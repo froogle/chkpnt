@@ -92,6 +92,7 @@ flutter:
   assets:
     - assets/logo.png
     - assets/onboarding1.png
+    - assets/onboarding2.png
 
 flutter_native_splash:
   color: "#D2691E"

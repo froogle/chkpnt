@@ -61,7 +61,7 @@ class _OnboardingOverlayState extends State<OnboardingOverlay> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.28),
+                  color: Colors.black.withAlpha((0.28 * 255).toInt()),
                   blurRadius: 28,
                   spreadRadius: 4,
                   offset: Offset(0, -4),
