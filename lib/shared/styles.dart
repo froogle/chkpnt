@@ -10,12 +10,10 @@ final ThemeData retroBacklogTheme = ThemeData(
     primary: Color(0xFFCC7E54),
     secondary: Color(0xFFC04F4A),
     surface: Color(0xFFD9B56B),
-    background: Color(0xFFF5E8DA),
     error: Color(0xFFB00020),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Color(0xFF3B2E29),
-    onBackground: Color(0xFF3B2E29),
     onError: Colors.white,
     brightness: Brightness.light,
   ),
@@ -63,12 +61,10 @@ final ThemeData retroBacklogDarkTheme = ThemeData(
     primary: Color(0xFFCC7E54),
     secondary: Color(0xFFC04F4A),
     surface: Color(0xFF4B3E3B),
-    background: Color(0xFF2C1F1A),
     error: Color(0xFFEF5350),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Colors.white,
-    onBackground: Colors.white,
     onError: Colors.black,
     brightness: Brightness.dark,
   ),
@@ -104,4 +100,13 @@ final ThemeData retroBacklogDarkTheme = ThemeData(
 
   cardColor: Color(0xFF46332E),
   dividerColor: Color(0xFF9D8463),
+);
+
+TextStyle get onboardingWelcomeTextStyle => TextStyle(
+  fontSize: 32,
+  fontWeight: FontWeight.bold,
+  color: Color(0xFF3B2E29),
+  shadows: const [
+    Shadow(blurRadius: 8, color: Colors.black26, offset: Offset(2, 2)),
+  ],
 );
