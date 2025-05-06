@@ -51,10 +51,22 @@ class _OnboardingOverlayState extends State<OnboardingOverlay> {
           return Container(
             constraints: BoxConstraints(maxHeight: overlayHeight),
             decoration: BoxDecoration(
-              color: Colors.white.withAlpha(0xB3),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.white.withAlpha(0xB3), Colors.white],
+              ),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(32),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.28),
+                  blurRadius: 28,
+                  spreadRadius: 4,
+                  offset: Offset(0, -4),
+                ),
+              ],
             ),
             child: SafeArea(
               top: false,
@@ -65,32 +77,8 @@ class _OnboardingOverlayState extends State<OnboardingOverlay> {
                 ),
                 child: SingleChildScrollView(
                   child: IntrinsicHeight(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Welcome to ChkPnt',
-                          style: onboardingWelcomeTextStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          'Take control of your gaming backlog!\n\nWith ChkPnt, you can easily track, organise, and complete your games. Enjoy features like progress tracking, wishlists, and personalised recommendations.\n\nStart your journey with a completely free 7 day trial—no strings attached!',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 18),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            onPressed: widget.onStartPressed,
-                            child: const Text("Let's Go"),
-                          ),
-                        ),
-                      ],
+                    child: _OnboardingContent(
+                      onStartPressed: widget.onStartPressed,
                     ),
                   ),
                 ),
@@ -98,6 +86,80 @@ class _OnboardingOverlayState extends State<OnboardingOverlay> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _OnboardingContent extends StatelessWidget {
+  final VoidCallback onStartPressed;
+  const _OnboardingContent({required this.onStartPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Welcome to ChkPnt',
+          style: onboardingWelcomeTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 18),
+        const _OnboardingDescription(),
+        const SizedBox(height: 18),
+        _OnboardingButton(onPressed: onStartPressed),
+      ],
+    );
+  }
+}
+
+class _OnboardingDescription extends StatelessWidget {
+  const _OnboardingDescription();
+
+  @override
+  Widget build(BuildContext context) {
+    final defaultStyle = Theme.of(context).textTheme.bodyMedium;
+    final boldStyle = defaultStyle?.copyWith(fontWeight: FontWeight.bold);
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: defaultStyle,
+        children: [
+          TextSpan(
+            text: 'Take control of your gaming backlog!\n\n',
+            style: boldStyle,
+          ),
+          const TextSpan(
+            text:
+                'Enjoy features like progress tracking, wishlists, and order tracking.\n\n',
+          ),
+          const TextSpan(text: 'Start now with a free 7 day trial.\n\n'),
+          TextSpan(text: 'No strings attached!', style: boldStyle),
+        ],
+      ),
+    );
+  }
+}
+
+class _OnboardingButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  const _OnboardingButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          elevation: 8,
+          shadowColor: Colors.black.withOpacity(0.25),
+        ),
+        child: const Text("Let's Go"),
       ),
     );
   }
