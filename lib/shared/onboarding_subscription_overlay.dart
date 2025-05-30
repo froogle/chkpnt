@@ -184,7 +184,7 @@ class _OnboardingSubscriptionOverlayState
   }
 
   void _handleSubscribe() {
-    // TODO: Handle subscribe
+    Navigator.of(context).pushReplacementNamed('/main');
   }
 }
 
