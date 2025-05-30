@@ -597,4 +597,195 @@ class MainScreenStyles {
     fontWeight: FontWeight.bold,
     color: Color(0xFF3B2E29),
   );
+
+  // Additional colors for MainScreen
+  static const Color expandIconColor = Color(0xFF674C3C);
+  static const Color primaryAccentColor = Color(0xFFCC7E54);
+  static const Color primaryAccentColorTransparent = Color(
+    0x1ACC7E54,
+  ); // 0.1 alpha
+  static const Color primaryTextColor = Color(0xFF3B2E29);
+  static const Color secondaryButtonColor = Color(0xFF924942);
+  static const Color subtleShadowColor = Color(0x1A000000);
+
+  // Additional spacing constants
+  static const EdgeInsets collapsibleSectionMargin = EdgeInsets.only(
+    bottom: 16,
+  );
+  static const EdgeInsets collapsibleSectionHeaderPadding =
+      EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+  static const EdgeInsets collapsibleSectionContentPadding = EdgeInsets.all(16);
+  static const EdgeInsets gameCardMargin = EdgeInsets.only(bottom: 12);
+  static const EdgeInsets filterDropdownItemPadding = EdgeInsets.symmetric(
+    vertical: 8,
+    horizontal: 4,
+  );
+  static const EdgeInsets filterDropdownButtonPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+  );
+  static const EdgeInsets addGameIconButtonPadding = EdgeInsets.all(12);
+  static const EdgeInsets smallIconPadding = EdgeInsets.all(8);
+  static const EdgeInsets tinyIconPadding = EdgeInsets.all(6);
+  static const EdgeInsets addButtonSmallPadding = EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 6,
+  );
+
+  // Game card text shadows
+  static const List<Shadow> gameCardTextShadows = [
+    Shadow(blurRadius: 6, color: Colors.black87, offset: Offset(1, 1)),
+  ];
+
+  static const List<Shadow> gameCardSubtextShadows = [
+    Shadow(blurRadius: 6, color: Colors.black87, offset: Offset(1, 1)),
+  ];
+
+  static const List<Shadow> gameCardPortraitTextShadows = [
+    Shadow(blurRadius: 4, color: Colors.black87, offset: Offset(1, 1)),
+  ];
+
+  // Game card text styles for landscape
+  static const TextStyle landscapeGameCardTitleStyle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    shadows: gameCardTextShadows,
+  );
+
+  static const TextStyle landscapeGameCardPlatformStyle = TextStyle(
+    fontSize: 12,
+    color: Colors.white70,
+    shadows: gameCardTextShadows,
+  );
+
+  static const TextStyle landscapeGameCardStatusStyle = TextStyle(
+    fontSize: 11,
+    color: Colors.white,
+    fontWeight: FontWeight.w500,
+    shadows: gameCardTextShadows,
+  );
+
+  // Game card text styles for portrait
+  static const TextStyle portraitGameCardTitleStyle = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    shadows: gameCardPortraitTextShadows,
+  );
+
+  static const TextStyle portraitGameCardPlatformStyle = TextStyle(
+    fontSize: 14,
+    color: Colors.white70,
+    shadows: gameCardPortraitTextShadows,
+  );
+
+  static const TextStyle portraitGameCardStatusStyle = TextStyle(
+    fontSize: 14,
+    color: Colors.white,
+    fontWeight: FontWeight.w500,
+    shadows: gameCardPortraitTextShadows,
+  );
+
+  // Filter dropdown text styles
+  static const TextStyle filterDropdownSelectedTextStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: primaryAccentColor,
+  );
+
+  static const TextStyle filterDropdownUnselectedTextStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: primaryTextColor,
+  );
+
+  static const TextStyle filterButtonTextStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+  );
+
+  // Gradient decorations for game cards
+  static const BoxDecoration landscapeGameCardGradientDecoration =
+      BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            Color(0x44000000), // Light overlay in middle
+            Color(0xCC000000), // Strong overlay at bottom
+          ],
+          stops: [0.0, 0.6, 1.0],
+        ),
+      );
+
+  static const BoxDecoration portraitGameCardGradientDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [
+        Color(0xCC000000), // More opaque black on left
+        Color(0x66000000), // Semi-transparent in middle
+        Colors.transparent, // Transparent on right
+      ],
+      stops: [0.0, 0.5, 1.0],
+    ),
+  );
+
+  // Action button decorations
+  static const BoxDecoration playActionButtonDecoration = BoxDecoration(
+    color: primaryAccentColor,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+    boxShadow: [
+      BoxShadow(color: Color(0x66000000), blurRadius: 6, offset: Offset(0, 2)),
+    ],
+  );
+
+  static const BoxDecoration portraitPlayActionButtonDecoration = BoxDecoration(
+    color: primaryAccentColor,
+    borderRadius: BorderRadius.all(Radius.circular(20)),
+    boxShadow: [
+      BoxShadow(color: Color(0x44000000), blurRadius: 8, offset: Offset(0, 2)),
+    ],
+  );
+
+  static const BoxDecoration completedBadgeDecoration = BoxDecoration(
+    color: Colors.green,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    boxShadow: [
+      BoxShadow(color: Color(0x66000000), blurRadius: 6, offset: Offset(0, 2)),
+    ],
+  );
+
+  static const BoxDecoration portraitCompletedBadgeDecoration = BoxDecoration(
+    color: Colors.green,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+    boxShadow: [
+      BoxShadow(color: Color(0x44000000), blurRadius: 8, offset: Offset(0, 2)),
+    ],
+  );
+
+  // Filter dropdown decorations
+  static const BoxDecoration filterDropdownSelectedItemDecoration =
+      BoxDecoration(
+        color: primaryAccentColorTransparent,
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      );
+
+  // Empty state styles
+  static const BoxDecoration emptyStateDecoration = BoxDecoration(
+    color: Color(0xFFF5F5F5), // Colors.grey[50]
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    border: Border.fromBorderSide(
+      BorderSide(color: Color(0xFFE0E0E0), width: 1), // Colors.grey[300]
+    ),
+  );
+
+  static const double emptyStateHeight = 120.0;
+  static const double emptyStateIconSize = 32.0;
+  static const Color emptyStateIconColor = Color(
+    0xFFBDBDBD,
+  ); // Colors.grey[400]
+  static const double emptyStateSpacing = 8.0;
 }
