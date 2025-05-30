@@ -179,3 +179,10 @@ class OnboardingOverlayStyles {
   // Start button style (shared with subscribe button)
   static ButtonStyle get startButtonStyle => subscribeButtonStyle;
 }
+
+// Splash Screen Styles
+class SplashScreenStyles {
+  static const Color backgroundColor = Color(0xFFD2691E);
+  static const Duration splashDuration = Duration(seconds: 2);
+  static const double logoSizeRatio = 0.8;
+}

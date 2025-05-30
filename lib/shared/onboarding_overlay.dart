@@ -26,61 +26,69 @@ class _OnboardingOverlayState extends State<OnboardingOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
-    final maxPortraitHeight = MediaQuery.of(context).size.height * 0.7;
-
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 800),
       curve: Curves.easeOutCubic,
       bottom: _isVisible ? 0 : -MediaQuery.of(context).size.height,
       left: 0,
       right: 0,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // For landscape mode, use 70% of screen height
-          // For portrait mode, use the intrinsic height of the content, up to 70% of the screen height
-          final double overlayHeight =
-              isPortrait
-                  ? maxPortraitHeight
-                  : (constraints.maxHeight * 0.7).clamp(
-                    0.0,
-                    constraints.maxHeight,
-                  );
+      child: _buildOverlayContainer(context),
+    );
+  }
 
-          return Container(
-            constraints: BoxConstraints(maxHeight: overlayHeight),
-            decoration: OnboardingOverlayStyles.overlayDecoration,
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: OnboardingOverlayStyles.overlayPadding,
-                child: SingleChildScrollView(
-                  child: IntrinsicHeight(
-                    child: _OnboardingContent(
-                      onStartPressed: widget.onStartPressed,
-                    ),
-                  ),
-                ),
-              ),
+  Widget _buildOverlayContainer(BuildContext context) {
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+    final maxPortraitHeight = MediaQuery.of(context).size.height * 0.7;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final overlayHeight = _calculateOverlayHeight(
+          isPortrait,
+          maxPortraitHeight,
+          constraints,
+        );
+
+        return Container(
+          constraints: BoxConstraints(maxHeight: overlayHeight),
+          decoration: OnboardingOverlayStyles.overlayDecoration,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: OnboardingOverlayStyles.overlayPadding,
+              child: _buildScrollableContent(),
             ),
-          );
-        },
+          ),
+        );
+      },
+    );
+  }
+
+  double _calculateOverlayHeight(
+    bool isPortrait,
+    double maxPortraitHeight,
+    BoxConstraints constraints,
+  ) {
+    return isPortrait
+        ? maxPortraitHeight
+        : (constraints.maxHeight * 0.7).clamp(0.0, constraints.maxHeight);
+  }
+
+  Widget _buildScrollableContent() {
+    return SingleChildScrollView(
+      child: IntrinsicHeight(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [_buildHeader(), _buildDescription(), _buildActionButton()],
+        ),
       ),
     );
   }
-}
 
-class _OnboardingContent extends StatelessWidget {
-  final VoidCallback onStartPressed;
-  const _OnboardingContent({required this.onStartPressed});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildHeader() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           'Welcome to ChkPnt',
@@ -88,11 +96,21 @@ class _OnboardingContent extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: OnboardingOverlayStyles.contentSpacing),
-        const _OnboardingDescription(),
-        const SizedBox(height: OnboardingOverlayStyles.contentSpacing),
-        _OnboardingButton(onPressed: onStartPressed),
       ],
     );
+  }
+
+  Widget _buildDescription() {
+    return Column(
+      children: [
+        _OnboardingDescription(),
+        const SizedBox(height: OnboardingOverlayStyles.contentSpacing),
+      ],
+    );
+  }
+
+  Widget _buildActionButton() {
+    return _OnboardingButton(onPressed: widget.onStartPressed);
   }
 }
 

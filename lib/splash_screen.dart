@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'onboarding_screen.dart';
+import 'shared/styles.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,34 +13,53 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    _startSplashTimer();
+  }
+
+  void _startSplashTimer() {
+    Future.delayed(SplashScreenStyles.splashDuration, () {
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-      );
+      _navigateToOnboarding();
     });
+  }
+
+  void _navigateToOnboarding() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFD2691E),
-      body: Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final size =
-                constraints.maxWidth < constraints.maxHeight
-                    ? constraints.maxWidth
-                    : constraints.maxHeight;
-            return Image.asset(
-              'assets/logo.png',
-              width: size * 0.8,
-              height: size * 0.8,
-              fit: BoxFit.contain,
-            );
-          },
-        ),
-      ),
+      backgroundColor: SplashScreenStyles.backgroundColor,
+      body: Center(child: _buildResponsiveLogo()),
+    );
+  }
+
+  Widget _buildResponsiveLogo() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final logoSize = _calculateLogoSize(constraints);
+        return _buildLogoImage(logoSize);
+      },
+    );
+  }
+
+  double _calculateLogoSize(BoxConstraints constraints) {
+    final availableSize =
+        constraints.maxWidth < constraints.maxHeight
+            ? constraints.maxWidth
+            : constraints.maxHeight;
+    return availableSize * SplashScreenStyles.logoSizeRatio;
+  }
+
+  Widget _buildLogoImage(double size) {
+    return Image.asset(
+      'assets/logo.png',
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
     );
   }
 }
