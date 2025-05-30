@@ -1,7 +1,7 @@
 ---
 description:
 globs:
-alwaysApply: false
+alwaysApply: true
 ---
 # Flutter Project Architecture Overview
 
@@ -24,21 +24,21 @@ lib/
 ## Architecture Layers
 
 ### 🎨 Presentation Layer
-- **[lib/screens/](mdc:lib/screens/)** - Full-screen widgets ([main_screen.dart](mdc:lib/main_screen.dart), [splash_screen.dart](mdc:lib/splash_screen.dart))
-- **[lib/shared/](mdc:lib/shared/)** - Reusable UI components (game cards, sections, inputs)
-- **[lib/styles/](mdc:lib/styles/)** - Centralized styling and themes
+- **[lib/screens/](mdc:lib/screens)** - Full-screen widgets ([main_screen.dart](mdc:lib/main_screen.dart), [splash_screen.dart](mdc:lib/splash_screen.dart))
+- **[lib/shared/](mdc:lib/shared)** - Reusable UI components (game cards, sections, inputs)
+- **[lib/styles/](mdc:lib/styles)** - Centralized styling and themes
 
 ### 🔄 State Management Layer
-- **[lib/providers/](mdc:lib/providers/)** - Riverpod providers for state management
+- **[lib/providers/](mdc:lib/providers)** - Riverpod providers for state management
 - Reactive state updates and dependency injection
 
 ### 🧠 Business Logic Layer
-- **[lib/services/](mdc:lib/services/)** - Pure business logic and domain rules
+- **[lib/services/](mdc:lib/services)** - Pure business logic and domain rules
 - Platform-agnostic and easily testable
 
 ### 💾 Data Access Layer
-- **[lib/repositories/](mdc:lib/repositories/)** - Data persistence and external APIs
-- **[lib/models/](mdc:lib/models/)** - Data structures and entities
+- **[lib/repositories/](mdc:lib/repositories)** - Data persistence and external APIs
+- **[lib/models/](mdc:lib/models)** - Data structures and entities
 
 ## Key Files and Patterns
 
@@ -59,7 +59,7 @@ lib/
 ### Widget Architecture
 ✅ **Extract Complex Build Methods** - Use focused `_buildXXX()` methods
 ✅ **Separate Business Logic** - Keep logic separate from UI rendering
-✅ **Centralized Styling** - Use styles from [lib/styles/](mdc:lib/styles/)
+✅ **Centralized Styling** - Use styles from [lib/styles/](mdc:lib/styles)
 ✅ **Consistent Naming** - Follow `_buildXXX()` convention
 
 ### State Management (Future Implementation)
@@ -77,15 +77,15 @@ lib/
 ## Development Workflow
 
 ### Adding New Features
-1. **Models** - Define data structures in [lib/models/](mdc:lib/models/)
-2. **Styling** - Add styles to appropriate module in [lib/styles/](mdc:lib/styles/)
-3. **Components** - Create reusable widgets in [lib/shared/](mdc:lib/shared/)
+1. **Models** - Define data structures in [lib/models/](mdc:lib/models)
+2. **Styling** - Add styles to appropriate module in [lib/styles/](mdc:lib/styles)
+3. **Components** - Create reusable widgets in [lib/shared/](mdc:lib/shared)
 4. **Screens** - Compose components into full screens
 5. **State** - Add providers for state management (future)
 
 ### Modifying Existing Components
-1. **Locate** - Find component in [lib/shared/](mdc:lib/shared/) or [lib/screens/](mdc:lib/screens/)
-2. **Style Changes** - Update relevant style module in [lib/styles/](mdc:lib/styles/)
+1. **Locate** - Find component in [lib/shared/](mdc:lib/shared) or [lib/screens/](mdc:lib/screens)
+2. **Style Changes** - Update relevant style module in [lib/styles/](mdc:lib/styles)
 3. **Widget Changes** - Follow established `_buildXXX()` patterns
 4. **Test** - Verify changes don't break existing functionality
 

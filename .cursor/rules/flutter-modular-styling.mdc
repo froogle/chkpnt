@@ -1,13 +1,13 @@
 ---
 description:
 globs:
-alwaysApply: false
+alwaysApply: true
 ---
 # Flutter Modular Styling Architecture
 
 ## Overview
 
-The styling system has been refactored from a monolithic 792-line file into a clean, modular architecture located in [lib/styles/](mdc:lib/styles/).
+The styling system has been refactored from a monolithic 792-line file into a clean, modular architecture located in [lib/styles/](mdc:lib/styles).
 
 ## File Structure
 
