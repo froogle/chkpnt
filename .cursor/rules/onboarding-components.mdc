@@ -3,71 +3,102 @@ description:
 globs:
 alwaysApply: false
 ---
-# Onboarding Components Architecture
+# Onboarding Components
 
 ## Component Overview
 
 The onboarding system consists of two main overlay components that share styling and behavior patterns:
 
-### Primary Components
-- [lib/shared/onboarding_overlay.dart](mdc:lib/shared/onboarding_overlay.dart) - Welcome/introduction overlay
-- [lib/shared/onboarding_subscription_overlay.dart](mdc:lib/shared/onboarding_subscription_overlay.dart) - Subscription selection overlay
+### Components
+- **[lib/shared/onboarding_overlay.dart](mdc:lib/shared/onboarding_overlay.dart)** - Welcome/introduction overlay
+- **[lib/shared/onboarding_subscription_overlay.dart](mdc:lib/shared/onboarding_subscription_overlay.dart)** - Subscription selection overlay
+- **[lib/onboarding_screen.dart](mdc:lib/onboarding_screen.dart)** - Main onboarding screen with background
+- **[lib/splash_screen.dart](mdc:lib/splash_screen.dart)** - App entry splash screen
 
-## Shared Styling Patterns
+## Shared Styling
 
-Both components follow identical structural patterns:
+All onboarding components use styles from **[lib/styles/onboarding_styles.dart](mdc:lib/styles/onboarding_styles.dart)**:
 
-### Container Structure
+### SplashScreenStyles
+- `backgroundColor` - Consistent splash background color
+- `splashDuration` - Standard 2-second delay
+- `logoSizeRatio` - Responsive logo sizing (0.8)
+
+### OnboardingOverlayStyles
+- `overlayDecoration` - Standard gradient decoration with border radius and shadows
+- `overlayPadding` - Consistent padding for overlay content
+- `contentSpacing` - Standard spacing between sections (18.0)
+- `subscribeButtonStyle` / `startButtonStyle` - Reusable button styling
+
+## Animation Patterns
+
+### Overlay Entry Animation
 ```dart
 AnimatedPositioned(
   duration: const Duration(milliseconds: 800),
   curve: Curves.easeOutCubic,
-  // ... positioning logic
-  child: Container(
-    decoration: OnboardingOverlayStyles.overlayDecoration,
-    child: SafeArea(
-      child: Padding(
-        padding: OnboardingOverlayStyles.overlayPadding,
-        // ... content
-      ),
-    ),
-  ),
+  bottom: showOverlay ? 0 : -overlayHeight,
+  // ... positioning
 )
 ```
 
-### Animation Behavior
-- **Entry Animation**: 800ms ease-out cubic slide from bottom
-- **Responsive Height**: 70% max height with adaptive layout for portrait/landscape
-- **Safe Area**: Respects device safe areas
-
-### Content Layout Patterns
-1. **Title**: Uses `onboardingWelcomeTextStyle` from [lib/shared/styles.dart](mdc:lib/shared/styles.dart)
-2. **Content Spacing**: `OnboardingOverlayStyles.contentSpacing` (18.0) between sections
-3. **Button Placement**: Full-width buttons with consistent height and styling
+### Responsive Height Calculation
+```dart
+double _calculateOverlayHeight(BoxConstraints constraints, bool isPortrait) {
+  final maxHeight = constraints.maxHeight * 0.7; // 70% max height
+  // Adaptive logic for content...
+}
+```
 
 ## Component-Specific Features
 
 ### OnboardingOverlay
 - Simple welcome message with rich text description
 - Single "Let's Go" action button
-- Uses `OnboardingOverlayStyles.startButtonStyle`
+- Smooth slide-up animation
 
 ### OnboardingSubscriptionOverlay
-- Interactive subscription option selection
-- Adaptive layout (portrait: vertical list, landscape: horizontal scroll)
-- Subscribe button with conditional enabling
-- Uses `OnboardingOverlayStyles.subscribeButtonStyle`
+- Interactive subscription option selection (Free/Premium/Pro)
+- Adaptive layout:
+  - **Portrait**: Vertical list of options
+  - **Landscape**: Horizontal scrollable options
+- Conditional subscribe button enabling
+- State management for selected option
 
-## Development Guidelines
+### SplashScreen
+- Responsive logo sizing based on screen constraints
+- Automatic navigation after delay
+- Clean, branded appearance
 
-When creating new onboarding components:
+## Usage Patterns
 
-1. **Extend Existing Patterns**: Use the same container structure and animation
-2. **Reuse Styling Classes**: Leverage `OnboardingOverlayStyles` constants
-3. **Maintain Consistency**: Follow the established spacing and button patterns
-4. **Responsive Design**: Support both portrait and landscape orientations
-5. **State Management**: Use simple state for visibility and user interactions
+### Displaying Overlays
+```dart
+// Show overlay with animation
+setState(() {
+  showOverlay = true;
+});
 
-## Style Customization
+// Hide overlay before navigation
+setState(() {
+  showOverlay = false;
+});
+await Future.delayed(const Duration(milliseconds: 300));
+// Navigate...
+```
 
-To modify styling across all onboarding components, update constants in `OnboardingOverlayStyles` class in [lib/shared/styles.dart](mdc:lib/shared/styles.dart). Changes will automatically apply to all components using these styles.
+### Navigation Flow
+1. **SplashScreen** → Auto-navigate after 2 seconds
+2. **OnboardingScreen** → Show welcome overlay
+3. **OnboardingOverlay** → "Let's Go" button triggers subscription overlay
+4. **OnboardingSubscriptionOverlay** → "Subscribe" navigates to main app
+
+## Best Practices
+
+When working with onboarding components:
+
+1. **Maintain Animation Consistency** - Use the same 800ms ease-out cubic timing
+2. **Preserve Responsive Design** - Test on both portrait and landscape orientations
+3. **Use Shared Styles** - Leverage OnboardingOverlayStyles for consistency
+4. **Handle State Properly** - Manage overlay visibility with proper state transitions
+5. **Test Navigation Flow** - Ensure smooth transitions between onboarding steps

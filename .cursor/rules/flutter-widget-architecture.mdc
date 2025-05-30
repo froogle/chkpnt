@@ -81,25 +81,6 @@ double _calculateLogoSize(BoxConstraints constraints) {
 }
 ```
 
-### 4. Use Centralized Styling
-
-All styling constants must be defined in [lib/shared/styles.dart](mdc:lib/shared/styles.dart) using style classes:
-
-```dart
-// ✅ Use style classes
-class SplashScreenStyles {
-  static const Color backgroundColor = Color(0xFFD2691E);
-  static const Duration splashDuration = Duration(seconds: 2);
-  static const double logoSizeRatio = 0.8;
-}
-
-class OnboardingOverlayStyles {
-  static const BoxDecoration overlayDecoration = BoxDecoration(/* ... */);
-  static const EdgeInsets overlayPadding = EdgeInsets.symmetric(/* ... */);
-  // ... other constants
-}
-```
-
 ## Implementation Examples
 
 ### Complete Widget Structure
@@ -142,7 +123,7 @@ When encountering complex widgets:
 
 1. **Identify Sections** - Look for logical UI sections (header, content, footer, etc.)
 2. **Extract Methods** - Create `_buildXXX()` methods for each section
-3. **Move Constants** - Relocate magic numbers and colors to style classes
+3. **Move Constants** - Relocate magic numbers and colors to appropriate style classes
 4. **Separate Logic** - Extract calculations and navigation to dedicated methods
 5. **Test Compilation** - Ensure changes don't break existing functionality
 
