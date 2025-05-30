@@ -89,17 +89,16 @@ PlatformFilterDropdown(
 
 ## 📊 Data Models
 
-### `game_models.dart`
-Contains shared data models:
-- `GameStatus` enum: playing, completed, backlog, abandoned
-- `GameItem` class: Represents a game with title, platform, status, and progress
+Game models are now located in `lib/models/`:
+- `game_models.dart` - Contains GameStatus enum and GameItem class
 
 ## 🎨 Styling
 
-All widgets use centralized styling from `styles.dart`:
-- `MainScreenStyles` - Main app styling constants
-- `OnboardingOverlayStyles` - Onboarding-specific styles
-- `SplashScreenStyles` - Splash screen styles
+All styling is now centralized in `lib/styles/`:
+- `styles.dart` - Contains all style classes:
+  - `MainScreenStyles` - Main app styling constants
+  - `OnboardingOverlayStyles` - Onboarding-specific styles
+  - `SplashScreenStyles` - Splash screen styles
 
 ## 🏗️ Architecture Benefits
 
@@ -108,6 +107,7 @@ All widgets use centralized styling from `styles.dart`:
 ✅ **Maintainability** - Changes in one place affect all usage
 ✅ **Testability** - Individual components can be tested independently
 ✅ **Scalability** - Easy to extend and add new shared components
+✅ **Organization** - Clear separation of concerns with dedicated folders
 
 ## 🔄 Future Additions
 
@@ -117,3 +117,14 @@ Consider creating shared widgets for:
 - Loading states
 - Form inputs
 - Toast/snackbar messages
+
+## 📁 Project Structure
+
+```
+lib/
+├── models/           # Data models and entities
+├── styles/           # Centralized styling
+├── shared/           # Reusable UI components
+├── screens/          # Screen-level widgets
+└── ...
+```

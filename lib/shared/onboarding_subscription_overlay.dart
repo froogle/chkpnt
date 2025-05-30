@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'styles.dart';
+import '../styles/styles.dart';
 
 class OnboardingSubscriptionOverlay extends StatefulWidget {
   const OnboardingSubscriptionOverlay({super.key});

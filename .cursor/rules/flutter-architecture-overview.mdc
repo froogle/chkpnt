@@ -1,0 +1,132 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Flutter Project Architecture Overview
+
+## Project Structure
+
+This Flutter app follows a clean architecture pattern with clear separation of concerns:
+
+```
+lib/
+├── models/           # Data models and entities
+├── styles/           # Centralized styling and themes
+├── shared/           # Reusable UI components
+├── providers/        # State management (Riverpod)
+├── services/         # Business logic and domain services
+├── repositories/     # Data access layer
+├── screens/          # Screen-level widgets
+└── main.dart
+```
+
+## Architecture Layers
+
+### 🎨 Presentation Layer
+- **[lib/screens/](mdc:lib/screens/)** - Full-screen widgets ([main_screen.dart](mdc:lib/main_screen.dart), [splash_screen.dart](mdc:lib/splash_screen.dart))
+- **[lib/shared/](mdc:lib/shared/)** - Reusable UI components (game cards, sections, inputs)
+- **[lib/styles/](mdc:lib/styles/)** - Centralized styling and themes
+
+### 🔄 State Management Layer
+- **[lib/providers/](mdc:lib/providers/)** - Riverpod providers for state management
+- Reactive state updates and dependency injection
+
+### 🧠 Business Logic Layer
+- **[lib/services/](mdc:lib/services/)** - Pure business logic and domain rules
+- Platform-agnostic and easily testable
+
+### 💾 Data Access Layer
+- **[lib/repositories/](mdc:lib/repositories/)** - Data persistence and external APIs
+- **[lib/models/](mdc:lib/models/)** - Data structures and entities
+
+## Key Files and Patterns
+
+### Core Application
+- **[lib/main.dart](mdc:lib/main.dart)** - App entry point with theme configuration
+- **[lib/main_screen.dart](mdc:lib/main_screen.dart)** - Main game library screen (refactored architecture)
+
+### Models and Data
+- **[lib/models/game_models.dart](mdc:lib/models/game_models.dart)** - GameItem class and GameStatus enum
+
+### Styling System
+- **[lib/styles/styles.dart](mdc:lib/styles/styles.dart)** - Barrel export for all style modules
+- **[lib/styles/global_styles.dart](mdc:lib/styles/global_styles.dart)** - AppColors, AppShadows, shared styles
+- **[lib/styles/main_screen_styles.dart](mdc:lib/styles/main_screen_styles.dart)** - Legacy compatibility layer
+
+## Architecture Principles
+
+### Widget Architecture
+✅ **Extract Complex Build Methods** - Use focused `_buildXXX()` methods
+✅ **Separate Business Logic** - Keep logic separate from UI rendering
+✅ **Centralized Styling** - Use styles from [lib/styles/](mdc:lib/styles/)
+✅ **Consistent Naming** - Follow `_buildXXX()` convention
+
+### State Management (Future Implementation)
+✅ **Riverpod Providers** - For reactive state management
+✅ **Dependency Injection** - Services injected through providers
+✅ **Separate UI/Business State** - Clear boundaries between concerns
+✅ **Error Handling** - Proper AsyncValue usage
+
+### Styling Architecture
+✅ **Modular Organization** - Component-specific style files
+✅ **Semantic Naming** - `AppColors.primaryAccent` vs magic hex values
+✅ **Reusable Components** - Shared shadows, decorations, text styles
+✅ **Backward Compatibility** - Legacy MainScreenStyles for migration
+
+## Development Workflow
+
+### Adding New Features
+1. **Models** - Define data structures in [lib/models/](mdc:lib/models/)
+2. **Styling** - Add styles to appropriate module in [lib/styles/](mdc:lib/styles/)
+3. **Components** - Create reusable widgets in [lib/shared/](mdc:lib/shared/)
+4. **Screens** - Compose components into full screens
+5. **State** - Add providers for state management (future)
+
+### Modifying Existing Components
+1. **Locate** - Find component in [lib/shared/](mdc:lib/shared/) or [lib/screens/](mdc:lib/screens/)
+2. **Style Changes** - Update relevant style module in [lib/styles/](mdc:lib/styles/)
+3. **Widget Changes** - Follow established `_buildXXX()` patterns
+4. **Test** - Verify changes don't break existing functionality
+
+### Creating Shared Components
+1. **Structure** - Follow established widget architecture patterns
+2. **Styling** - Use modular styles from appropriate style modules
+3. **Documentation** - Add usage examples to component documentation
+4. **Testing** - Create widget tests for new components
+
+## Current State vs Future Architecture
+
+### ✅ Currently Implemented
+- Modular styling system with backward compatibility
+- Shared component library with consistent patterns
+- Clean widget architecture with extracted build methods
+- Proper separation of concerns in presentation layer
+
+### 🔄 Future Implementation
+- Riverpod providers for state management
+- Service layer for business logic
+- Repository layer for data persistence
+- Comprehensive testing strategy
+
+## Best Practices
+
+### File Organization
+- Keep files focused on single responsibility
+- Use clear, descriptive names
+- Group related functionality together
+- Maintain consistent structure across similar files
+
+### Code Quality
+- Extract complex logic into focused methods
+- Use semantic naming throughout
+- Prefer composition over inheritance
+- Write testable, maintainable code
+
+### Performance
+- Import only what you need from style modules
+- Use const constructors where possible
+- Leverage Flutter's widget tree optimization
+- Consider lazy loading for large datasets (future)
+
+This architecture provides a solid foundation that scales beautifully as the application grows! 🚀

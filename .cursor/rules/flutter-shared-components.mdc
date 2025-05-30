@@ -1,0 +1,197 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Flutter Shared Components Library
+
+## Overview
+
+The [lib/shared/](mdc:lib/shared/) directory contains reusable UI components that follow established architecture patterns and use centralized styling.
+
+## Available Components
+
+### Game Components
+- **[lib/shared/landscape_game_card.dart](mdc:lib/shared/landscape_game_card.dart)** - Game card for grid layouts (landscape)
+- **[lib/shared/portrait_game_card.dart](mdc:lib/shared/portrait_game_card.dart)** - Game card for list layouts (portrait)
+
+### Layout Components
+- **[lib/shared/collapsible_section.dart](mdc:lib/shared/collapsible_section.dart)** - Generic expandable section
+- **[lib/shared/empty_state_widget.dart](mdc:lib/shared/empty_state_widget.dart)** - Consistent empty state display
+
+### Input Components
+- **[lib/shared/compact_search_bar.dart](mdc:lib/shared/compact_search_bar.dart)** - Reusable search input
+- **[lib/shared/platform_filter_dropdown.dart](mdc:lib/shared/platform_filter_dropdown.dart)** - Platform selection dropdown
+
+### Onboarding Components
+- **[lib/shared/onboarding_overlay.dart](mdc:lib/shared/onboarding_overlay.dart)** - Welcome overlay
+- **[lib/shared/onboarding_subscription_overlay.dart](mdc:lib/shared/onboarding_subscription_overlay.dart)** - Subscription selection
+
+## Usage Examples
+
+### Game Cards
+```dart
+// Landscape orientation (grid)
+LandscapeGameCard(
+  game: gameItem,
+  onTap: () => showGameDetails(game),
+  onPlayPressed: game.status == GameStatus.backlog
+      ? () => startPlaying(game)
+      : null,
+)
+
+// Portrait orientation (list)
+PortraitGameCard(
+  game: gameItem,
+  onTap: () => showGameDetails(game),
+  onPlayPressed: game.status == GameStatus.backlog
+      ? () => startPlaying(game)
+      : null,
+)
+```
+
+### Layout Components
+```dart
+// Collapsible section
+CollapsibleSection(
+  title: 'Section Title',
+  isExpanded: isExpanded,
+  onToggle: () => toggleSection(),
+  isEmpty: items.isEmpty,
+  emptyStateWidget: EmptyStateWidget(...),
+  content: YourContentWidget(),
+)
+
+// Empty state
+EmptyStateWidget(
+  icon: Icons.inbox_outlined,
+  message: 'No items found',
+  actionButton: ElevatedButton(...),
+)
+```
+
+### Input Components
+```dart
+// Search bar
+CompactSearchBar(
+  hintText: 'Search games...',
+  onChanged: (query) => handleSearch(query),
+  controller: searchController,
+)
+
+// Platform filter
+PlatformFilterDropdown(
+  selectedPlatform: selectedPlatform,
+  platforms: platformsList,
+  onPlatformChanged: (platform) => updateFilter(platform),
+)
+```
+
+## Component Guidelines
+
+### Architecture Patterns
+All shared components follow these patterns:
+1. **Extract Complex Build Methods** - Use `_buildXXX()` methods
+2. **Separate Business Logic** - Keep logic separate from UI
+3. **Centralized Styling** - Use styles from [lib/styles/](mdc:lib/styles/)
+4. **Consistent Naming** - Follow `_buildXXX()` convention
+
+### Styling Integration
+Components use modular styling:
+```dart
+// Import specific style modules
+import '../styles/game_card_styles.dart';
+import '../styles/global_styles.dart';
+
+// Use component-specific styles
+Container(
+  decoration: GameCardStyles.landscapeGameCardDecoration,
+  child: Text('Title', style: GameCardStyles.landscapeGameCardTitleStyle),
+)
+```
+
+### Data Models
+Components use models from [lib/models/game_models.dart](mdc:lib/models/game_models.dart):
+- `GameItem` class for game data
+- `GameStatus` enum for game states
+
+## Creating New Shared Components
+
+### 1. Component Structure
+```dart
+class MySharedWidget extends StatelessWidget {
+  final RequiredData data;
+  final VoidCallback onAction;
+
+  const MySharedWidget({
+    super.key,
+    required this.data,
+    required this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildContainer();
+  }
+
+  Widget _buildContainer() {
+    return Container(
+      decoration: MyComponentStyles.containerDecoration,
+      child: _buildContent(),
+    );
+  }
+
+  Widget _buildContent() {
+    // Component content
+  }
+}
+```
+
+### 2. Add Styling
+Create or update appropriate style module in [lib/styles/](mdc:lib/styles/):
+```dart
+class MyComponentStyles {
+  static const BoxDecoration containerDecoration = BoxDecoration(
+    color: AppColors.background,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    boxShadow: AppShadows.cardElevation,
+  );
+}
+```
+
+### 3. Export in Barrel File
+Update [lib/shared/README.md](mdc:lib/shared/README.md) with documentation and usage examples.
+
+## Benefits
+
+✅ **Reusability** - Components can be used across multiple screens
+✅ **Consistency** - Centralized styling ensures uniform appearance
+✅ **Maintainability** - Changes in one place affect all usage
+✅ **Testability** - Individual components can be tested independently
+✅ **Scalability** - Easy to extend and add new shared components
+
+## Testing Shared Components
+
+Create widget tests for shared components:
+```dart
+testWidgets('LandscapeGameCard displays game information', (tester) async {
+  final game = GameItem(
+    title: 'Test Game',
+    platform: 'PC',
+    status: GameStatus.playing,
+    progress: 0.5,
+  );
+
+  await tester.pumpWidget(
+    MaterialApp(
+      home: LandscapeGameCard(
+        game: game,
+        onTap: () {},
+      ),
+    ),
+  );
+
+  expect(find.text('Test Game'), findsOneWidget);
+  expect(find.text('PC'), findsOneWidget);
+});
+```

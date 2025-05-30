@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'styles.dart';
+import '../styles/styles.dart';
 
 class PlatformFilterDropdown extends StatelessWidget {
   final String selectedPlatform;

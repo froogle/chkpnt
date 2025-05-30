@@ -1,5 +1,5 @@
-import 'package:chkpnt/shared/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:chkpnt/styles/styles.dart';
 import 'splash_screen.dart';
 import 'main_screen.dart';
 

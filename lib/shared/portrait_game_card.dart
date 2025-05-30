@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'styles.dart';
-import 'game_models.dart';
+import '../styles/styles.dart';
+import '../models/game_models.dart';
 
 class PortraitGameCard extends StatelessWidget {
   final GameItem game;

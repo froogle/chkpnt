@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'shared/styles.dart';
+import 'styles/styles.dart';
 import 'shared/landscape_game_card.dart';
 import 'shared/portrait_game_card.dart';
 import 'shared/collapsible_section.dart';
 import 'shared/platform_filter_dropdown.dart';
 import 'shared/compact_search_bar.dart';
-import 'shared/game_models.dart';
+import 'models/game_models.dart';
 import 'shared/empty_state_widget.dart';
 
 class MainScreen extends StatefulWidget {

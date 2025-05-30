@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 # Flutter Styling Best Practices
 
-## Avoid Embedded Styling
+## Core Principles
 
 **Never use inline styling directly in widget build methods.** All styling should be extracted to constants or reusable style objects.
 
@@ -29,6 +29,9 @@ ElevatedButton.styleFrom(
   elevation: 8,
   shadowColor: Colors.black.withOpacity(0.25),
 )
+
+// Hardcoded colors
+Text('Hello', style: TextStyle(color: Color(0xFF123456)))
 ```
 
 ### ✅ Good Examples
@@ -43,30 +46,27 @@ const SizedBox(height: OnboardingOverlayStyles.contentSpacing)
 
 // Use reusable button styles
 style: OnboardingOverlayStyles.startButtonStyle
+
+// Use semantic color names
+Text('Hello', style: TextStyle(color: AppColors.primaryText))
 ```
 
 ## Styling Organization Rules
 
-1. **Central Location**: All styles go in [lib/shared/styles.dart](mdc:lib/shared/styles.dart)
-2. **Grouped by Component**: Use classes like `OnboardingOverlayStyles` to group related styles
-3. **Named Constants**: Replace magic numbers with descriptive constant names
-4. **Reusable Styles**: Create getter methods for complex styles that can be shared
-5. **Modern APIs**: Use `withValues(alpha:)` instead of deprecated `withOpacity()`
-
-## File Organization
-
-- **Theme Data**: Global themes (`retroBacklogTheme`, `retroBacklogDarkTheme`)
-- **Text Styles**: Shared text styling functions (`onboardingWelcomeTextStyle`)
-- **Component Classes**: Grouped styling constants (`OnboardingOverlayStyles`)
+1. **No Magic Numbers**: Replace all hardcoded values with named constants
+2. **Semantic Naming**: Use descriptive names (`primaryAccent` not `orangeColor`)
+3. **Reusable Components**: Create getter methods for complex styles that can be shared
+4. **Modern APIs**: Use `withValues(alpha:)` instead of deprecated `withOpacity()`
+5. **Consistent Spacing**: Use standard spacing increments (8, 12, 16, 24, 32)
 
 ## Consistency Guidelines
 
-- Use the same overlay decoration across similar components
 - Maintain consistent spacing values throughout the app
-- Reuse button styles to ensure visual consistency
+- Reuse decorations, shadows, and text styles to ensure visual consistency
 - Group related styling constants together in logical classes
+- Use the same design tokens (colors, fonts, sizes) across similar components
 
-## Maintenance Benefits
+## Benefits
 
 This approach provides:
 - **Single source of truth** for styling decisions
@@ -74,3 +74,4 @@ This approach provides:
 - **Better readability** with descriptive names instead of magic numbers
 - **Consistency** across the entire application
 - **Scalability** for future styling needs
+- **Maintainability** when design requirements change
