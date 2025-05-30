@@ -35,7 +35,6 @@ class _OnboardingSubscriptionOverlayState
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
     final maxPortraitHeight = MediaQuery.of(context).size.height * 0.85;
-    final isLandscape = !isPortrait;
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 800),
