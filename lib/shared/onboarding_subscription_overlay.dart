@@ -54,31 +54,11 @@ class _OnboardingSubscriptionOverlayState
 
           return Container(
             constraints: BoxConstraints(maxHeight: overlayHeight),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.white.withAlpha(0xB3), Colors.white],
-              ),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(32),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha((0.28 * 255).toInt()),
-                  blurRadius: 28,
-                  spreadRadius: 4,
-                  offset: Offset(0, -4),
-                ),
-              ],
-            ),
+            decoration: OnboardingOverlayStyles.overlayDecoration,
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 24,
-                ),
+                padding: OnboardingOverlayStyles.overlayPadding,
                 child: SingleChildScrollView(
                   child: IntrinsicHeight(
                     child: Column(
@@ -90,9 +70,13 @@ class _OnboardingSubscriptionOverlayState
                           style: onboardingWelcomeTextStyle,
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(
+                          height: OnboardingOverlayStyles.titleSpacing,
+                        ),
                         _SubscriptionMessage(),
-                        const SizedBox(height: 18),
+                        const SizedBox(
+                          height: OnboardingOverlayStyles.messageSpacing,
+                        ),
                         if (isPortrait)
                           ...List.generate(
                             _options.length,
@@ -111,10 +95,12 @@ class _OnboardingSubscriptionOverlayState
                               children: List.generate(
                                 _options.length,
                                 (i) => Container(
-                                  width: 180,
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
+                                  width:
+                                      OnboardingOverlayStyles
+                                          .landscapeTileWidth,
+                                  margin:
+                                      OnboardingOverlayStyles
+                                          .landscapeTileMargin,
                                   child: _SubscriptionTile(
                                     option: _options[i],
                                     selected: _selectedOption == i,
@@ -128,9 +114,12 @@ class _OnboardingSubscriptionOverlayState
                             ),
                           ),
                         const SizedBox(height: 24),
+                        const SizedBox(
+                          height: OnboardingOverlayStyles.buttonTopSpacing,
+                        ),
                         SizedBox(
                           width: double.infinity,
-                          height: 56,
+                          height: OnboardingOverlayStyles.subscribeButtonHeight,
                           child: ElevatedButton(
                             onPressed:
                                 _selectedOption != null
@@ -138,10 +127,7 @@ class _OnboardingSubscriptionOverlayState
                                       /* TODO: Handle subscribe */
                                     }
                                     : null,
-                            style: ElevatedButton.styleFrom(
-                              elevation: 8,
-                              shadowColor: Colors.black.withOpacity(0.25),
-                            ),
+                            style: OnboardingOverlayStyles.subscribeButtonStyle,
                             child: const Text('Subscribe'),
                           ),
                         ),
@@ -202,20 +188,27 @@ class _SubscriptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: selected ? 8 : 2,
+      elevation:
+          selected
+              ? OnboardingOverlayStyles.tileElevationSelected
+              : OnboardingOverlayStyles.tileElevationUnselected,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          OnboardingOverlayStyles.tileBorderRadius,
+        ),
         side: BorderSide(
           color: selected ? Theme.of(context).primaryColor : Colors.transparent,
-          width: 2,
+          width: OnboardingOverlayStyles.tileBorderWidth,
         ),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: OnboardingOverlayStyles.tileMargin,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          OnboardingOverlayStyles.tileBorderRadius,
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          padding: OnboardingOverlayStyles.tilePadding,
           child:
               isLandscape
                   ? Column(
@@ -224,11 +217,15 @@ class _SubscriptionTile extends StatelessWidget {
                     children: [
                       Text(
                         option.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: OnboardingOverlayStyles.tileTitleStyle,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(
+                        height: OnboardingOverlayStyles.landscapeSpacing,
+                      ),
                       Text(option.subtitle, textAlign: TextAlign.center),
-                      const SizedBox(height: 8),
+                      const SizedBox(
+                        height: OnboardingOverlayStyles.landscapeBottomSpacing,
+                      ),
                       Text(
                         option.price,
                         style: Theme.of(context).textTheme.labelLarge,
@@ -243,9 +240,7 @@ class _SubscriptionTile extends StatelessWidget {
                           children: [
                             Text(
                               option.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: OnboardingOverlayStyles.tileTitleStyle,
                             ),
                             Text(option.subtitle),
                           ],

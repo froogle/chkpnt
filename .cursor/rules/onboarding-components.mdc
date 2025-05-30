@@ -1,0 +1,73 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Onboarding Components Architecture
+
+## Component Overview
+
+The onboarding system consists of two main overlay components that share styling and behavior patterns:
+
+### Primary Components
+- [lib/shared/onboarding_overlay.dart](mdc:lib/shared/onboarding_overlay.dart) - Welcome/introduction overlay
+- [lib/shared/onboarding_subscription_overlay.dart](mdc:lib/shared/onboarding_subscription_overlay.dart) - Subscription selection overlay
+
+## Shared Styling Patterns
+
+Both components follow identical structural patterns:
+
+### Container Structure
+```dart
+AnimatedPositioned(
+  duration: const Duration(milliseconds: 800),
+  curve: Curves.easeOutCubic,
+  // ... positioning logic
+  child: Container(
+    decoration: OnboardingOverlayStyles.overlayDecoration,
+    child: SafeArea(
+      child: Padding(
+        padding: OnboardingOverlayStyles.overlayPadding,
+        // ... content
+      ),
+    ),
+  ),
+)
+```
+
+### Animation Behavior
+- **Entry Animation**: 800ms ease-out cubic slide from bottom
+- **Responsive Height**: 70% max height with adaptive layout for portrait/landscape
+- **Safe Area**: Respects device safe areas
+
+### Content Layout Patterns
+1. **Title**: Uses `onboardingWelcomeTextStyle` from [lib/shared/styles.dart](mdc:lib/shared/styles.dart)
+2. **Content Spacing**: `OnboardingOverlayStyles.contentSpacing` (18.0) between sections
+3. **Button Placement**: Full-width buttons with consistent height and styling
+
+## Component-Specific Features
+
+### OnboardingOverlay
+- Simple welcome message with rich text description
+- Single "Let's Go" action button
+- Uses `OnboardingOverlayStyles.startButtonStyle`
+
+### OnboardingSubscriptionOverlay
+- Interactive subscription option selection
+- Adaptive layout (portrait: vertical list, landscape: horizontal scroll)
+- Subscribe button with conditional enabling
+- Uses `OnboardingOverlayStyles.subscribeButtonStyle`
+
+## Development Guidelines
+
+When creating new onboarding components:
+
+1. **Extend Existing Patterns**: Use the same container structure and animation
+2. **Reuse Styling Classes**: Leverage `OnboardingOverlayStyles` constants
+3. **Maintain Consistency**: Follow the established spacing and button patterns
+4. **Responsive Design**: Support both portrait and landscape orientations
+5. **State Management**: Use simple state for visibility and user interactions
+
+## Style Customization
+
+To modify styling across all onboarding components, update constants in `OnboardingOverlayStyles` class in [lib/shared/styles.dart](mdc:lib/shared/styles.dart). Changes will automatically apply to all components using these styles.

@@ -1,0 +1,76 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Flutter Styling Best Practices
+
+## Avoid Embedded Styling
+
+**Never use inline styling directly in widget build methods.** All styling should be extracted to constants or reusable style objects.
+
+### ❌ Bad Examples
+```dart
+// Embedded BoxDecoration
+Container(
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Colors.white.withAlpha(0xB3), Colors.white],
+    ),
+    borderRadius: BorderRadius.circular(32),
+  ),
+)
+
+// Magic numbers for spacing
+const SizedBox(height: 18)
+
+// Inline button styling
+ElevatedButton.styleFrom(
+  elevation: 8,
+  shadowColor: Colors.black.withOpacity(0.25),
+)
+```
+
+### ✅ Good Examples
+```dart
+// Use centralized decoration
+Container(
+  decoration: OnboardingOverlayStyles.overlayDecoration,
+)
+
+// Use named spacing constants
+const SizedBox(height: OnboardingOverlayStyles.contentSpacing)
+
+// Use reusable button styles
+style: OnboardingOverlayStyles.startButtonStyle
+```
+
+## Styling Organization Rules
+
+1. **Central Location**: All styles go in [lib/shared/styles.dart](mdc:lib/shared/styles.dart)
+2. **Grouped by Component**: Use classes like `OnboardingOverlayStyles` to group related styles
+3. **Named Constants**: Replace magic numbers with descriptive constant names
+4. **Reusable Styles**: Create getter methods for complex styles that can be shared
+5. **Modern APIs**: Use `withValues(alpha:)` instead of deprecated `withOpacity()`
+
+## File Organization
+
+- **Theme Data**: Global themes (`retroBacklogTheme`, `retroBacklogDarkTheme`)
+- **Text Styles**: Shared text styling functions (`onboardingWelcomeTextStyle`)
+- **Component Classes**: Grouped styling constants (`OnboardingOverlayStyles`)
+
+## Consistency Guidelines
+
+- Use the same overlay decoration across similar components
+- Maintain consistent spacing values throughout the app
+- Reuse button styles to ensure visual consistency
+- Group related styling constants together in logical classes
+
+## Maintenance Benefits
+
+This approach provides:
+- **Single source of truth** for styling decisions
+- **Easy global changes** by modifying constants
+- **Better readability** with descriptive names instead of magic numbers
+- **Consistency** across the entire application
+- **Scalability** for future styling needs

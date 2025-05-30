@@ -50,31 +50,11 @@ class _OnboardingOverlayState extends State<OnboardingOverlay> {
 
           return Container(
             constraints: BoxConstraints(maxHeight: overlayHeight),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.white.withAlpha(0xB3), Colors.white],
-              ),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(32),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha((0.28 * 255).toInt()),
-                  blurRadius: 28,
-                  spreadRadius: 4,
-                  offset: Offset(0, -4),
-                ),
-              ],
-            ),
+            decoration: OnboardingOverlayStyles.overlayDecoration,
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 24,
-                ),
+                padding: OnboardingOverlayStyles.overlayPadding,
                 child: SingleChildScrollView(
                   child: IntrinsicHeight(
                     child: _OnboardingContent(
@@ -107,9 +87,9 @@ class _OnboardingContent extends StatelessWidget {
           style: onboardingWelcomeTextStyle,
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: OnboardingOverlayStyles.contentSpacing),
         const _OnboardingDescription(),
-        const SizedBox(height: 18),
+        const SizedBox(height: OnboardingOverlayStyles.contentSpacing),
         _OnboardingButton(onPressed: onStartPressed),
       ],
     );
@@ -152,13 +132,10 @@ class _OnboardingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: OnboardingOverlayStyles.startButtonHeight,
       child: ElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          elevation: 8,
-          shadowColor: Colors.black.withOpacity(0.25),
-        ),
+        style: OnboardingOverlayStyles.startButtonStyle,
         child: const Text("Let's Go"),
       ),
     );
