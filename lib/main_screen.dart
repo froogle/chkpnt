@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'styles/styles.dart';
 import 'shared/landscape_game_card.dart';
 import 'shared/portrait_game_card.dart';
@@ -7,136 +8,76 @@ import 'shared/platform_filter_dropdown.dart';
 import 'shared/compact_search_bar.dart';
 import 'models/game_models.dart';
 import 'shared/empty_state_widget.dart';
+import 'providers/game_provider.dart';
+import 'providers/ui_state_provider.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  String _selectedPlatform = 'All';
-  final List<String> _platforms = [
-    'All',
-    'PS5',
-    'PS4',
-    'Switch',
-    'PC',
-    'Xbox',
-    'Xbox 360',
-    'Steam Deck',
-    'Nintendo DS',
-    'Game Boy',
-  ];
-
-  // Collapsible section state
-  final Map<String, bool> _sectionExpanded = {
-    'Playing': true,
-    'Backlog': false,
-    'Completed': false,
-    'Abandoned': false,
-  };
-
-  final List<GameItem> _sampleGames = [
-    GameItem(
-      title: 'Game Title',
-      platform: 'Platform',
-      status: GameStatus.playing,
-      progress: 0.6,
-    ),
-    GameItem(
-      title: 'Game Title',
-      platform: 'Platform',
-      status: GameStatus.playing,
-      progress: 0.3,
-    ),
-    GameItem(
-      title: 'Game Title',
-      platform: 'Platform',
-      status: GameStatus.completed,
-      progress: 1.0,
-    ),
-    GameItem(
-      title: 'Game Title',
-      platform: 'Platform',
-      status: GameStatus.completed,
-      progress: 1.0,
-    ),
-    GameItem(
-      title: 'Game Title',
-      platform: 'Platform',
-      status: GameStatus.backlog,
-      progress: 0.0,
-    ),
-    GameItem(
-      title: 'Game Title',
-      platform: 'Platform',
-      status: GameStatus.abandoned,
-      progress: 0.2,
-    ),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: MainScreenStyles.backgroundColor,
       body: SafeArea(
         child: OrientationBuilder(
           builder:
               (context, orientation) =>
-                  _buildResponsiveLayout(context, orientation),
+                  _buildResponsiveLayout(context, orientation, ref),
         ),
       ),
     );
   }
 
-  Widget _buildResponsiveLayout(BuildContext context, Orientation orientation) {
+  Widget _buildResponsiveLayout(
+    BuildContext context,
+    Orientation orientation,
+    WidgetRef ref,
+  ) {
     final isLandscape = orientation == Orientation.landscape;
     return isLandscape
-        ? _buildLandscapeLayout(context)
-        : _buildPortraitLayout(context);
+        ? _buildLandscapeLayout(context, ref)
+        : _buildPortraitLayout(context, ref);
   }
 
-  Widget _buildPortraitLayout(BuildContext context) {
+  Widget _buildPortraitLayout(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        _buildCompactHeader(),
-        Expanded(child: _buildPortraitContent()),
+        _buildCompactHeader(ref),
+        Expanded(child: _buildPortraitContent(ref)),
         _buildBottomNavigation(),
       ],
     );
   }
 
-  Widget _buildLandscapeLayout(BuildContext context) {
+  Widget _buildLandscapeLayout(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        _buildCompactHeader(),
-        Expanded(child: _buildLandscapeContent(context)),
+        _buildCompactHeader(ref),
+        Expanded(child: _buildLandscapeContent(context, ref)),
         _buildBottomNavigation(),
       ],
     );
   }
 
-  Widget _buildPortraitContent() {
+  Widget _buildPortraitContent(WidgetRef ref) {
     return SingleChildScrollView(
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPortraitSection('Playing', GameStatus.playing),
+          _buildPortraitSection('Playing', GameStatus.playing, ref),
           const SizedBox(height: MainScreenStyles.sectionSpacing),
-          _buildPortraitSection('Backlog', GameStatus.backlog),
+          _buildPortraitSection('Backlog', GameStatus.backlog, ref),
           const SizedBox(height: MainScreenStyles.sectionSpacing),
-          _buildPortraitSection('Completed', GameStatus.completed),
+          _buildPortraitSection('Completed', GameStatus.completed, ref),
           const SizedBox(height: MainScreenStyles.sectionSpacing),
-          _buildPortraitSection('Abandoned', GameStatus.abandoned),
+          _buildPortraitSection('Abandoned', GameStatus.abandoned, ref),
         ],
       ),
     );
   }
 
-  Widget _buildLandscapeContent(BuildContext context) {
+  Widget _buildLandscapeContent(BuildContext context, WidgetRef ref) {
     final crossAxisCount = _calculateGridColumns(context);
 
     return SingleChildScrollView(
@@ -144,36 +85,54 @@ class _MainScreenState extends State<MainScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildLandscapeSection('Playing', GameStatus.playing, crossAxisCount),
+          _buildLandscapeSection(
+            'Playing',
+            GameStatus.playing,
+            crossAxisCount,
+            ref,
+          ),
           const SizedBox(height: MainScreenStyles.sectionSpacing),
-          _buildLandscapeSection('Backlog', GameStatus.backlog, crossAxisCount),
+          _buildLandscapeSection(
+            'Backlog',
+            GameStatus.backlog,
+            crossAxisCount,
+            ref,
+          ),
           const SizedBox(height: MainScreenStyles.sectionSpacing),
           _buildLandscapeSection(
             'Completed',
             GameStatus.completed,
             crossAxisCount,
+            ref,
           ),
           const SizedBox(height: MainScreenStyles.sectionSpacing),
           _buildLandscapeSection(
             'Abandoned',
             GameStatus.abandoned,
             crossAxisCount,
+            ref,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCompactHeader() {
+  Widget _buildCompactHeader(WidgetRef ref) {
+    final selectedPlatform = ref.watch(selectedPlatformProvider);
+    final availablePlatforms = ref.watch(availablePlatformsProvider);
+
     return Padding(
       padding: MainScreenStyles.headerPadding,
       child: Row(
         children: [
           PlatformFilterDropdown(
-            selectedPlatform: _selectedPlatform,
-            platforms: _platforms,
-            onPlatformChanged:
-                (platform) => setState(() => _selectedPlatform = platform),
+            selectedPlatform: selectedPlatform,
+            platforms: availablePlatforms,
+            onPlatformChanged: (platform) {
+              ref
+                  .read(selectedPlatformProvider.notifier)
+                  .selectPlatform(platform);
+            },
           ),
           const SizedBox(width: 12),
           const Expanded(child: CompactSearchBar()),
@@ -201,17 +160,24 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildPortraitSection(String title, GameStatus status) {
-    final isExpanded = _sectionExpanded[title] ?? false;
-    final games = _getGamesByStatus(status);
+  Widget _buildPortraitSection(String title, GameStatus status, WidgetRef ref) {
+    final sectionExpansion = ref.watch(sectionExpansionProvider);
+    final selectedPlatform = ref.watch(selectedPlatformProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final games = ref.watch(
+      fullyFilteredGamesProvider(status, selectedPlatform, searchQuery),
+    );
+    final isExpanded = sectionExpansion[title] ?? false;
 
     return CollapsibleSection(
       title: title,
       isExpanded: isExpanded,
-      onToggle: () => _toggleSection(title),
+      onToggle:
+          () =>
+              ref.read(sectionExpansionProvider.notifier).toggleSection(title),
       isEmpty: games.isEmpty,
       emptyStateWidget: games.isEmpty ? _buildEmptyState(title) : null,
-      content: _buildPortraitGamesList(games),
+      content: _buildPortraitGamesList(games, ref),
     );
   }
 
@@ -219,21 +185,29 @@ class _MainScreenState extends State<MainScreen> {
     String title,
     GameStatus status,
     int crossAxisCount,
+    WidgetRef ref,
   ) {
-    final isExpanded = _sectionExpanded[title] ?? false;
-    final games = _getGamesByStatus(status);
+    final sectionExpansion = ref.watch(sectionExpansionProvider);
+    final selectedPlatform = ref.watch(selectedPlatformProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final games = ref.watch(
+      fullyFilteredGamesProvider(status, selectedPlatform, searchQuery),
+    );
+    final isExpanded = sectionExpansion[title] ?? false;
 
     return CollapsibleSection(
       title: title,
       isExpanded: isExpanded,
-      onToggle: () => _toggleSection(title),
+      onToggle:
+          () =>
+              ref.read(sectionExpansionProvider.notifier).toggleSection(title),
       isEmpty: games.isEmpty,
       emptyStateWidget: games.isEmpty ? _buildEmptyState(title) : null,
-      content: _buildLandscapeGamesGrid(games, crossAxisCount),
+      content: _buildLandscapeGamesGrid(games, crossAxisCount, ref),
     );
   }
 
-  Widget _buildPortraitGamesList(List<GameItem> games) {
+  Widget _buildPortraitGamesList(List<GameItem> games, WidgetRef ref) {
     return Column(
       children:
           games
@@ -245,7 +219,7 @@ class _MainScreenState extends State<MainScreen> {
                     onTap: () => _showGameDetails(game),
                     onPlayPressed:
                         game.status == GameStatus.backlog
-                            ? () => _handleStartPlaying(game)
+                            ? () => _handleStartPlaying(game, ref)
                             : null,
                   ),
                 ),
@@ -254,7 +228,11 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildLandscapeGamesGrid(List<GameItem> games, int crossAxisCount) {
+  Widget _buildLandscapeGamesGrid(
+    List<GameItem> games,
+    int crossAxisCount,
+    WidgetRef ref,
+  ) {
     final gridHeight = _calculateGridHeight(games.length, crossAxisCount);
 
     return SizedBox(
@@ -269,7 +247,7 @@ class _MainScreenState extends State<MainScreen> {
               onTap: () => _showGameDetails(games[index]),
               onPlayPressed:
                   games[index].status == GameStatus.backlog
-                      ? () => _handleStartPlaying(games[index])
+                      ? () => _handleStartPlaying(games[index], ref)
                       : null,
             ),
       ),
@@ -291,20 +269,7 @@ class _MainScreenState extends State<MainScreen> {
     return EmptyStateWidget(
       icon: Icons.gamepad_outlined,
       message: 'No games in ${sectionName.toLowerCase()}',
-      actionButton: sectionName == 'Backlog' ? _buildAddGameButton() : null,
-    );
-  }
-
-  Widget _buildAddGameButton() {
-    return ElevatedButton(
-      onPressed: () {},
-      style: MainScreenStyles.addButtonStyle.copyWith(
-        padding: WidgetStateProperty.all(
-          MainScreenStyles.addButtonSmallPadding,
-        ),
-        textStyle: WidgetStateProperty.all(const TextStyle(fontSize: 12)),
-      ),
-      child: const Text('ADD GAME'),
+      actionButton: null,
     );
   }
 
@@ -348,28 +313,13 @@ class _MainScreenState extends State<MainScreen> {
     return (rowCount * cardHeight) + ((rowCount - 1) * spacing);
   }
 
-  void _toggleSection(String title) {
-    setState(() {
-      _sectionExpanded[title] = !(_sectionExpanded[title] ?? false);
-    });
-  }
-
-  void _handleStartPlaying(GameItem game) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Started playing! (Game moved to Playing section)'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
-  List<GameItem> _getGamesByStatus(GameStatus status) {
-    return _sampleGames.where((game) => game.status == status).toList();
+  void _handleStartPlaying(GameItem game, WidgetRef ref) {
+    ref.read(gameListProvider.notifier).startPlaying(game.id);
+    // Show a snack bar or navigation feedback
   }
 
   void _showGameDetails(GameItem game) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Show details for ${game.title}')));
+    // Navigate to game details or show details dialog
+    // This will be implemented when you add game details functionality
   }
 }

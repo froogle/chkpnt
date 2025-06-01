@@ -71,8 +71,12 @@ class PortraitGameCard extends StatelessWidget {
       right: 100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [_buildGameInfo(), _buildGameStatus()],
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(flex: 2, child: _buildGameInfo()),
+          const SizedBox(height: 8),
+          _buildGameStatus(),
+        ],
       ),
     );
   }
@@ -80,6 +84,7 @@ class PortraitGameCard extends StatelessWidget {
   Widget _buildGameInfo() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [_buildTitle(), const SizedBox(height: 4), _buildPlatform()],
     );
   }
@@ -88,7 +93,7 @@ class PortraitGameCard extends StatelessWidget {
     return Text(
       game.title,
       style: MainScreenStyles.portraitGameCardTitleStyle,
-      maxLines: 2,
+      maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
   }
@@ -141,6 +146,10 @@ class PortraitGameCard extends StatelessWidget {
         );
       case GameStatus.backlog:
         return const SizedBox.shrink();
+      case GameStatus.wishlist:
+        return const Icon(Icons.favorite_outline, color: Colors.red, size: 18);
+      case GameStatus.ordered:
+        return const Icon(Icons.shopping_cart, color: Colors.blue, size: 18);
     }
   }
 
@@ -184,6 +193,10 @@ class PortraitGameCard extends StatelessWidget {
         return 'In Backlog';
       case GameStatus.abandoned:
         return 'Abandoned';
+      case GameStatus.wishlist:
+        return 'Wishlist';
+      case GameStatus.ordered:
+        return 'Ordered';
     }
   }
 }

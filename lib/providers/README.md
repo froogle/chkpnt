@@ -10,226 +10,162 @@ Providers manage application state and serve as the bridge between UI and busine
 - **Reactive Updates** - Automatically notify UI of state changes
 - **Lifecycle Management** - Handle state creation, caching, and disposal
 
-## 🧩 Provider Types
+## 🧩 Implemented Providers
 
-### Game State Providers
-Future providers for game-related state:
+### Game State Providers (`game_provider.dart`)
 
-**`gameListProvider`**
+**`gameListProvider`** - Main games list state
 ```dart
-// Manages the list of all games
-final gameListProvider = StateNotifierProvider<GameListNotifier, List<GameItem>>(
-  (ref) => GameListNotifier(ref.watch(gameServiceProvider)),
-);
+@riverpod
+class GameList extends _$GameList {
+  @override
+  List<GameItem> build() => _sampleGames;
+
+  void addGame(GameItem game) { /* ... */ }
+  void updateGame(GameItem updatedGame) { /* ... */ }
+  void removeGame(String gameId) { /* ... */ }
+  void startPlaying(String gameId) { /* ... */ }
+  void markCompleted(String gameId) { /* ... */ }
+}
 ```
 
-**`gamesByStatusProvider`**
+**`gamesByStatusProvider`** - Games filtered by status
 ```dart
-// Filtered games by status (playing, completed, etc.)
-final gamesByStatusProvider = Provider.family<List<GameItem>, GameStatus>(
-  (ref, status) {
-    final games = ref.watch(gameListProvider);
-    return games.where((game) => game.status == status).toList();
-  },
-);
+@riverpod
+List<GameItem> gamesByStatus(GamesByStatusRef ref, GameStatus status) {
+  final games = ref.watch(gameListProvider);
+  return games.where((game) => game.status == status).toList();
+}
 ```
 
-**`selectedGameProvider`**
+**`filteredGamesProvider`** - Games filtered by status and platform
 ```dart
-// Currently selected/viewed game
-final selectedGameProvider = StateProvider<GameItem?>((ref) => null);
+@riverpod
+List<GameItem> filteredGames(FilteredGamesRef ref, GameStatus status, String platform) {
+  // Filters games by both status and platform
+}
 ```
 
-### UI State Providers
-
-**`searchQueryProvider`**
+**`fullyFilteredGamesProvider`** - Games filtered by status, platform, and search
 ```dart
-// Search input state
-final searchQueryProvider = StateProvider<String>((ref) => '');
+@riverpod
+List<GameItem> fullyFilteredGames(FullyFilteredGamesRef ref, GameStatus status, String platform, String searchQuery) {
+  // Filters games by status, platform, and search query
+}
 ```
 
-**`selectedPlatformProvider`**
+**`availablePlatformsProvider`** - Dynamic list of available platforms
 ```dart
-// Platform filter state
-final selectedPlatformProvider = StateProvider<String>((ref) => 'All');
+@riverpod
+List<String> availablePlatforms(AvailablePlatformsRef ref) {
+  // Returns ['All', ...unique platforms from games]
+}
 ```
 
-**`sectionExpansionProvider`**
+### UI State Providers (`ui_state_provider.dart`)
+
+**`searchQueryProvider`** - Search input state
 ```dart
-// Collapsible section states
-final sectionExpansionProvider = StateProvider<Map<String, bool>>(
-  (ref) => {
+@riverpod
+class SearchQuery extends _$SearchQuery {
+  @override
+  String build() => '';
+
+  void updateQuery(String query) { state = query; }
+  void clearQuery() { state = ''; }
+}
+```
+
+**`selectedPlatformProvider`** - Platform filter state
+```dart
+@riverpod
+class SelectedPlatform extends _$SelectedPlatform {
+  @override
+  String build() => 'All';
+
+  void selectPlatform(String platform) { state = platform; }
+  void resetToAll() { state = 'All'; }
+}
+```
+
+**`sectionExpansionProvider`** - Collapsible section states
+```dart
+@riverpod
+class SectionExpansion extends _$SectionExpansion {
+  @override
+  Map<String, bool> build() => {
     'Playing': true,
     'Backlog': false,
     'Completed': false,
     'Abandoned': false,
-  },
-);
+  };
+
+  void toggleSection(String sectionName) { /* ... */ }
+  void expandSection(String sectionName) { /* ... */ }
+  void collapseSection(String sectionName) { /* ... */ }
+}
 ```
 
-### Service Providers
+## 🚀 Usage Examples
 
-**`gameServiceProvider`**
+### Reading State
 ```dart
-// Game service dependency injection
-final gameServiceProvider = Provider<GameService>((ref) {
-  final repository = ref.watch(gameRepositoryProvider);
-  return GameServiceImpl(repository);
-});
-```
-
-**`userPreferencesProvider`**
-```dart
-// User preferences and settings
-final userPreferencesProvider = StateNotifierProvider<UserPreferencesNotifier, UserPreferences>(
-  (ref) => UserPreferencesNotifier(ref.watch(preferencesServiceProvider)),
-);
-```
-
-## 🏗️ Provider Architecture
-
-### StateNotifier Pattern
-For complex state that needs business logic:
-
-```dart
-class GameListNotifier extends StateNotifier<List<GameItem>> {
-  final GameService _gameService;
-
-  GameListNotifier(this._gameService) : super([]) {
-    _loadGames();
-  }
-
-  Future<void> _loadGames() async {
-    try {
-      final games = await _gameService.getAllGames();
-      state = games;
-    } catch (e) {
-      // Handle error
-    }
-  }
-
-  Future<void> addGame(GameItem game) async {
-    try {
-      final newGame = await _gameService.createGame(game);
-      state = [...state, newGame];
-    } catch (e) {
-      // Handle error
-    }
-  }
-
-  Future<void> updateGameStatus(String gameId, GameStatus newStatus) async {
-    try {
-      await _gameService.updateGameStatus(gameId, newStatus);
-      state = [
-        for (final game in state)
-          if (game.id == gameId)
-            game.copyWith(status: newStatus)
-          else
-            game,
-      ];
-    } catch (e) {
-      // Handle error
-    }
+class MyWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final games = ref.watch(gameListProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final selectedPlatform = ref.watch(selectedPlatformProvider);
+    
+    return YourUI();
   }
 }
 ```
 
-### Family Providers
-For parameterized providers:
-
+### Updating State
 ```dart
-// Get games filtered by multiple criteria
-final filteredGamesProvider = Provider.family<List<GameItem>, GameFilter>(
-  (ref, filter) {
-    final games = ref.watch(gameListProvider);
-    final searchQuery = ref.watch(searchQueryProvider);
+// Add a new game
+ref.read(gameListProvider.notifier).addGame(newGame);
 
-    return games
-        .where((game) => _matchesFilter(game, filter))
-        .where((game) => _matchesSearch(game, searchQuery))
-        .toList();
-  },
-);
+// Update search query
+ref.read(searchQueryProvider.notifier).updateQuery('zelda');
+
+// Change platform filter
+ref.read(selectedPlatformProvider.notifier).selectPlatform('Switch');
+
+// Toggle section expansion
+ref.read(sectionExpansionProvider.notifier).toggleSection('Playing');
 ```
 
-### Async Providers
-For loading data asynchronously:
-
+### Complex Filtering
 ```dart
-final gameStatsProvider = FutureProvider<GameStats>((ref) async {
-  final gameService = ref.watch(gameServiceProvider);
-  return await gameService.calculateStats();
-});
+// Get games that match all filters (status + platform + search)
+final filteredGames = ref.watch(fullyFilteredGamesProvider(
+  GameStatus.playing,
+  'Switch',
+  'zelda'
+));
 ```
 
-## 🔄 State Flow
+## 🏗️ Architecture Benefits
 
-```
-UI Widget
-    ↓ (reads state)
-Provider
-    ↓ (calls business logic)
-Service
-    ↓ (data operations)
-Repository
-    ↓ (persistence)
-Database/API
-```
+1. **Reactive Updates**: UI automatically rebuilds when state changes
+2. **Efficient Filtering**: Providers cache results and only recompute when dependencies change  
+3. **Type Safety**: Full compile-time type checking with generated code
+4. **Performance**: Only widgets that depend on changed state rebuild
+5. **Testability**: Easy to test by providing mock providers
+6. **DevTools Integration**: Full debugging support with Riverpod DevTools
+
+## 📝 Next Steps
+
+Consider adding providers for:
+- Game detail state management
+- Settings and preferences
+- User authentication state
+- Data persistence (repositories)
+- Network state and caching
 
 ## 🧪 Testing Providers
 
 ### Provider Testing
-```dart
-testWidgets('gameListProvider loads games correctly', (tester) async {
-  final container = ProviderContainer(
-    overrides: [
-      gameServiceProvider.overrideWithValue(mockGameService),
-    ],
-  );
-
-  when(() => mockGameService.getAllGames())
-      .thenAnswer((_) async => [testGame1, testGame2]);
-
-  final notifier = container.read(gameListProvider.notifier);
-  await tester.pump();
-
-  final games = container.read(gameListProvider);
-  expect(games.length, 2);
-  expect(games.first.title, 'Test Game 1');
-});
 ```
-
-## 📋 Provider Guidelines
-
-### State Structure
-✅ **Immutable State** - Use immutable data classes
-✅ **Normalized Data** - Avoid nested objects where possible
-✅ **Computed Values** - Use Provider.family for derived state
-✅ **Separate Concerns** - UI state vs business state
-
-### Performance
-✅ **Granular Providers** - Small, focused providers
-✅ **Selective Watching** - Only watch what you need
-✅ **Family Providers** - For parameterized state
-✅ **AutoDispose** - Use autoDispose for temporary state
-
-### Error Handling
-✅ **AsyncValue** - Use AsyncValue for loading/error states
-✅ **Try-Catch** - Handle errors in StateNotifier methods
-✅ **User Feedback** - Show meaningful error messages
-✅ **Fallback State** - Provide sensible defaults
-
-## 🔄 Future Implementation
-
-Providers will be added progressively:
-
-1. **Basic State** - Simple StateProviders for UI state
-2. **Game Management** - StateNotifiers for game CRUD
-3. **Advanced Features** - Complex business logic providers
-4. **Optimization** - Performance tuning and caching
-
-## 📚 Resources
-
-- [Riverpod Documentation](https://riverpod.dev/)
-- [State Management Best Practices](https://docs.flutter.dev/development/data-and-backend/state-mgmt)
-- [Provider Testing Guide](https://riverpod.dev/docs/cookbooks/testing)

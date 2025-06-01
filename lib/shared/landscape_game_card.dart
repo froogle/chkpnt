@@ -83,7 +83,7 @@ class LandscapeGameCard extends StatelessWidget {
     return Text(
       game.title,
       style: MainScreenStyles.landscapeGameCardTitleStyle,
-      maxLines: 2,
+      maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
   }
@@ -147,6 +147,10 @@ class LandscapeGameCard extends StatelessWidget {
         );
       case GameStatus.backlog:
         return const SizedBox.shrink();
+      case GameStatus.wishlist:
+        return const Icon(Icons.favorite_outline, color: Colors.red, size: 16);
+      case GameStatus.ordered:
+        return const Icon(Icons.shopping_cart, color: Colors.blue, size: 16);
     }
   }
 
@@ -183,6 +187,10 @@ class LandscapeGameCard extends StatelessWidget {
         return 'In Backlog';
       case GameStatus.abandoned:
         return 'Abandoned';
+      case GameStatus.wishlist:
+        return 'Wishlist';
+      case GameStatus.ordered:
+        return 'Ordered';
     }
   }
 }

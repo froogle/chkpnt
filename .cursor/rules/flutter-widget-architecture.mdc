@@ -1,6 +1,6 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: true
 ---
 # Flutter Widget Architecture Patterns
@@ -139,3 +139,4 @@ This architecture provides:
 ## Enforcement
 
 All new widgets and widget modifications should follow these patterns. Use existing refactored widgets as reference implementations.
+Always add unit tests when building out new functionality. 
