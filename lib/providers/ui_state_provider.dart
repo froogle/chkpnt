@@ -1,4 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'game_provider.dart';
+import '../models/game_models.dart';
 
 part 'ui_state_provider.g.dart';
 
@@ -61,5 +64,19 @@ class SectionExpansion extends _$SectionExpansion {
 
   void collapseAll() {
     state = {for (final key in state.keys) key: false};
+  }
+
+  void updateExpansionBasedOnResults({
+    required List<GameItem> playingGames,
+    required List<GameItem> backlogGames,
+    required List<GameItem> completedGames,
+    required List<GameItem> abandonedGames,
+  }) {
+    state = {
+      'Playing': playingGames.isNotEmpty,
+      'Backlog': backlogGames.isNotEmpty,
+      'Completed': completedGames.isNotEmpty,
+      'Abandoned': abandonedGames.isNotEmpty,
+    };
   }
 }

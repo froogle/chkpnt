@@ -16,6 +16,16 @@ class MainScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Listen for platform filter changes and update section expansion
+    ref.listen(selectedPlatformProvider, (previous, current) {
+      _updateSectionExpansionForFilters(ref);
+    });
+
+    // Listen for search query changes and update section expansion
+    ref.listen(searchQueryProvider, (previous, current) {
+      _updateSectionExpansionForFilters(ref);
+    });
+
     return Scaffold(
       backgroundColor: MainScreenStyles.backgroundColor,
       body: SafeArea(
@@ -26,6 +36,40 @@ class MainScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _updateSectionExpansionForFilters(WidgetRef ref) {
+    final platform = ref.read(selectedPlatformProvider);
+    final searchQuery = ref.read(searchQueryProvider);
+
+    // Only auto-expand/collapse when filters are active (not on "All" and empty search)
+    final hasActiveFilters = platform != 'All' || searchQuery.isNotEmpty;
+
+    if (hasActiveFilters) {
+      // Get filtered games for each section
+      final playingGames = ref.read(
+        fullyFilteredGamesProvider(GameStatus.playing, platform, searchQuery),
+      );
+      final backlogGames = ref.read(
+        fullyFilteredGamesProvider(GameStatus.backlog, platform, searchQuery),
+      );
+      final completedGames = ref.read(
+        fullyFilteredGamesProvider(GameStatus.completed, platform, searchQuery),
+      );
+      final abandonedGames = ref.read(
+        fullyFilteredGamesProvider(GameStatus.abandoned, platform, searchQuery),
+      );
+
+      // Update section expansion based on results
+      ref
+          .read(sectionExpansionProvider.notifier)
+          .updateExpansionBasedOnResults(
+            playingGames: playingGames,
+            backlogGames: backlogGames,
+            completedGames: completedGames,
+            abandonedGames: abandonedGames,
+          );
+    }
   }
 
   Widget _buildResponsiveLayout(
