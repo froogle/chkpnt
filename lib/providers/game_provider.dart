@@ -7,42 +7,42 @@ part 'game_provider.g.dart';
 // Sample games data - in a real app, this would come from a repository
 final List<GameItem> _sampleGames = [
   GameItem(
-    id: '1',
+    id: GameId.generate(),
     title: 'The Legend of Zelda: Breath of the Wild',
     platform: 'Switch',
     status: GameStatus.playing,
     progress: 0.6,
   ),
   GameItem(
-    id: '2',
+    id: GameId.generate(),
     title: 'God of War',
     platform: 'PS5',
     status: GameStatus.playing,
     progress: 0.3,
   ),
   GameItem(
-    id: '3',
+    id: GameId.generate(),
     title: 'Cyberpunk 2077',
     platform: 'PC',
     status: GameStatus.completed,
     progress: 1.0,
   ),
   GameItem(
-    id: '4',
+    id: GameId.generate(),
     title: 'Red Dead Redemption 2',
     platform: 'Xbox',
     status: GameStatus.completed,
     progress: 1.0,
   ),
   GameItem(
-    id: '5',
+    id: GameId.generate(),
     title: 'Elden Ring',
     platform: 'Steam Deck',
     status: GameStatus.backlog,
     progress: 0.0,
   ),
   GameItem(
-    id: '6',
+    id: GameId.generate(),
     title: 'Mass Effect Legendary Edition',
     platform: 'PC',
     status: GameStatus.abandoned,
@@ -72,12 +72,12 @@ class GameList extends _$GameList {
   }
 
   // Remove a game
-  void removeGame(String gameId) {
+  void removeGame(GameId gameId) {
     state = state.where((game) => game.id != gameId).toList();
   }
 
   // Start playing a game (move from backlog to playing)
-  void startPlaying(String gameId) {
+  void startPlaying(GameId gameId) {
     state = [
       for (final game in state)
         if (game.id == gameId)
@@ -88,7 +88,7 @@ class GameList extends _$GameList {
   }
 
   // Mark game as completed
-  void markCompleted(String gameId) {
+  void markCompleted(GameId gameId) {
     state = [
       for (final game in state)
         if (game.id == gameId)

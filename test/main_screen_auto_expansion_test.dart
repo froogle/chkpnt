@@ -158,11 +158,6 @@ void main() {
     test(
       'updateSectionExpansionForFilters should handle hasActiveFilters logic correctly',
       () {
-        // Test the logic without widget testing
-        final sectionNotifier = container.read(
-          sectionExpansionProvider.notifier,
-        );
-
         // Case 1: No active filters (All platform, empty search)
         container.read(selectedPlatformProvider.notifier).selectPlatform('All');
         container.read(searchQueryProvider.notifier).clearQuery();

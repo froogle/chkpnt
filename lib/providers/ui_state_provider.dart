@@ -1,6 +1,4 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'game_provider.dart';
 import '../models/game_models.dart';
 
 part 'ui_state_provider.g.dart';

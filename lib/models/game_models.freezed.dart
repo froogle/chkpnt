@@ -15,13 +15,160 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
+GameId _$GameIdFromJson(Map<String, dynamic> json) {
+  return _GameId.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GameId {
+  String get value => throw _privateConstructorUsedError;
+
+  /// Serializes this GameId to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GameId
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GameIdCopyWith<GameId> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GameIdCopyWith<$Res> {
+  factory $GameIdCopyWith(GameId value, $Res Function(GameId) then) =
+      _$GameIdCopyWithImpl<$Res, GameId>;
+  @useResult
+  $Res call({String value});
+}
+
+/// @nodoc
+class _$GameIdCopyWithImpl<$Res, $Val extends GameId>
+    implements $GameIdCopyWith<$Res> {
+  _$GameIdCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GameId
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? value = null}) {
+    return _then(
+      _value.copyWith(
+            value:
+                null == value
+                    ? _value.value
+                    : value // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$GameIdImplCopyWith<$Res> implements $GameIdCopyWith<$Res> {
+  factory _$$GameIdImplCopyWith(
+    _$GameIdImpl value,
+    $Res Function(_$GameIdImpl) then,
+  ) = __$$GameIdImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String value});
+}
+
+/// @nodoc
+class __$$GameIdImplCopyWithImpl<$Res>
+    extends _$GameIdCopyWithImpl<$Res, _$GameIdImpl>
+    implements _$$GameIdImplCopyWith<$Res> {
+  __$$GameIdImplCopyWithImpl(
+    _$GameIdImpl _value,
+    $Res Function(_$GameIdImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GameId
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? value = null}) {
+    return _then(
+      _$GameIdImpl(
+        null == value
+            ? _value.value
+            : value // ignore: cast_nullable_to_non_nullable
+                as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GameIdImpl implements _GameId {
+  const _$GameIdImpl(this.value);
+
+  factory _$GameIdImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameIdImplFromJson(json);
+
+  @override
+  final String value;
+
+  @override
+  String toString() {
+    return 'GameId(value: $value)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GameIdImpl &&
+            (identical(other.value, value) || other.value == value));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, value);
+
+  /// Create a copy of GameId
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GameIdImplCopyWith<_$GameIdImpl> get copyWith =>
+      __$$GameIdImplCopyWithImpl<_$GameIdImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GameIdImplToJson(this);
+  }
+}
+
+abstract class _GameId implements GameId {
+  const factory _GameId(final String value) = _$GameIdImpl;
+
+  factory _GameId.fromJson(Map<String, dynamic> json) = _$GameIdImpl.fromJson;
+
+  @override
+  String get value;
+
+  /// Create a copy of GameId
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GameIdImplCopyWith<_$GameIdImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 GameItem _$GameItemFromJson(Map<String, dynamic> json) {
   return _GameItem.fromJson(json);
 }
 
 /// @nodoc
 mixin _$GameItem {
-  String get id => throw _privateConstructorUsedError;
+  GameId get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get platform => throw _privateConstructorUsedError;
   GameStatus get status => throw _privateConstructorUsedError;
@@ -43,12 +190,14 @@ abstract class $GameItemCopyWith<$Res> {
       _$GameItemCopyWithImpl<$Res, GameItem>;
   @useResult
   $Res call({
-    String id,
+    GameId id,
     String title,
     String platform,
     GameStatus status,
     double progress,
   });
+
+  $GameIdCopyWith<$Res> get id;
 }
 
 /// @nodoc
@@ -78,7 +227,7 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
                 null == id
                     ? _value.id
                     : id // ignore: cast_nullable_to_non_nullable
-                        as String,
+                        as GameId,
             title:
                 null == title
                     ? _value.title
@@ -103,6 +252,16 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
           as $Val,
     );
   }
+
+  /// Create a copy of GameItem
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $GameIdCopyWith<$Res> get id {
+    return $GameIdCopyWith<$Res>(_value.id, (value) {
+      return _then(_value.copyWith(id: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -115,12 +274,15 @@ abstract class _$$GameItemImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String id,
+    GameId id,
     String title,
     String platform,
     GameStatus status,
     double progress,
   });
+
+  @override
+  $GameIdCopyWith<$Res> get id;
 }
 
 /// @nodoc
@@ -149,7 +311,7 @@ class __$$GameItemImplCopyWithImpl<$Res>
             null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
-                    as String,
+                    as GameId,
         title:
             null == title
                 ? _value.title
@@ -190,7 +352,7 @@ class _$GameItemImpl implements _GameItem {
       _$$GameItemImplFromJson(json);
 
   @override
-  final String id;
+  final GameId id;
   @override
   final String title;
   @override
@@ -240,7 +402,7 @@ class _$GameItemImpl implements _GameItem {
 
 abstract class _GameItem implements GameItem {
   const factory _GameItem({
-    required final String id,
+    required final GameId id,
     required final String title,
     required final String platform,
     required final GameStatus status,
@@ -251,7 +413,7 @@ abstract class _GameItem implements GameItem {
       _$GameItemImpl.fromJson;
 
   @override
-  String get id;
+  GameId get id;
   @override
   String get title;
   @override

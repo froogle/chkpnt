@@ -6,9 +6,15 @@ part of 'game_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_$GameIdImpl _$$GameIdImplFromJson(Map<String, dynamic> json) =>
+    _$GameIdImpl(json['value'] as String);
+
+Map<String, dynamic> _$$GameIdImplToJson(_$GameIdImpl instance) =>
+    <String, dynamic>{'value': instance.value};
+
 _$GameItemImpl _$$GameItemImplFromJson(Map<String, dynamic> json) =>
     _$GameItemImpl(
-      id: json['id'] as String,
+      id: GameId.fromJson(json['id'] as Map<String, dynamic>),
       title: json['title'] as String,
       platform: json['platform'] as String,
       status: $enumDecode(_$GameStatusEnumMap, json['status']),

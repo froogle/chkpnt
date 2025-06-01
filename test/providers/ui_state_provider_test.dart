@@ -88,7 +88,7 @@ void main() {
 
         final playingGames = [
           GameItem(
-            id: '1',
+            id: GameId.generate(),
             title: 'Test Game 1',
             platform: 'PC',
             status: GameStatus.playing,
@@ -99,7 +99,7 @@ void main() {
         final backlogGames = <GameItem>[];
         final completedGames = [
           GameItem(
-            id: '2',
+            id: GameId.generate(),
             title: 'Test Game 2',
             platform: 'PC',
             status: GameStatus.completed,
@@ -144,7 +144,7 @@ void main() {
 
         final gamesList = [
           GameItem(
-            id: '1',
+            id: GameId.generate(),
             title: 'Test Game',
             platform: 'PC',
             status: GameStatus.playing,
