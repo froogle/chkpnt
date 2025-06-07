@@ -25,6 +25,7 @@ class GameItem with _$GameItem {
     required String title,
     required String platform,
     required GameStatus status,
+    String? imagePath,
   }) = _GameItem;
 
   factory GameItem.fromJson(Map<String, dynamic> json) =>

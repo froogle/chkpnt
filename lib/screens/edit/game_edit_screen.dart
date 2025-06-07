@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
+import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'widgets/game_edit_info_section.dart';
 import 'widgets/game_edit_actions.dart';
 import 'widgets/animations/animated_edit_form.dart';
+import 'widgets/image_selection_bottom_sheet.dart';
 
 class GameEditScreen extends ConsumerStatefulWidget {
   final GameItem? game;
@@ -33,6 +35,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   late GameStatus _selectedStatus;
   late TextEditingController _titleController;
   late String _selectedPlatform;
+  late String? _selectedImagePath;
   bool _hasUnsavedChanges = false;
 
   @override
@@ -43,11 +46,13 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       _selectedStatus = GameStatus.backlog;
       _titleController = TextEditingController(text: 'New Game');
       _selectedPlatform = '';
+      _selectedImagePath = null;
     } else {
       // Values from existing game for editing
       _selectedStatus = widget.game!.status;
       _titleController = TextEditingController(text: widget.game!.title);
       _selectedPlatform = widget.game!.platform;
+      _selectedImagePath = widget.game!.imagePath;
     }
 
     _titleController.addListener(_onTextChanged);
@@ -174,7 +179,11 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           children: [
             SizedBox(
               width: GameDetailSheetStyles.gameImageWidthPortrait,
-              child: GameImage(heroTag: 'game_image_${widget.game?.id ?? ''}'),
+              child: GameImage(
+                heroTag: 'game_image_${widget.game?.id ?? ''}',
+                imagePath: _selectedImagePath,
+                onTap: _handleImageTap,
+              ),
             ),
             const SizedBox(width: 20),
             Expanded(
@@ -207,7 +216,11 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       children: [
         SizedBox(
           width: 120,
-          child: GameImage(heroTag: 'game_image_${widget.game?.id ?? ''}'),
+          child: GameImage(
+            heroTag: 'game_image_${widget.game?.id ?? ''}',
+            imagePath: _selectedImagePath,
+            onTap: _handleImageTap,
+          ),
         ),
         const SizedBox(width: 24),
         Expanded(
@@ -225,17 +238,53 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   // Business logic methods
+  Future<void> _handleImageTap() async {
+    final result = await ImageSelectionBottomSheet.show(
+      context: context,
+      hasExistingImage: _selectedImagePath != null,
+    );
+
+    if (result != null) {
+      if (result == 'remove') {
+        _removeImage();
+      } else if (result is GameImageSource) {
+        await _selectImage(result);
+      }
+    }
+  }
+
+  Future<void> _selectImage(GameImageSource source) async {
+    final gameImageService = ref.read(gameImageServiceProvider);
+    final imagePath = await gameImageService.selectAndSaveImage(source);
+
+    if (imagePath != null) {
+      setState(() {
+        _selectedImagePath = imagePath;
+        _hasUnsavedChanges = _hasChanges();
+      });
+    }
+  }
+
+  void _removeImage() {
+    setState(() {
+      _selectedImagePath = null;
+      _hasUnsavedChanges = _hasChanges();
+    });
+  }
+
   bool _hasChanges() {
     if (widget.isAddMode) {
       // For add mode, check if any field has been changed from defaults
       return _titleController.text != 'New Game' ||
           _selectedPlatform != '' ||
-          _selectedStatus != GameStatus.backlog;
+          _selectedStatus != GameStatus.backlog ||
+          _selectedImagePath != null;
     } else {
       // For edit mode, check if any field has been changed from original
       return _titleController.text != widget.game!.title ||
           _selectedPlatform != widget.game!.platform ||
-          _selectedStatus != widget.game!.status;
+          _selectedStatus != widget.game!.status ||
+          _selectedImagePath != widget.game!.imagePath;
     }
   }
 
@@ -306,6 +355,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         title: _titleController.text.trim(),
         platform: _selectedPlatform,
         status: _selectedStatus,
+        imagePath: _selectedImagePath,
       );
 
       await gameActionsService.addGame(newGame, context);
@@ -315,6 +365,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         title: _titleController.text.trim(),
         platform: _selectedPlatform,
         status: _selectedStatus,
+        imagePath: _selectedImagePath,
       );
 
       await gameActionsService.updateGame(widget.game!, updatedGame, context);
