@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 
 final ThemeData retroBacklogTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: Color(0xFFCC7E54), // From Image 2 (pleasant, warm orange)
-  scaffoldBackgroundColor: Color(0xFFFFF8F2), // Light neutral for readability
-  canvasColor: Color(0xFFF5E8DA), // Soft complementary background
+  primaryColor: Color(0xFF8B5CF6), // Purple primary
+  scaffoldBackgroundColor: Color(0xFFF8FAFC), // Light neutral background
+  canvasColor: Color(0xFFF1F5F9), // Subtle card background
 
   colorScheme: ColorScheme(
-    primary: Color(0xFFCC7E54),
-    secondary: Color(0xFFC04F4A),
-    surface: Color(0xFFD9B56B),
-    error: Color(0xFFB00020),
+    primary: Color(0xFF8B5CF6), // Purple
+    secondary: Color(0xFFA855F7), // Slightly different purple
+    surface: Color(0xFFE2E8F0), // Light surface
+    error: Color(0xFFEF4444), // Modern red
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: Color(0xFF3B2E29),
+    onSurface: Color(0xFF1E293B), // Dark text
     onError: Colors.white,
     brightness: Brightness.light,
   ),
 
   appBarTheme: AppBarTheme(
-    backgroundColor: Color(0xFF674C3C),
-    foregroundColor: Colors.white,
+    backgroundColor: Colors.transparent,
+    foregroundColor: Color(0xFF1E293B),
     elevation: 0,
   ),
 
@@ -28,40 +28,51 @@ final ThemeData retroBacklogTheme = ThemeData(
     headlineLarge: TextStyle(
       fontSize: 32,
       fontWeight: FontWeight.bold,
-      color: Color(0xFF3B2E29),
+      color: Color(0xFF1E293B),
     ),
-    bodyMedium: TextStyle(fontSize: 16, color: Color(0xFF4B3E3B)),
+    headlineMedium: TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+      color: Color(0xFF1E293B),
+    ),
+    bodyLarge: TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w500,
+      color: Color(0xFF334155),
+    ),
+    bodyMedium: TextStyle(fontSize: 16, color: Color(0xFF64748B)),
     labelLarge: TextStyle(
       fontSize: 14,
-      fontWeight: FontWeight.bold,
-      color: Color(0xFFCC7E54),
+      fontWeight: FontWeight.w600,
+      color: Color(0xFF8B5CF6),
     ),
   ),
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0xFF924942),
+      backgroundColor: Color(0xFF8B5CF6),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      elevation: 0,
     ),
   ),
 
-  cardColor: Color(0xFFF5E8DA),
-  dividerColor: Color(0xFF9D8463),
+  cardColor: Colors.white,
+  dividerColor: Color(0xFFE2E8F0),
 );
 
 final ThemeData retroBacklogDarkTheme = ThemeData(
   brightness: Brightness.dark,
-  primaryColor: Color(0xFFCC7E54),
-  scaffoldBackgroundColor: Color(0xFF2C1F1A),
-  canvasColor: Color(0xFF3B2E29),
+  primaryColor: Color(0xFF8B5CF6),
+  scaffoldBackgroundColor: Color(0xFF0F172A),
+  canvasColor: Color(0xFF1E293B),
 
   colorScheme: ColorScheme(
-    primary: Color(0xFFCC7E54),
-    secondary: Color(0xFFC04F4A),
-    surface: Color(0xFF4B3E3B),
-    error: Color(0xFFEF5350),
+    primary: Color(0xFF8B5CF6),
+    secondary: Color(0xFFA855F7),
+    surface: Color(0xFF334155),
+    error: Color(0xFFEF4444),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Colors.white,
@@ -70,7 +81,7 @@ final ThemeData retroBacklogDarkTheme = ThemeData(
   ),
 
   appBarTheme: AppBarTheme(
-    backgroundColor: Color(0xFF674C3C),
+    backgroundColor: Colors.transparent,
     foregroundColor: Colors.white,
     elevation: 0,
   ),
@@ -81,23 +92,34 @@ final ThemeData retroBacklogDarkTheme = ThemeData(
       fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
-    bodyMedium: TextStyle(fontSize: 16, color: Color(0xFFDFB268)),
+    headlineMedium: TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+    ),
+    bodyLarge: TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w500,
+      color: Color(0xFFF1F5F9),
+    ),
+    bodyMedium: TextStyle(fontSize: 16, color: Color(0xFFCBD5E1)),
     labelLarge: TextStyle(
       fontSize: 14,
-      fontWeight: FontWeight.bold,
-      color: Color(0xFFCC7E54),
+      fontWeight: FontWeight.w600,
+      color: Color(0xFF8B5CF6),
     ),
   ),
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0xFF924942),
+      backgroundColor: Color(0xFF8B5CF6),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      elevation: 0,
     ),
   ),
 
-  cardColor: Color(0xFF46332E),
-  dividerColor: Color(0xFF9D8463),
+  cardColor: Color(0xFF1E293B),
+  dividerColor: Color(0xFF334155),
 );

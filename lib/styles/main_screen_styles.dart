@@ -123,8 +123,8 @@ class MainScreenStyles {
   static const TextStyle portraitGameCardStatusStyle =
       GameCardStyles.portraitGameCardStatusStyle;
 
-  // Dropdown text styles (from DropdownStyles)
-  static const TextStyle filterDropdownSelectedTextStyle =
+  // Dropdown text styles (from DropdownStyles) - Updated to getters where needed
+  static TextStyle get filterDropdownSelectedTextStyle =>
       DropdownStyles.filterDropdownSelectedTextStyle;
   static const TextStyle filterDropdownUnselectedTextStyle =
       DropdownStyles.filterDropdownUnselectedTextStyle;
@@ -135,34 +135,34 @@ class MainScreenStyles {
   static const TextStyle emptyStateTextStyle =
       EmptyStateStyles.emptyStateTextStyle;
 
-  // Decorations (from various files)
-  static const BoxDecoration searchBarDecoration =
+  // Decorations (from various files) - Updated to getters where needed
+  static BoxDecoration get searchBarDecoration =>
       InputStyles.searchBarDecoration;
-  static const BoxDecoration compactSearchBarDecoration =
+  static BoxDecoration get compactSearchBarDecoration =>
       InputStyles.compactSearchBarDecoration;
-  static const BoxDecoration gameCardDecoration =
+  static BoxDecoration get gameCardDecoration =>
       GameCardStyles.gameCardDecoration;
-  static const BoxDecoration landscapeGameCardDecoration =
+  static BoxDecoration get landscapeGameCardDecoration =>
       GameCardStyles.landscapeGameCardDecoration;
   static const BoxDecoration gameImageDecoration =
       GameCardStyles.gameImageDecoration;
-  static const BoxDecoration progressBarDecoration =
+  static BoxDecoration get progressBarDecoration =>
       GameCardStyles.progressBarDecoration;
-  static const BoxDecoration bottomNavDecoration =
+  static BoxDecoration get bottomNavDecoration =>
       LayoutStyles.bottomNavDecoration;
-  static const BoxDecoration landscapeHeaderDecoration =
+  static BoxDecoration get landscapeHeaderDecoration =>
       LayoutStyles.landscapeHeaderDecoration;
-  static const BoxDecoration landscapeCategoryTabDecoration =
+  static BoxDecoration get landscapeCategoryTabDecoration =>
       LayoutStyles.landscapeCategoryTabDecoration;
-  static const BoxDecoration selectedCategoryTabDecoration =
+  static BoxDecoration get selectedCategoryTabDecoration =>
       LayoutStyles.selectedCategoryTabDecoration;
   static const BoxDecoration unselectedCategoryTabDecoration =
       LayoutStyles.unselectedCategoryTabDecoration;
-  static const BoxDecoration collapsibleSectionDecoration =
+  static BoxDecoration get collapsibleSectionDecoration =>
       CollapsibleSectionStyles.collapsibleSectionDecoration;
-  static const BoxDecoration collapsibleSectionHeaderDecoration =
+  static BoxDecoration get collapsibleSectionHeaderDecoration =>
       CollapsibleSectionStyles.collapsibleSectionHeaderDecoration;
-  static const BoxDecoration collapsibleFilterDropdownDecoration =
+  static BoxDecoration get collapsibleFilterDropdownDecoration =>
       DropdownStyles.collapsibleFilterDropdownDecoration;
 
   // Game card gradient decorations (from GameCardStyles)
@@ -171,32 +171,32 @@ class MainScreenStyles {
   static const BoxDecoration portraitGameCardGradientDecoration =
       GameCardStyles.portraitGameCardGradientDecoration;
 
-  // Action button decorations (from GameCardStyles)
-  static const BoxDecoration playActionButtonDecoration =
+  // Action button decorations (from GameCardStyles) - Updated to getters
+  static BoxDecoration get playActionButtonDecoration =>
       GameCardStyles.playActionButtonDecoration;
-  static const BoxDecoration portraitPlayActionButtonDecoration =
+  static BoxDecoration get portraitPlayActionButtonDecoration =>
       GameCardStyles.portraitPlayActionButtonDecoration;
   static const BoxDecoration completedBadgeDecoration =
       GameCardStyles.completedBadgeDecoration;
   static const BoxDecoration portraitCompletedBadgeDecoration =
       GameCardStyles.portraitCompletedBadgeDecoration;
 
-  // Dropdown decorations (from DropdownStyles)
-  static const BoxDecoration filterDropdownSelectedItemDecoration =
+  // Dropdown decorations (from DropdownStyles) - Updated to getters
+  static BoxDecoration get filterDropdownSelectedItemDecoration =>
       DropdownStyles.filterDropdownSelectedItemDecoration;
 
-  // Empty state decorations (from EmptyStateStyles)
-  static const BoxDecoration emptyStateDecoration =
+  // Empty state decorations (from EmptyStateStyles) - Updated to getters
+  static BoxDecoration get emptyStateDecoration =>
       EmptyStateStyles.emptyStateDecoration;
   static const double emptyStateHeight = EmptyStateStyles.emptyStateHeight;
   static const double emptyStateIconSize = EmptyStateStyles.emptyStateIconSize;
   static const Color emptyStateIconColor = AppColors.emptyStateIcon;
   static const double emptyStateSpacing = EmptyStateStyles.emptyStateSpacing;
 
-  // Input decorations (from InputStyles)
-  static const InputDecoration searchInputDecoration =
+  // Input decorations (from InputStyles) - Updated to getters where needed
+  static InputDecoration get searchInputDecoration =>
       InputStyles.searchInputDecoration;
-  static const InputDecoration compactSearchInputDecoration =
+  static InputDecoration get compactSearchInputDecoration =>
       InputStyles.compactSearchInputDecoration;
 
   // Button styles (from InputStyles)

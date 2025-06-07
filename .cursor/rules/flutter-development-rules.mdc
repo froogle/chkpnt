@@ -1,0 +1,406 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Flutter Development Rules - Comprehensive Guide
+
+## 🎯 Core Principles
+
+- **Always use British English spellings** (colour, centre, organisation, etc.)
+- **Extract Complex Build Methods** using `_buildXXX()` pattern
+- **Separate Business Logic** from UI rendering
+- **Use Centralised Styling** from `lib/styles/`
+- **Follow Consistent Naming** conventions throughout
+- **Test Everything** - All new widgets must have tests
+- **Quality Assurance** - Always run Flutter Analyze and tests after changes
+
+## 📁 Project Architecture
+
+This Flutter app follows a clean, scalable architecture with clear separation between reusable and screen-specific components:
+
+```
+lib/
+├── shared/
+│   └── widgets/                    # Truly reusable widgets (2+ screens)
+│       ├── cards/                  # Display components
+│       │   ├── landscape_game_card.dart
+│       │   └── portrait_game_card.dart
+│       ├── inputs/                 # Form inputs and controls
+│       │   ├── compact_search_bar.dart
+│       │   └── platform_filter_dropdown.dart
+│       ├── buttons/                # Interactive elements
+│       │   └── close_button.dart
+│       └── layout/                 # Layout helpers and containers
+│           ├── collapsible_section.dart
+│           └── empty_state_widget.dart
+├── screens/
+│   ├── main/
+│   │   ├── widgets/               # Main screen specific widgets
+│   │   │   ├── main_screen_header.dart
+│   │   │   ├── main_screen_bottom_nav.dart
+│   │   │   ├── game_section.dart
+│   │   │   └── animations/
+│   │   │       └── game_transition_animation.dart
+│   │   └── main_screen.dart
+│   ├── onboarding/
+│   │   ├── widgets/               # Onboarding specific widgets
+│   │   │   ├── onboarding_overlay.dart
+│   │   │   └── onboarding_subscription_overlay.dart
+│   │   └── onboarding_screen.dart
+│   └── splash/
+│       └── splash_screen.dart
+├── models/                        # Data models and entities
+├── providers/                     # State management (Riverpod)
+├── services/                      # Business logic and domain services
+├── repositories/                  # Data access layer
+├── styles/                        # Centralised styling and themes
+└── utils/                         # Utility functions
+```
+
+## 🎯 Widget Organisation Rules
+
+### ✅ Shared Widgets (`lib/shared/widgets/`)
+Place widgets here ONLY if they meet **ALL** criteria:
+- [ ] Used by 2+ screens (current or planned)
+- [ ] Generic and configurable with well-defined props
+- [ ] No screen-specific business logic
+- [ ] Stable API that won't change frequently
+- [ ] Well-documented with usage examples
+- [ ] **Must have comprehensive tests**
+
+### 🏠 Screen-Specific Widgets (`lib/screens/[screen]/widgets/`)
+Use for widgets that:
+- Are used only by one screen
+- Contain screen-specific business logic
+- Are tightly coupled to screen requirements
+- Have very specific functionality (like animations)
+- **Must have unit tests covering core functionality**
+
+### 📱 Screen Organisation
+- Each screen gets its own directory under `lib/screens/`
+- Screen widgets go in `screens/[screen]/widgets/`
+- Complex animations go in `screens/[screen]/widgets/animations/`
+- Main screen file goes in `screens/[screen]/[screen]_screen.dart`
+
+## 🏗️ Widget Architecture Patterns
+
+### 1. Extract Complex Build Methods
+**Never leave complex logic directly in build() methods.** Break them down into focused, single-purpose methods.
+
+#### ✅ Good Example
+```dart
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: SafeArea(
+      child: _buildContent(),
+    ),
+  );
+}
+
+Widget _buildContent() {
+  return Column(
+    children: [
+      _buildHeader(),
+      Expanded(child: _buildBody()),
+      _buildFooter(),
+    ],
+  );
+}
+
+Widget _buildHeader() {
+  return Container(
+    padding: HeaderStyles.padding,
+    child: Text('Title', style: HeaderStyles.titleStyle),
+  );
+}
+```
+
+### 2. Consistent Method Naming
+All widget builder methods must follow the `_buildXXX()` convention:
+
+- `_buildHeader()` - Header sections
+- `_buildContent()` - Main content areas  
+- `_buildActionButton()` - Interactive elements
+- `_buildContainer()` - Container wrappers
+- `_buildList()` - List and grid layouts
+
+### 3. Separate Business Logic from UI
+Extract calculations, navigation, and state management into dedicated methods:
+
+#### ✅ Good Example
+```dart
+// UI methods
+Widget _buildResponsiveLogo() {
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final logoSize = _calculateLogoSize(constraints);
+      return _buildLogoImage(logoSize);
+    },
+  );
+}
+
+Widget _buildLogoImage(double size) {
+  return Image.asset('assets/logo.png', width: size, height: size);
+}
+
+// Logic methods
+double _calculateLogoSize(BoxConstraints constraints) {
+  final availableSize = constraints.maxWidth < constraints.maxHeight
+      ? constraints.maxWidth
+      : constraints.maxHeight;
+  return availableSize * 0.8;
+}
+
+void _navigateToNextScreen() {
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(builder: (_) => const NextScreen()),
+  );
+}
+```
+
+## 🎨 Styling Architecture
+
+### Core Styling Principles
+**Never use inline styling in widgets.** All styling should be extracted to centralised, reusable style objects.
+
+#### ❌ Avoid
+```dart
+// Inline decorations
+Container(
+  decoration: BoxDecoration(
+    gradient: LinearGradient(colours: [Colors.white.withAlpha(0xB3), Colors.white]),
+    borderRadius: BorderRadius.circular(32),
+  ),
+)
+
+// Magic numbers
+const SizedBox(height: 18)
+
+// Hardcoded colours
+Text('Hello', style: TextStyle(colour: Color(0xFF123456)))
+```
+
+#### ✅ Use Instead
+```dart
+// Centralised styling
+Container(decoration: OnboardingOverlayStyles.overlayDecoration)
+
+// Named constants
+const SizedBox(height: OnboardingOverlayStyles.contentSpacing)
+
+// Semantic colours
+Text('Hello', style: TextStyle(colour: AppColours.primaryText))
+```
+
+### File Structure
+```
+lib/styles/
+├── styles.dart              # Barrel export for all modules
+├── themes.dart              # Global app themes (light/dark)
+├── global_styles.dart       # Shared colours, shadows, text styles
+├── game_card_styles.dart    # Game card specific styling
+├── layout_styles.dart       # Layout and structural styling
+├── input_styles.dart        # Form inputs and controls styling
+├── onboarding_styles.dart   # Splash and onboarding styling
+└── main_screen_styles.dart  # Legacy compatibility layer
+```
+
+### Import Patterns
+```dart
+// Preferred: Import specific modules
+import '../styles/game_card_styles.dart';
+import '../styles/global_styles.dart';
+
+// Usage
+Container(
+  decoration: GameCardStyles.gameCardDecoration,
+  child: Text('Title', style: TextStyle(colour: AppColours.primaryText)),
+)
+```
+
+## 🧪 Testing Requirements
+
+### 🎯 Testing Rules
+- **New Widget = New Test** - Every new widget must have a corresponding test file
+- **Shared Widget Testing** - Shared widgets require comprehensive test coverage
+- **Screen Widget Testing** - Screen-specific widgets need unit tests for core functionality
+- **Business Logic Testing** - All logic methods must be tested separately from UI
+
+### Test File Structure
+```
+test/
+├── screens/
+│   ├── main/
+│   │   ├── widgets/
+│   │   │   ├── game_detail_sheet_test.dart
+│   │   │   └── main_screen_header_test.dart
+│   │   └── main_screen_test.dart
+│   └── onboarding/
+├── shared/
+│   └── widgets/
+│       ├── cards/
+│       │   ├── landscape_game_card_test.dart
+│       │   └── portrait_game_card_test.dart
+│       └── buttons/
+│           └── close_button_test.dart
+├── models/
+├── providers/
+└── services/
+```
+
+### Test Requirements by Widget Type
+
+#### Shared Widgets
+- [ ] **Golden Tests** - UI rendering tests for different states
+- [ ] **Interaction Tests** - Tap, scroll, input interactions
+- [ ] **Prop Tests** - All props and configurations
+- [ ] **Edge Cases** - Null values, empty states, error conditions
+- [ ] **Accessibility Tests** - Screen reader support, semantics
+
+#### Screen-Specific Widgets
+- [ ] **Core Functionality** - Main widget behaviour
+- [ ] **State Changes** - StatefulWidget state transitions
+- [ ] **Navigation** - Route transitions and back button behaviour
+- [ ] **Business Logic** - Calculation and data transformation methods
+
+### Test Template
+```dart
+// test/screens/main/widgets/my_widget_test.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../lib/screens/main/widgets/my_widget.dart';
+
+void main() {
+  group('MyWidget', () {
+    testWidgets('renders correctly with default props', (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(
+            home: MyWidget(),
+          ),
+        ),
+      );
+
+      expect(find.byType(MyWidget), findsOneWidget);
+      // Add specific assertions here
+    });
+
+    testWidgets('handles user interaction correctly', (tester) async {
+      // Test interaction logic
+    });
+
+    // Add more tests as needed
+  });
+}
+```
+
+## 🔍 Quality Assurance Workflow
+
+### 🎯 Pre-Commit Checklist
+Before committing any code changes, **ALWAYS** run these commands:
+
+1. **Flutter Analyze** - Check for code quality issues
+   ```bash
+   flutter analyze
+   ```
+
+2. **Run Tests** - Ensure all tests pass
+   ```bash
+   flutter test
+   ```
+
+3. **Test Coverage** - Verify adequate test coverage
+   ```bash
+   flutter test --coverage
+   ```
+
+### 🔄 Development Workflow
+
+#### Adding New Features
+1. **Models** - Define data structures in `lib/models/`
+2. **Styling** - Add styles to appropriate module in `lib/styles/`
+3. **Screen Widgets** - Start with `screens/[screen]/widgets/`
+4. **Tests** - Write tests for all new widgets and logic
+5. **Screens** - Compose widgets into full screens
+6. **Quality Check** - Run `flutter analyze` and `flutter test`
+7. **Promote to Shared** - When widgets are needed by multiple screens
+
+#### Creating New Widgets
+1. **Create Widget** - Follow established patterns and conventions
+2. **Extract Styling** - Use centralised styling classes
+3. **Write Tests** - Create comprehensive test coverage
+4. **Run Quality Checks** - `flutter analyze` and `flutter test`
+5. **Document Usage** - Add clear documentation and examples
+
+#### Making Significant Changes
+1. **Plan Changes** - Identify affected components and tests
+2. **Implement Changes** - Follow established patterns
+3. **Update Tests** - Modify existing tests or add new ones
+4. **Run Full Test Suite** - `flutter test` for entire project
+5. **Check Code Quality** - `flutter analyze` for the entire codebase
+6. **Verify Coverage** - Ensure test coverage remains adequate
+
+## 🔄 Widget Promotion Guidelines
+
+### When to Promote Screen-Specific → Shared
+1. **Second Screen Usage** - When a widget is needed by a second screen
+2. **Generalisation** - Remove screen-specific props and logic
+3. **API Stabilisation** - Ensure props and behaviour are stable
+4. **Documentation** - Add comprehensive usage examples
+5. **Testing** - Verify the widget works in isolation with full test coverage
+6. **Quality Assurance** - Run `flutter analyze` and `flutter test`
+
+## 📋 Best Practices
+
+### File Organisation
+- Keep files focused on single responsibility
+- Use clear, descriptive names following convention
+- Group related functionality together
+- Maintain consistent structure across similar files
+
+### Code Quality
+- Extract complex logic into focused `_buildXXX()` methods
+- Use semantic naming throughout
+- Prefer composition over inheritance
+- Write testable, maintainable code
+- Always use British English spellings
+
+### Widget Architecture
+- Extract Complex Build Methods using `_buildXXX()` pattern
+- Separate Business Logic from UI rendering
+- Use Centralised Styling from `lib/styles/`
+- Follow Consistent Naming conventions
+- Always add tests for new widgets
+
+### Quality Assurance
+- **Always run `flutter analyze`** before committing code
+- **Always run `flutter test`** after significant changes
+- **Maintain test coverage** for all new functionality
+- **Document breaking changes** and migration paths
+
+## 🚀 Enforcement
+
+- All new widgets must follow these patterns
+- Use existing widgets as reference implementations
+- Extract complex build methods during code reviews
+- **Mandatory testing** for all new widgets and significant changes
+- **Quality gates** - Code must pass analyze and tests before merge
+- Always add tests when building new functionality
+
+## ✅ Benefits
+
+This architecture provides:
+- **Readable Code** - Clear structure visible at the top level
+- **Easy Maintenance** - Changes isolated to specific methods
+- **Better Testing** - Individual methods can be tested independently
+- **Consistency** - Uniform patterns across the entire codebase
+- **Scalability** - Easy to extend and modify existing widgets
+- **Quality Assurance** - Built-in quality checks and testing requirements
+- **Team Collaboration** - Clear guidelines for all development activities
+
+This comprehensive guide ensures consistent, high-quality Flutter development across the entire project! 🚀
+

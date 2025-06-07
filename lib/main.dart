@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chkpnt/styles/styles.dart';
-import 'splash_screen.dart';
-import 'main_screen.dart';
+import 'screens/splash/splash_screen.dart';
+import 'screens/main/main_screen.dart';
+import 'screens/onboarding/onboarding_screen.dart';
+import 'styles/styles.dart';
 
 void main() {
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,12 +16,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'ChkPnt',
       theme: retroBacklogTheme,
       darkTheme: retroBacklogDarkTheme,
       themeMode: ThemeMode.system,
       home: const SplashScreen(),
-      routes: {'/main': (context) => const MainScreen()},
+      routes: {
+        '/main': (context) => const MainScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }
