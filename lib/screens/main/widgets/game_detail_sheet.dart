@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
-import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'game_detail_sheet_info.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'game_detail_sheet_actions.dart';
+import 'package:chkpnt/services/game_actions_service.dart';
 
 class GameDetailSheet extends ConsumerStatefulWidget {
   final GameItem game;
@@ -182,9 +182,11 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
   Future<void> _saveChanges() async {
     if (!_hasStatusChanged()) return;
 
-    final gameProvider = ref.read(gameListProvider.notifier);
     final updatedGame = widget.game.copyWith(status: _selectedStatus);
-    gameProvider.updateGame(updatedGame);
+
+    // Use the game actions service to update the game and show notification
+    final gameActionsService = ref.read(gameActionsServiceProvider);
+    await gameActionsService.updateGame(widget.game, updatedGame, context);
 
     if (mounted) {
       Navigator.of(context).pop();
