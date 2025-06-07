@@ -11,42 +11,36 @@ final List<GameItem> _sampleGames = [
     title: 'The Legend of Zelda: Breath of the Wild',
     platform: 'Switch',
     status: GameStatus.playing,
-    progress: 0.6,
   ),
   GameItem(
     id: GameId.generate(),
     title: 'God of War',
     platform: 'PS5',
     status: GameStatus.playing,
-    progress: 0.3,
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Cyberpunk 2077',
     platform: 'PC',
     status: GameStatus.completed,
-    progress: 1.0,
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Red Dead Redemption 2',
     platform: 'Xbox',
     status: GameStatus.completed,
-    progress: 1.0,
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Elden Ring',
     platform: 'Steam Deck',
     status: GameStatus.backlog,
-    progress: 0.0,
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Mass Effect Legendary Edition',
     platform: 'PC',
     status: GameStatus.abandoned,
-    progress: 0.2,
   ),
 ];
 
@@ -92,7 +86,7 @@ class GameList extends _$GameList {
     state = [
       for (final game in state)
         if (game.id == gameId)
-          game.copyWith(status: GameStatus.completed, progress: 1.0)
+          game.copyWith(status: GameStatus.completed)
         else
           game,
     ];

@@ -90,9 +90,8 @@ void main() {
           GameItem(
             id: GameId.generate(),
             title: 'Test Game 1',
-            platform: 'PC',
+            platform: 'PS5',
             status: GameStatus.playing,
-            progress: 0.5,
           ),
         ];
 
@@ -101,9 +100,8 @@ void main() {
           GameItem(
             id: GameId.generate(),
             title: 'Test Game 2',
-            platform: 'PC',
+            platform: 'Xbox',
             status: GameStatus.completed,
-            progress: 1.0,
           ),
         ];
         final abandonedGames = <GameItem>[];
@@ -146,9 +144,8 @@ void main() {
           GameItem(
             id: GameId.generate(),
             title: 'Test Game',
-            platform: 'PC',
+            platform: 'PS5',
             status: GameStatus.playing,
-            progress: 0.5,
           ),
         ];
 

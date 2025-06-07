@@ -18,9 +18,8 @@ void main() {
       testGame = GameItem(
         id: GameId.generate(),
         title: 'Test Game',
-        platform: 'PC',
+        platform: 'Test Platform',
         status: GameStatus.backlog,
-        progress: 0.0,
       );
 
       // Add test game to provider

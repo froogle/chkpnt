@@ -10,9 +10,20 @@ import 'widgets/game_edit_actions.dart';
 import 'widgets/animations/animated_edit_form.dart';
 
 class GameEditScreen extends ConsumerStatefulWidget {
-  final GameItem game;
+  final GameItem? game;
+  final bool isAddMode;
 
-  const GameEditScreen({super.key, required this.game});
+  const GameEditScreen._({super.key, this.game, required this.isAddMode});
+
+  // Factory constructor for editing existing games
+  factory GameEditScreen.edit({Key? key, required GameItem game}) {
+    return GameEditScreen._(key: key, game: game, isAddMode: false);
+  }
+
+  // Factory constructor for adding new games
+  factory GameEditScreen.add({Key? key}) {
+    return GameEditScreen._(key: key, game: null, isAddMode: true);
+  }
 
   @override
   ConsumerState<GameEditScreen> createState() => _GameEditScreenState();
@@ -27,9 +38,17 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedStatus = widget.game.status;
-    _titleController = TextEditingController(text: widget.game.title);
-    _selectedPlatform = widget.game.platform;
+    if (widget.isAddMode) {
+      // Default values for adding new games
+      _selectedStatus = GameStatus.backlog;
+      _titleController = TextEditingController(text: 'New Game');
+      _selectedPlatform = '';
+    } else {
+      // Values from existing game for editing
+      _selectedStatus = widget.game!.status;
+      _titleController = TextEditingController(text: widget.game!.title);
+      _selectedPlatform = widget.game!.platform;
+    }
 
     _titleController.addListener(_onTextChanged);
   }
@@ -70,9 +89,9 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
         onPressed: _handleBackPressed,
       ),
-      title: const Text(
-        'Edit Game',
-        style: TextStyle(
+      title: Text(
+        widget.isAddMode ? 'Add Game' : 'Edit Game',
+        style: const TextStyle(
           color: Colors.black87,
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -107,6 +126,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
             GameEditActions(
               onSavePressed: _saveChanges,
               hasChanges: _hasChanges(),
+              buttonText: widget.isAddMode ? 'Add Game' : 'Save Changes',
             ),
           ],
         ),
@@ -139,6 +159,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           GameEditActions(
             onSavePressed: _saveChanges,
             hasChanges: _hasChanges(),
+            buttonText: widget.isAddMode ? 'Add Game' : 'Save Changes',
           ),
         ],
       ),
@@ -153,7 +174,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           children: [
             SizedBox(
               width: GameDetailSheetStyles.gameImageWidthPortrait,
-              child: GameImage(heroTag: 'game_image_${widget.game.id}'),
+              child: GameImage(heroTag: 'game_image_${widget.game?.id ?? ''}'),
             ),
             const SizedBox(width: 20),
             Expanded(
@@ -186,7 +207,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       children: [
         SizedBox(
           width: 120,
-          child: GameImage(heroTag: 'game_image_${widget.game.id}'),
+          child: GameImage(heroTag: 'game_image_${widget.game?.id ?? ''}'),
         ),
         const SizedBox(width: 24),
         Expanded(
@@ -205,9 +226,17 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   // Business logic methods
   bool _hasChanges() {
-    return _titleController.text != widget.game.title ||
-        _selectedPlatform != widget.game.platform ||
-        _selectedStatus != widget.game.status;
+    if (widget.isAddMode) {
+      // For add mode, check if any field has been changed from defaults
+      return _titleController.text != 'New Game' ||
+          _selectedPlatform != '' ||
+          _selectedStatus != GameStatus.backlog;
+    } else {
+      // For edit mode, check if any field has been changed from original
+      return _titleController.text != widget.game!.title ||
+          _selectedPlatform != widget.game!.platform ||
+          _selectedStatus != widget.game!.status;
+    }
   }
 
   void _handleStatusChange(GameStatus status) {
@@ -268,14 +297,28 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       return;
     }
 
-    final updatedGame = widget.game.copyWith(
-      title: _titleController.text.trim(),
-      platform: _selectedPlatform,
-      status: _selectedStatus,
-    );
-
     final gameActionsService = ref.read(gameActionsServiceProvider);
-    await gameActionsService.updateGame(widget.game, updatedGame, context);
+
+    if (widget.isAddMode) {
+      // Adding a new game
+      final newGame = GameItem(
+        id: GameId.generate(), // This will be replaced in the service
+        title: _titleController.text.trim(),
+        platform: _selectedPlatform,
+        status: _selectedStatus,
+      );
+
+      await gameActionsService.addGame(newGame, context);
+    } else {
+      // Editing existing game
+      final updatedGame = widget.game!.copyWith(
+        title: _titleController.text.trim(),
+        platform: _selectedPlatform,
+        status: _selectedStatus,
+      );
+
+      await gameActionsService.updateGame(widget.game!, updatedGame, context);
+    }
 
     if (mounted) {
       Navigator.of(context).pop();

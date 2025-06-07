@@ -164,12 +164,13 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     Navigator.of(context).pop(); // Close the detail sheet first
     Navigator.of(
       context,
-    ).push(EditScreenPageRoute(child: GameEditScreen(game: game)));
+    ).push(EditScreenPageRoute(child: GameEditScreen.edit(game: game)));
   }
 
   void _handleAddGame() {
-    // Handle adding new games
-    // This will be implemented when you add game creation functionality
+    Navigator.of(
+      context,
+    ).push(EditScreenPageRoute(child: GameEditScreen.add()));
   }
 
   void _handleNavigation(int index) {

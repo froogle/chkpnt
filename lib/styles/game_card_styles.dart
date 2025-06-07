@@ -7,8 +7,6 @@ class GameCardStyles {
   static const double gameImageSize = 80.0;
   static const double landscapeGameImageSize = 48.0;
   static const double landscapeGameCardAspectRatio = 1.2;
-  static const double progressBarWidth = 80.0;
-  static const double progressBarHeight = 8.0;
 
   // Spacing and padding
   static const EdgeInsets gameCardPadding = EdgeInsets.all(20.0);
@@ -193,21 +191,6 @@ class GameCardStyles {
     borderRadius: BorderRadius.all(Radius.circular(16)),
     boxShadow: [
       BoxShadow(color: Color(0x4010B981), blurRadius: 8, offset: Offset(0, 4)),
-    ],
-  );
-
-  // Enhanced progress bar decoration
-  static BoxDecoration get progressBarDecoration => BoxDecoration(
-    gradient: LinearGradient(
-      colors: [AppColors.primaryPurple, AppColors.secondaryPurple],
-    ),
-    borderRadius: BorderRadius.all(Radius.circular(6)),
-    boxShadow: [
-      BoxShadow(
-        color: AppColors.primaryPurple.withValues(alpha: 0.3),
-        blurRadius: 4,
-        offset: Offset(0, 2),
-      ),
     ],
   );
 }

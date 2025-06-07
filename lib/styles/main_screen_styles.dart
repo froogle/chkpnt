@@ -33,8 +33,6 @@ class MainScreenStyles {
       GameCardStyles.landscapeGameImageSize;
   static const double landscapeGameCardAspectRatio =
       GameCardStyles.landscapeGameCardAspectRatio;
-  static const double progressBarWidth = GameCardStyles.progressBarWidth;
-  static const double progressBarHeight = GameCardStyles.progressBarHeight;
 
   // Input dimensions (from InputStyles)
   static const double compactSearchHeight = InputStyles.compactSearchHeight;
@@ -146,8 +144,7 @@ class MainScreenStyles {
       GameCardStyles.landscapeGameCardDecoration;
   static const BoxDecoration gameImageDecoration =
       GameCardStyles.gameImageDecoration;
-  static BoxDecoration get progressBarDecoration =>
-      GameCardStyles.progressBarDecoration;
+
   static BoxDecoration get bottomNavDecoration =>
       LayoutStyles.bottomNavDecoration;
   static BoxDecoration get landscapeHeaderDecoration =>
@@ -239,12 +236,6 @@ class MainScreenStyles {
     fontSize: 14,
     color: AppColors.expandIcon,
     fontStyle: FontStyle.italic,
-  );
-
-  static const TextStyle landscapeGameProgressStyle = TextStyle(
-    fontSize: 12,
-    color: AppColors.expandIcon,
-    fontWeight: FontWeight.w500,
   );
 
   static const TextStyle landscapeGameStatusStyle = TextStyle(

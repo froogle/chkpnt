@@ -4,11 +4,13 @@ import 'package:chkpnt/styles/styles.dart';
 class GameEditActions extends StatelessWidget {
   final VoidCallback onSavePressed;
   final bool hasChanges;
+  final String buttonText;
 
   const GameEditActions({
     super.key,
     required this.onSavePressed,
     required this.hasChanges,
+    this.buttonText = 'Save Changes',
   });
 
   @override
@@ -32,7 +34,7 @@ class GameEditActions extends StatelessWidget {
             ),
             const SizedBox(width: EditScreenStyles.saveButtonIconSpacing),
             Text(
-              'Save Changes',
+              buttonText,
               style: EditScreenStyles.saveButtonTextStyle(hasChanges),
             ),
           ],

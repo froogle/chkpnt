@@ -13,11 +13,10 @@ void main() {
     setUp(() {
       container = ProviderContainer();
       testGame = GameItem(
-        id: GameId('test-1'),
-        title: 'The Legend of Zelda: Breath of the Wild',
-        platform: 'Nintendo Switch',
+        id: GameId.generate(),
+        title: 'Test Game',
+        platform: 'Test Platform',
         status: GameStatus.playing,
-        progress: 50.0,
       );
 
       // Add the test game to the provider

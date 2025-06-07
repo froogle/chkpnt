@@ -8,12 +8,11 @@ void main() {
     late GameItem testGame;
 
     setUp(() {
-      testGame = const GameItem(
-        id: GameId('test-1'),
-        title: 'The Legend of Zelda: Breath of the Wild',
-        platform: 'Nintendo Switch',
+      testGame = GameItem(
+        id: GameId.generate(),
+        title: 'Test Game',
+        platform: 'Test Platform',
         status: GameStatus.playing,
-        progress: 50.0,
       );
     });
 
@@ -25,10 +24,7 @@ void main() {
       );
 
       // Check that the game title is displayed
-      expect(
-        find.text('The Legend of Zelda: Breath of the Wild'),
-        findsOneWidget,
-      );
+      expect(find.text('Test Game'), findsOneWidget);
     });
 
     testWidgets('should render platform badge', (WidgetTester tester) async {
@@ -37,7 +33,7 @@ void main() {
       );
 
       // Check that platform information is displayed via PlatformBadge
-      expect(find.text('Nintendo Switch'), findsOneWidget);
+      expect(find.text('Test Platform'), findsOneWidget);
     });
 
     testWidgets('should display current status with correct icon and text', (

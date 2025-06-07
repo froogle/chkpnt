@@ -131,8 +131,7 @@ class _OnboardingDescription extends StatelessWidget {
             style: boldStyle,
           ),
           const TextSpan(
-            text:
-                'Enjoy features like progress tracking, wishlists, and order tracking.\n\n',
+            text: 'Enjoy features like wishlists and order tracking.\n\n',
           ),
           const TextSpan(text: 'Start now with a free 7 day trial.\n\n'),
           TextSpan(text: 'No strings attached!', style: boldStyle),

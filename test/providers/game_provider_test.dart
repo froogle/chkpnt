@@ -254,25 +254,28 @@ void main() {
       expect(updatedGame.status, GameStatus.playing);
     });
 
-    test('markCompleted should set game to completed with 100% progress', () {
-      final notifier = container.read(gameListProvider.notifier);
-      final games = container.read(gameListProvider);
+    test('markCompleted should set game to completed status', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
 
-      // Find a playing game
-      final playingGame = games.firstWhere(
-        (game) => game.status == GameStatus.playing,
+      // Add a test game
+      final testGame = GameItem(
+        id: GameId.generate(),
+        title: 'Test Game',
+        platform: 'PC',
+        status: GameStatus.playing,
       );
-      final gameId = playingGame.id;
+      container.read(gameListProvider.notifier).addGame(testGame);
 
-      // Mark as completed
-      notifier.markCompleted(gameId);
+      // Mark it as completed
+      container.read(gameListProvider.notifier).markCompleted(testGame.id);
 
-      // Verify the game is completed with full progress
-      final updatedGames = container.read(gameListProvider);
-      final updatedGame = updatedGames.firstWhere((game) => game.id == gameId);
+      // Get the updated list
+      final updatedList = container.read(gameListProvider);
+      final updatedGame = updatedList.firstWhere((g) => g.id == testGame.id);
 
+      // Verify the game is completed
       expect(updatedGame.status, GameStatus.completed);
-      expect(updatedGame.progress, 1.0);
     });
   });
 }

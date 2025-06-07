@@ -92,6 +92,29 @@ class GameActionsService {
     }
   }
 
+  /// Handles adding a new game
+  Future<void> addGame(GameItem newGame, BuildContext context) async {
+    // Generate a new ID for the game
+    final gameWithId = newGame.copyWith(id: GameId.generate());
+
+    // Add the game to the provider
+    _ref.read(gameListProvider.notifier).addGame(gameWithId);
+
+    // Expand the relevant section for the new game's status
+    final statusName = _getStatusDisplayName(gameWithId.status);
+    _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+
+    // Show feedback
+    if (context.mounted) {
+      _showGameActionFeedback(
+        context: context,
+        message: '${gameWithId.title} added to $statusName!',
+        icon: _getStatusIcon(gameWithId.status),
+        color: _getStatusColor(gameWithId.status),
+      );
+    }
+  }
+
   /// Updates section expansion based on current filters
   void updateSectionExpansionForFilters() {
     final platform = _ref.read(selectedPlatformProvider);
