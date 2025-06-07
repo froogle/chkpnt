@@ -9,15 +9,18 @@ class PlatformBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: GameDetailSheetStyles.platformBadgePadding,
-        decoration: GameDetailSheetStyles.platformBadgeDecoration,
-        child: Text(
-          platform,
-          style: GameDetailSheetStyles.platformBadgeTextStyle,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          padding: GameDetailSheetStyles.platformBadgePadding,
+          decoration: GameDetailSheetStyles.platformBadgeDecoration,
+          child: Text(
+            platform,
+            style: GameDetailSheetStyles.platformBadgeTextStyle,
+          ),
         ),
       ),
     );
