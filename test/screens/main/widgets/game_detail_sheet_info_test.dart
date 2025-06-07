@@ -235,5 +235,93 @@ void main() {
         expect(find.text('Current Status: $expectedText'), findsOneWidget);
       }
     });
+
+    group('Interactive functionality tests', () {
+      testWidgets('should call onEditPressed when title is tapped', (
+        WidgetTester tester,
+      ) async {
+        bool editPressed = false;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: GameDetailSheetInfo(
+                game: testGame,
+                onEditPressed: () {
+                  editPressed = true;
+                },
+              ),
+            ),
+          ),
+        );
+
+        // Tap on the title
+        await tester.tap(find.text(testGame.title));
+        await tester.pump();
+
+        expect(editPressed, isTrue);
+      });
+
+      testWidgets('should call onEditPressed when platform is tapped', (
+        WidgetTester tester,
+      ) async {
+        bool editPressed = false;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: GameDetailSheetInfo(
+                game: testGame,
+                onEditPressed: () {
+                  editPressed = true;
+                },
+              ),
+            ),
+          ),
+        );
+
+        // Tap on the platform badge
+        await tester.tap(find.text(testGame.platform));
+        await tester.pump();
+
+        expect(editPressed, isTrue);
+      });
+
+      testWidgets(
+        'should not crash when onEditPressed is null and title is tapped',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+            ),
+          );
+
+          // Tap on the title - should not crash
+          await tester.tap(find.text(testGame.title));
+          await tester.pump();
+
+          // Should still display the title
+          expect(find.text(testGame.title), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'should not crash when onEditPressed is null and platform is tapped',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+            ),
+          );
+
+          // Tap on the platform - should not crash
+          await tester.tap(find.text(testGame.platform));
+          await tester.pump();
+
+          // Should still display the platform
+          expect(find.text(testGame.platform), findsOneWidget);
+        },
+      );
+    });
   });
 }

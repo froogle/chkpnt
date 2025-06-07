@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../models/game_models.dart';
+import 'package:chkpnt/models/game_models.dart';
 
 part 'ui_state_provider.g.dart';
 

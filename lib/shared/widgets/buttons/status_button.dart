@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../models/game_models.dart';
-import '../../../styles/styles.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/styles/styles.dart';
 
 class StatusButton extends StatelessWidget {
   final GameStatus status;

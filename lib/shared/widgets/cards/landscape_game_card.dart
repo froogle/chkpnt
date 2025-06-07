@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../styles/styles.dart';
-import '../../../models/game_models.dart';
+import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/models/game_models.dart';
 
 class LandscapeGameCard extends StatelessWidget {
   final GameItem game;

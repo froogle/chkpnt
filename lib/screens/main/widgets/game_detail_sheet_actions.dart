@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../styles/styles.dart';
+import 'package:chkpnt/styles/styles.dart';
 
 class GameDetailSheetActions extends StatelessWidget {
   final VoidCallback? onEditPressed;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../shared/widgets/inputs/platform_filter_dropdown.dart';
-import '../../../shared/widgets/inputs/compact_search_bar.dart';
-import '../../../providers/game_provider.dart';
-import '../../../providers/ui_state_provider.dart';
-import '../../../styles/main_screen_styles.dart';
-import '../../../styles/input_styles.dart';
+import 'package:chkpnt/shared/widgets/inputs/platform_filter_dropdown.dart';
+import 'package:chkpnt/shared/widgets/inputs/compact_search_bar.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/styles/main_screen_styles.dart';
+import 'package:chkpnt/styles/input_styles.dart';
 
 class MainScreenHeader extends ConsumerWidget {
   final VoidCallback? onAddGamePressed;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/game_models.dart';
-import '../providers/game_provider.dart';
-import '../providers/ui_state_provider.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 
 class GameActionsService {
   final Ref _ref;
@@ -44,6 +44,50 @@ class GameActionsService {
         message: '${game.title} completed!',
         icon: Icons.check_circle,
         color: Colors.blue,
+      );
+    }
+  }
+
+  /// Handles updating a game's details (title, platform, status)
+  Future<void> updateGame(
+    GameItem originalGame,
+    GameItem updatedGame,
+    BuildContext context,
+  ) async {
+    // Update the game in the provider
+    _ref.read(gameListProvider.notifier).updateGame(updatedGame);
+
+    // Determine what changed for appropriate feedback
+    final titleChanged = originalGame.title != updatedGame.title;
+    final platformChanged = originalGame.platform != updatedGame.platform;
+    final statusChanged = originalGame.status != updatedGame.status;
+
+    // Build feedback message based on what changed
+    String message = '${updatedGame.title} updated!';
+    IconData icon = Icons.check_circle;
+    Color color = Colors.green;
+
+    if (statusChanged) {
+      // Expand the relevant section if status changed
+      final statusName = _getStatusDisplayName(updatedGame.status);
+      _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+
+      message = '${updatedGame.title} moved to $statusName!';
+      icon = _getStatusIcon(updatedGame.status);
+      color = _getStatusColor(updatedGame.status);
+    } else if (titleChanged || platformChanged) {
+      message = '${updatedGame.title} details updated!';
+      icon = Icons.edit;
+      color = Colors.blue;
+    }
+
+    // Show feedback
+    if (context.mounted) {
+      _showGameActionFeedback(
+        context: context,
+        message: message,
+        icon: icon,
+        color: color,
       );
     }
   }
@@ -105,6 +149,60 @@ class GameActionsService {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
+  }
+
+  /// Gets the display name for a game status
+  String _getStatusDisplayName(GameStatus status) {
+    switch (status) {
+      case GameStatus.playing:
+        return 'Playing';
+      case GameStatus.completed:
+        return 'Completed';
+      case GameStatus.backlog:
+        return 'Backlog';
+      case GameStatus.abandoned:
+        return 'Abandoned';
+      case GameStatus.wishlist:
+        return 'Wishlist';
+      case GameStatus.ordered:
+        return 'Ordered';
+    }
+  }
+
+  /// Gets the appropriate icon for a game status
+  IconData _getStatusIcon(GameStatus status) {
+    switch (status) {
+      case GameStatus.playing:
+        return Icons.play_circle_fill;
+      case GameStatus.completed:
+        return Icons.check_circle;
+      case GameStatus.backlog:
+        return Icons.list;
+      case GameStatus.abandoned:
+        return Icons.pause_circle_filled;
+      case GameStatus.wishlist:
+        return Icons.favorite;
+      case GameStatus.ordered:
+        return Icons.shopping_cart;
+    }
+  }
+
+  /// Gets the appropriate color for a game status
+  Color _getStatusColor(GameStatus status) {
+    switch (status) {
+      case GameStatus.playing:
+        return Colors.orange;
+      case GameStatus.completed:
+        return Colors.green;
+      case GameStatus.backlog:
+        return Colors.blue;
+      case GameStatus.abandoned:
+        return Colors.grey;
+      case GameStatus.wishlist:
+        return Colors.red;
+      case GameStatus.ordered:
+        return Colors.purple;
+    }
   }
 }
 

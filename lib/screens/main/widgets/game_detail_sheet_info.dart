@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../../models/game_models.dart';
-import '../../../styles/styles.dart';
-import '../../../shared/widgets/buttons/platform_badge.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/shared/widgets/buttons/platform_badge.dart';
 
 class GameDetailSheetInfo extends StatelessWidget {
   final GameItem game;
   final bool isPortrait;
   final bool showPlatformAndStatus;
   final bool showTitle;
+  final VoidCallback? onEditPressed;
 
   const GameDetailSheetInfo({
     super.key,
@@ -15,6 +16,7 @@ class GameDetailSheetInfo extends StatelessWidget {
     this.isPortrait = true,
     this.showPlatformAndStatus = true,
     this.showTitle = true,
+    this.onEditPressed,
   });
 
   @override
@@ -30,7 +32,14 @@ class GameDetailSheetInfo extends StatelessWidget {
   }
 
   Widget _buildTitle() {
-    return Text(game.title, style: GameDetailSheetStyles.gameTitleStyle);
+    return InkWell(
+      onTap: onEditPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+        child: Text(game.title, style: GameDetailSheetStyles.gameTitleStyle),
+      ),
+    );
   }
 
   Widget _buildPlatformAndStatus() {
@@ -44,7 +53,7 @@ class GameDetailSheetInfo extends StatelessWidget {
   Widget _buildPortraitPlatformAndStatus() {
     return Row(
       children: [
-        PlatformBadge(platform: game.platform),
+        PlatformBadge(platform: game.platform, onTap: onEditPressed),
         const SizedBox(width: 12),
         _buildCurrentStatusIcon(),
         const SizedBox(width: 8),
@@ -59,7 +68,7 @@ class GameDetailSheetInfo extends StatelessWidget {
       children: [
         Row(
           children: [
-            PlatformBadge(platform: game.platform),
+            PlatformBadge(platform: game.platform, onTap: onEditPressed),
             const SizedBox(width: 12),
             _buildCurrentStatusIcon(),
             const SizedBox(width: 8),

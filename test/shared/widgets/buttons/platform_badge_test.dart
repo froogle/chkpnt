@@ -101,5 +101,45 @@ void main() {
       expect(find.text('Xbox'), findsOneWidget);
       expect(find.byType(PlatformBadge), findsNWidgets(3));
     });
+
+    testWidgets('should call onTap callback when tapped', (
+      WidgetTester tester,
+    ) async {
+      bool tapped = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PlatformBadge(
+              platform: 'PS5',
+              onTap: () {
+                tapped = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Tap the platform badge
+      await tester.tap(find.byType(PlatformBadge));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
+
+    testWidgets('should not crash when onTap is null', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: PlatformBadge(platform: 'PS5'))),
+      );
+
+      // Tap the platform badge - should not crash
+      await tester.tap(find.byType(PlatformBadge));
+      await tester.pump();
+
+      // Should still display the platform
+      expect(find.text('PS5'), findsOneWidget);
+    });
   });
 }

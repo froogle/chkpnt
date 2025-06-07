@@ -10,6 +10,7 @@ export 'game_card_styles.dart';
 export 'game_detail_sheet_styles.dart';
 export 'layout_styles.dart';
 export 'input_styles.dart';
+export 'edit_screen_styles.dart';
 
 // Export the legacy compatibility class for backward compatibility
 export 'main_screen_styles.dart';

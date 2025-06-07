@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/game_models.dart';
-import '../../../shared/widgets/layout/collapsible_section.dart';
-import '../../../shared/widgets/layout/empty_state_widget.dart';
-import '../../../shared/widgets/cards/portrait_game_card.dart';
-import '../../../shared/widgets/cards/landscape_game_card.dart';
-import '../../../providers/game_provider.dart';
-import '../../../providers/ui_state_provider.dart';
-import '../../../styles/main_screen_styles.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/shared/widgets/layout/collapsible_section.dart';
+import 'package:chkpnt/shared/widgets/layout/empty_state_widget.dart';
+import 'package:chkpnt/shared/widgets/cards/portrait_game_card.dart';
+import 'package:chkpnt/shared/widgets/cards/landscape_game_card.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/styles/main_screen_styles.dart';
 
 class GameSection extends ConsumerWidget {
   final String title;

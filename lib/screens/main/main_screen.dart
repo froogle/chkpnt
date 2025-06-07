@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../styles/styles.dart';
+import 'package:chkpnt/styles/styles.dart';
 import 'widgets/main_screen_header.dart';
 import 'widgets/main_screen_bottom_nav.dart';
 import 'widgets/game_section.dart';
 import 'widgets/animations/game_transition_animation.dart';
 import 'widgets/animations/game_detail_sheet_animation.dart';
-import '../../models/game_models.dart';
-import '../../providers/ui_state_provider.dart';
-import '../../services/game_actions_service.dart';
-import '../../utils/ui_utils.dart';
+import '../edit/game_edit_screen.dart';
+import '../edit/widgets/edit_screen_page_route.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/services/game_actions_service.dart';
+import 'package:chkpnt/utils/ui_utils.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -159,9 +161,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   void _handleEditGame(GameItem game) {
-    // Handle game editing
-    // This will be implemented when you add game editing functionality
-    Navigator.of(context).pop(); // Close the detail sheet for now
+    Navigator.of(context).pop(); // Close the detail sheet first
+    Navigator.of(
+      context,
+    ).push(EditScreenPageRoute(child: GameEditScreen(game: game)));
   }
 
   void _handleAddGame() {

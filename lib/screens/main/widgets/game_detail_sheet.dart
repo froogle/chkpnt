@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/game_models.dart';
-import '../../../styles/styles.dart';
-import '../../../providers/game_provider.dart';
-import 'game_detail_sheet_image.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'game_detail_sheet_info.dart';
-import 'game_detail_sheet_status_section.dart';
+import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'game_detail_sheet_actions.dart';
 
 class GameDetailSheet extends ConsumerStatefulWidget {
@@ -65,7 +65,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
           children: [
             _buildPortraitLayout(),
             const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-            GameDetailSheetStatusSection(
+            GameStatusSelector(
               selectedStatus: _selectedStatus,
               onStatusChanged: _handleStatusChange,
             ),
@@ -94,7 +94,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
                   const SizedBox(
                     height: GameDetailSheetStyles.sectionSpacingLandscape,
                   ),
-                  GameDetailSheetStatusSection(
+                  GameStatusSelector(
                     selectedStatus: _selectedStatus,
                     onStatusChanged: _handleStatusChange,
                   ),
@@ -121,7 +121,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
           children: [
             SizedBox(
               width: GameDetailSheetStyles.gameImageWidthPortrait,
-              child: const GameDetailSheetImage(),
+              child: GameImage(heroTag: 'game_image_${widget.game.id}'),
             ),
             const SizedBox(width: 20),
             Expanded(
@@ -129,6 +129,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
                 game: widget.game,
                 isPortrait: true,
                 showPlatformAndStatus: false,
+                onEditPressed: widget.onEditPressed,
               ),
             ),
           ],
@@ -139,6 +140,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
           isPortrait: true,
           showPlatformAndStatus: true,
           showTitle: false,
+          onEditPressed: widget.onEditPressed,
         ),
       ],
     );
@@ -148,7 +150,10 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(width: 120, child: GameDetailSheetImage()),
+        SizedBox(
+          width: 120,
+          child: GameImage(heroTag: 'game_image_${widget.game.id}'),
+        ),
         const SizedBox(width: 24),
         Expanded(
           flex: 2,
@@ -156,6 +161,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
             game: widget.game,
             isPortrait: false,
             showPlatformAndStatus: true,
+            onEditPressed: widget.onEditPressed,
           ),
         ),
       ],
