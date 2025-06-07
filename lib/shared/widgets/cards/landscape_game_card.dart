@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/services/game_image_service.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 
 class LandscapeGameCard extends ConsumerWidget {
   final GameItem game;
@@ -60,22 +61,18 @@ class LandscapeGameCard extends ConsumerWidget {
       return _buildPlaceholder();
     }
 
-    return FutureBuilder<File?>(
-      future: ref.read(gameImageServiceProvider).getImageFile(game.imagePath!),
-      builder: (context, snapshot) {
-        // Show loading placeholder while checking if image exists
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingPlaceholder();
-        }
+    // Use the new Family provider instead of FutureBuilder
+    final imageAsync = ref.watch(gameImageProvider(game.imagePath!));
 
-        // Show actual image if it exists
-        if (snapshot.hasData && snapshot.data != null) {
-          return _buildActualImage(snapshot.data!);
+    return imageAsync.when(
+      data: (imageFile) {
+        if (imageFile != null) {
+          return _buildActualImage(imageFile);
         }
-
-        // Fall back to placeholder if image doesn't exist
         return _buildPlaceholder();
       },
+      loading: () => _buildLoadingPlaceholder(),
+      error: (error, stackTrace) => _buildPlaceholder(),
     );
   }
 

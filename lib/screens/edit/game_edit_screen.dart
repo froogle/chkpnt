@@ -6,6 +6,7 @@ import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'widgets/game_edit_info_section.dart';
 import 'widgets/game_edit_actions.dart';
 import 'widgets/animations/animated_edit_form.dart';
@@ -32,43 +33,36 @@ class GameEditScreen extends ConsumerStatefulWidget {
 }
 
 class _GameEditScreenState extends ConsumerState<GameEditScreen> {
-  late GameStatus _selectedStatus;
   late TextEditingController _titleController;
-  late String _selectedPlatform;
-  late String? _selectedImagePath;
-  bool _hasUnsavedChanges = false;
+  late GameEditContext _editContext;
 
   @override
   void initState() {
     super.initState();
-    if (widget.isAddMode) {
-      // Default values for adding new games
-      _selectedStatus = GameStatus.backlog;
-      _titleController = TextEditingController(text: 'New Game');
-      _selectedPlatform = '';
-      _selectedImagePath = null;
-    } else {
-      // Values from existing game for editing
-      _selectedStatus = widget.game!.status;
-      _titleController = TextEditingController(text: widget.game!.title);
-      _selectedPlatform = widget.game!.platform;
-      _selectedImagePath = widget.game!.imagePath;
-    }
 
-    _titleController.addListener(_onTextChanged);
+    // Create the edit context that will be used with the Family provider
+    _editContext = GameEditContext(
+      isAddMode: widget.isAddMode,
+      game: widget.game,
+    );
+
+    // Set up title controller with initial value from provider
+    final initialState = ref.read(gameEditStateProvider(_editContext));
+    _titleController = TextEditingController(text: initialState.title);
+    _titleController.addListener(_onTitleChanged);
   }
 
   @override
   void dispose() {
-    _titleController.removeListener(_onTextChanged);
+    _titleController.removeListener(_onTitleChanged);
     _titleController.dispose();
     super.dispose();
   }
 
-  void _onTextChanged() {
-    setState(() {
-      _hasUnsavedChanges = _hasChanges();
-    });
+  void _onTitleChanged() {
+    ref
+        .read(gameEditStateProvider(_editContext).notifier)
+        .updateTitle(_titleController.text);
   }
 
   @override
@@ -123,16 +117,9 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           children: [
             _buildPortraitLayout(),
             const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-            GameStatusSelector(
-              selectedStatus: _selectedStatus,
-              onStatusChanged: _handleStatusChange,
-            ),
+            _buildStatusSelector(),
             const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-            GameEditActions(
-              onSavePressed: _saveChanges,
-              hasChanges: _hasChanges(),
-              buttonText: widget.isAddMode ? 'Add Game' : 'Save Changes',
-            ),
+            _buildActionButtons(),
           ],
         ),
       ),
@@ -152,26 +139,21 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
                   const SizedBox(
                     height: GameDetailSheetStyles.sectionSpacingLandscape,
                   ),
-                  GameStatusSelector(
-                    selectedStatus: _selectedStatus,
-                    onStatusChanged: _handleStatusChange,
-                  ),
+                  _buildStatusSelector(),
                 ],
               ),
             ),
           ),
           const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
-          GameEditActions(
-            onSavePressed: _saveChanges,
-            hasChanges: _hasChanges(),
-            buttonText: widget.isAddMode ? 'Add Game' : 'Save Changes',
-          ),
+          _buildActionButtons(),
         ],
       ),
     );
   }
 
   Widget _buildPortraitLayout() {
+    final editState = ref.watch(gameEditStateProvider(_editContext));
+
     return Column(
       children: [
         Row(
@@ -181,16 +163,13 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
               width: GameDetailSheetStyles.gameImageWidthPortrait,
               child: GameImage(
                 heroTag: 'game_image_${widget.game?.id ?? ''}',
-                imagePath: _selectedImagePath,
+                imagePath: editState.imagePath,
                 onTap: _handleImageTap,
               ),
             ),
             const SizedBox(width: 20),
             Expanded(
-              child: GameEditInfoSection(
-                titleController: _titleController,
-                selectedPlatform: _selectedPlatform,
-                onPlatformChanged: _handlePlatformChange,
+              child: _buildInfoSection(
                 isPortrait: true,
                 showPlatformAndStatus: false,
               ),
@@ -198,10 +177,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        GameEditInfoSection(
-          titleController: _titleController,
-          selectedPlatform: _selectedPlatform,
-          onPlatformChanged: _handlePlatformChange,
+        _buildInfoSection(
           isPortrait: true,
           showPlatformAndStatus: true,
           showTitle: false,
@@ -211,6 +187,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildLandscapeLayout() {
+    final editState = ref.watch(gameEditStateProvider(_editContext));
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -218,17 +196,14 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           width: 120,
           child: GameImage(
             heroTag: 'game_image_${widget.game?.id ?? ''}',
-            imagePath: _selectedImagePath,
+            imagePath: editState.imagePath,
             onTap: _handleImageTap,
           ),
         ),
         const SizedBox(width: 24),
         Expanded(
           flex: 2,
-          child: GameEditInfoSection(
-            titleController: _titleController,
-            selectedPlatform: _selectedPlatform,
-            onPlatformChanged: _handlePlatformChange,
+          child: _buildInfoSection(
             isPortrait: false,
             showPlatformAndStatus: true,
           ),
@@ -237,11 +212,50 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     );
   }
 
+  Widget _buildInfoSection({
+    required bool isPortrait,
+    required bool showPlatformAndStatus,
+    bool showTitle = true,
+  }) {
+    final editState = ref.watch(gameEditStateProvider(_editContext));
+
+    return GameEditInfoSection(
+      titleController: _titleController,
+      selectedPlatform: editState.platform,
+      onPlatformChanged: _handlePlatformChange,
+      isPortrait: isPortrait,
+      showPlatformAndStatus: showPlatformAndStatus,
+      showTitle: showTitle,
+    );
+  }
+
+  Widget _buildStatusSelector() {
+    final editState = ref.watch(gameEditStateProvider(_editContext));
+
+    return GameStatusSelector(
+      selectedStatus: editState.status,
+      onStatusChanged: _handleStatusChange,
+    );
+  }
+
+  Widget _buildActionButtons() {
+    final editState = ref.watch(gameEditStateProvider(_editContext));
+
+    return GameEditActions(
+      onSavePressed: _saveChanges,
+      hasChanges: editState.hasUnsavedChanges,
+      buttonText: widget.isAddMode ? 'Add Game' : 'Save Changes',
+    );
+  }
+
   // Business logic methods
+
   Future<void> _handleImageTap() async {
+    final editState = ref.read(gameEditStateProvider(_editContext));
+
     final result = await ImageSelectionBottomSheet.show(
       context: context,
-      hasExistingImage: _selectedImagePath != null,
+      hasExistingImage: editState.imagePath != null,
     );
 
     if (result != null) {
@@ -258,52 +272,32 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     final imagePath = await gameImageService.selectAndSaveImage(source);
 
     if (imagePath != null) {
-      setState(() {
-        _selectedImagePath = imagePath;
-        _hasUnsavedChanges = _hasChanges();
-      });
+      ref
+          .read(gameEditStateProvider(_editContext).notifier)
+          .updateImagePath(imagePath);
     }
   }
 
   void _removeImage() {
-    setState(() {
-      _selectedImagePath = null;
-      _hasUnsavedChanges = _hasChanges();
-    });
-  }
-
-  bool _hasChanges() {
-    if (widget.isAddMode) {
-      // For add mode, check if any field has been changed from defaults
-      return _titleController.text != 'New Game' ||
-          _selectedPlatform != '' ||
-          _selectedStatus != GameStatus.backlog ||
-          _selectedImagePath != null;
-    } else {
-      // For edit mode, check if any field has been changed from original
-      return _titleController.text != widget.game!.title ||
-          _selectedPlatform != widget.game!.platform ||
-          _selectedStatus != widget.game!.status ||
-          _selectedImagePath != widget.game!.imagePath;
-    }
+    ref
+        .read(gameEditStateProvider(_editContext).notifier)
+        .updateImagePath(null);
   }
 
   void _handleStatusChange(GameStatus status) {
-    setState(() {
-      _selectedStatus = status;
-      _hasUnsavedChanges = _hasChanges();
-    });
+    ref.read(gameEditStateProvider(_editContext).notifier).updateStatus(status);
   }
 
   void _handlePlatformChange(String platform) {
-    setState(() {
-      _selectedPlatform = platform;
-      _hasUnsavedChanges = _hasChanges();
-    });
+    ref
+        .read(gameEditStateProvider(_editContext).notifier)
+        .updatePlatform(platform);
   }
 
   void _handleBackPressed() {
-    if (_hasUnsavedChanges) {
+    final editState = ref.read(gameEditStateProvider(_editContext));
+
+    if (editState.hasUnsavedChanges) {
       _showUnsavedChangesDialog();
     } else {
       Navigator.of(context).pop();
@@ -341,7 +335,9 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Future<void> _saveChanges() async {
-    if (!_hasChanges()) {
+    final editState = ref.read(gameEditStateProvider(_editContext));
+
+    if (!editState.hasUnsavedChanges) {
       Navigator.of(context).pop();
       return;
     }
@@ -352,20 +348,20 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       // Adding a new game
       final newGame = GameItem(
         id: GameId.generate(), // This will be replaced in the service
-        title: _titleController.text.trim(),
-        platform: _selectedPlatform,
-        status: _selectedStatus,
-        imagePath: _selectedImagePath,
+        title: editState.title.trim(),
+        platform: editState.platform,
+        status: editState.status,
+        imagePath: editState.imagePath,
       );
 
       await gameActionsService.addGame(newGame, context);
     } else {
       // Editing existing game
       final updatedGame = widget.game!.copyWith(
-        title: _titleController.text.trim(),
-        platform: _selectedPlatform,
-        status: _selectedStatus,
-        imagePath: _selectedImagePath,
+        title: editState.title.trim(),
+        platform: editState.platform,
+        status: editState.status,
+        imagePath: editState.imagePath,
       );
 
       await gameActionsService.updateGame(widget.game!, updatedGame, context);

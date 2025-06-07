@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/screens/edit/game_edit_screen.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 
 void main() {
   group('GameEditScreen', () {
@@ -11,10 +11,11 @@ void main() {
 
     setUp(() {
       testGame = GameItem(
-        id: GameId.generate(),
+        id: const GameId('test-game'),
         title: 'Test Game',
         platform: 'PS5',
         status: GameStatus.playing,
+        imagePath: null,
       );
     });
 
@@ -25,6 +26,9 @@ void main() {
             child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
           ),
         );
+
+        // No more async timing issues - Family providers are immediately available
+        await tester.pump();
 
         expect(find.byType(GameEditScreen), findsOneWidget);
         expect(find.text('Edit Game'), findsOneWidget);
@@ -37,6 +41,9 @@ void main() {
           ),
         );
 
+        // No more async timing issues
+        await tester.pump();
+
         expect(find.text('Test Game'), findsOneWidget);
       });
 
@@ -46,6 +53,9 @@ void main() {
             child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
           ),
         );
+
+        // No more async timing issues
+        await tester.pump();
 
         expect(find.text('Save Changes'), findsOneWidget);
       });
@@ -57,6 +67,9 @@ void main() {
           ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
         );
 
+        // No more async timing issues
+        await tester.pump();
+
         expect(find.byType(GameEditScreen), findsOneWidget);
         expect(find.text('Add Game'), findsAtLeastNWidgets(1));
       });
@@ -66,6 +79,9 @@ void main() {
           ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
         );
 
+        // No more async timing issues
+        await tester.pump();
+
         expect(find.text('New Game'), findsOneWidget);
       });
 
@@ -73,6 +89,9 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
         );
+
+        // No more async timing issues
+        await tester.pump();
 
         expect(
           find.descendant(
@@ -91,6 +110,9 @@ void main() {
         ),
       );
 
+      // No more async timing issues
+      await tester.pump();
+
       expect(find.text('Test Game'), findsOneWidget);
       expect(find.text('PS5'), findsOneWidget);
     });
@@ -102,16 +124,16 @@ void main() {
         ),
       );
 
-      // Wait for animations and async operations to complete
-      await tester.pumpAndSettle();
+      // Simple pump - no more timing issues
+      await tester.pump();
 
       // Find the title text field (using TextField instead of TextFormField)
       final titleField = find.byType(TextField).first;
       await tester.tap(titleField);
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       await tester.enterText(titleField, 'Updated Game Title');
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       expect(find.text('Updated Game Title'), findsOneWidget);
     });
@@ -123,8 +145,8 @@ void main() {
         ),
       );
 
-      // Wait for animations and async operations to complete
-      await tester.pumpAndSettle();
+      // Simple pump - no more async timing issues
+      await tester.pump();
 
       // Find save button by text instead of type to be more specific
       expect(find.text('Save Changes'), findsOneWidget);
@@ -132,9 +154,9 @@ void main() {
       // Make a change to enable the save button
       final titleField = find.byType(TextField).first;
       await tester.tap(titleField);
-      await tester.pumpAndSettle();
+      await tester.pump();
       await tester.enterText(titleField, 'Modified Title');
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // The save button should still be present
       expect(find.text('Save Changes'), findsOneWidget);
@@ -147,8 +169,8 @@ void main() {
         ),
       );
 
-      // Wait for animations and async operations to complete
-      await tester.pumpAndSettle();
+      // Simple pump - no more async timing issues
+      await tester.pump();
 
       expect(find.text('PS5'), findsOneWidget);
     });
@@ -163,8 +185,8 @@ void main() {
         ),
       );
 
-      // Wait for animations and async operations to complete
-      await tester.pumpAndSettle();
+      // Simple pump - no more async timing issues
+      await tester.pump();
 
       expect(find.byType(GameEditScreen), findsOneWidget);
       expect(find.text('Edit Game'), findsOneWidget);
@@ -180,8 +202,8 @@ void main() {
         ),
       );
 
-      // Wait for animations and async operations to complete
-      await tester.pumpAndSettle();
+      // Simple pump - no more async timing issues
+      await tester.pump();
 
       expect(find.byType(GameEditScreen), findsOneWidget);
       expect(find.text('Edit Game'), findsOneWidget);
@@ -195,11 +217,71 @@ void main() {
           ),
         );
 
-        // Wait for animations and async operations to complete
-        await tester.pumpAndSettle();
+        // Simple pump - no more async timing issues
+        await tester.pump();
 
         // The status selector should show the current status
         expect(find.byType(GameEditScreen), findsOneWidget);
+      });
+    });
+
+    group('Provider State Management', () {
+      testWidgets('properly initializes provider state for edit mode', (
+        tester,
+      ) async {
+        final container = ProviderContainer();
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
+          ),
+        );
+
+        await tester.pump();
+
+        // Create the expected context for this edit session
+        final editContext = GameEditContext(isAddMode: false, game: testGame);
+
+        // Verify the provider state is correctly initialized
+        final providerState = container.read(
+          gameEditStateProvider(editContext),
+        );
+        expect(providerState.title, equals('Test Game'));
+        expect(providerState.platform, equals('PS5'));
+        expect(providerState.status, equals(GameStatus.playing));
+        expect(providerState.hasUnsavedChanges, isFalse);
+
+        container.dispose();
+      });
+
+      testWidgets('properly initializes provider state for add mode', (
+        tester,
+      ) async {
+        final container = ProviderContainer();
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(home: GameEditScreen.add()),
+          ),
+        );
+
+        await tester.pump();
+
+        // Create the expected context for this add session
+        final editContext = GameEditContext(isAddMode: true, game: null);
+
+        // Verify the provider state is correctly initialized
+        final providerState = container.read(
+          gameEditStateProvider(editContext),
+        );
+        expect(providerState.title, equals('New Game'));
+        expect(providerState.platform, equals(''));
+        expect(providerState.status, equals(GameStatus.backlog));
+        expect(providerState.hasUnsavedChanges, isFalse);
+
+        container.dispose();
       });
     });
   });
