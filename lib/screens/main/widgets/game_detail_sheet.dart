@@ -121,7 +121,10 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
           children: [
             SizedBox(
               width: GameDetailSheetStyles.gameImageWidthPortrait,
-              child: GameImage(heroTag: 'game_image_${widget.game.id}'),
+              child: GestureDetector(
+                onTap: widget.onEditPressed,
+                child: GameImage(heroTag: 'game_image_${widget.game.id}'),
+              ),
             ),
             const SizedBox(width: 20),
             Expanded(
@@ -152,7 +155,10 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
       children: [
         SizedBox(
           width: 120,
-          child: GameImage(heroTag: 'game_image_${widget.game.id}'),
+          child: GestureDetector(
+            onTap: widget.onEditPressed,
+            child: GameImage(heroTag: 'game_image_${widget.game.id}'),
+          ),
         ),
         const SizedBox(width: 24),
         Expanded(
