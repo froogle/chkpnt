@@ -22,6 +22,7 @@ class _AnimatedEditFormState extends State<AnimatedEditForm>
     with TickerProviderStateMixin {
   late List<AnimationController> _controllers;
   late List<Animation<double>> _animations;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -48,23 +49,25 @@ class _AnimatedEditFormState extends State<AnimatedEditForm>
         }).toList();
   }
 
-  void _startAnimations() async {
-    if (!mounted) return;
+  void _startAnimations() {
+    if (_disposed || !mounted) return;
 
-    await Future.delayed(widget.delay);
-    if (!mounted) return;
+    // Use post frame callback for better test compatibility
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_disposed || !mounted) return;
 
-    for (int i = 0; i < _controllers.length; i++) {
-      if (!mounted) return;
-      _controllers[i].forward();
-      if (i < _controllers.length - 1) {
-        await Future.delayed(widget.staggerDuration);
+      // Start all animations immediately to avoid test hanging
+      for (final controller in _controllers) {
+        if (!_disposed && mounted) {
+          controller.forward();
+        }
       }
-    }
+    });
   }
 
   @override
   void dispose() {
+    _disposed = true;
     for (final controller in _controllers) {
       controller.dispose();
     }

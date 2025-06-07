@@ -134,6 +134,9 @@ void main() {
     testWidgets('remove option is tappable when visible', (tester) async {
       // Set a larger test size to avoid overflow
       await tester.binding.setSurfaceSize(const Size(800, 600));
+      addTearDown(() async {
+        await tester.binding.setSurfaceSize(null);
+      });
 
       await tester.pumpWidget(
         MaterialApp(
@@ -144,6 +147,7 @@ void main() {
                     onPressed:
                         () => showModalBottomSheet<dynamic>(
                           context: context,
+                          isScrollControlled: true,
                           builder:
                               (_) => const ImageSelectionBottomSheet(
                                 hasExistingImage: true,
@@ -166,11 +170,6 @@ void main() {
 
       // Bottom sheet should be closed
       expect(find.text('Remove Image'), findsNothing);
-
-      // Reset surface size
-      addTearDown(() async {
-        await tester.binding.setSurfaceSize(null);
-      });
     });
 
     testWidgets('has proper styling and layout', (tester) async {
