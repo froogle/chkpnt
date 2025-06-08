@@ -11,36 +11,48 @@ final List<GameItem> _sampleGames = [
     title: 'The Legend of Zelda: Breath of the Wild',
     platform: 'Switch',
     status: GameStatus.playing,
+    lastModified: DateTime.now(),
+    lastStatusChange: DateTime.now(),
   ),
   GameItem(
     id: GameId.generate(),
     title: 'God of War',
     platform: 'PS5',
     status: GameStatus.playing,
+    lastModified: DateTime.now(),
+    lastStatusChange: DateTime.now(),
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Cyberpunk 2077',
     platform: 'PC',
     status: GameStatus.completed,
+    lastModified: DateTime.now(),
+    lastStatusChange: DateTime.now(),
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Red Dead Redemption 2',
     platform: 'Xbox',
     status: GameStatus.completed,
+    lastModified: DateTime.now(),
+    lastStatusChange: DateTime.now(),
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Elden Ring',
     platform: 'Steam Deck',
     status: GameStatus.backlog,
+    lastModified: DateTime.now(),
+    lastStatusChange: DateTime.now(),
   ),
   GameItem(
     id: GameId.generate(),
     title: 'Mass Effect Legendary Edition',
     platform: 'PC',
     status: GameStatus.abandoned,
+    lastModified: DateTime.now(),
+    lastStatusChange: DateTime.now(),
   ),
 ];
 
@@ -61,7 +73,16 @@ class GameList extends _$GameList {
   void updateGame(GameItem updatedGame) {
     state = [
       for (final game in state)
-        if (game.id == updatedGame.id) updatedGame else game,
+        if (game.id == updatedGame.id)
+          updatedGame.copyWith(
+            lastModified: DateTime.now(),
+            lastStatusChange:
+                game.status != updatedGame.status
+                    ? DateTime.now()
+                    : game.lastStatusChange,
+          )
+        else
+          game,
     ];
   }
 
@@ -75,7 +96,11 @@ class GameList extends _$GameList {
     state = [
       for (final game in state)
         if (game.id == gameId)
-          game.copyWith(status: GameStatus.playing)
+          game.copyWith(
+            status: GameStatus.playing,
+            lastStatusChange: DateTime.now(),
+            lastModified: DateTime.now(),
+          )
         else
           game,
     ];
@@ -86,7 +111,11 @@ class GameList extends _$GameList {
     state = [
       for (final game in state)
         if (game.id == gameId)
-          game.copyWith(status: GameStatus.completed)
+          game.copyWith(
+            status: GameStatus.completed,
+            lastStatusChange: DateTime.now(),
+            lastModified: DateTime.now(),
+          )
         else
           game,
     ];

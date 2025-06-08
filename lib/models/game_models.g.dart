@@ -18,7 +18,10 @@ _$GameItemImpl _$$GameItemImplFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       platform: json['platform'] as String,
       status: $enumDecode(_$GameStatusEnumMap, json['status']),
+      lastModified: DateTime.parse(json['lastModified'] as String),
+      lastStatusChange: DateTime.parse(json['lastStatusChange'] as String),
       imagePath: json['imagePath'] as String?,
+      remoteImageUrl: json['remoteImageUrl'] as String?,
     );
 
 Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
@@ -27,7 +30,10 @@ Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
       'title': instance.title,
       'platform': instance.platform,
       'status': _$GameStatusEnumMap[instance.status]!,
+      'lastModified': instance.lastModified.toIso8601String(),
+      'lastStatusChange': instance.lastStatusChange.toIso8601String(),
       'imagePath': instance.imagePath,
+      'remoteImageUrl': instance.remoteImageUrl,
     };
 
 const _$GameStatusEnumMap = {

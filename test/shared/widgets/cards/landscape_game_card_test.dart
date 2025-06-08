@@ -41,6 +41,8 @@ void main() {
         title: 'Test Game',
         platform: 'Test Platform',
         status: GameStatus.backlog,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
       );
     });
 

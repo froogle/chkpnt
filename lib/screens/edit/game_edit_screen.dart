@@ -352,6 +352,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         platform: editState.platform,
         status: editState.status,
         imagePath: editState.imagePath,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
       );
 
       await gameActionsService.addGame(newGame, context);

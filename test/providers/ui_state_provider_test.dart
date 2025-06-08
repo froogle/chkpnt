@@ -93,6 +93,8 @@ void main() {
             title: 'Test Game 1',
             platform: 'PS5',
             status: GameStatus.playing,
+            lastModified: DateTime.now(),
+            lastStatusChange: DateTime.now(),
           ),
         ];
 
@@ -103,6 +105,8 @@ void main() {
             title: 'Test Game 2',
             platform: 'Xbox',
             status: GameStatus.completed,
+            lastModified: DateTime.now(),
+            lastStatusChange: DateTime.now(),
           ),
         ];
         final abandonedGames = <GameItem>[];
@@ -147,6 +151,8 @@ void main() {
             title: 'Test Game',
             platform: 'PS5',
             status: GameStatus.playing,
+            lastModified: DateTime.now(),
+            lastStatusChange: DateTime.now(),
           ),
         ];
 
@@ -346,6 +352,8 @@ void main() {
         title: 'Existing Game',
         platform: 'PS5',
         status: GameStatus.playing,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
         imagePath: '/path/to/image.jpg',
       );
 
@@ -430,6 +438,8 @@ void main() {
         title: 'Original Game',
         platform: 'PS5',
         status: GameStatus.playing,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
       );
 
       final context = GameEditContext(isAddMode: false, game: testGame);

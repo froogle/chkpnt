@@ -264,6 +264,8 @@ void main() {
         title: 'Test Game',
         platform: 'PC',
         status: GameStatus.playing,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
       );
       container.read(gameListProvider.notifier).addGame(testGame);
 
