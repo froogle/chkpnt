@@ -12,11 +12,10 @@ void main() {
     setUp(() {
       container = ProviderContainer();
       testGame = GameItem(
-        id: GameId('test-1'),
+        id: GameId.generate(),
         title: 'Test Game',
-        platform: 'PC',
+        platform: 'Test Platform',
         status: GameStatus.playing,
-        progress: 0.0,
       );
     });
 
@@ -52,7 +51,7 @@ void main() {
 
       // Verify that the game details are shown in the modal
       expect(find.text('Test Game'), findsOneWidget);
-      expect(find.text('PC'), findsOneWidget);
+      expect(find.text('Test Platform'), findsOneWidget);
     });
 
     testWidgets('should show draggable scrollable sheet in modal', (
@@ -288,7 +287,7 @@ void main() {
 
       // Verify the extension method works
       expect(find.text('Test Game'), findsOneWidget);
-      expect(find.text('PC'), findsOneWidget);
+      expect(find.text('Test Platform'), findsOneWidget);
     });
 
     testWidgets('should show backdrop filter', (WidgetTester tester) async {

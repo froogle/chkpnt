@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../styles/styles.dart';
-import '../../../providers/ui_state_provider.dart';
+import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 
 class CompactSearchBar extends ConsumerWidget {
   final String? hintText;

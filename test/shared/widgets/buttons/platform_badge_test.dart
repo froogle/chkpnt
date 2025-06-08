@@ -19,25 +19,63 @@ void main() {
       expect(find.text(platformName), findsOneWidget);
     });
 
-    testWidgets('should render with proper container styling', (
+    testWidgets('should render with proper ink styling', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: PlatformBadge(platform: 'PS5'))),
       );
 
-      // Find the container with styling
-      final container = tester.widget<Container>(
+      // Find the ink widget with styling
+      final ink = tester.widget<Ink>(
         find.descendant(
           of: find.byType(PlatformBadge),
-          matching: find.byType(Container),
+          matching: find.byType(Ink),
         ),
       );
 
       // Verify that decoration is applied
-      expect(container.decoration, isNotNull);
-      expect(container.padding, isNotNull);
+      expect(ink.decoration, isNotNull);
+      expect(ink.padding, isNotNull);
     });
+
+    testWidgets(
+      'should have proper Material and InkWell structure for visual feedback',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(body: PlatformBadge(platform: 'PS5')),
+          ),
+        );
+
+        // Verify Material widget is present for ink effects
+        expect(
+          find.descendant(
+            of: find.byType(PlatformBadge),
+            matching: find.byType(Material),
+          ),
+          findsOneWidget,
+        );
+
+        // Verify InkWell is present for tap interactions
+        expect(
+          find.descendant(
+            of: find.byType(PlatformBadge),
+            matching: find.byType(InkWell),
+          ),
+          findsOneWidget,
+        );
+
+        // Verify Ink widget is present for proper decoration layering
+        expect(
+          find.descendant(
+            of: find.byType(PlatformBadge),
+            matching: find.byType(Ink),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('should handle various platform names', (
       WidgetTester tester,
@@ -100,6 +138,46 @@ void main() {
       expect(find.text('PS5'), findsOneWidget);
       expect(find.text('Xbox'), findsOneWidget);
       expect(find.byType(PlatformBadge), findsNWidgets(3));
+    });
+
+    testWidgets('should call onTap callback when tapped', (
+      WidgetTester tester,
+    ) async {
+      bool tapped = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PlatformBadge(
+              platform: 'PS5',
+              onTap: () {
+                tapped = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Tap the platform badge
+      await tester.tap(find.byType(PlatformBadge));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
+
+    testWidgets('should not crash when onTap is null', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: PlatformBadge(platform: 'PS5'))),
+      );
+
+      // Tap the platform badge - should not crash
+      await tester.tap(find.byType(PlatformBadge));
+      await tester.pump();
+
+      // Should still display the platform
+      expect(find.text('PS5'), findsOneWidget);
     });
   });
 }

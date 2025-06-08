@@ -172,7 +172,7 @@ mixin _$GameItem {
   String get title => throw _privateConstructorUsedError;
   String get platform => throw _privateConstructorUsedError;
   GameStatus get status => throw _privateConstructorUsedError;
-  double get progress => throw _privateConstructorUsedError;
+  String? get imagePath => throw _privateConstructorUsedError;
 
   /// Serializes this GameItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -194,7 +194,7 @@ abstract class $GameItemCopyWith<$Res> {
     String title,
     String platform,
     GameStatus status,
-    double progress,
+    String? imagePath,
   });
 
   $GameIdCopyWith<$Res> get id;
@@ -219,7 +219,7 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
     Object? title = null,
     Object? platform = null,
     Object? status = null,
-    Object? progress = null,
+    Object? imagePath = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -243,11 +243,11 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
                     ? _value.status
                     : status // ignore: cast_nullable_to_non_nullable
                         as GameStatus,
-            progress:
-                null == progress
-                    ? _value.progress
-                    : progress // ignore: cast_nullable_to_non_nullable
-                        as double,
+            imagePath:
+                freezed == imagePath
+                    ? _value.imagePath
+                    : imagePath // ignore: cast_nullable_to_non_nullable
+                        as String?,
           )
           as $Val,
     );
@@ -278,7 +278,7 @@ abstract class _$$GameItemImplCopyWith<$Res>
     String title,
     String platform,
     GameStatus status,
-    double progress,
+    String? imagePath,
   });
 
   @override
@@ -303,7 +303,7 @@ class __$$GameItemImplCopyWithImpl<$Res>
     Object? title = null,
     Object? platform = null,
     Object? status = null,
-    Object? progress = null,
+    Object? imagePath = freezed,
   }) {
     return _then(
       _$GameItemImpl(
@@ -327,11 +327,11 @@ class __$$GameItemImplCopyWithImpl<$Res>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                     as GameStatus,
-        progress:
-            null == progress
-                ? _value.progress
-                : progress // ignore: cast_nullable_to_non_nullable
-                    as double,
+        imagePath:
+            freezed == imagePath
+                ? _value.imagePath
+                : imagePath // ignore: cast_nullable_to_non_nullable
+                    as String?,
       ),
     );
   }
@@ -345,7 +345,7 @@ class _$GameItemImpl implements _GameItem {
     required this.title,
     required this.platform,
     required this.status,
-    required this.progress,
+    this.imagePath,
   });
 
   factory _$GameItemImpl.fromJson(Map<String, dynamic> json) =>
@@ -360,11 +360,11 @@ class _$GameItemImpl implements _GameItem {
   @override
   final GameStatus status;
   @override
-  final double progress;
+  final String? imagePath;
 
   @override
   String toString() {
-    return 'GameItem(id: $id, title: $title, platform: $platform, status: $status, progress: $progress)';
+    return 'GameItem(id: $id, title: $title, platform: $platform, status: $status, imagePath: $imagePath)';
   }
 
   @override
@@ -377,14 +377,14 @@ class _$GameItemImpl implements _GameItem {
             (identical(other.platform, platform) ||
                 other.platform == platform) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.progress, progress) ||
-                other.progress == progress));
+            (identical(other.imagePath, imagePath) ||
+                other.imagePath == imagePath));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, title, platform, status, progress);
+      Object.hash(runtimeType, id, title, platform, status, imagePath);
 
   /// Create a copy of GameItem
   /// with the given fields replaced by the non-null parameter values.
@@ -406,7 +406,7 @@ abstract class _GameItem implements GameItem {
     required final String title,
     required final String platform,
     required final GameStatus status,
-    required final double progress,
+    final String? imagePath,
   }) = _$GameItemImpl;
 
   factory _GameItem.fromJson(Map<String, dynamic> json) =
@@ -421,7 +421,7 @@ abstract class _GameItem implements GameItem {
   @override
   GameStatus get status;
   @override
-  double get progress;
+  String? get imagePath;
 
   /// Create a copy of GameItem
   /// with the given fields replaced by the non-null parameter values.

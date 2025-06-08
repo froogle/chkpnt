@@ -18,7 +18,7 @@ _$GameItemImpl _$$GameItemImplFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       platform: json['platform'] as String,
       status: $enumDecode(_$GameStatusEnumMap, json['status']),
-      progress: (json['progress'] as num).toDouble(),
+      imagePath: json['imagePath'] as String?,
     );
 
 Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
@@ -27,7 +27,7 @@ Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
       'title': instance.title,
       'platform': instance.platform,
       'status': _$GameStatusEnumMap[instance.status]!,
-      'progress': instance.progress,
+      'imagePath': instance.imagePath,
     };
 
 const _$GameStatusEnumMap = {

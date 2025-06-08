@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../models/game_models.dart';
-import '../../../styles/styles.dart';
-import '../../../shared/widgets/buttons/status_button.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/styles/styles.dart';
+import '../buttons/status_button.dart';
 
-class GameDetailSheetStatusSection extends StatelessWidget {
+class GameStatusSelector extends StatelessWidget {
   final GameStatus selectedStatus;
   final ValueChanged<GameStatus> onStatusChanged;
 
-  const GameDetailSheetStatusSection({
+  const GameStatusSelector({
     super.key,
     required this.selectedStatus,
     required this.onStatusChanged,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../styles/main_screen_styles.dart';
+import 'package:chkpnt/styles/main_screen_styles.dart';
 
 class MainScreenBottomNav extends StatelessWidget {
   final Function(int)? onNavItemPressed;

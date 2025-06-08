@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../models/game_models.dart';
-import '../../../../shared/widgets/cards/portrait_game_card.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/shared/widgets/cards/portrait_game_card.dart';
 
 class GameTransitionAnimation extends StatefulWidget {
   final GameItem game;

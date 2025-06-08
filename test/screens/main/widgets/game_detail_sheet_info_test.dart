@@ -8,12 +8,11 @@ void main() {
     late GameItem testGame;
 
     setUp(() {
-      testGame = const GameItem(
-        id: GameId('test-1'),
-        title: 'The Legend of Zelda: Breath of the Wild',
-        platform: 'Nintendo Switch',
+      testGame = GameItem(
+        id: GameId.generate(),
+        title: 'Test Game',
+        platform: 'Test Platform',
         status: GameStatus.playing,
-        progress: 50.0,
       );
     });
 
@@ -25,10 +24,7 @@ void main() {
       );
 
       // Check that the game title is displayed
-      expect(
-        find.text('The Legend of Zelda: Breath of the Wild'),
-        findsOneWidget,
-      );
+      expect(find.text('Test Game'), findsOneWidget);
     });
 
     testWidgets('should render platform badge', (WidgetTester tester) async {
@@ -37,7 +33,7 @@ void main() {
       );
 
       // Check that platform information is displayed via PlatformBadge
-      expect(find.text('Nintendo Switch'), findsOneWidget);
+      expect(find.text('Test Platform'), findsOneWidget);
     });
 
     testWidgets('should display current status with correct icon and text', (
@@ -234,6 +230,94 @@ void main() {
 
         expect(find.text('Current Status: $expectedText'), findsOneWidget);
       }
+    });
+
+    group('Interactive functionality tests', () {
+      testWidgets('should call onEditPressed when title is tapped', (
+        WidgetTester tester,
+      ) async {
+        bool editPressed = false;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: GameDetailSheetInfo(
+                game: testGame,
+                onEditPressed: () {
+                  editPressed = true;
+                },
+              ),
+            ),
+          ),
+        );
+
+        // Tap on the title
+        await tester.tap(find.text(testGame.title));
+        await tester.pump();
+
+        expect(editPressed, isTrue);
+      });
+
+      testWidgets('should call onEditPressed when platform is tapped', (
+        WidgetTester tester,
+      ) async {
+        bool editPressed = false;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: GameDetailSheetInfo(
+                game: testGame,
+                onEditPressed: () {
+                  editPressed = true;
+                },
+              ),
+            ),
+          ),
+        );
+
+        // Tap on the platform badge
+        await tester.tap(find.text(testGame.platform));
+        await tester.pump();
+
+        expect(editPressed, isTrue);
+      });
+
+      testWidgets(
+        'should not crash when onEditPressed is null and title is tapped',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+            ),
+          );
+
+          // Tap on the title - should not crash
+          await tester.tap(find.text(testGame.title));
+          await tester.pump();
+
+          // Should still display the title
+          expect(find.text(testGame.title), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'should not crash when onEditPressed is null and platform is tapped',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+            ),
+          );
+
+          // Tap on the platform - should not crash
+          await tester.tap(find.text(testGame.platform));
+          await tester.pump();
+
+          // Should still display the platform
+          expect(find.text(testGame.platform), findsOneWidget);
+        },
+      );
     });
   });
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/game_models.dart';
-import '../../../styles/styles.dart';
-import '../../../providers/game_provider.dart';
-import 'game_detail_sheet_image.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'game_detail_sheet_info.dart';
-import 'game_detail_sheet_status_section.dart';
+import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'game_detail_sheet_actions.dart';
+import 'package:chkpnt/services/game_actions_service.dart';
 
 class GameDetailSheet extends ConsumerStatefulWidget {
   final GameItem game;
@@ -48,36 +48,28 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
 
   Widget _buildResponsiveContent(Orientation orientation) {
     final isLandscape = orientation == Orientation.landscape;
-
-    if (isLandscape) {
-      return _buildLandscapeContent();
-    } else {
-      return _buildPortraitContent();
-    }
+    return isLandscape ? _buildLandscapeContent() : _buildPortraitContent();
   }
 
   Widget _buildPortraitContent() {
     return SingleChildScrollView(
       child: Padding(
         padding: GameDetailSheetStyles.contentPadding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildPortraitLayout(),
-            const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-            GameDetailSheetStatusSection(
-              selectedStatus: _selectedStatus,
-              onStatusChanged: _handleStatusChange,
-            ),
-            const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-            GameDetailSheetActions(
-              onEditPressed: widget.onEditPressed,
-              onSavePressed: _saveChanges,
-              hasChanges: _hasStatusChanged(),
-            ),
-          ],
-        ),
+        child: _buildPortraitColumn(),
       ),
+    );
+  }
+
+  Widget _buildPortraitColumn() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildPortraitLayout(),
+        _buildSectionSpacing(),
+        _buildStatusSelector(),
+        _buildSectionSpacing(),
+        _buildActions(),
+      ],
     );
   }
 
@@ -86,28 +78,21 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
       padding: GameDetailSheetStyles.contentPaddingLandscape,
       child: Column(
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildLandscapeLayout(),
-                  const SizedBox(
-                    height: GameDetailSheetStyles.sectionSpacingLandscape,
-                  ),
-                  GameDetailSheetStatusSection(
-                    selectedStatus: _selectedStatus,
-                    onStatusChanged: _handleStatusChange,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
-          GameDetailSheetActions(
-            onEditPressed: widget.onEditPressed,
-            onSavePressed: _saveChanges,
-            hasChanges: _hasStatusChanged(),
-          ),
+          Expanded(child: _buildLandscapeScrollableContent()),
+          _buildLandscapeSpacing(),
+          _buildActions(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLandscapeScrollableContent() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildLandscapeLayout(),
+          _buildLandscapeSpacing(),
+          _buildStatusSelector(),
         ],
       ),
     );
@@ -116,31 +101,53 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
   Widget _buildPortraitLayout() {
     return Column(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: GameDetailSheetStyles.gameImageWidthPortrait,
-              child: const GameDetailSheetImage(),
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: GameDetailSheetInfo(
-                game: widget.game,
-                isPortrait: true,
-                showPlatformAndStatus: false,
-              ),
-            ),
-          ],
-        ),
+        _buildPortraitGameRow(),
         const SizedBox(height: 16),
-        GameDetailSheetInfo(
-          game: widget.game,
-          isPortrait: true,
-          showPlatformAndStatus: true,
-          showTitle: false,
-        ),
+        _buildPortraitPlatformInfo(),
       ],
+    );
+  }
+
+  Widget _buildPortraitGameRow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildPortraitGameImage(),
+        const SizedBox(width: 20),
+        Expanded(child: _buildPortraitGameInfo()),
+      ],
+    );
+  }
+
+  Widget _buildPortraitGameImage() {
+    return SizedBox(
+      width: GameDetailSheetStyles.gameImageWidthPortrait,
+      child: GestureDetector(
+        onTap: widget.onEditPressed,
+        child: GameImage(
+          heroTag: 'game_image_${widget.game.id}',
+          imagePath: widget.game.imagePath,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPortraitGameInfo() {
+    return GameDetailSheetInfo(
+      game: widget.game,
+      isPortrait: true,
+      showPlatformAndStatus: false,
+      onEditPressed: widget.onEditPressed,
+    );
+  }
+
+  Widget _buildPortraitPlatformInfo() {
+    return GameDetailSheetInfo(
+      game: widget.game,
+      isPortrait: true,
+      showPlatformAndStatus: true,
+      showTitle: false,
+      onEditPressed: widget.onEditPressed,
     );
   }
 
@@ -148,17 +155,57 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(width: 120, child: GameDetailSheetImage()),
+        _buildLandscapeGameImage(),
         const SizedBox(width: 24),
-        Expanded(
-          flex: 2,
-          child: GameDetailSheetInfo(
-            game: widget.game,
-            isPortrait: false,
-            showPlatformAndStatus: true,
-          ),
-        ),
+        Expanded(flex: 2, child: _buildLandscapeGameInfo()),
       ],
+    );
+  }
+
+  Widget _buildLandscapeGameImage() {
+    return SizedBox(
+      width: 120,
+      child: GestureDetector(
+        onTap: widget.onEditPressed,
+        child: GameImage(
+          heroTag: 'game_image_${widget.game.id}',
+          imagePath: widget.game.imagePath,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLandscapeGameInfo() {
+    return GameDetailSheetInfo(
+      game: widget.game,
+      isPortrait: false,
+      showPlatformAndStatus: true,
+      onEditPressed: widget.onEditPressed,
+    );
+  }
+
+  Widget _buildStatusSelector() {
+    return GameStatusSelector(
+      selectedStatus: _selectedStatus,
+      onStatusChanged: _handleStatusChange,
+    );
+  }
+
+  Widget _buildActions() {
+    return GameDetailSheetActions(
+      onEditPressed: widget.onEditPressed,
+      onSavePressed: _saveChanges,
+      hasChanges: _hasStatusChanged(),
+    );
+  }
+
+  Widget _buildSectionSpacing() {
+    return const SizedBox(height: GameDetailSheetStyles.sectionSpacing);
+  }
+
+  Widget _buildLandscapeSpacing() {
+    return const SizedBox(
+      height: GameDetailSheetStyles.sectionSpacingLandscape,
     );
   }
 
@@ -176,9 +223,11 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
   Future<void> _saveChanges() async {
     if (!_hasStatusChanged()) return;
 
-    final gameProvider = ref.read(gameListProvider.notifier);
     final updatedGame = widget.game.copyWith(status: _selectedStatus);
-    gameProvider.updateGame(updatedGame);
+
+    // Use the game actions service to update the game and show notification
+    final gameActionsService = ref.read(gameActionsServiceProvider);
+    await gameActionsService.updateGame(widget.game, updatedGame, context);
 
     if (mounted) {
       Navigator.of(context).pop();

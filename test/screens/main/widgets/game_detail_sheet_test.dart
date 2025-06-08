@@ -13,11 +13,10 @@ void main() {
     setUp(() {
       container = ProviderContainer();
       testGame = GameItem(
-        id: GameId('test-1'),
-        title: 'The Legend of Zelda: Breath of the Wild',
-        platform: 'Nintendo Switch',
+        id: GameId.generate(),
+        title: 'Test Game',
+        platform: 'Test Platform',
         status: GameStatus.playing,
-        progress: 50.0,
       );
 
       // Add the test game to the provider
@@ -41,13 +40,10 @@ void main() {
       );
 
       // Check that game title is displayed
-      expect(
-        find.text('The Legend of Zelda: Breath of the Wild'),
-        findsOneWidget,
-      );
+      expect(find.text('Test Game'), findsOneWidget);
 
       // Check that platform is displayed
-      expect(find.text('Nintendo Switch'), findsOneWidget);
+      expect(find.text('Test Platform'), findsOneWidget);
 
       // Check that the current status icon is displayed (be more specific about context)
       expect(find.byIcon(Icons.play_circle_fill), findsAtLeastNWidgets(1));
@@ -274,6 +270,56 @@ void main() {
       expect(updatedGame.status, GameStatus.completed);
     });
 
+    testWidgets('should show notification when status changes', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: Scaffold(body: GameDetailSheet(game: testGame)),
+          ),
+        ),
+      );
+
+      // Change status from Playing to Completed
+      await tester.tap(find.text('Completed'));
+      await tester.pump();
+
+      // Save the change
+      await tester.tap(find.text('Save Changes'));
+      await tester.pump();
+
+      // Check that the notification appears (SnackBar with success message)
+      expect(find.text('Test Game moved to Completed!'), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle), findsAtLeastNWidgets(1));
+    });
+
+    testWidgets('should show notification for backlog status change', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: Scaffold(body: GameDetailSheet(game: testGame)),
+          ),
+        ),
+      );
+
+      // Change status from Playing to Backlog
+      await tester.tap(find.text('Backlog'));
+      await tester.pump();
+
+      // Save the change
+      await tester.tap(find.text('Save Changes'));
+      await tester.pump();
+
+      // Check that the notification appears (SnackBar with success message)
+      expect(find.text('Test Game moved to Backlog!'), findsOneWidget);
+      expect(find.byIcon(Icons.list), findsAtLeastNWidgets(1));
+    });
+
     group('Platform Badge Tests', () {
       testWidgets('should render platform badge', (WidgetTester tester) async {
         await tester.pumpWidget(
@@ -286,7 +332,7 @@ void main() {
         );
 
         // Platform badge should be visible
-        expect(find.text('Nintendo Switch'), findsOneWidget);
+        expect(find.text('Test Platform'), findsOneWidget);
       });
 
       testWidgets('should handle different platforms', (

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../styles/styles.dart';
-import '../../../models/game_models.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
+import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/services/game_image_service.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 
-class LandscapeGameCard extends StatelessWidget {
+class LandscapeGameCard extends ConsumerWidget {
   final GameItem game;
   final VoidCallback onTap;
   final VoidCallback? onPlayPressed;
@@ -15,7 +19,7 @@ class LandscapeGameCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: MainScreenStyles.landscapeGameCardDecoration,
       child: Material(
@@ -25,17 +29,17 @@ class LandscapeGameCard extends StatelessWidget {
           onTap: onTap,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: _buildCardContent(),
+            child: _buildCardContent(ref),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCardContent() {
+  Widget _buildCardContent(WidgetRef ref) {
     return Stack(
       children: [
-        _buildBackground(),
+        _buildBackground(ref),
         _buildGradientOverlay(),
         _buildTextContent(),
         if (game.status == GameStatus.completed) _buildCompletedBadge(),
@@ -43,12 +47,60 @@ class LandscapeGameCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBackground() {
+  Widget _buildBackground(WidgetRef ref) {
     return Positioned.fill(
       child: Container(
         decoration: MainScreenStyles.gameImageDecoration,
-        child: const Icon(Icons.gamepad, size: 64, color: Colors.grey),
+        child: _buildGameImageContent(ref),
       ),
+    );
+  }
+
+  Widget _buildGameImageContent(WidgetRef ref) {
+    if (game.imagePath == null || game.imagePath!.isEmpty) {
+      return _buildPlaceholder();
+    }
+
+    // Use the new Family provider instead of FutureBuilder
+    final imageAsync = ref.watch(gameImageProvider(game.imagePath!));
+
+    return imageAsync.when(
+      data: (imageFile) {
+        if (imageFile != null) {
+          return _buildActualImage(imageFile);
+        }
+        return _buildPlaceholder();
+      },
+      loading: () => _buildLoadingPlaceholder(),
+      error: (error, stackTrace) => _buildPlaceholder(),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return const Center(
+      child: Icon(Icons.gamepad, size: 64, color: Colors.grey),
+    );
+  }
+
+  Widget _buildLoadingPlaceholder() {
+    return const Center(
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey),
+      ),
+    );
+  }
+
+  Widget _buildActualImage(File imageFile) {
+    return Image.file(
+      imageFile,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildPlaceholder();
+      },
     );
   }
 
