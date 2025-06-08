@@ -67,7 +67,8 @@ Place widgets here ONLY if they meet **ALL** criteria:
 - [ ] No screen-specific business logic
 - [ ] Stable API that won't change frequently
 - [ ] Well-documented with usage examples
-- [ ] **Must have comprehensive tests**
+- [ ] **Must have functional tests for user interactions**
+- [ ] **State logic must be tested separately in providers/services**
 
 ### 🏠 Screen-Specific Widgets (`lib/screens/[screen]/widgets/`)
 Use for widgets that:
@@ -75,7 +76,8 @@ Use for widgets that:
 - Contain screen-specific business logic
 - Are tightly coupled to screen requirements
 - Have very specific functionality (like animations)
-- **Must have unit tests covering core functionality**
+- **Must have functional tests for user interactions that trigger state changes**
+- **Business logic must be extracted to services and tested separately**
 
 ### 📱 Screen Organisation
 - Each screen gets its own directory under `lib/screens/`
@@ -220,82 +222,127 @@ Container(
 )
 ```
 
-## 🧪 Testing Requirements
+## 🧪 Testing Strategy - State Management & Business Logic Focus
 
-### 🎯 Testing Rules
-- **New Widget = New Test** - Every new widget must have a corresponding test file
-- **Shared Widget Testing** - Shared widgets require comprehensive test coverage
-- **Screen Widget Testing** - Screen-specific widgets need unit tests for core functionality
-- **Business Logic Testing** - All logic methods must be tested separately from UI
+### 🎯 Core Testing Philosophy
+**Prioritise state management and business logic over UI animations and visual details.**
 
-### Test File Structure
+Testing focuses on:
+1. **State Transitions** - Game status changes, data updates
+2. **Business Logic** - Filtering, searching, game management
+3. **Core Functionality** - User interactions that trigger state changes
+4. **Data Integrity** - Consistency and referential integrity
+
+### 📁 Test Structure & Priorities
+
+#### Priority 1: Core Logic Tests (Required)
+```
+test/
+├── core_functionality_test.dart     # Pure state management testing
+├── business_logic_test.dart         # Service layer and business logic
+├── providers/                       # State management (Riverpod)
+│   ├── game_provider_test.dart
+│   └── ui_state_provider_test.dart
+├── services/                        # Business logic services
+│   ├── game_actions_service_test.dart
+│   └── game_image_service_test.dart
+└── models/                          # Data model behaviour
+    └── game_models_test.dart
+```
+
+#### Priority 2: Functional UI Tests (Selective)
 ```
 test/
 ├── screens/
-│   ├── main/
-│   │   ├── widgets/
-│   │   │   ├── game_detail_sheet_test.dart
-│   │   │   └── main_screen_header_test.dart
-│   │   └── main_screen_test.dart
-│   └── onboarding/
-├── shared/
-│   └── widgets/
-│       ├── cards/
-│       │   ├── landscape_game_card_test.dart
-│       │   └── portrait_game_card_test.dart
-│       └── buttons/
-│           └── close_button_test.dart
-├── models/
-├── providers/
-└── services/
+│   └── main/widgets/
+│       ├── game_detail_sheet_test.dart    # Status change workflows
+│       └── game_detail_sheet_actions_test.dart
+└── shared/widgets/
+    └── cards/                             # Card interactions & callbacks
+        ├── portrait_game_card_test.dart
+        └── landscape_game_card_test.dart
 ```
 
-### Test Requirements by Widget Type
+### 🎯 Testing Requirements by Type
 
-#### Shared Widgets
-- [ ] **Golden Tests** - UI rendering tests for different states
-- [ ] **Interaction Tests** - Tap, scroll, input interactions
-- [ ] **Prop Tests** - All props and configurations
-- [ ] **Edge Cases** - Null values, empty states, error conditions
-- [ ] **Accessibility Tests** - Screen reader support, semantics
+#### Core Logic Tests (100% Coverage Required)
+- [ ] **State Transitions** - All game status changes (backlog → playing → completed)
+- [ ] **Filtering Logic** - Platform, status, search combinations
+- [ ] **Business Rules** - Game creation, updates, validation
+- [ ] **Data Integrity** - Referential integrity, timestamp handling
+- [ ] **Service Layer** - GameActionsService, business logic methods
 
-#### Screen-Specific Widgets
-- [ ] **Core Functionality** - Main widget behaviour
-- [ ] **State Changes** - StatefulWidget state transitions
-- [ ] **Navigation** - Route transitions and back button behaviour
-- [ ] **Business Logic** - Calculation and data transformation methods
+#### Functional UI Tests (70% Coverage Target)
+- [ ] **User Interactions** - Callbacks, form submissions, navigation triggers
+- [ ] **State Integration** - UI triggers correct state changes
+- [ ] **Core Workflows** - Status changes, game management flows
+- [ ] **Edge Cases** - Error handling, validation feedback
 
-### Test Template
+#### ❌ Avoid These Test Types
+- **Animation Tests** - Timing, visual effects, transitions
+- **Pure UI Rendering** - Layout, styling, visual appearance
+- **Async Timing Tests** - Focus on end state, not timing details
+- **Widget Golden Tests** - Unless critical for functionality
+
+### 📋 Test Templates
+
+#### Core State Management Test
 ```dart
-// test/screens/main/widgets/my_widget_test.dart
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+// test/core_functionality_test.dart
+test('should transition game from backlog to playing', () {
+  // Create game
+  final backlogGame = GameItem.create(
+    title: 'Test Game',
+    platform: 'PC',
+    status: GameStatus.backlog,
+  );
+  container.read(gameListProvider.notifier).addGame(backlogGame);
 
-import '../../../../lib/screens/main/widgets/my_widget.dart';
+  // Change status
+  container.read(gameListProvider.notifier).startPlaying(backlogGame.id);
 
-void main() {
-  group('MyWidget', () {
-    testWidgets('renders correctly with default props', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(
-            home: MyWidget(),
-          ),
-        ),
-      );
+  // Verify state change (no UI involved)
+  final games = container.read(gameListProvider);
+  final updatedGame = games.firstWhere((g) => g.id == backlogGame.id);
+  expect(updatedGame.status, GameStatus.playing);
+});
+```
 
-      expect(find.byType(MyWidget), findsOneWidget);
-      // Add specific assertions here
-    });
+#### Business Logic Test
+```dart
+// test/business_logic_test.dart
+test('should update section expansion based on filters', () {
+  // Setup test data
+  container.read(gameListProvider.notifier).createGame(/*...*/);
 
-    testWidgets('handles user interaction correctly', (tester) async {
-      // Test interaction logic
-    });
+  // Apply filters
+  container.read(selectedPlatformProvider.notifier).selectPlatform('PC');
 
-    // Add more tests as needed
-  });
-}
+  // Test business logic
+  final gameActionsService = container.read(gameActionsServiceProvider);
+  gameActionsService.updateSectionExpansionForFilters();
+
+  // Verify business rules applied
+  final expansionState = container.read(sectionExpansionProvider);
+  expect(expansionState['Playing'], true); // Has PC games
+});
+```
+
+#### Functional UI Test (When Needed)
+```dart
+// test/screens/main/widgets/game_detail_sheet_test.dart
+testWidgets('should save status changes correctly', (tester) async {
+  await tester.pumpWidget(/*setup widget*/);
+
+  // User interaction
+  await tester.tap(find.text('Completed'));
+  await tester.tap(find.text('Save Changes'));
+
+  // Verify state change occurred
+  final games = container.read(gameListProvider);
+  final updatedGame = games.firstWhere((g) => g.id == testGame.id);
+  expect(updatedGame.status, GameStatus.completed);
+});
 ```
 
 ## 🔍 Quality Assurance Workflow
@@ -322,19 +369,23 @@ Before committing any code changes, **ALWAYS** run these commands:
 
 #### Adding New Features
 1. **Models** - Define data structures in `lib/models/`
-2. **Styling** - Add styles to appropriate module in `lib/styles/`
-3. **Screen Widgets** - Start with `screens/[screen]/widgets/`
-4. **Tests** - Write tests for all new widgets and logic
-5. **Screens** - Compose widgets into full screens
-6. **Quality Check** - Run `flutter analyze` and `flutter test`
-7. **Promote to Shared** - When widgets are needed by multiple screens
+2. **State Management** - Create providers in `lib/providers/`
+3. **Business Logic** - Implement services in `lib/services/`
+4. **Core Logic Tests** - Write state management and business logic tests first
+5. **Styling** - Add styles to appropriate module in `lib/styles/`
+6. **Screen Widgets** - Start with `screens/[screen]/widgets/`
+7. **Functional UI Tests** - Add only for user interactions that trigger state changes
+8. **Quality Check** - Run `flutter analyze` and `flutter test`
+9. **Promote to Shared** - When widgets are needed by multiple screens
 
 #### Creating New Widgets
-1. **Create Widget** - Follow established patterns and conventions
-2. **Extract Styling** - Use centralised styling classes
-3. **Write Tests** - Create comprehensive test coverage
-4. **Run Quality Checks** - `flutter analyze` and `flutter test`
-5. **Document Usage** - Add clear documentation and examples
+1. **State First** - Implement state management and business logic
+2. **Test State** - Write core functionality and business logic tests
+3. **Create Widget** - Follow established patterns and conventions
+4. **Extract Styling** - Use centralised styling classes
+5. **Test Interactions** - Add functional tests only for user interactions
+6. **Run Quality Checks** - `flutter analyze` and `flutter test`
+7. **Document Usage** - Add clear documentation and examples
 
 #### Making Significant Changes
 1. **Plan Changes** - Identify affected components and tests
@@ -482,23 +533,33 @@ expect(addedGame.lastModified, specificTime);
 
 ## 🚀 Enforcement
 
+### Testing Priorities (Mandatory)
+1. **State Management Tests** - 100% coverage required for providers and services
+2. **Business Logic Tests** - All domain logic must be tested
+3. **Core Functionality Tests** - State transitions and data integrity
+4. **Functional UI Tests** - Only for user interactions that trigger state changes
+
+### Development Standards
 - All new widgets must follow these patterns
 - Use existing widgets as reference implementations
 - Extract complex build methods during code reviews
-- **Mandatory testing** for all new widgets and significant changes
+- **State-first development** - Implement and test state logic before UI
 - **Quality gates** - Code must pass analyze and tests before merge
-- Always add tests when building new functionality
+- **No animation tests** - Focus on state outcomes, not visual effects
 
 ## ✅ Benefits
 
 This architecture provides:
+- **Reliable State Management** - Comprehensive testing of all state transitions
+- **Maintainable Business Logic** - Clear separation and thorough testing of domain logic
+- **Fast Test Execution** - Focus on state outcomes eliminates slow animation tests
 - **Readable Code** - Clear structure visible at the top level
-- **Easy Maintenance** - Changes isolated to specific methods
-- **Better Testing** - Individual methods can be tested independently
+- **Easy Maintenance** - Changes isolated to specific methods and tested separately
+- **Better Testing** - State logic tested independently from UI components
 - **Consistency** - Uniform patterns across the entire codebase
-- **Scalability** - Easy to extend and modify existing widgets
-- **Quality Assurance** - Built-in quality checks and testing requirements
-- **Team Collaboration** - Clear guidelines for all development activities
+- **Scalability** - Easy to extend and modify existing functionality
+- **Quality Assurance** - Built-in quality checks focused on core functionality
+- **Team Collaboration** - Clear guidelines prioritising what matters most
 
-This comprehensive guide ensures consistent, high-quality Flutter development across the entire project! 🚀
+This comprehensive guide ensures consistent, high-quality Flutter development with robust, maintainable testing that focuses on **state management and business logic**! 🚀
 

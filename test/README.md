@@ -1,99 +1,196 @@
-# Test Documentation
+# Testing Strategy - Focused on State Management and Business Logic
 
-This directory contains unit and integration tests for the Game Library app, with a focus on the auto-expansion functionality for filtered sections.
+## 🎯 Core Testing Philosophy
 
-## Test Structure
+This project prioritises testing **state management** and **business logic** over UI animations and visual details. The testing strategy focuses on:
 
-### Unit Tests
+1. **State Transitions** - Game status changes, data updates
+2. **Business Logic** - Filtering, searching, game management
+3. **Core Functionality** - User interactions that trigger state changes
+4. **Data Integrity** - Consistency and referential integrity
 
-#### `providers/ui_state_provider_test.dart`
-Tests the UI state management providers:
-- **SectionExpansion**: Tests section expand/collapse functionality and the new `updateExpansionBasedOnResults` method
-- **SearchQuery**: Tests search query state management
-- **SelectedPlatform**: Tests platform filter state management
+## 📁 Test Structure
 
-Key features tested:
-- Default expansion state (Playing: true, others: false)
-- Manual toggle, expand, and collapse operations
-- Expand/collapse all functionality
-- **NEW**: Auto-expansion based on filter results
+### Core Tests (Priority 1)
+- `test/core_functionality_test.dart` - Pure state management testing
+- `test/business_logic_test.dart` - Service layer and business logic
+- `test/providers/` - Provider state management
+- `test/services/` - Business logic services
+- `test/models/` - Data model behaviour
 
-#### `providers/game_provider_test.dart`
-Tests the game data providers and filtering logic:
-- **fullyFilteredGamesProvider**: Tests multi-filter functionality (status + platform + search)
-- **gamesByStatus**: Tests status-based filtering
-- **gamesByPlatform**: Tests platform-based filtering
-- **availablePlatforms**: Tests platform list generation
-- **searchFilteredGames**: Tests search functionality
-- **GameList mutations**: Tests game state changes (startPlaying, markCompleted)
+### Functional UI Tests (Priority 2)
+- `test/screens/main/widgets/game_detail_sheet_test.dart` - Status change workflows
+- `test/shared/widgets/cards/` - Card interaction and callback testing
+- Tests that verify UI triggers correct state changes
 
-### Integration Tests
+### Removed Tests
+- ❌ Animation tests - Removed to focus on core functionality
+- ❌ Pure UI rendering tests - Minimised in favour of state testing
+- ❌ Async timing tests - Simplified to focus on state outcomes
 
-#### `main_screen_auto_expansion_test.dart`
-Tests the complete auto-expansion workflow:
-- **Platform Filter Auto-Expansion**: Verifies sections expand/collapse when platform filters are applied
-- **Search Filter Auto-Expansion**: Verifies sections expand/collapse when search is used
-- **Combined Filters**: Tests behavior when both platform and search filters are active
-- **Filter Reset Behavior**: Ensures manual expansion state is preserved when filters are cleared
-- **State Persistence**: Tests manual vs automatic expansion state management
+## 🧪 Test Categories
 
-## New Functionality Tests
+### 1. State Management Tests (`core_functionality_test.dart`)
 
-### Auto-Expansion Logic
-The new auto-expansion functionality is tested to ensure:
+**Focus**: Pure state transitions without UI dependencies
 
-1. **Filter Detection**: Only activates when platform ≠ "All" OR search query is not empty
-2. **Section Expansion**: Sections with matching games expand, empty sections collapse
-3. **Filter Combinations**: Works correctly with multiple active filters
-4. **State Preservation**: Manual expansion state is maintained when no filters are active
-5. **Edge Cases**: Handles empty results, all sections having results, etc.
+```dart
+test('should transition game from backlog to playing', () {
+  // Create game, change status, verify state change
+  // No UI components involved
+});
+```
 
-### Test Scenarios Covered
+**Coverage**:
+- Game state transitions (backlog → playing → completed)
+- Filtering logic (platform, status, search)
+- Game creation and management
+- Data integrity and consistency
 
-#### Platform Filtering
-- ✅ PC filter: Expands Completed and Abandoned sections (based on sample data)
-- ✅ Switch filter: Expands Playing section (Zelda game)
-- ✅ Non-existent platform: Collapses all sections
+### 2. Business Logic Tests (`business_logic_test.dart`)
 
-#### Search Filtering
-- ✅ "zelda" search: Expands only Playing section
-- ✅ "cyber" search: Expands only Completed section
-- ✅ Non-existent game search: Collapses all sections
+**Focus**: Service layer behaviour and complex business rules
 
-#### Combined Filtering
-- ✅ PC + "cyber": Expands only Completed section (Cyberpunk 2077)
-- ✅ Switch + "zelda": Expands only Playing section
+```dart
+test('should update section expansion based on filters', () {
+  // Test GameActionsService logic
+  // Verify business rules are applied correctly
+});
+```
 
-#### State Management
-- ✅ Manual expansion preserved when filters are cleared
-- ✅ Auto-expansion overrides manual state when filters are applied
-- ✅ Filter changes trigger immediate expansion updates
+**Coverage**:
+- GameActionsService functionality
+- UI state management (section expansion, filters)
+- Filter integration logic
+- Data consistency across state changes
 
-## Running Tests
+### 3. Provider Tests (`test/providers/`)
 
-To run all tests:
+**Focus**: Riverpod provider behaviour and state management
+
+**Coverage**:
+- Game filtering providers
+- UI state providers
+- Provider composition and dependencies
+- State persistence and updates
+
+### 4. Service Tests (`test/services/`)
+
+**Focus**: Business logic services and domain operations
+
+**Coverage**:
+- Game actions and operations
+- Image handling services
+- Business rule enforcement
+
+### 5. Model Tests (`test/models/`)
+
+**Focus**: Data model behaviour and validation
+
+**Coverage**:
+- Game model creation and updates
+- Timestamp handling
+- Data validation and constraints
+
+### 6. Functional UI Tests (Selected)
+
+**Focus**: UI interactions that trigger state changes
+
+**Criteria for inclusion**:
+- ✅ Tests user interactions (taps, form submissions)
+- ✅ Verifies state changes occur correctly
+- ✅ Tests callback functionality
+- ✅ Validates business logic integration
+- ❌ Avoids pure visual/layout testing
+- ❌ Avoids animation timing tests
+
+## 🎯 Testing Principles
+
+### What We Test
+1. **State Transitions**: Game status changes, filter updates
+2. **Business Logic**: Complex filtering, search, game management
+3. **User Interactions**: Callbacks, form submissions, navigation triggers
+4. **Data Integrity**: Consistency, validation, referential integrity
+5. **Integration**: Provider-service-model interactions
+
+### What We Don't Test
+1. **Animations**: Timing, visual effects, transitions
+2. **Pure UI Layout**: Positioning, styling, visual appearance
+3. **Widget Rendering**: Unless it affects functionality
+4. **Async Timing**: Focus on end state, not timing details
+
+### Test Quality Guidelines
+
+#### ✅ Good Tests
+```dart
+test('should filter games by status correctly', () {
+  // Add test data
+  container.read(gameListProvider.notifier).createGame(/*...*/);
+
+  // Test filtering logic
+  final playingGames = container.read(gamesByStatusProvider(GameStatus.playing));
+
+  // Verify results
+  expect(playingGames.every((g) => g.status == GameStatus.playing), true);
+});
+```
+
+#### ❌ Avoid
+```dart
+testWidgets('should animate smoothly', (tester) async {
+  // Animation timing tests
+  await tester.pump(Duration(milliseconds: 100));
+  // Visual effect verification
+});
+```
+
+## 🚀 Running Tests
+
+### Run Core Tests
+```bash
+# State management tests
+flutter test test/core_functionality_test.dart
+
+# Business logic tests
+flutter test test/business_logic_test.dart
+
+# All provider tests
+flutter test test/providers/
+
+# All service tests
+flutter test test/services/
+```
+
+### Run All Tests
 ```bash
 flutter test
 ```
 
-To run specific test files:
-```bash
-flutter test test/providers/ui_state_provider_test.dart
-flutter test test/providers/game_provider_test.dart
-flutter test test/main_screen_auto_expansion_test.dart
-```
-
-To run tests with coverage:
+### Test Coverage
 ```bash
 flutter test --coverage
 ```
 
-## Sample Data Used in Tests
+## 📊 Test Coverage Goals
 
-The tests rely on the sample data defined in `game_provider.dart`:
-- **Playing**: Zelda (Switch), God of War (PS5)
-- **Completed**: Cyberpunk 2077 (PC), Red Dead Redemption 2 (Xbox)
-- **Backlog**: Elden Ring (Steam Deck)
-- **Abandoned**: Mass Effect (PC)
+- **Providers**: 100% - All state management logic
+- **Services**: 100% - All business logic
+- **Models**: 95% - Core data behaviour
+- **Core Functionality**: 100% - All state transitions
+- **UI Widgets**: 70% - Focus on interaction, not rendering
 
-This data is used to verify correct filtering and expansion behavior across different scenarios. 
+## 🔄 Maintenance
+
+### Adding New Features
+1. **Start with state tests** - Test the core logic first
+2. **Add business logic tests** - Test service layer behaviour
+3. **Add functional UI tests** - Only for user interactions
+4. **Avoid animation tests** - Focus on state outcomes
+
+### Refactoring Guidelines
+- Maintain test coverage for state management
+- Update business logic tests when rules change
+- Keep UI tests minimal and focused on functionality
+- Remove tests that don't add value to core functionality
+
+This testing strategy ensures robust, maintainable tests that focus on what matters most: **reliable state management and correct business logic**.
