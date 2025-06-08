@@ -21,6 +21,120 @@ void main() {
       );
     });
 
+    group('GameItem.create factory constructor', () {
+      test('should create game with all required fields', () {
+        final game = GameItem.create(
+          title: 'New Game',
+          platform: 'PC',
+          status: GameStatus.backlog,
+        );
+
+        expect(game.title, 'New Game');
+        expect(game.platform, 'PC');
+        expect(game.status, GameStatus.backlog);
+        expect(game.id.value, isNotEmpty);
+        expect(game.lastModified, isA<DateTime>());
+        expect(game.lastStatusChange, isA<DateTime>());
+        expect(game.imagePath, isNull);
+        expect(game.remoteImageUrl, isNull);
+      });
+
+      test('should create game with optional fields', () {
+        final game = GameItem.create(
+          title: 'New Game',
+          platform: 'PC',
+          status: GameStatus.backlog,
+          imagePath: '/path/to/image.jpg',
+          remoteImageUrl: 'https://example.com/image.jpg',
+        );
+
+        expect(game.title, 'New Game');
+        expect(game.platform, 'PC');
+        expect(game.status, GameStatus.backlog);
+        expect(game.imagePath, '/path/to/image.jpg');
+        expect(game.remoteImageUrl, 'https://example.com/image.jpg');
+      });
+
+      test('should set lastModified and lastStatusChange to same time', () {
+        final game = GameItem.create(
+          title: 'New Game',
+          platform: 'PC',
+          status: GameStatus.backlog,
+        );
+
+        expect(game.lastModified, equals(game.lastStatusChange));
+      });
+
+      test('should generate unique IDs for different games', () {
+        final game1 = GameItem.create(
+          title: 'Game 1',
+          platform: 'PC',
+          status: GameStatus.backlog,
+        );
+        final game2 = GameItem.create(
+          title: 'Game 2',
+          platform: 'PS5',
+          status: GameStatus.playing,
+        );
+
+        expect(game1.id.value, isNot(equals(game2.id.value)));
+      });
+
+      test('should set timestamps to current time', () {
+        final beforeCreation = DateTime.now();
+        final game = GameItem.create(
+          title: 'New Game',
+          platform: 'PC',
+          status: GameStatus.backlog,
+        );
+        final afterCreation = DateTime.now();
+
+        expect(
+          game.lastModified.isAfter(beforeCreation) ||
+              game.lastModified.isAtSameMomentAs(beforeCreation),
+          true,
+        );
+        expect(
+          game.lastModified.isBefore(afterCreation) ||
+              game.lastModified.isAtSameMomentAs(afterCreation),
+          true,
+        );
+        expect(
+          game.lastStatusChange.isAfter(beforeCreation) ||
+              game.lastStatusChange.isAtSameMomentAs(beforeCreation),
+          true,
+        );
+        expect(
+          game.lastStatusChange.isBefore(afterCreation) ||
+              game.lastStatusChange.isAtSameMomentAs(afterCreation),
+          true,
+        );
+      });
+
+      test('should work with all game statuses', () {
+        final statuses = [
+          GameStatus.playing,
+          GameStatus.completed,
+          GameStatus.backlog,
+          GameStatus.abandoned,
+          GameStatus.wishlist,
+          GameStatus.ordered,
+        ];
+
+        for (final status in statuses) {
+          final game = GameItem.create(
+            title: 'Test Game',
+            platform: 'PC',
+            status: status,
+          );
+
+          expect(game.status, status);
+          expect(game.lastModified, isA<DateTime>());
+          expect(game.lastStatusChange, isA<DateTime>());
+        }
+      });
+    });
+
     group('lastStatusChange behaviour', () {
       test('should preserve lastStatusChange when status remains the same', () {
         // Create a copy with updated title but same status

@@ -234,6 +234,203 @@ void main() {
       container.dispose();
     });
 
+    group('addGame timestamp handling', () {
+      test('should preserve timestamps when adding game with addGame()', () {
+        final notifier = container.read(gameListProvider.notifier);
+        final initialGamesCount = container.read(gameListProvider).length;
+
+        // Create a game with specific timestamps
+        final pastTime = DateTime(2020, 1, 1);
+        final gameWithOldTimestamps = GameItem(
+          id: GameId.generate(),
+          title: 'Test Game',
+          platform: 'PC',
+          status: GameStatus.backlog,
+          lastModified: pastTime,
+          lastStatusChange: pastTime,
+        );
+
+        notifier.addGame(gameWithOldTimestamps);
+
+        final updatedGames = container.read(gameListProvider);
+        expect(updatedGames.length, initialGamesCount + 1);
+
+        final addedGame = updatedGames.last;
+        expect(addedGame.title, 'Test Game');
+        expect(addedGame.platform, 'PC');
+        expect(addedGame.status, GameStatus.backlog);
+        expect(addedGame.id, gameWithOldTimestamps.id);
+
+        // Timestamps should be preserved as provided
+        expect(addedGame.lastModified, pastTime);
+        expect(addedGame.lastStatusChange, pastTime);
+      });
+
+      test(
+        'should preserve all game properties when adding with addGame()',
+        () {
+          final notifier = container.read(gameListProvider.notifier);
+          final gameId = GameId.generate();
+          final specificTime = DateTime(2023, 5, 15, 14, 30);
+
+          final testGame = GameItem(
+            id: gameId,
+            title: 'Preserved Game',
+            platform: 'Nintendo Switch',
+            status: GameStatus.completed,
+            lastModified: specificTime,
+            lastStatusChange: specificTime,
+            imagePath: '/test/image/path.jpg',
+            remoteImageUrl: 'https://example.com/image.png',
+          );
+
+          notifier.addGame(testGame);
+
+          final updatedGames = container.read(gameListProvider);
+          final addedGame = updatedGames.firstWhere(
+            (game) => game.id == gameId,
+          );
+
+          expect(addedGame.id, gameId);
+          expect(addedGame.title, 'Preserved Game');
+          expect(addedGame.platform, 'Nintendo Switch');
+          expect(addedGame.status, GameStatus.completed);
+          expect(addedGame.lastModified, specificTime);
+          expect(addedGame.lastStatusChange, specificTime);
+          expect(addedGame.imagePath, '/test/image/path.jpg');
+          expect(addedGame.remoteImageUrl, 'https://example.com/image.png');
+        },
+      );
+    });
+
+    group('createGame convenience method', () {
+      test('should create and add game with required fields only', () {
+        final notifier = container.read(gameListProvider.notifier);
+        final initialGamesCount = container.read(gameListProvider).length;
+
+        final beforeCreate = DateTime.now();
+        notifier.createGame(
+          title: 'New Game',
+          platform: 'Switch',
+          status: GameStatus.wishlist,
+        );
+        final afterCreate = DateTime.now();
+
+        final updatedGames = container.read(gameListProvider);
+        expect(updatedGames.length, initialGamesCount + 1);
+
+        final newGame = updatedGames.last;
+        expect(newGame.title, 'New Game');
+        expect(newGame.platform, 'Switch');
+        expect(newGame.status, GameStatus.wishlist);
+        expect(newGame.id.value, isNotEmpty);
+        expect(newGame.imagePath, isNull);
+        expect(newGame.remoteImageUrl, isNull);
+
+        // Check timestamps are current
+        expect(
+          newGame.lastModified.isAfter(beforeCreate) ||
+              newGame.lastModified.isAtSameMomentAs(beforeCreate),
+          true,
+        );
+        expect(
+          newGame.lastModified.isBefore(afterCreate) ||
+              newGame.lastModified.isAtSameMomentAs(afterCreate),
+          true,
+        );
+        expect(
+          newGame.lastStatusChange.isAfter(beforeCreate) ||
+              newGame.lastStatusChange.isAtSameMomentAs(beforeCreate),
+          true,
+        );
+        expect(
+          newGame.lastStatusChange.isBefore(afterCreate) ||
+              newGame.lastStatusChange.isAtSameMomentAs(afterCreate),
+          true,
+        );
+      });
+
+      test('should create and add game with optional fields', () {
+        final notifier = container.read(gameListProvider.notifier);
+        final initialGamesCount = container.read(gameListProvider).length;
+
+        notifier.createGame(
+          title: 'New Game with Images',
+          platform: 'PS5',
+          status: GameStatus.playing,
+          imagePath: '/path/to/local/image.jpg',
+          remoteImageUrl: 'https://example.com/remote/image.jpg',
+        );
+
+        final updatedGames = container.read(gameListProvider);
+        expect(updatedGames.length, initialGamesCount + 1);
+
+        final newGame = updatedGames.last;
+        expect(newGame.title, 'New Game with Images');
+        expect(newGame.platform, 'PS5');
+        expect(newGame.status, GameStatus.playing);
+        expect(newGame.imagePath, '/path/to/local/image.jpg');
+        expect(newGame.remoteImageUrl, 'https://example.com/remote/image.jpg');
+      });
+
+      test('should generate unique IDs for multiple games', () {
+        final notifier = container.read(gameListProvider.notifier);
+
+        notifier.createGame(
+          title: 'Game 1',
+          platform: 'PC',
+          status: GameStatus.backlog,
+        );
+        notifier.createGame(
+          title: 'Game 2',
+          platform: 'Xbox',
+          status: GameStatus.playing,
+        );
+
+        final updatedGames = container.read(gameListProvider);
+        final lastTwoGames =
+            updatedGames.skip(updatedGames.length - 2).toList();
+
+        expect(
+          lastTwoGames[0].id.value,
+          isNot(equals(lastTwoGames[1].id.value)),
+        );
+        expect(lastTwoGames[0].title, 'Game 1');
+        expect(lastTwoGames[1].title, 'Game 2');
+      });
+
+      test('should work with all game statuses', () {
+        final notifier = container.read(gameListProvider.notifier);
+        final statuses = [
+          GameStatus.playing,
+          GameStatus.completed,
+          GameStatus.backlog,
+          GameStatus.abandoned,
+          GameStatus.wishlist,
+          GameStatus.ordered,
+        ];
+
+        final initialCount = container.read(gameListProvider).length;
+
+        for (int i = 0; i < statuses.length; i++) {
+          notifier.createGame(
+            title: 'Test Game ${i + 1}',
+            platform: 'PC',
+            status: statuses[i],
+          );
+        }
+
+        final updatedGames = container.read(gameListProvider);
+        expect(updatedGames.length, initialCount + statuses.length);
+
+        final newGames = updatedGames.skip(initialCount).toList();
+        for (int i = 0; i < statuses.length; i++) {
+          expect(newGames[i].status, statuses[i]);
+          expect(newGames[i].title, 'Test Game ${i + 1}');
+        }
+      });
+    });
+
     test('startPlaying should move game from backlog to playing', () {
       final notifier = container.read(gameListProvider.notifier);
       final games = container.read(gameListProvider);
@@ -258,16 +455,18 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      // Add a test game
-      final testGame = GameItem(
-        id: GameId.generate(),
-        title: 'Test Game',
-        platform: 'PC',
-        status: GameStatus.playing,
-        lastModified: DateTime.now(),
-        lastStatusChange: DateTime.now(),
-      );
-      container.read(gameListProvider.notifier).addGame(testGame);
+      // Add a test game using the new createGame method
+      container
+          .read(gameListProvider.notifier)
+          .createGame(
+            title: 'Test Game',
+            platform: 'PC',
+            status: GameStatus.playing,
+          );
+
+      // Get the added game
+      final gamesList = container.read(gameListProvider);
+      final testGame = gamesList.firstWhere((g) => g.title == 'Test Game');
 
       // Mark it as completed
       container.read(gameListProvider.notifier).markCompleted(testGame.id);

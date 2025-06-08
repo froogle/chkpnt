@@ -31,6 +31,28 @@ class GameItem with _$GameItem {
     String? remoteImageUrl,
   }) = _GameItem;
 
+  /// Factory constructor for creating new games with automatic timestamp handling.
+  /// This removes the need for UI code to manually set timestamps.
+  factory GameItem.create({
+    required String title,
+    required String platform,
+    required GameStatus status,
+    String? imagePath,
+    String? remoteImageUrl,
+  }) {
+    final now = DateTime.now();
+    return GameItem(
+      id: GameId.generate(),
+      title: title,
+      platform: platform,
+      status: status,
+      lastModified: now,
+      lastStatusChange: now,
+      imagePath: imagePath,
+      remoteImageUrl: remoteImageUrl,
+    );
+  }
+
   factory GameItem.fromJson(Map<String, dynamic> json) =>
       _$GameItemFromJson(json);
 }

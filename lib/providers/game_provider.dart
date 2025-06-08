@@ -69,6 +69,26 @@ class GameList extends _$GameList {
     state = [...state, game];
   }
 
+  /// Convenience method for creating new games without timestamp concerns.
+  /// This is the preferred method for UI code to add games as it automatically
+  /// handles timestamp generation.
+  void createGame({
+    required String title,
+    required String platform,
+    required GameStatus status,
+    String? imagePath,
+    String? remoteImageUrl,
+  }) {
+    final game = GameItem.create(
+      title: title,
+      platform: platform,
+      status: status,
+      imagePath: imagePath,
+      remoteImageUrl: remoteImageUrl,
+    );
+    addGame(game);
+  }
+
   // Update an existing game
   void updateGame(GameItem updatedGame) {
     state = [

@@ -702,7 +702,7 @@ class _FullyFilteredGamesProviderElement
   String get searchQuery => (origin as FullyFilteredGamesProvider).searchQuery;
 }
 
-String _$gameListHash() => r'db210050681b553df6dfda32c10fcdafc7ea03ff';
+String _$gameListHash() => r'81f37e4edeec966a9d5ee72a62714cbcf0cb79c4';
 
 /// See also [GameList].
 @ProviderFor(GameList)

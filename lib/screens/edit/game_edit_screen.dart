@@ -345,15 +345,12 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     final gameActionsService = ref.read(gameActionsServiceProvider);
 
     if (widget.isAddMode) {
-      // Adding a new game
-      final newGame = GameItem(
-        id: GameId.generate(), // This will be replaced in the service
+      // Adding a new game - use GameItem.create for automatic timestamp handling
+      final newGame = GameItem.create(
         title: editState.title.trim(),
         platform: editState.platform,
         status: editState.status,
         imagePath: editState.imagePath,
-        lastModified: DateTime.now(),
-        lastStatusChange: DateTime.now(),
       );
 
       await gameActionsService.addGame(newGame, context);

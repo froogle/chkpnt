@@ -94,23 +94,28 @@ class GameActionsService {
 
   /// Handles adding a new game
   Future<void> addGame(GameItem newGame, BuildContext context) async {
-    // Generate a new ID for the game
-    final gameWithId = newGame.copyWith(id: GameId.generate());
-
-    // Add the game to the provider
-    _ref.read(gameListProvider.notifier).addGame(gameWithId);
+    // Use the provider's createGame method for automatic timestamp handling
+    _ref
+        .read(gameListProvider.notifier)
+        .createGame(
+          title: newGame.title,
+          platform: newGame.platform,
+          status: newGame.status,
+          imagePath: newGame.imagePath,
+          remoteImageUrl: newGame.remoteImageUrl,
+        );
 
     // Expand the relevant section for the new game's status
-    final statusName = _getStatusDisplayName(gameWithId.status);
+    final statusName = _getStatusDisplayName(newGame.status);
     _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
 
     // Show feedback
     if (context.mounted) {
       _showGameActionFeedback(
         context: context,
-        message: '${gameWithId.title} added to $statusName!',
-        icon: _getStatusIcon(gameWithId.status),
-        color: _getStatusColor(gameWithId.status),
+        message: '${newGame.title} added to $statusName!',
+        icon: _getStatusIcon(newGame.status),
+        color: _getStatusColor(newGame.status),
       );
     }
   }
