@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Flutter Development Rules - Comprehensive Guide
@@ -121,7 +121,7 @@ Widget _buildHeader() {
 All widget builder methods must follow the `_buildXXX()` convention:
 
 - `_buildHeader()` - Header sections
-- `_buildContent()` - Main content areas  
+- `_buildContent()` - Main content areas
 - `_buildActionButton()` - Interactive elements
 - `_buildContainer()` - Container wrappers
 - `_buildList()` - List and grid layouts
@@ -381,6 +381,104 @@ Before committing any code changes, **ALWAYS** run these commands:
 - **Always run `flutter test`** after significant changes
 - **Maintain test coverage** for all new functionality
 - **Document breaking changes** and migration paths
+
+## 🎮 Game Creation Patterns
+
+### 🎯 Core Principle
+**Never manually handle timestamps when creating games in UI code.** The data layer should manage all timestamp concerns automatically.
+
+### ✅ For UI Code (Recommended)
+Use these patterns when creating games from user interfaces, forms, or user interactions:
+
+#### Preferred: Provider Convenience Method
+```dart
+// Best for UI code - automatically handles timestamps and IDs
+ref.read(gameListProvider.notifier).createGame(
+  title: 'New Game',
+  platform: 'PC',
+  status: GameStatus.backlog,
+  imagePath: '/optional/image/path.jpg',
+  remoteImageUrl: 'https://optional.com/image.jpg',
+);
+```
+
+#### Alternative: Factory Constructor
+```dart
+// Also acceptable for UI - creates game with auto-timestamps
+final game = GameItem.create(
+  title: 'New Game',
+  platform: 'PC',
+  status: GameStatus.backlog,
+);
+ref.read(gameListProvider.notifier).addGame(game);
+```
+
+### 🏗️ For Data Layer (When Needed)
+Use this pattern when you need to preserve specific timestamps (imports, migrations, etc.):
+
+```dart
+// When you need to preserve specific timestamps
+final gameWithSpecificTimestamps = GameItem(
+  id: GameId.generate(), // or existing ID
+  title: 'Imported Game',
+  platform: 'Switch',
+  status: GameStatus.playing,
+  lastModified: importTimestamp,      // Preserve original
+  lastStatusChange: importTimestamp,  // Preserve original
+);
+ref.read(gameListProvider.notifier).addGame(gameWithSpecificTimestamps);
+```
+
+### 📋 Usage Guidelines
+
+#### ✅ Do
+- **UI Code**: Always use `createGame()` or `GameItem.create()`
+- **Data Layer**: Use full `GameItem()` constructor only when preserving timestamps
+- **Import/Migration**: Use `addGame()` with explicit timestamps
+- **Tests**: Use appropriate method based on what you're testing
+
+#### ❌ Don't
+- Manually set `DateTime.now()` in UI code
+- Use full `GameItem()` constructor in UI without good reason
+- Mix timestamp handling approaches in the same feature
+- Forget to test both creation patterns
+
+### 🧪 Testing Patterns
+
+#### Testing UI Game Creation
+```dart
+// Test the convenience method
+container.read(gameListProvider.notifier).createGame(
+  title: 'Test Game',
+  platform: 'PC',
+  status: GameStatus.backlog,
+);
+
+// Verify timestamps are current
+final games = container.read(gameListProvider);
+final newGame = games.last;
+expect(newGame.lastModified.isAfter(beforeCreate), true);
+```
+
+#### Testing Data Layer Preservation
+```dart
+// Test timestamp preservation
+final specificTime = DateTime(2023, 5, 15);
+final game = GameItem(
+  id: GameId.generate(),
+  title: 'Preserved Game',
+  platform: 'PC',
+  status: GameStatus.playing,
+  lastModified: specificTime,
+  lastStatusChange: specificTime,
+);
+container.read(gameListProvider.notifier).addGame(game);
+
+// Verify timestamps are preserved
+final games = container.read(gameListProvider);
+final addedGame = games.firstWhere((g) => g.id == game.id);
+expect(addedGame.lastModified, specificTime);
+```
 
 ## 🚀 Enforcement
 
