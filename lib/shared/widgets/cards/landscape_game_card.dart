@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 
 class LandscapeGameCard extends ConsumerWidget {
