@@ -6,7 +6,7 @@ part of 'game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameRepositoryHash() => r'1d4a3a5ec61d3fe3bdb00c8d2355c2b23ec636c3';
+String _$gameRepositoryHash() => r'5e4d7f8e2c807598cdf6b5627966e8ba9b64f458';
 
 /// Repository provider - this is where you can swap storage implementations
 ///
@@ -861,7 +861,7 @@ final gamesErrorProvider = AutoDisposeProvider<String?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GamesErrorRef = AutoDisposeProviderRef<String?>;
-String _$gameListHash() => r'a017edea5d16cd06963db3a9ec758f10cbf21500';
+String _$gameListHash() => r'ccef18181e2af687735a74b5f13831a219c8a7a4';
 
 /// Current games list provider - provides latest snapshot for UI
 /// This is the main provider widgets should watch
