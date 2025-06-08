@@ -2,13 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import 'test_helpers.dart';
 
 void main() {
   group('Core Game State Management Tests', () {
     late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer();
+      container = TestHelpers.createTestContainer();
     });
 
     tearDown(() {

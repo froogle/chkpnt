@@ -5,6 +5,7 @@ import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
+import '../test_helpers.dart';
 
 void main() {
   group('GameActionsService', () {
@@ -12,8 +13,8 @@ void main() {
     late GameActionsService service;
     late GameItem testGame;
 
-    setUp(() {
-      container = ProviderContainer();
+    setUp(() async {
+      container = TestHelpers.createTestContainer();
       service = container.read(gameActionsServiceProvider);
       testGame = GameItem(
         id: GameId.generate(),
@@ -25,7 +26,7 @@ void main() {
       );
 
       // Add test game to provider
-      container.read(gameListProvider.notifier).addGame(testGame);
+      await container.read(gameListProvider.notifier).addGame(testGame);
     });
 
     tearDown(() {

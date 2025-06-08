@@ -2,13 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/models/game_models.dart';
+import '../test_helpers.dart';
 
 void main() {
   group('GameProvider Filtering', () {
     late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer();
+      container = TestHelpers.createTestContainer();
     });
 
     tearDown(() {
@@ -18,7 +19,10 @@ void main() {
     group('fullyFilteredGamesProvider', () {
       test(
         'should filter games by status only when platform is "All" and no search',
-        () {
+        () async {
+          // Wait for initial data to load
+          await TestHelpers.waitForGames(container);
+
           final playingGames = container.read(
             fullyFilteredGamesProvider(GameStatus.playing, 'All', ''),
           );
@@ -32,21 +36,27 @@ void main() {
         },
       );
 
-      test('should filter games by platform only when status matches', () {
-        final pcPlayingGames = container.read(
-          fullyFilteredGamesProvider(GameStatus.completed, 'PC', ''),
-        );
+      test(
+        'should filter games by platform only when status matches',
+        () async {
+          // Wait for initial data to load
+          await TestHelpers.waitForGames(container);
 
-        // Should return only PC games that are completed
-        expect(pcPlayingGames.length, 1);
-        expect(
-          pcPlayingGames.every(
-            (game) =>
-                game.platform == 'PC' && game.status == GameStatus.completed,
-          ),
-          true,
-        );
-      });
+          final pcPlayingGames = container.read(
+            fullyFilteredGamesProvider(GameStatus.completed, 'PC', ''),
+          );
+
+          // Should return only PC games that are completed
+          expect(pcPlayingGames.length, 1);
+          expect(
+            pcPlayingGames.every(
+              (game) =>
+                  game.platform == 'PC' && game.status == GameStatus.completed,
+            ),
+            true,
+          );
+        },
+      );
 
       test('should filter games by search query', () {
         final searchResults = container.read(
@@ -227,7 +237,7 @@ void main() {
     late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer();
+      container = TestHelpers.createTestContainer();
     });
 
     tearDown(() {
@@ -451,29 +461,21 @@ void main() {
       expect(updatedGame.status, GameStatus.playing);
     });
 
-    test('markCompleted should set game to completed status', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      // Add a test game using the new createGame method
-      container
-          .read(gameListProvider.notifier)
-          .createGame(
-            title: 'Test Game',
-            platform: 'PC',
-            status: GameStatus.playing,
-          );
-
-      // Get the added game
-      final gamesList = container.read(gameListProvider);
-      final testGame = gamesList.firstWhere((g) => g.title == 'Test Game');
+    test('markCompleted should set game to completed status', () async {
+      // Find a playing game from the test data
+      final games = container.read(gameListProvider);
+      final playingGame = games.firstWhere(
+        (game) => game.status == GameStatus.playing,
+      );
 
       // Mark it as completed
-      container.read(gameListProvider.notifier).markCompleted(testGame.id);
+      await container
+          .read(gameListProvider.notifier)
+          .markCompleted(playingGame.id);
 
       // Get the updated list
       final updatedList = container.read(gameListProvider);
-      final updatedGame = updatedList.firstWhere((g) => g.id == testGame.id);
+      final updatedGame = updatedList.firstWhere((g) => g.id == playingGame.id);
 
       // Verify the game is completed
       expect(updatedGame.status, GameStatus.completed);

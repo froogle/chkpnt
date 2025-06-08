@@ -1,84 +1,62 @@
+import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/repositories/game_repository.dart';
+import 'package:chkpnt/repositories/in_memory_game_repository.dart';
 
 part 'game_provider.g.dart';
 
-// Sample games data - in a real app, this would come from a repository
-final List<GameItem> _sampleGames = [
-  GameItem(
-    id: GameId.generate(),
-    title: 'The Legend of Zelda: Breath of the Wild',
-    platform: 'Switch',
-    status: GameStatus.playing,
-    lastModified: DateTime.now(),
-    lastStatusChange: DateTime.now(),
-  ),
-  GameItem(
-    id: GameId.generate(),
-    title: 'God of War',
-    platform: 'PS5',
-    status: GameStatus.playing,
-    lastModified: DateTime.now(),
-    lastStatusChange: DateTime.now(),
-  ),
-  GameItem(
-    id: GameId.generate(),
-    title: 'Cyberpunk 2077',
-    platform: 'PC',
-    status: GameStatus.completed,
-    lastModified: DateTime.now(),
-    lastStatusChange: DateTime.now(),
-  ),
-  GameItem(
-    id: GameId.generate(),
-    title: 'Red Dead Redemption 2',
-    platform: 'Xbox',
-    status: GameStatus.completed,
-    lastModified: DateTime.now(),
-    lastStatusChange: DateTime.now(),
-  ),
-  GameItem(
-    id: GameId.generate(),
-    title: 'Elden Ring',
-    platform: 'Steam Deck',
-    status: GameStatus.backlog,
-    lastModified: DateTime.now(),
-    lastStatusChange: DateTime.now(),
-  ),
-  GameItem(
-    id: GameId.generate(),
-    title: 'Mass Effect Legendary Edition',
-    platform: 'PC',
-    status: GameStatus.abandoned,
-    lastModified: DateTime.now(),
-    lastStatusChange: DateTime.now(),
-  ),
-];
+// === REPOSITORY LAYER ===
 
-// Main games list provider
+/// Repository provider - this is where you can swap storage implementations
+@riverpod
+GameRepository gameRepository(Ref ref) {
+  final repository = InMemoryGameRepository();
+  ref.onDispose(() => repository.dispose());
+  return repository;
+}
+
+// === STREAMING PROVIDERS ===
+
+/// Main games stream provider - replaces the synchronous gameListProvider
+@riverpod
+Stream<List<GameItem>> gamesStream(Ref ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return repository.watchGames();
+}
+
+/// Current games list provider - provides latest snapshot for UI
+/// This is the main provider widgets should watch
 @riverpod
 class GameList extends _$GameList {
   @override
   List<GameItem> build() {
-    return _sampleGames;
+    // Watch the stream and return current value
+    final gamesAsync = ref.watch(gamesStreamProvider);
+    return gamesAsync.when(
+      data: (games) => games,
+      loading: () => [], // Return empty while loading
+      error: (error, stack) => [], // Return empty on error
+    );
   }
 
   // Add a new game
-  void addGame(GameItem game) {
-    state = [...state, game];
+  Future<void> addGame(GameItem game) async {
+    final repository = ref.read(gameRepositoryProvider);
+    await repository.createGame(game);
   }
 
   /// Convenience method for creating new games without timestamp concerns.
   /// This is the preferred method for UI code to add games as it automatically
   /// handles timestamp generation.
-  void createGame({
+  Future<void> createGame({
     required String title,
     required String platform,
     required GameStatus status,
     String? imagePath,
     String? remoteImageUrl,
-  }) {
+  }) async {
     final game = GameItem.create(
       title: title,
       platform: platform,
@@ -86,70 +64,57 @@ class GameList extends _$GameList {
       imagePath: imagePath,
       remoteImageUrl: remoteImageUrl,
     );
-    addGame(game);
+    await addGame(game);
   }
 
   // Update an existing game
-  void updateGame(GameItem updatedGame) {
-    state = [
-      for (final game in state)
-        if (game.id == updatedGame.id)
-          updatedGame.copyWith(
-            lastModified: DateTime.now(),
-            lastStatusChange:
-                game.status != updatedGame.status
-                    ? DateTime.now()
-                    : game.lastStatusChange,
-          )
-        else
-          game,
-    ];
+  Future<void> updateGame(GameItem updatedGame) async {
+    final repository = ref.read(gameRepositoryProvider);
+    await repository.updateGame(updatedGame);
   }
 
   // Remove a game
-  void removeGame(GameId gameId) {
-    state = state.where((game) => game.id != gameId).toList();
+  Future<void> removeGame(GameId gameId) async {
+    final repository = ref.read(gameRepositoryProvider);
+    await repository.deleteGame(gameId);
   }
 
   // Start playing a game (move from backlog to playing)
-  void startPlaying(GameId gameId) {
-    state = [
-      for (final game in state)
-        if (game.id == gameId)
-          game.copyWith(
-            status: GameStatus.playing,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
-          )
-        else
-          game,
-    ];
+  Future<void> startPlaying(GameId gameId) async {
+    final currentGames = state;
+    final game = currentGames.firstWhere((g) => g.id == gameId);
+    final updatedGame = game.copyWith(
+      status: GameStatus.playing,
+      lastStatusChange: DateTime.now(),
+      lastModified: DateTime.now(),
+    );
+    await updateGame(updatedGame);
   }
 
   // Mark game as completed
-  void markCompleted(GameId gameId) {
-    state = [
-      for (final game in state)
-        if (game.id == gameId)
-          game.copyWith(
-            status: GameStatus.completed,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
-          )
-        else
-          game,
-    ];
+  Future<void> markCompleted(GameId gameId) async {
+    final currentGames = state;
+    final game = currentGames.firstWhere((g) => g.id == gameId);
+    final updatedGame = game.copyWith(
+      status: GameStatus.completed,
+      lastStatusChange: DateTime.now(),
+      lastModified: DateTime.now(),
+    );
+    await updateGame(updatedGame);
   }
 }
 
-// Provider for games filtered by status
+// === DERIVED STREAMING PROVIDERS ===
+// These now work with the streaming data and update automatically
+
+/// Provider for games filtered by status - automatically updates when games change
 @riverpod
 List<GameItem> gamesByStatus(Ref ref, GameStatus status) {
   final games = ref.watch(gameListProvider);
   return games.where((game) => game.status == status).toList();
 }
 
-// Provider for games filtered by platform
+/// Provider for games filtered by platform - automatically updates when games change
 @riverpod
 List<GameItem> gamesByPlatform(Ref ref, String platform) {
   final games = ref.watch(gameListProvider);
@@ -157,7 +122,7 @@ List<GameItem> gamesByPlatform(Ref ref, String platform) {
   return games.where((game) => game.platform == platform).toList();
 }
 
-// Provider for games filtered by both status and platform
+/// Provider for games filtered by both status and platform
 @riverpod
 List<GameItem> filteredGames(Ref ref, GameStatus status, String platform) {
   final games = ref.watch(gameListProvider);
@@ -168,7 +133,7 @@ List<GameItem> filteredGames(Ref ref, GameStatus status, String platform) {
   }).toList();
 }
 
-// Provider for available platforms
+/// Provider for available platforms - automatically updates when games change
 @riverpod
 List<String> availablePlatforms(Ref ref) {
   final games = ref.watch(gameListProvider);
@@ -177,7 +142,7 @@ List<String> availablePlatforms(Ref ref) {
   return ['All', ...platforms];
 }
 
-// Provider for games filtered by search query
+/// Provider for games filtered by search query
 @riverpod
 List<GameItem> searchFilteredGames(Ref ref, String searchQuery) {
   final games = ref.watch(gameListProvider);
@@ -190,7 +155,7 @@ List<GameItem> searchFilteredGames(Ref ref, String searchQuery) {
   }).toList();
 }
 
-// Provider for games filtered by status, platform, and search
+/// Provider for games filtered by status, platform, and search
 @riverpod
 List<GameItem> fullyFilteredGames(
   Ref ref,
@@ -213,4 +178,27 @@ List<GameItem> fullyFilteredGames(
 
     return matchesStatus && matchesPlatform && matchesSearch;
   }).toList();
+}
+
+// === ASYNC STATE PROVIDERS ===
+// These provide loading and error states for better UX
+
+/// Raw async games provider - exposes loading/error states for UI
+@riverpod
+AsyncValue<List<GameItem>> gamesAsync(Ref ref) {
+  return ref.watch(gamesStreamProvider);
+}
+
+/// Loading state provider for UI feedback
+@riverpod
+bool isGamesLoading(Ref ref) {
+  final gamesAsync = ref.watch(gamesAsyncProvider);
+  return gamesAsync.isLoading;
+}
+
+/// Error state provider for error handling
+@riverpod
+String? gamesError(Ref ref) {
+  final gamesAsync = ref.watch(gamesAsyncProvider);
+  return gamesAsync.hasError ? gamesAsync.error.toString() : null;
 }

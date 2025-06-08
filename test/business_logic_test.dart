@@ -4,13 +4,14 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
+import 'test_helpers.dart';
 
 void main() {
   group('Business Logic Tests', () {
     late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer();
+      container = TestHelpers.createTestContainer();
     });
 
     tearDown(() {

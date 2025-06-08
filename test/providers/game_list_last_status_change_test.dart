@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import '../test_helpers.dart';
 
 void main() {
   group('GameList lastStatusChange Integration Tests', () {
@@ -9,8 +10,8 @@ void main() {
     late GameItem testGame;
     late DateTime initialTime;
 
-    setUp(() {
-      container = ProviderContainer();
+    setUp(() async {
+      container = TestHelpers.createTestContainer();
       initialTime = DateTime(2024, 1, 1, 12, 0, 0);
 
       testGame = GameItem(
@@ -23,7 +24,7 @@ void main() {
       );
 
       // Add the test game to the provider
-      container.read(gameListProvider.notifier).addGame(testGame);
+      await container.read(gameListProvider.notifier).addGame(testGame);
     });
 
     tearDown(() {
@@ -31,21 +32,30 @@ void main() {
     });
 
     group('updateGame method behavior', () {
-      test('should preserve lastStatusChange when only title changes', () {
-        final notifier = container.read(gameListProvider.notifier);
+      test(
+        'should preserve lastStatusChange when only title changes',
+        () async {
+          final notifier = container.read(gameListProvider.notifier);
 
-        // Update only the title
-        final updatedGame = testGame.copyWith(title: 'Updated Title');
-        notifier.updateGame(updatedGame);
+          // Update only the title
+          final updatedGame = testGame.copyWith(title: 'Updated Title');
+          await notifier.updateGame(updatedGame);
 
-        final games = container.read(gameListProvider);
-        final savedGame = games.firstWhere((game) => game.id == testGame.id);
+          // Wait for the update to complete
+          await TestHelpers.waitForAsyncOperation();
 
-        expect(savedGame.title, equals('Updated Title'));
-        expect(savedGame.status, equals(GameStatus.backlog)); // Same status
-        expect(savedGame.lastStatusChange, equals(initialTime)); // Unchanged
-        expect(savedGame.lastModified.isAfter(initialTime), isTrue); // Updated
-      });
+          final games = container.read(gameListProvider);
+          final savedGame = games.firstWhere((game) => game.id == testGame.id);
+
+          expect(savedGame.title, equals('Updated Title'));
+          expect(savedGame.status, equals(GameStatus.backlog)); // Same status
+          expect(savedGame.lastStatusChange, equals(initialTime)); // Unchanged
+          expect(
+            savedGame.lastModified.isAfter(initialTime),
+            isTrue,
+          ); // Updated
+        },
+      );
 
       test('should preserve lastStatusChange when only platform changes', () {
         final notifier = container.read(gameListProvider.notifier);

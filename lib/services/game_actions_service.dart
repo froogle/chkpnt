@@ -18,7 +18,7 @@ class GameActionsService {
     await Future.delayed(const Duration(milliseconds: 100));
 
     // Actually move the game
-    _ref.read(gameListProvider.notifier).startPlaying(game.id);
+    await _ref.read(gameListProvider.notifier).startPlaying(game.id);
 
     // Small delay before showing feedback
     await Future.delayed(const Duration(milliseconds: 200));
@@ -36,7 +36,7 @@ class GameActionsService {
 
   /// Handles marking a game as completed
   Future<void> markGameCompleted(GameItem game, BuildContext context) async {
-    _ref.read(gameListProvider.notifier).markCompleted(game.id);
+    await _ref.read(gameListProvider.notifier).markCompleted(game.id);
 
     if (context.mounted) {
       _showGameActionFeedback(
@@ -55,7 +55,7 @@ class GameActionsService {
     BuildContext context,
   ) async {
     // Update the game in the provider
-    _ref.read(gameListProvider.notifier).updateGame(updatedGame);
+    await _ref.read(gameListProvider.notifier).updateGame(updatedGame);
 
     // Determine what changed for appropriate feedback
     final titleChanged = originalGame.title != updatedGame.title;
@@ -95,7 +95,7 @@ class GameActionsService {
   /// Handles adding a new game
   Future<void> addGame(GameItem newGame, BuildContext context) async {
     // Use the provider's createGame method for automatic timestamp handling
-    _ref
+    await _ref
         .read(gameListProvider.notifier)
         .createGame(
           title: newGame.title,
