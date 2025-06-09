@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/shared/widgets/cards/portrait_game_card.dart';
+import 'package:chkpnt/shared/widgets/cards/game_card.dart';
 
 class GameTransitionAnimation extends StatefulWidget {
   final GameItem game;
@@ -99,8 +99,11 @@ class _GameTransitionAnimationState extends State<GameTransitionAnimation>
               ),
             ],
           ),
-          child: PortraitGameCard(
+          child: GameCard(
             game: widget.game,
+            layout: GameCardLayout.overlay,
+            size: GameCardSize.medium,
+            height: 120,
             onTap: () {},
             onPlayPressed: null,
           ),
