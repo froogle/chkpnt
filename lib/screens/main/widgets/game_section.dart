@@ -111,17 +111,15 @@ class GameSection extends ConsumerWidget {
   GridLayoutConfiguration _getLayoutConfiguration() {
     if (isLandscape) {
       final columns = crossAxisCount ?? 5;
-      // Adjust aspect ratio based on number of columns to maintain consistent tile sizes
-      final aspectRatio = columns >= 6 ? 0.8 : 0.75;
       return GridLayoutConfiguration(
         columns: columns,
-        aspectRatio: aspectRatio,
+        aspectRatio: 0.85, // Adjusted to make the card portion square
         spacing: 8, // Tighter spacing in landscape to fit more games
       );
     } else {
       return GridLayoutConfiguration(
         columns: 3,
-        aspectRatio: 0.7, // Portrait tiles are slightly taller
+        aspectRatio: 0.85, // Adjusted to make the card portion square
         spacing: 12,
       );
     }

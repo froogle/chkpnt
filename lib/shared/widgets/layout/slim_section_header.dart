@@ -58,28 +58,37 @@ class SlimSectionHeader extends StatelessWidget {
   }
 
   Widget _buildTitle() {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primaryText,
-              letterSpacing: 0.3,
+    return ShaderMask(
+      shaderCallback:
+          (bounds) => const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.black, AppColors.primaryPurple, Colors.black],
+            stops: [0.2, 0.5, 0.8],
+          ).createShader(bounds),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: 0.3,
+              ),
             ),
-          ),
-          TextSpan(
-            text: ' ($gameCount)',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: AppColors.primaryText.withValues(alpha: 0.7),
-              letterSpacing: 0.2,
+            TextSpan(
+              text: ' ($gameCount)',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                letterSpacing: 0.2,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
