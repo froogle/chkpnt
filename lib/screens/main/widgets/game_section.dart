@@ -126,19 +126,55 @@ class GameSection extends ConsumerWidget {
   }
 
   Widget _buildAnimatedGameTile(GameItem game) {
-    return AnimatedOpacity(
-      opacity: isAnimating && animatingGame?.id == game.id ? 0.0 : 1.0,
-      duration: const Duration(milliseconds: 200),
-      child: GameCard(
-        game: game,
-        layout: GameCardLayout.compact,
-        size: GameCardSize.small,
-        onTap: () => onGameTap(game),
-        onPlayPressed:
-            game.status == GameStatus.backlog
-                ? () => onPlayPressed?.call(game)
-                : null,
-      ),
+    // Handle fade-out for games leaving backlog
+    if (status == GameStatus.backlog &&
+        isAnimating &&
+        animatingGame?.id == game.id) {
+      return AnimatedOpacity(
+        opacity: 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: GameCard(
+          game: game,
+          layout: GameCardLayout.compact,
+          size: GameCardSize.small,
+          onTap: () => onGameTap(game),
+          onPlayPressed: () => onPlayPressed?.call(game),
+        ),
+      );
+    }
+
+    // Handle fade-in for games entering playing
+    if (status == GameStatus.playing &&
+        isAnimating &&
+        animatingGame?.id == game.id) {
+      return TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 400),
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, opacity, child) {
+          return Opacity(
+            opacity: opacity,
+            child: GameCard(
+              game: game,
+              layout: GameCardLayout.compact,
+              size: GameCardSize.small,
+              onTap: () => onGameTap(game),
+              onPlayPressed: null, // No play button for playing games
+            ),
+          );
+        },
+      );
+    }
+
+    // Default state - fully visible
+    return GameCard(
+      game: game,
+      layout: GameCardLayout.compact,
+      size: GameCardSize.small,
+      onTap: () => onGameTap(game),
+      onPlayPressed:
+          game.status == GameStatus.backlog
+              ? () => onPlayPressed?.call(game)
+              : null,
     );
   }
 }
