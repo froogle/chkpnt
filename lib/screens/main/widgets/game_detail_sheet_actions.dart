@@ -4,12 +4,14 @@ import 'package:chkpnt/styles/styles.dart';
 class GameDetailSheetActions extends StatelessWidget {
   final VoidCallback? onEditPressed;
   final VoidCallback? onSavePressed;
+  final VoidCallback? onDeletePressed;
   final bool hasChanges;
 
   const GameDetailSheetActions({
     super.key,
     this.onEditPressed,
     this.onSavePressed,
+    this.onDeletePressed,
     required this.hasChanges,
   });
 
@@ -17,8 +19,10 @@ class GameDetailSheetActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        _buildDeleteButton(),
+        SizedBox(width: InputStyles.actionButtonSpacing),
         _buildEditButton(),
-        const SizedBox(width: GameDetailSheetStyles.actionButtonSpacing),
+        SizedBox(width: InputStyles.actionButtonSpacing),
         _buildSaveButton(),
       ],
     );
@@ -26,40 +30,40 @@ class GameDetailSheetActions extends StatelessWidget {
 
   Widget _buildEditButton() {
     return Expanded(
-      child: OutlinedButton.icon(
+      child: OutlinedButton(
         onPressed: onEditPressed,
-        icon: const Icon(Icons.edit),
-        label: const Text('Edit Game'),
-        style: _buildEditButtonStyle(),
-      ),
-    );
-  }
-
-  ButtonStyle _buildEditButtonStyle() {
-    return OutlinedButton.styleFrom(
-      padding: GameDetailSheetStyles.actionButtonPadding,
-      shape: const RoundedRectangleBorder(
-        borderRadius: GameDetailSheetStyles.actionButtonBorderRadius,
+        style: InputStyles.secondaryActionButtonStyle,
+        child: const Text('Edit'),
       ),
     );
   }
 
   Widget _buildSaveButton() {
     return Expanded(
-      child: ElevatedButton.icon(
+      child: InputStyles.primaryActionButton(
         onPressed: hasChanges ? onSavePressed : null,
-        icon: const Icon(Icons.save),
-        label: const Text('Save Changes'),
-        style: _buildSaveButtonStyle(),
+        enabled: hasChanges,
+        child: Text(
+          'Save',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: hasChanges ? Colors.white : AppColors.expandIcon,
+          ),
+        ),
       ),
     );
   }
 
-  ButtonStyle _buildSaveButtonStyle() {
-    return ElevatedButton.styleFrom(
-      padding: GameDetailSheetStyles.actionButtonPadding,
-      shape: const RoundedRectangleBorder(
-        borderRadius: GameDetailSheetStyles.actionButtonBorderRadius,
+  Widget _buildDeleteButton() {
+    return Expanded(
+      child: OutlinedButton(
+        onPressed: onDeletePressed,
+        style: InputStyles.secondaryActionButtonStyle.copyWith(
+          foregroundColor: WidgetStateProperty.all(Colors.red),
+          side: WidgetStateProperty.all(const BorderSide(color: Colors.red)),
+        ),
+        child: const Text('Delete'),
       ),
     );
   }

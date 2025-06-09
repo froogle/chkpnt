@@ -15,30 +15,16 @@ class GameStatusSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildStatusSectionTitle(),
-        const SizedBox(height: 12),
-        _buildStatusGrid(),
-      ],
-    );
-  }
-
-  Widget _buildStatusSectionTitle() {
-    return const Text(
-      'Change Status',
-      style: GameDetailSheetStyles.sectionTitleStyle,
-    );
+    return _buildStatusGrid();
   }
 
   Widget _buildStatusGrid() {
     const statuses = [
-      GameStatus.wishlist,
-      GameStatus.abandoned,
-      GameStatus.completed,
-      GameStatus.backlog,
       GameStatus.playing,
+      GameStatus.backlog,
+      GameStatus.completed,
+      GameStatus.abandoned,
+      GameStatus.wishlist,
     ];
 
     return LayoutBuilder(
@@ -52,40 +38,60 @@ class GameStatusSelector extends StatelessWidget {
     List<GameStatus> statuses,
     BoxConstraints constraints,
   ) {
-    final isWide = constraints.maxWidth > 400;
-    final crossAxisCount = isWide ? 5 : 2;
+    // Calculate button width based on available space
+    const spacing = InputStyles.statusButtonSpacing;
+    final availableWidth = constraints.maxWidth;
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: _buildStatusGridDelegate(crossAxisCount, isWide),
-      itemCount: statuses.length,
-      itemBuilder: (context, index) => _buildStatusGridItem(statuses[index]),
+    // Determine layout based on orientation and available space
+    int buttonsPerRow;
+
+    // Landscape approach: Maximum 4-wide to prevent overflow
+    if (availableWidth >= 300) {
+      // Try for 4-wide with generous requirements
+      final minButtonWidthFor4 = 75.0; // Reasonable size for 4-wide
+      final widthNeededFor4 = (minButtonWidthFor4 * 4) + (spacing * 3);
+
+      if (availableWidth >= widthNeededFor4) {
+        buttonsPerRow = 4;
+      } else {
+        // Force 4-wide if buttons can be at least 65px wide
+        final actualButtonWidth = (availableWidth - (spacing * 3)) / 4;
+        if (actualButtonWidth >= 65.0) {
+          buttonsPerRow = 4;
+        } else {
+          buttonsPerRow = 3;
+        }
+      }
+    } else {
+      // Smaller screens - use 3-wide
+      buttonsPerRow = 3;
+    }
+
+    final buttonWidth =
+        (availableWidth - (spacing * (buttonsPerRow - 1))) / buttonsPerRow;
+
+    return Wrap(
+      spacing: spacing,
+      runSpacing: spacing, // Use consistent spacing for both directions
+      alignment: WrapAlignment.start, // Left-align buttons
+      children:
+          statuses
+              .map((status) => _buildStatusButton(status, buttonWidth))
+              .toList(),
     );
   }
 
-  SliverGridDelegateWithFixedCrossAxisCount _buildStatusGridDelegate(
-    int crossAxisCount,
-    bool isWide,
-  ) {
-    return SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: crossAxisCount,
-      childAspectRatio:
-          isWide
-              ? GameDetailSheetStyles.statusButtonAspectRatioWide
-              : GameDetailSheetStyles.statusButtonAspectRatio,
-      crossAxisSpacing: GameDetailSheetStyles.statusGridCrossAxisSpacing,
-      mainAxisSpacing: GameDetailSheetStyles.statusGridMainAxisSpacing,
-    );
-  }
-
-  Widget _buildStatusGridItem(GameStatus status) {
+  Widget _buildStatusButton(GameStatus status, double buttonWidth) {
     final isSelected = status == selectedStatus;
 
-    return StatusButton(
-      status: status,
-      isSelected: isSelected,
-      onTap: () => onStatusChanged(status),
+    return SizedBox(
+      width: buttonWidth,
+      height: InputStyles.statusButtonHeight,
+      child: StatusButton(
+        status: status,
+        isSelected: isSelected,
+        onTap: () => onStatusChanged(status),
+      ),
     );
   }
 }

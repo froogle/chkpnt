@@ -209,9 +209,89 @@ class _PlatformEditDropdownState extends State<PlatformEditDropdown> {
 
   void _handlePlatformSelection(String platform) {
     if (platform.isNotEmpty && platform != widget.selectedPlatform) {
-      widget.onPlatformChanged(platform);
-      _textController.text = platform;
+      final abbreviatedPlatform = _getAbbreviatedPlatformName(platform);
+      widget.onPlatformChanged(abbreviatedPlatform);
+      _textController.text = abbreviatedPlatform;
     }
     Navigator.of(context).pop();
+  }
+
+  String _getAbbreviatedPlatformName(String platform) {
+    final normalised = platform.trim();
+
+    // Convert common long platform names to abbreviations
+    switch (normalised.toLowerCase()) {
+      case 'game boy advance':
+      case 'gameboy advance':
+        return 'GBA';
+      case 'game boy color':
+      case 'gameboy color':
+        return 'GBC';
+      case 'game boy':
+      case 'gameboy':
+        return 'GB';
+      case 'nintendo switch':
+        return 'Switch';
+      case 'nintendo 3ds':
+        return '3DS';
+      case 'nintendo ds':
+        return 'DS';
+      case 'nintendo entertainment system':
+      case 'nes':
+        return 'NES';
+      case 'super nintendo':
+      case 'super nintendo entertainment system':
+      case 'snes':
+        return 'SNES';
+      case 'nintendo 64':
+        return 'N64';
+      case 'nintendo gamecube':
+      case 'gamecube':
+        return 'GameCube';
+      case 'nintendo wii':
+        return 'Wii';
+      case 'nintendo wii u':
+        return 'Wii U';
+      case 'playstation':
+      case 'playstation 1':
+        return 'PS1';
+      case 'playstation 2':
+        return 'PS2';
+      case 'playstation 3':
+        return 'PS3';
+      case 'playstation 4':
+        return 'PS4';
+      case 'playstation 5':
+        return 'PS5';
+      case 'playstation portable':
+        return 'PSP';
+      case 'playstation vita':
+        return 'PS Vita';
+      case 'xbox':
+      case 'original xbox':
+        return 'Xbox';
+      case 'xbox 360':
+        return 'Xbox 360';
+      case 'xbox one':
+        return 'Xbox One';
+      case 'xbox series x':
+      case 'xbox series s':
+      case 'xbox series x/s':
+        return 'Xbox Series';
+      case 'steam deck':
+        return 'Steam Deck';
+      case 'personal computer':
+        return 'PC';
+      case 'mobile':
+      case 'ios':
+      case 'android':
+        return normalised; // Keep mobile platforms as-is
+      default:
+        // For unknown platforms, keep original if reasonable length
+        // or truncate if too long
+        return normalised.length > 12
+            ? '${normalised.substring(0, 12)}...'
+            : normalised;
+    }
   }
 }

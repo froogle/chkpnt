@@ -63,6 +63,133 @@ class InputStyles {
     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
   );
 
+  // ========================================
+  // Status Button Styles (Standardized)
+  // ========================================
+
+  /// Dimensions and spacing for status buttons (used across the app)
+  static const double statusButtonHeight = 36.0;
+  static const double statusButtonIconSize = 16.0;
+  static const double statusButtonSpacing = 10.0;
+  static const double statusButtonVerticalSpacing = 4.0;
+  static const double statusButtonFontSize = 10.0;
+  static const BorderRadius statusButtonBorderRadius = BorderRadius.all(
+    Radius.circular(18), // Pill-like appearance
+  );
+  static const EdgeInsets statusButtonContentPadding = EdgeInsets.symmetric(
+    horizontal: 8,
+    vertical: 6,
+  );
+
+  /// Status button decoration - works for both selected and unselected states
+  static BoxDecoration statusButtonDecoration(bool isSelected) => BoxDecoration(
+    gradient:
+        isSelected
+            ? LinearGradient(
+              colors: [
+                AppColors.primaryPurple.withValues(alpha: 0.15),
+                AppColors.secondaryPurple.withValues(alpha: 0.1),
+              ],
+            )
+            : AppGradients.cardGradient,
+    borderRadius: statusButtonBorderRadius,
+    border: Border.all(
+      color:
+          isSelected
+              ? AppColors.primaryPurple.withValues(alpha: 0.4)
+              : AppColors.primaryPurple.withValues(alpha: 0.2),
+      width: isSelected ? 2 : 1,
+    ),
+    boxShadow: isSelected ? AppShadows.subtleElevation : null,
+  );
+
+  /// Status button text style - adapts based on selection state
+  static TextStyle statusButtonTextStyle(bool isSelected) => TextStyle(
+    fontSize: statusButtonFontSize,
+    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+    color: isSelected ? AppColors.primaryPurple : AppColors.expandIcon,
+    letterSpacing: 0.2,
+  );
+
+  // ========================================
+  // Action Button Styles (Standardized)
+  // ========================================
+
+  /// Compact action button dimensions (used for Edit/Save buttons)
+  static const double actionButtonCompactHeight = 36.0;
+  static const EdgeInsets actionButtonCompactPadding = EdgeInsets.symmetric(
+    vertical: 8,
+    horizontal: 16,
+  );
+  static const BorderRadius actionButtonBorderRadius = BorderRadius.all(
+    Radius.circular(12),
+  );
+  static const double actionButtonSpacing = 12.0;
+
+  /// Primary action button style (for Save Changes, etc.)
+  static ButtonStyle get primaryActionButtonStyle => ElevatedButton.styleFrom(
+    backgroundColor: Colors.transparent,
+    foregroundColor: Colors.white,
+    elevation: 0,
+    shadowColor: Colors.transparent,
+    shape: RoundedRectangleBorder(borderRadius: actionButtonBorderRadius),
+    padding: actionButtonCompactPadding,
+    minimumSize: Size(0, actionButtonCompactHeight),
+    textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+  ).copyWith(backgroundColor: WidgetStateProperty.all(Colors.transparent));
+
+  /// Secondary action button style (for Edit Game, etc.)
+  static ButtonStyle get secondaryActionButtonStyle => OutlinedButton.styleFrom(
+    backgroundColor: Colors.white,
+    foregroundColor: AppColors.primaryPurple,
+    elevation: 0,
+    side: BorderSide(
+      color: AppColors.primaryPurple.withValues(alpha: 0.3),
+      width: 1.5,
+    ),
+    shape: RoundedRectangleBorder(borderRadius: actionButtonBorderRadius),
+    padding: actionButtonCompactPadding,
+    minimumSize: Size(0, actionButtonCompactHeight),
+    textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+  );
+
+  /// Helper widget for primary action buttons with gradient background
+  static Widget primaryActionButton({
+    required Widget child,
+    required VoidCallback? onPressed,
+    bool enabled = true,
+  }) {
+    return Container(
+      height: actionButtonCompactHeight,
+      decoration: BoxDecoration(
+        gradient: enabled ? AppGradients.buttonGradient : null,
+        color: enabled ? null : AppColors.expandIcon.withValues(alpha: 0.3),
+        borderRadius: actionButtonBorderRadius,
+        boxShadow:
+            enabled
+                ? [
+                  BoxShadow(
+                    color: AppColors.primaryPurple.withValues(alpha: 0.2),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ]
+                : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: enabled ? onPressed : null,
+          borderRadius: actionButtonBorderRadius,
+          child: Container(
+            padding: actionButtonCompactPadding,
+            child: Center(child: child),
+          ),
+        ),
+      ),
+    );
+  }
+
   // Filter button padding
   static const EdgeInsets filterButtonPadding = EdgeInsets.symmetric(
     horizontal: 6.0,

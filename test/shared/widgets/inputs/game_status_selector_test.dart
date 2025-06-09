@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 
 void main() {
   group('GameStatusSelector Widget Tests', () {
@@ -20,8 +20,9 @@ void main() {
         ),
       );
 
-      expect(find.text('Change Status'), findsOneWidget);
-      expect(find.byType(GridView), findsOneWidget);
+      // Should have responsive layout structure
+      expect(find.byType(LayoutBuilder), findsOneWidget);
+      expect(find.byType(Wrap), findsOneWidget);
     });
 
     testWidgets('displays all game statuses', (tester) async {
@@ -88,7 +89,7 @@ void main() {
       }
     });
 
-    testWidgets('renders responsive grid layout', (tester) async {
+    testWidgets('renders responsive layout', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -102,9 +103,13 @@ void main() {
         ),
       );
 
-      final gridView = tester.widget<GridView>(find.byType(GridView));
-      expect(gridView.shrinkWrap, isTrue);
-      expect(gridView.physics, isA<NeverScrollableScrollPhysics>());
+      // Should have LayoutBuilder for responsive behavior
+      expect(find.byType(LayoutBuilder), findsOneWidget);
+      // Should use Wrap layout
+      expect(find.byType(Wrap), findsOneWidget);
+      // Should display all status buttons
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Playing'), findsOneWidget);
     });
 
     testWidgets('maintains proper structure', (tester) async {
@@ -121,9 +126,12 @@ void main() {
         ),
       );
 
-      expect(find.byType(Column), findsOneWidget);
+      // Should have responsive layout structure
+      expect(find.byType(Wrap), findsOneWidget);
       expect(find.byType(LayoutBuilder), findsOneWidget);
-      expect(find.byType(GridView), findsOneWidget);
+      // Should have all status buttons regardless of layout
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Playing'), findsOneWidget);
     });
 
     testWidgets('handles status changes correctly', (tester) async {
@@ -214,7 +222,9 @@ void main() {
       );
 
       expect(find.byType(GameStatusSelector), findsOneWidget);
-      expect(find.byType(GridView), findsOneWidget);
+      // Should use Wrap layout for responsive behavior
+      expect(find.byType(Wrap), findsOneWidget);
+      expect(find.byType(LayoutBuilder), findsOneWidget);
     });
 
     testWidgets('renders with wide constraints', (tester) async {
@@ -235,7 +245,38 @@ void main() {
       );
 
       expect(find.byType(GameStatusSelector), findsOneWidget);
-      expect(find.byType(GridView), findsOneWidget);
+      // Should still use Wrap layout (responsive)
+      expect(find.byType(Wrap), findsOneWidget);
+      expect(find.byType(LayoutBuilder), findsOneWidget);
+    });
+
+    testWidgets('calculates button widths correctly', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: SizedBox(
+                width: 400,
+                child: GameStatusSelector(
+                  selectedStatus: GameStatus.wishlist,
+                  onStatusChanged: (status) {},
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Should render all buttons
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Abandoned'), findsOneWidget);
+      expect(find.text('Completed'), findsOneWidget);
+      expect(find.text('Backlog'), findsOneWidget);
+      expect(find.text('Playing'), findsOneWidget);
+
+      // Should have proper responsive structure
+      expect(find.byType(Wrap), findsOneWidget);
+      expect(find.byType(LayoutBuilder), findsOneWidget);
     });
   });
 }

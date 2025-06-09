@@ -23,7 +23,7 @@ class StatusButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          decoration: GameDetailSheetStyles.statusButtonDecoration(isSelected),
+          decoration: InputStyles.statusButtonDecoration(isSelected),
           child: _buildContent(),
         ),
       ),
@@ -31,69 +31,53 @@ class StatusButton extends StatelessWidget {
   }
 
   Widget _buildContent() {
-    return Center(
-      child: Padding(
-        padding: GameDetailSheetStyles.statusButtonContentPadding,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildStatusIcon(),
-            const SizedBox(width: GameDetailSheetStyles.statusButtonSpacing),
-            Flexible(
-              child: Text(
-                _getStatusDisplayText(),
-                style: GameDetailSheetStyles.statusButtonTextStyle(isSelected),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
+    return Padding(
+      padding: InputStyles.statusButtonContentPadding,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildIcon(),
+          SizedBox(width: InputStyles.statusButtonVerticalSpacing),
+          _buildLabel(),
+        ],
       ),
     );
   }
 
-  Widget _buildStatusIcon() {
+  Widget _buildIcon() {
+    return Icon(
+      _getStatusIcon(),
+      size: InputStyles.statusButtonIconSize,
+      color: _getIconColor(),
+    );
+  }
+
+  Widget _buildLabel() {
+    return Text(
+      _getStatusLabel(),
+      style: InputStyles.statusButtonTextStyle(isSelected),
+    );
+  }
+
+  IconData _getStatusIcon() {
     switch (status) {
-      case GameStatus.completed:
-        return const Icon(
-          Icons.check_circle,
-          color: Colors.green,
-          size: GameDetailSheetStyles.statusButtonIconSize,
-        );
       case GameStatus.playing:
-        return const Icon(
-          Icons.play_circle_fill,
-          color: Colors.orange,
-          size: GameDetailSheetStyles.statusButtonIconSize,
-        );
-      case GameStatus.abandoned:
-        return const Icon(
-          Icons.pause_circle_filled,
-          color: Colors.grey,
-          size: GameDetailSheetStyles.statusButtonIconSize,
-        );
+        return Icons.play_circle_filled;
+      case GameStatus.completed:
+        return Icons.check_circle;
       case GameStatus.backlog:
-        return const Icon(
-          Icons.playlist_add,
-          color: Colors.blue,
-          size: GameDetailSheetStyles.statusButtonIconSize,
-        );
+        return Icons.list;
+      case GameStatus.abandoned:
+        return Icons.pause_circle_filled;
       case GameStatus.wishlist:
-        return const Icon(
-          Icons.favorite_outline,
-          color: Colors.red,
-          size: GameDetailSheetStyles.statusButtonIconSize,
-        );
+        return Icons.favorite;
       case GameStatus.ordered:
-        return const Icon(
-          Icons.shopping_cart,
-          color: Colors.purple,
-          size: GameDetailSheetStyles.statusButtonIconSize,
-        );
+        return Icons.shopping_cart;
     }
   }
 
-  String _getStatusDisplayText() {
+  String _getStatusLabel() {
     switch (status) {
       case GameStatus.playing:
         return 'Playing';
@@ -108,5 +92,9 @@ class StatusButton extends StatelessWidget {
       case GameStatus.ordered:
         return 'Ordered';
     }
+  }
+
+  Color _getIconColor() {
+    return isSelected ? AppColors.primaryPurple : AppColors.expandIcon;
   }
 }

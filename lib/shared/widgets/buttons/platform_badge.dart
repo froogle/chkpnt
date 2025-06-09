@@ -15,12 +15,9 @@ class PlatformBadge extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Ink(
-          padding: GameDetailSheetStyles.platformBadgePadding,
-          decoration: GameDetailSheetStyles.platformBadgeDecoration,
-          child: Text(
-            platform,
-            style: GameDetailSheetStyles.platformBadgeTextStyle,
-          ),
+          padding: AppLayout.platformBadgePadding,
+          decoration: AppLayout.platformBadgeDecoration,
+          child: Text(platform, style: AppLayout.platformBadgeTextStyle),
         ),
       ),
     );

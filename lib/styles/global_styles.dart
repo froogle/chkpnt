@@ -10,6 +10,39 @@ TextStyle get onboardingWelcomeTextStyle => TextStyle(
   ],
 );
 
+/// Standardized heading style with gradient - used for section titles throughout the app
+class AppHeadingStyles {
+  /// Creates a gradient heading widget with consistent styling
+  static Widget gradientHeading(String text, {double fontSize = 14.0}) {
+    return ShaderMask(
+      shaderCallback:
+          (bounds) => const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.black, AppColors.primaryPurple, Colors.black],
+            stops: [0.2, 0.5, 0.8],
+          ).createShader(bounds),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.w700,
+          color: Colors.white, // This will be masked by the gradient
+          letterSpacing: 0.3,
+        ),
+      ),
+    );
+  }
+
+  /// Standard section heading style
+  static const TextStyle sectionHeading = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: AppColors.primaryText,
+    letterSpacing: 0.3,
+  );
+}
+
 /// Global colour palette - Modern purple gradient scheme
 class AppColors {
   // Primary purple colours
@@ -149,4 +182,157 @@ class AppShadows {
       spreadRadius: 0,
     ),
   ];
+}
+
+/// Global layout and container styles
+class AppLayout {
+  // ========================================
+  // Sheet/Modal Styles (Standardized)
+  // ========================================
+
+  /// Standard content padding for sheets and modals
+  static const EdgeInsets sheetContentPadding = EdgeInsets.fromLTRB(
+    24,
+    20,
+    20,
+    28,
+  );
+  static const EdgeInsets sheetContentPaddingLandscape = EdgeInsets.fromLTRB(
+    24,
+    16,
+    12,
+    24,
+  );
+
+  /// Standard spacing values for sheets
+  static const double sheetSectionSpacing = 24.0;
+  static const double sheetSectionSpacingLandscape = 20.0;
+  static const double sheetHeaderSpacing = 12.0;
+  static const double sheetHeaderSpacingLandscape = 8.0;
+
+  /// Modern sheet decoration with gradient and border
+  static BoxDecoration get sheetDecoration => BoxDecoration(
+    gradient: AppGradients.cardGradient,
+    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    border: Border.all(
+      color: AppColors.primaryPurple.withValues(alpha: 0.2),
+      width: 1,
+    ),
+    boxShadow: [
+      ...AppShadows.cardElevation,
+      BoxShadow(
+        color: AppColors.primaryPurple.withValues(alpha: 0.1),
+        blurRadius: 20,
+        spreadRadius: 0,
+        offset: Offset(0, -8),
+      ),
+    ],
+  );
+
+  /// Close button decoration for sheets and modals
+  static BoxDecoration get closeButtonDecoration => BoxDecoration(
+    gradient: LinearGradient(colors: [Colors.grey[50]!, Colors.grey[100]!]),
+    borderRadius: BorderRadius.circular(24),
+    border: Border.all(
+      color: AppColors.primaryPurple.withValues(alpha: 0.2),
+      width: 1,
+    ),
+    boxShadow: AppShadows.subtleElevation,
+  );
+
+  static const EdgeInsets closeButtonPadding = EdgeInsets.all(10);
+  static const BoxConstraints closeButtonConstraints = BoxConstraints(
+    minWidth: 44,
+    minHeight: 44,
+  );
+  static const double closeButtonIconSize = 22.0;
+  static const double closeButtonTopMargin = 6.0;
+  static const double closeButtonRightMargin = 12.0;
+
+  // ========================================
+  // Image Container Styles (Standardized)
+  // ========================================
+
+  /// Standard game image dimensions
+  static const double gameImageHeight = 120.0;
+  static const double gameImageWidthPortrait = 140.0;
+  static const double gameImageIconSize = 48.0;
+  static const BorderRadius gameImageBorderRadius = BorderRadius.all(
+    Radius.circular(16),
+  );
+
+  /// Game image container decoration
+  static BoxDecoration get gameImageDecoration => BoxDecoration(
+    borderRadius: gameImageBorderRadius,
+    gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [AppColors.background, AppColors.collapsibleSection],
+    ),
+    border: Border.all(
+      color: AppColors.primaryPurple.withValues(alpha: 0.2),
+      width: 1,
+    ),
+    boxShadow: AppShadows.subtleElevation,
+  );
+
+  // ========================================
+  // Badge Styles (Standardized)
+  // ========================================
+
+  /// Platform badge styling
+  static const EdgeInsets platformBadgePadding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 8,
+  );
+  static const BorderRadius platformBadgeBorderRadius = BorderRadius.all(
+    Radius.circular(20),
+  );
+
+  static BoxDecoration get platformBadgeDecoration => BoxDecoration(
+    gradient: LinearGradient(
+      colors: [
+        AppColors.primaryPurple.withValues(alpha: 0.1),
+        AppColors.secondaryPurple.withValues(alpha: 0.05),
+      ],
+    ),
+    borderRadius: platformBadgeBorderRadius,
+    border: Border.all(
+      color: AppColors.primaryPurple.withValues(alpha: 0.3),
+      width: 1,
+    ),
+  );
+
+  static TextStyle get platformBadgeTextStyle => TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primaryPurple,
+    letterSpacing: 0.3,
+  );
+
+  // ========================================
+  // Typography Styles (Standardized)
+  // ========================================
+
+  /// Standard title styles for detail views
+  static const TextStyle detailTitleStyle = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: AppColors.primaryText,
+    letterSpacing: 0.4,
+  );
+
+  static const TextStyle detailSubtitleStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.expandIcon,
+    letterSpacing: 0.2,
+  );
+
+  static const TextStyle detailSectionTitleStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: AppColors.primaryText,
+    letterSpacing: 0.3,
+  );
 }

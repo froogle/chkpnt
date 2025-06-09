@@ -37,7 +37,7 @@ class GameDetailSheetInfo extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-        child: Text(game.title, style: GameDetailSheetStyles.gameTitleStyle),
+        child: Text(game.title, style: AppLayout.detailTitleStyle),
       ),
     );
   }
@@ -68,7 +68,7 @@ class GameDetailSheetInfo extends StatelessWidget {
       children: [
         Row(
           children: [
-            PlatformBadge(platform: game.platform, onTap: onEditPressed),
+            _buildCompactPlatformBadge(),
             const SizedBox(width: 12),
             _buildCurrentStatusIcon(),
             const SizedBox(width: 8),
@@ -79,43 +79,146 @@ class GameDetailSheetInfo extends StatelessWidget {
     );
   }
 
+  Widget _buildCompactPlatformBadge() {
+    final displayPlatform = _getCompactPlatformName(game.platform);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onEditPressed,
+        borderRadius: BorderRadius.circular(4),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: _getStatusColor().withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(_getStatusIcon(), size: 14, color: Colors.white),
+              const SizedBox(width: 6),
+              Text(
+                displayPlatform,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getCompactPlatformName(String platform) {
+    switch (platform.toLowerCase()) {
+      case 'gameboy advance':
+      case 'game boy advance':
+        return 'GBA';
+      case 'nintendo switch':
+        return 'Switch';
+      case 'nintendo 3ds':
+        return '3DS';
+      case 'nintendo ds':
+        return 'DS';
+      case 'playstation 5':
+        return 'PS5';
+      case 'playstation 4':
+        return 'PS4';
+      case 'playstation 3':
+        return 'PS3';
+      case 'playstation 2':
+        return 'PS2';
+      case 'xbox series x':
+      case 'xbox series s':
+        return 'Xbox';
+      case 'xbox one':
+        return 'Xbox One';
+      case 'steam deck':
+        return 'Steam';
+      default:
+        return platform.length > 8
+            ? '${platform.substring(0, 8)}...'
+            : platform;
+    }
+  }
+
+  Color _getStatusColor() {
+    switch (game.status) {
+      case GameStatus.playing:
+        return Colors.orange;
+      case GameStatus.completed:
+        return Colors.green;
+      case GameStatus.backlog:
+        return Colors.blue;
+      case GameStatus.abandoned:
+        return Colors.grey;
+      case GameStatus.wishlist:
+        return Colors.red;
+      case GameStatus.ordered:
+        return Colors.purple;
+    }
+  }
+
+  IconData _getStatusIcon() {
+    switch (game.status) {
+      case GameStatus.playing:
+        return Icons.play_circle_fill;
+      case GameStatus.completed:
+        return Icons.check_circle;
+      case GameStatus.backlog:
+        return Icons.schedule;
+      case GameStatus.abandoned:
+        return Icons.pause_circle_filled;
+      case GameStatus.wishlist:
+        return Icons.favorite;
+      case GameStatus.ordered:
+        return Icons.shopping_cart;
+    }
+  }
+
   Widget _buildCurrentStatusIcon() {
     switch (game.status) {
       case GameStatus.completed:
-        return const Icon(
+        return Icon(
           Icons.check_circle,
-          color: Colors.green,
-          size: GameDetailSheetStyles.statusButtonIconSize,
+          color: AppColors.primaryPurple,
+          size: InputStyles.statusButtonIconSize,
         );
       case GameStatus.playing:
-        return const Icon(
-          Icons.play_circle_fill,
-          color: Colors.orange,
-          size: GameDetailSheetStyles.statusButtonIconSize,
+        return Icon(
+          Icons.play_circle_filled,
+          color: AppColors.primaryPurple,
+          size: InputStyles.statusButtonIconSize,
         );
       case GameStatus.abandoned:
-        return const Icon(
+        return Icon(
           Icons.pause_circle_filled,
-          color: Colors.grey,
-          size: GameDetailSheetStyles.statusButtonIconSize,
+          color: AppColors.expandIcon,
+          size: InputStyles.statusButtonIconSize,
         );
       case GameStatus.backlog:
-        return const Icon(
-          Icons.playlist_add,
-          color: Colors.blue,
-          size: GameDetailSheetStyles.statusButtonIconSize,
+        return Icon(
+          Icons.list,
+          color: AppColors.primaryPurple,
+          size: InputStyles.statusButtonIconSize,
         );
       case GameStatus.wishlist:
-        return const Icon(
-          Icons.favorite_outline,
-          color: Colors.red,
-          size: GameDetailSheetStyles.statusButtonIconSize,
+        return Icon(
+          Icons.favorite,
+          color: AppColors.primaryPurple,
+          size: InputStyles.statusButtonIconSize,
         );
       case GameStatus.ordered:
-        return const Icon(
+        return Icon(
           Icons.shopping_cart,
-          color: Colors.purple,
-          size: GameDetailSheetStyles.statusButtonIconSize,
+          color: AppColors.primaryPurple,
+          size: InputStyles.statusButtonIconSize,
         );
     }
   }
@@ -123,7 +226,7 @@ class GameDetailSheetInfo extends StatelessWidget {
   Widget _buildCurrentStatusText() {
     return Text(
       'Current Status: ${_getStatusDisplayText(game.status)}',
-      style: GameDetailSheetStyles.currentStatusStyle,
+      style: AppLayout.detailSubtitleStyle,
     );
   }
 
