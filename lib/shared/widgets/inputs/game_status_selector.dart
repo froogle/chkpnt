@@ -30,11 +30,12 @@ class GameStatusSelector extends StatelessWidget {
     return LayoutBuilder(
       builder:
           (context, constraints) =>
-              _buildResponsiveStatusGrid(statuses, constraints),
+              _buildResponsiveStatusGrid(context, statuses, constraints),
     );
   }
 
   Widget _buildResponsiveStatusGrid(
+    BuildContext context,
     List<GameStatus> statuses,
     BoxConstraints constraints,
   ) {
@@ -42,29 +43,27 @@ class GameStatusSelector extends StatelessWidget {
     const spacing = InputStyles.statusButtonSpacing;
     final availableWidth = constraints.maxWidth;
 
-    // Determine layout based on orientation and available space
-    int buttonsPerRow;
+    // Determine orientation to set maximum buttons per row
+    final orientation = MediaQuery.of(context).orientation;
+    final isPortrait = orientation == Orientation.portrait;
 
-    // Landscape approach: Maximum 4-wide to prevent overflow
-    if (availableWidth >= 300) {
-      // Try for 4-wide with generous requirements
-      final minButtonWidthFor4 = 75.0; // Reasonable size for 4-wide
-      final widthNeededFor4 = (minButtonWidthFor4 * 4) + (spacing * 3);
+    // Set maximum buttons per row based on orientation
+    final maxButtonsPerRow = isPortrait ? 3 : 4;
 
-      if (availableWidth >= widthNeededFor4) {
-        buttonsPerRow = 4;
-      } else {
-        // Force 4-wide if buttons can be at least 65px wide
-        final actualButtonWidth = (availableWidth - (spacing * 3)) / 4;
-        if (actualButtonWidth >= 65.0) {
-          buttonsPerRow = 4;
-        } else {
-          buttonsPerRow = 3;
-        }
-      }
-    } else {
-      // Smaller screens - use 3-wide
-      buttonsPerRow = 3;
+    // Calculate optimal buttons per row within the limit
+    int buttonsPerRow = maxButtonsPerRow;
+
+    // Check if we can fit the maximum buttons with reasonable size
+    final minButtonWidth =
+        isPortrait ? 85.0 : 75.0; // Slightly larger for portrait
+    final widthNeededForMax =
+        (minButtonWidth * maxButtonsPerRow) +
+        (spacing * (maxButtonsPerRow - 1));
+
+    if (availableWidth < widthNeededForMax) {
+      // If we can't fit the maximum, reduce to fit
+      buttonsPerRow = maxButtonsPerRow - 1;
+      if (buttonsPerRow < 2) buttonsPerRow = 2; // Minimum 2 buttons per row
     }
 
     final buttonWidth =
@@ -72,8 +71,8 @@ class GameStatusSelector extends StatelessWidget {
 
     return Wrap(
       spacing: spacing,
-      runSpacing: spacing, // Use consistent spacing for both directions
-      alignment: WrapAlignment.start, // Left-align buttons
+      runSpacing: spacing,
+      alignment: WrapAlignment.start,
       children:
           statuses
               .map((status) => _buildStatusButton(status, buttonWidth))
