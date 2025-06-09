@@ -90,12 +90,13 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildGameSection('Playing', GameStatus.playing, isLandscape),
-          const SizedBox(height: MainScreenStyles.sectionSpacing),
+          const SizedBox(height: 20),
           _buildGameSection('Backlog', GameStatus.backlog, isLandscape),
-          const SizedBox(height: MainScreenStyles.sectionSpacing),
+          const SizedBox(height: 20),
           _buildGameSection('Completed', GameStatus.completed, isLandscape),
-          const SizedBox(height: MainScreenStyles.sectionSpacing),
+          const SizedBox(height: 20),
           _buildGameSection('Abandoned', GameStatus.abandoned, isLandscape),
+          const SizedBox(height: 24), // Bottom padding
         ],
       ),
     );

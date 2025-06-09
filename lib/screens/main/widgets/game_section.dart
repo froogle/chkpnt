@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/shared/widgets/layout/collapsible_section.dart';
+import 'package:chkpnt/shared/widgets/layout/slim_section_header.dart';
 import 'package:chkpnt/shared/widgets/layout/empty_state_widget.dart';
-import 'package:chkpnt/shared/widgets/cards/portrait_game_card.dart';
-import 'package:chkpnt/shared/widgets/cards/landscape_game_card.dart';
+import 'package:chkpnt/shared/widgets/cards/compact_game_tile.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
-import 'package:chkpnt/styles/main_screen_styles.dart';
+
+class GridLayoutConfiguration {
+  final int columns;
+  final double aspectRatio;
+  final double spacing;
+
+  const GridLayoutConfiguration({
+    required this.columns,
+    required this.aspectRatio,
+    required this.spacing,
+  });
+}
 
 class GameSection extends ConsumerWidget {
   final String title;
@@ -41,108 +51,94 @@ class GameSection extends ConsumerWidget {
     );
     final isExpanded = sectionExpansion[title] ?? false;
 
-    return CollapsibleSection(
-      title: title,
-      isExpanded: isExpanded,
-      onToggle:
-          () =>
-              ref.read(sectionExpansionProvider.notifier).toggleSection(title),
-      isEmpty: games.isEmpty,
-      emptyStateWidget: games.isEmpty ? _buildEmptyState() : null,
-      content:
-          isLandscape
-              ? _buildLandscapeContent(games)
-              : _buildPortraitContent(games),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SlimSectionHeader(
+          title: title,
+          isExpanded: isExpanded,
+          onToggle:
+              () => ref
+                  .read(sectionExpansionProvider.notifier)
+                  .toggleSection(title),
+          isEmpty: games.isEmpty,
+          gameCount: games.length,
+        ),
+        if (isExpanded) _buildContent(games),
+      ],
+    );
+  }
+
+  Widget _buildContent(List<GameItem> games) {
+    if (games.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: _buildGrid(games),
     );
   }
 
   Widget _buildEmptyState() {
-    return EmptyStateWidget(
-      icon: Icons.gamepad_outlined,
-      message: 'No games in ${title.toLowerCase()}',
-      actionButton: null,
-    );
-  }
-
-  Widget _buildPortraitContent(List<GameItem> games) {
-    return Column(
-      children:
-          games
-              .map(
-                (game) => _buildAnimatedGameCard(
-                  child: Padding(
-                    padding: MainScreenStyles.gameCardMargin,
-                    child: PortraitGameCard(
-                      game: game,
-                      onTap: () => onGameTap(game),
-                      onPlayPressed:
-                          game.status == GameStatus.backlog
-                              ? () => onPlayPressed?.call(game)
-                              : null,
-                    ),
-                  ),
-                  game: game,
-                ),
-              )
-              .toList(),
-    );
-  }
-
-  Widget _buildLandscapeContent(List<GameItem> games) {
-    if (crossAxisCount == null) {
-      throw ArgumentError('crossAxisCount is required for landscape layout');
-    }
-
-    final gridHeight = _calculateGridHeight(games.length, crossAxisCount!);
-
-    return SizedBox(
-      height: gridHeight,
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: _buildGridDelegate(crossAxisCount!),
-        itemCount: games.length,
-        itemBuilder:
-            (context, index) => _buildAnimatedGameCard(
-              child: LandscapeGameCard(
-                game: games[index],
-                onTap: () => onGameTap(games[index]),
-                onPlayPressed:
-                    games[index].status == GameStatus.backlog
-                        ? () => onPlayPressed?.call(games[index])
-                        : null,
-              ),
-              game: games[index],
-            ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      child: EmptyStateWidget(
+        icon: Icons.gamepad_outlined,
+        message: 'No games in ${title.toLowerCase()}',
+        actionButton: null,
       ),
     );
   }
 
-  Widget _buildAnimatedGameCard({
-    required Widget child,
-    required GameItem game,
-  }) {
+  Widget _buildGrid(List<GameItem> games) {
+    final layoutConfig = _getLayoutConfiguration();
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: layoutConfig.columns,
+        crossAxisSpacing: layoutConfig.spacing,
+        mainAxisSpacing: layoutConfig.spacing,
+        childAspectRatio: layoutConfig.aspectRatio,
+      ),
+      itemCount: games.length,
+      itemBuilder: (context, index) => _buildAnimatedGameTile(games[index]),
+    );
+  }
+
+  GridLayoutConfiguration _getLayoutConfiguration() {
+    if (isLandscape) {
+      final columns = crossAxisCount ?? 5;
+      // Adjust aspect ratio based on number of columns to maintain consistent tile sizes
+      final aspectRatio = columns >= 6 ? 0.8 : 0.75;
+      return GridLayoutConfiguration(
+        columns: columns,
+        aspectRatio: aspectRatio,
+        spacing: 8, // Tighter spacing in landscape to fit more games
+      );
+    } else {
+      return GridLayoutConfiguration(
+        columns: 3,
+        aspectRatio: 0.7, // Portrait tiles are slightly taller
+        spacing: 12,
+      );
+    }
+  }
+
+  Widget _buildAnimatedGameTile(GameItem game) {
     return AnimatedOpacity(
       opacity: isAnimating && animatingGame?.id == game.id ? 0.0 : 1.0,
       duration: const Duration(milliseconds: 200),
-      child: child,
+      child: CompactGameTile(
+        game: game,
+        onTap: () => onGameTap(game),
+        onPlayPressed:
+            game.status == GameStatus.backlog
+                ? () => onPlayPressed?.call(game)
+                : null,
+      ),
     );
-  }
-
-  SliverGridDelegateWithFixedCrossAxisCount _buildGridDelegate(
-    int crossAxisCount,
-  ) {
-    return SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: crossAxisCount,
-      crossAxisSpacing: MainScreenStyles.landscapeGridSpacing,
-      mainAxisSpacing: MainScreenStyles.landscapeGridSpacing,
-      childAspectRatio: MainScreenStyles.landscapeGameCardAspectRatio,
-    );
-  }
-
-  double _calculateGridHeight(int itemCount, int crossAxisCount) {
-    const cardHeight = 180.0;
-    final rowCount = (itemCount / crossAxisCount).ceil();
-    final spacing = MainScreenStyles.landscapeGridSpacing;
-    return (rowCount * cardHeight) + ((rowCount - 1) * spacing);
   }
 }
