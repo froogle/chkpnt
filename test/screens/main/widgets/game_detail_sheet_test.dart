@@ -4,23 +4,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/main/widgets/game_detail_sheet.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import '../../../test_helpers.dart';
 
 void main() {
   group('GameDetailSheet Widget Tests', () {
     late ProviderContainer container;
     late GameItem testGame;
 
-    setUp(() {
-      container = ProviderContainer();
+    setUp(() async {
+      container = TestHelpers.createTestContainer();
       testGame = GameItem(
         id: GameId.generate(),
         title: 'Test Game',
         platform: 'Test Platform',
         status: GameStatus.playing,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
       );
 
       // Add the test game to the provider
-      container.read(gameListProvider.notifier).addGame(testGame);
+      await container.read(gameListProvider.notifier).addGame(testGame);
     });
 
     tearDown(() {

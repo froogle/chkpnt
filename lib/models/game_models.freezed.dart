@@ -172,7 +172,10 @@ mixin _$GameItem {
   String get title => throw _privateConstructorUsedError;
   String get platform => throw _privateConstructorUsedError;
   GameStatus get status => throw _privateConstructorUsedError;
+  DateTime get lastModified => throw _privateConstructorUsedError;
+  DateTime get lastStatusChange => throw _privateConstructorUsedError;
   String? get imagePath => throw _privateConstructorUsedError;
+  String? get remoteImageUrl => throw _privateConstructorUsedError;
 
   /// Serializes this GameItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -194,7 +197,10 @@ abstract class $GameItemCopyWith<$Res> {
     String title,
     String platform,
     GameStatus status,
+    DateTime lastModified,
+    DateTime lastStatusChange,
     String? imagePath,
+    String? remoteImageUrl,
   });
 
   $GameIdCopyWith<$Res> get id;
@@ -219,7 +225,10 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
     Object? title = null,
     Object? platform = null,
     Object? status = null,
+    Object? lastModified = null,
+    Object? lastStatusChange = null,
     Object? imagePath = freezed,
+    Object? remoteImageUrl = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -243,10 +252,25 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
                     ? _value.status
                     : status // ignore: cast_nullable_to_non_nullable
                         as GameStatus,
+            lastModified:
+                null == lastModified
+                    ? _value.lastModified
+                    : lastModified // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            lastStatusChange:
+                null == lastStatusChange
+                    ? _value.lastStatusChange
+                    : lastStatusChange // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
             imagePath:
                 freezed == imagePath
                     ? _value.imagePath
                     : imagePath // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            remoteImageUrl:
+                freezed == remoteImageUrl
+                    ? _value.remoteImageUrl
+                    : remoteImageUrl // ignore: cast_nullable_to_non_nullable
                         as String?,
           )
           as $Val,
@@ -278,7 +302,10 @@ abstract class _$$GameItemImplCopyWith<$Res>
     String title,
     String platform,
     GameStatus status,
+    DateTime lastModified,
+    DateTime lastStatusChange,
     String? imagePath,
+    String? remoteImageUrl,
   });
 
   @override
@@ -303,7 +330,10 @@ class __$$GameItemImplCopyWithImpl<$Res>
     Object? title = null,
     Object? platform = null,
     Object? status = null,
+    Object? lastModified = null,
+    Object? lastStatusChange = null,
     Object? imagePath = freezed,
+    Object? remoteImageUrl = freezed,
   }) {
     return _then(
       _$GameItemImpl(
@@ -327,10 +357,25 @@ class __$$GameItemImplCopyWithImpl<$Res>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                     as GameStatus,
+        lastModified:
+            null == lastModified
+                ? _value.lastModified
+                : lastModified // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        lastStatusChange:
+            null == lastStatusChange
+                ? _value.lastStatusChange
+                : lastStatusChange // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
         imagePath:
             freezed == imagePath
                 ? _value.imagePath
                 : imagePath // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        remoteImageUrl:
+            freezed == remoteImageUrl
+                ? _value.remoteImageUrl
+                : remoteImageUrl // ignore: cast_nullable_to_non_nullable
                     as String?,
       ),
     );
@@ -345,7 +390,10 @@ class _$GameItemImpl implements _GameItem {
     required this.title,
     required this.platform,
     required this.status,
+    required this.lastModified,
+    required this.lastStatusChange,
     this.imagePath,
+    this.remoteImageUrl,
   });
 
   factory _$GameItemImpl.fromJson(Map<String, dynamic> json) =>
@@ -360,11 +408,17 @@ class _$GameItemImpl implements _GameItem {
   @override
   final GameStatus status;
   @override
+  final DateTime lastModified;
+  @override
+  final DateTime lastStatusChange;
+  @override
   final String? imagePath;
+  @override
+  final String? remoteImageUrl;
 
   @override
   String toString() {
-    return 'GameItem(id: $id, title: $title, platform: $platform, status: $status, imagePath: $imagePath)';
+    return 'GameItem(id: $id, title: $title, platform: $platform, status: $status, lastModified: $lastModified, lastStatusChange: $lastStatusChange, imagePath: $imagePath, remoteImageUrl: $remoteImageUrl)';
   }
 
   @override
@@ -377,14 +431,29 @@ class _$GameItemImpl implements _GameItem {
             (identical(other.platform, platform) ||
                 other.platform == platform) &&
             (identical(other.status, status) || other.status == status) &&
+            (identical(other.lastModified, lastModified) ||
+                other.lastModified == lastModified) &&
+            (identical(other.lastStatusChange, lastStatusChange) ||
+                other.lastStatusChange == lastStatusChange) &&
             (identical(other.imagePath, imagePath) ||
-                other.imagePath == imagePath));
+                other.imagePath == imagePath) &&
+            (identical(other.remoteImageUrl, remoteImageUrl) ||
+                other.remoteImageUrl == remoteImageUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, title, platform, status, imagePath);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    title,
+    platform,
+    status,
+    lastModified,
+    lastStatusChange,
+    imagePath,
+    remoteImageUrl,
+  );
 
   /// Create a copy of GameItem
   /// with the given fields replaced by the non-null parameter values.
@@ -406,7 +475,10 @@ abstract class _GameItem implements GameItem {
     required final String title,
     required final String platform,
     required final GameStatus status,
+    required final DateTime lastModified,
+    required final DateTime lastStatusChange,
     final String? imagePath,
+    final String? remoteImageUrl,
   }) = _$GameItemImpl;
 
   factory _GameItem.fromJson(Map<String, dynamic> json) =
@@ -421,7 +493,13 @@ abstract class _GameItem implements GameItem {
   @override
   GameStatus get status;
   @override
+  DateTime get lastModified;
+  @override
+  DateTime get lastStatusChange;
+  @override
   String? get imagePath;
+  @override
+  String? get remoteImageUrl;
 
   /// Create a copy of GameItem
   /// with the given fields replaced by the non-null parameter values.

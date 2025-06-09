@@ -1,35 +1,140 @@
 # Providers Directory
 
-This directory contains Riverpod providers for state management throughout the application.
+This directory contains **streaming-based Riverpod providers** for reactive state management throughout the application.
 
 ## 🎯 Purpose
 
-Providers manage application state and serve as the bridge between UI and business logic:
-- **State Management** - Hold and update application state
+Providers manage application state using **streaming data sources** and serve as the bridge between UI and business logic:
+- **Streaming State Management** - Real-time reactive updates from data repositories
+- **Async State Handling** - Proper loading, error, and data states with `AsyncValue`
+- **Repository Integration** - Connect UI to persistent storage through repository pattern
 - **Dependency Injection** - Provide services and repositories to widgets
 - **Reactive Updates** - Automatically notify UI of state changes
 - **Lifecycle Management** - Handle state creation, caching, and disposal
 
+## 🔄 **Streaming Architecture Overview**
+
+```dart
+// Repository provides streaming data
+abstract class GameRepository {
+  Stream<List<GameItem>> watchGames();    // Streaming source
+  Future<GameItem> createGame(GameItem game);  // Mutations
+}
+
+// Provider consumes stream and exposes to UI
+@riverpod
+class GameList extends _$GameList {
+  @override
+  Stream<List<GameItem>> build() {
+    final repository = ref.read(gameRepositoryProvider);
+    return repository.watchGames();  // Stream from repository
+  }
+
+  // Async mutations
+  Future<void> addGame(GameItem game) async {
+    final repository = ref.read(gameRepositoryProvider);
+    await repository.createGame(game);
+    // Stream automatically updates UI
+  }
+}
+
+// UI consumes with AsyncValue handling
+final gamesAsync = ref.watch(gamesStreamProvider);
+return gamesAsync.when(
+  loading: () => CircularProgressIndicator(),
+  error: (error, stack) => ErrorWidget(error),
+  data: (games) => GamesList(games: games),
+);
+```
+
 ## 🧩 Implemented Providers
 
-### Game State Providers (`game_provider.dart`)
+### **Streaming Game State Providers** (`game_provider.dart`)
 
-**`gameListProvider`** - Main games list state
+#### **Repository Provider**
+```dart
+@riverpod
+GameRepository gameRepository(GameRepositoryRef ref) {
+  return InMemoryGameRepository(); // Easy to swap for persistent storage
+}
+```
+
+#### **Core Streaming Providers**
+
+**`gamesStreamProvider`** - **Primary streaming data source**
+```dart
+@riverpod
+Stream<List<GameItem>> gamesStream(GamesStreamRef ref) {
+  final repository = ref.read(gameRepositoryProvider);
+  return repository.watchGames(); // Stream from repository
+}
+```
+
+**`gameListProvider`** - **Synchronous access to current state**
 ```dart
 @riverpod
 class GameList extends _$GameList {
   @override
-  List<GameItem> build() => _sampleGames;
+  Stream<List<GameItem>> build() {
+    return ref.read(gameRepositoryProvider).watchGames();
+  }
 
-  void addGame(GameItem game) { /* ... */ }
-  void updateGame(GameItem updatedGame) { /* ... */ }
-  void removeGame(String gameId) { /* ... */ }
-  void startPlaying(String gameId) { /* ... */ }
-  void markCompleted(String gameId) { /* ... */ }
+  // Async mutations - repository handles persistence
+  Future<void> addGame(GameItem game) async {
+    await ref.read(gameRepositoryProvider).createGame(game);
+  }
+
+  Future<void> updateGame(GameItem updatedGame) async {
+    await ref.read(gameRepositoryProvider).updateGame(updatedGame);
+  }
+
+  Future<void> removeGame(GameId gameId) async {
+    await ref.read(gameRepositoryProvider).deleteGame(gameId);
+  }
+
+  Future<void> startPlaying(GameId gameId) async {
+    final games = await ref.read(gameRepositoryProvider).getAllGames();
+    final game = games.firstWhere((g) => g.id == gameId);
+    final updatedGame = game.copyWith(
+      status: GameStatus.playing,
+      lastStatusChange: DateTime.now(),
+    );
+    await updateGame(updatedGame);
+  }
+
+  Future<void> markCompleted(GameId gameId) async {
+    final games = await ref.read(gameRepositoryProvider).getAllGames();
+    final game = games.firstWhere((g) => g.id == gameId);
+    final updatedGame = game.copyWith(
+      status: GameStatus.completed,
+      lastStatusChange: DateTime.now(),
+    );
+    await updateGame(updatedGame);
+  }
+
+  // Convenience method for game creation with auto-timestamps
+  Future<void> createGame({
+    required String title,
+    required String platform,
+    required GameStatus status,
+    String? imagePath,
+    String? remoteImageUrl,
+  }) async {
+    final game = GameItem.create(
+      title: title,
+      platform: platform,
+      status: status,
+      imagePath: imagePath,
+      remoteImageUrl: remoteImageUrl,
+    );
+    await addGame(game);
+  }
 }
 ```
 
-**`gamesByStatusProvider`** - Games filtered by status
+#### **Derived Reactive Providers**
+
+**`gamesByStatusProvider`** - **Automatically reacts to stream changes**
 ```dart
 @riverpod
 List<GameItem> gamesByStatus(GamesByStatusRef ref, GameStatus status) {
@@ -38,33 +143,68 @@ List<GameItem> gamesByStatus(GamesByStatusRef ref, GameStatus status) {
 }
 ```
 
-**`filteredGamesProvider`** - Games filtered by status and platform
+**`gamesByPlatformProvider`** - **Platform filtering with reactive updates**
 ```dart
 @riverpod
-List<GameItem> filteredGames(FilteredGamesRef ref, GameStatus status, String platform) {
-  // Filters games by both status and platform
+List<GameItem> gamesByPlatform(GamesByPlatformRef ref, String platform) {
+  final games = ref.watch(gameListProvider);
+  if (platform == 'All') return games;
+  return games.where((game) => game.platform == platform).toList();
 }
 ```
 
-**`fullyFilteredGamesProvider`** - Games filtered by status, platform, and search
+**`fullyFilteredGamesProvider`** - **Combined filtering with real-time updates**
 ```dart
 @riverpod
-List<GameItem> fullyFilteredGames(FullyFilteredGamesRef ref, GameStatus status, String platform, String searchQuery) {
-  // Filters games by status, platform, and search query
+List<GameItem> fullyFilteredGames(
+  FullyFilteredGamesRef ref,
+  GameStatus status,
+  String platform,
+  String searchQuery,
+) {
+  final games = ref.watch(gameListProvider);
+
+  return games.where((game) {
+    final statusMatch = game.status == status;
+    final platformMatch = platform == 'All' || game.platform == platform;
+    final searchMatch = searchQuery.isEmpty ||
+        game.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+        game.platform.toLowerCase().contains(searchQuery.toLowerCase());
+
+    return statusMatch && platformMatch && searchMatch;
+  }).toList();
 }
 ```
 
-**`availablePlatformsProvider`** - Dynamic list of available platforms
+**`availablePlatformsProvider`** - **Dynamic platform list**
 ```dart
 @riverpod
 List<String> availablePlatforms(AvailablePlatformsRef ref) {
-  // Returns ['All', ...unique platforms from games]
+  final games = ref.watch(gameListProvider);
+  final platforms = games.map((game) => game.platform).toSet().toList();
+  platforms.sort();
+  return ['All', ...platforms];
 }
 ```
 
-### UI State Providers (`ui_state_provider.dart`)
+**`searchFilteredGamesProvider`** - **Search functionality**
+```dart
+@riverpod
+List<GameItem> searchFilteredGames(SearchFilteredGamesRef ref, String query) {
+  final games = ref.watch(gameListProvider);
+  if (query.isEmpty) return games;
 
-**`searchQueryProvider`** - Search input state
+  final lowerQuery = query.toLowerCase();
+  return games.where((game) {
+    return game.title.toLowerCase().contains(lowerQuery) ||
+           game.platform.toLowerCase().contains(lowerQuery);
+  }).toList();
+}
+```
+
+### **UI State Providers** (`ui_state_provider.dart`)
+
+**`searchQueryProvider`** - **Search input state**
 ```dart
 @riverpod
 class SearchQuery extends _$SearchQuery {
@@ -76,7 +216,7 @@ class SearchQuery extends _$SearchQuery {
 }
 ```
 
-**`selectedPlatformProvider`** - Platform filter state
+**`selectedPlatformProvider`** - **Platform filter state**
 ```dart
 @riverpod
 class SelectedPlatform extends _$SelectedPlatform {
@@ -88,7 +228,7 @@ class SelectedPlatform extends _$SelectedPlatform {
 }
 ```
 
-**`sectionExpansionProvider`** - Collapsible section states
+**`sectionExpansionProvider`** - **Collapsible section states**
 ```dart
 @riverpod
 class SectionExpansion extends _$SectionExpansion {
@@ -100,408 +240,268 @@ class SectionExpansion extends _$SectionExpansion {
     'Abandoned': false,
   };
 
-  void toggleSection(String sectionName) { /* ... */ }
-  void expandSection(String sectionName) { /* ... */ }
-  void collapseSection(String sectionName) { /* ... */ }
+  void toggleSection(String sectionName) {
+    state = {...state, sectionName: !state[sectionName]!};
+  }
+
+  void expandSection(String sectionName) {
+    state = {...state, sectionName: true};
+  }
+
+  void collapseSection(String sectionName) {
+    state = {...state, sectionName: false};
+  }
+
+  void expandAll() {
+    state = state.map((key, _) => MapEntry(key, true));
+  }
+
+  void collapseAll() {
+    state = state.map((key, _) => MapEntry(key, false));
+  }
 }
 ```
 
 ## 🚀 Usage Examples
 
-### Reading State
+### **Reading Streaming State with Async Handling**
 ```dart
 class MyWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final games = ref.watch(gameListProvider);
+    final gamesAsync = ref.watch(gamesStreamProvider);
     final searchQuery = ref.watch(searchQueryProvider);
     final selectedPlatform = ref.watch(selectedPlatformProvider);
-    
-    return YourUI();
+
+    return gamesAsync.when(
+      loading: () => const CircularProgressIndicator(),
+      error: (error, stackTrace) => ErrorWidget.withDetails(
+        message: 'Failed to load games',
+        error: error,
+      ),
+      data: (games) => GamesList(
+        games: games,
+        searchQuery: searchQuery,
+        selectedPlatform: selectedPlatform,
+      ),
+    );
   }
 }
 ```
 
-### Updating State
+### **Reading Current State (Synchronous)**
 ```dart
-// Add a new game
-ref.read(gameListProvider.notifier).addGame(newGame);
+class GameCountWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Direct access to current state (may be empty during loading)
+    final games = ref.watch(gameListProvider);
+    return Text('Total games: ${games.length}');
+  }
+}
+```
 
-// Update search query
+### **Performing Async Mutations**
+```dart
+// Add a new game (async operation)
+await ref.read(gameListProvider.notifier).addGame(newGame);
+
+// Update game status (async operation)
+await ref.read(gameListProvider.notifier).startPlaying(gameId);
+
+// Create game with convenience method
+await ref.read(gameListProvider.notifier).createGame(
+  title: 'New Game',
+  platform: 'Switch',
+  status: GameStatus.backlog,
+);
+
+// Update UI state (synchronous)
 ref.read(searchQueryProvider.notifier).updateQuery('zelda');
-
-// Change platform filter
 ref.read(selectedPlatformProvider.notifier).selectPlatform('Switch');
-
-// Toggle section expansion
 ref.read(sectionExpansionProvider.notifier).toggleSection('Playing');
 ```
 
-### Complex Filtering
+### **Complex Filtering with Real-time Updates**
 ```dart
-// Get games that match all filters (status + platform + search)
+// Get games that match all filters - updates automatically when data changes
 final filteredGames = ref.watch(fullyFilteredGamesProvider(
   GameStatus.playing,
   'Switch',
   'zelda'
 ));
+
+// UI automatically rebuilds when:
+// - Game data changes (via stream)
+// - Filter criteria changes
+// - Search query changes
 ```
 
-## 🏗️ Architecture Benefits
+## 🏗️ **Architecture Benefits**
 
-1. **Reactive Updates**: UI automatically rebuilds when state changes
-2. **Efficient Filtering**: Providers cache results and only recompute when dependencies change  
-3. **Type Safety**: Full compile-time type checking with generated code
-4. **Performance**: Only widgets that depend on changed state rebuild
-5. **Testability**: Easy to test by providing mock providers
-6. **DevTools Integration**: Full debugging support with Riverpod DevTools
+### **Streaming Architecture**
+1. **Real-time Updates**: UI automatically reflects data changes from any source
+2. **Repository Abstraction**: Easy to swap storage backends (memory → SQLite → Firebase)
+3. **Async State Management**: Proper loading, error, and data state handling
+4. **Performance**: Streams only emit when data actually changes
+5. **Reactive Filtering**: All derived state automatically updates with base data
 
-## 📝 Next Steps
+### **Repository Integration**
+1. **Persistence Ready**: Easy integration with any storage solution
+2. **Error Handling**: Repository errors properly propagated to UI
+3. **Testing**: Easy to mock repositories for testing
+4. **Caching**: Repository can implement intelligent caching strategies
 
-Consider adding providers for:
-- Game detail state management
-- Settings and preferences
-- User authentication state
-- Data persistence (repositories)
-- Network state and caching
+### **Development Benefits**
+1. **Type Safety**: Full compile-time type checking with generated code
+2. **DevTools Integration**: Full debugging support with Riverpod DevTools
+3. **Testability**: Easy to test with provider overrides
+4. **Hot Reload**: State preservation during development
 
-## 🧪 Testing Providers
+## 💾 **Repository Integration**
 
-### Test Setup
-
-Add these dependencies to your `pubspec.yaml`:
-
-```yaml
-dev_dependencies:
-  flutter_test: ^1.0.0
-  riverpod_test: ^2.0.0
-  mockito: ^5.4.2
-  build_runner: ^2.4.7
-```
-
-### Basic Provider Testing
-
+### **Current Implementation: In-Memory**
 ```dart
-import 'package:flutter_test/flutter_test.dart';
-import 'package:riverpod_test/riverpod_test.dart';
-import '../lib/providers/game_provider.dart';
-import '../lib/models/game_item.dart';
-
-void main() {
-  group('GameList Provider Tests', () {
-    testWidgets('should start with sample games', (tester) async {
-      final container = createContainer();
-      
-      final games = container.read(gameListProvider);
-      
-      expect(games, isNotEmpty);
-      expect(games.length, greaterThan(0));
-    });
-
-    testWidgets('should add game correctly', (tester) async {
-      final container = createContainer();
-      final notifier = container.read(gameListProvider.notifier);
-      
-      final newGame = GameItem(
-        id: 'test-id',
-        title: 'Test Game',
-        platform: 'PC',
-        status: GameStatus.backlog,
-        addedDate: DateTime.now(),
-      );
-      
-      notifier.addGame(newGame);
-      
-      final games = container.read(gameListProvider);
-      expect(games.any((game) => game.id == 'test-id'), isTrue);
-    });
-
-    testWidgets('should update game status', (tester) async {
-      final container = createContainer();
-      final notifier = container.read(gameListProvider.notifier);
-      
-      // Add a test game first
-      final testGame = GameItem(
-        id: 'test-update',
-        title: 'Update Test',
-        platform: 'Switch',
-        status: GameStatus.backlog,
-        addedDate: DateTime.now(),
-      );
-      notifier.addGame(testGame);
-      
-      // Start playing the game
-      notifier.startPlaying('test-update');
-      
-      final games = container.read(gameListProvider);
-      final updatedGame = games.firstWhere((game) => game.id == 'test-update');
-      expect(updatedGame.status, GameStatus.playing);
-      expect(updatedGame.startedDate, isNotNull);
-    });
-  });
+@riverpod
+GameRepository gameRepository(GameRepositoryRef ref) {
+  return InMemoryGameRepository(); // Provides sample data with streaming
 }
 ```
 
-### Testing Computed Providers
-
+### **Ready for Persistent Storage**
 ```dart
-group('Filtered Games Provider Tests', () {
-  testWidgets('should filter games by status', (tester) async {
-    final container = createContainer();
-    
-    final playingGames = container.read(
-      gamesByStatusProvider(GameStatus.playing)
-    );
-    
-    expect(
-      playingGames.every((game) => game.status == GameStatus.playing),
-      isTrue,
-    );
-  });
+// Easy to swap implementations
+@riverpod
+GameRepository gameRepository(GameRepositoryRef ref) {
+  return HiveGameRepository();      // or
+  return SqliteGameRepository();    // or
+  return FirebaseGameRepository();  // Your choice
+}
 
-  testWidgets('should filter by platform and status', (tester) async {
-    final container = createContainer();
-    
-    final switchPlayingGames = container.read(
-      filteredGamesProvider(GameStatus.playing, 'Switch')
-    );
-    
-    expect(
-      switchPlayingGames.every((game) => 
-        game.status == GameStatus.playing && game.platform == 'Switch'
-      ),
-      isTrue,
-    );
-  });
-
-  testWidgets('should filter by all criteria', (tester) async {
-    final container = createContainer();
-    
-    final filteredGames = container.read(
-      fullyFilteredGamesProvider(GameStatus.backlog, 'PC', 'zelda')
-    );
-    
-    expect(
-      filteredGames.every((game) => 
-        game.status == GameStatus.backlog &&
-        game.platform == 'PC' &&
-        game.title.toLowerCase().contains('zelda')
-      ),
-      isTrue,
-    );
-  });
-});
+// Repository interface ensures compatibility
+abstract class GameRepository {
+  Stream<List<GameItem>> watchGames();           // Streaming data
+  Future<List<GameItem>> getAllGames();          // One-time access
+  Future<GameItem> createGame(GameItem game);    // Mutations
+  Future<GameItem> updateGame(GameItem game);
+  Future<void> deleteGame(GameId gameId);
+  // ... other methods
+}
 ```
 
-### Testing UI State Providers
+## 🧪 **Testing Streaming Providers**
 
+### **Test Infrastructure**
 ```dart
-group('UI State Provider Tests', () {
-  testWidgets('search query should update correctly', (tester) async {
-    final container = createContainer();
-    final notifier = container.read(searchQueryProvider.notifier);
-    
-    // Initial state should be empty
-    expect(container.read(searchQueryProvider), '');
-    
-    // Update query
-    notifier.updateQuery('zelda');
-    expect(container.read(searchQueryProvider), 'zelda');
-    
-    // Clear query
-    notifier.clearQuery();
-    expect(container.read(searchQueryProvider), '');
-  });
-
-  testWidgets('platform selection should work', (tester) async {
-    final container = createContainer();
-    final notifier = container.read(selectedPlatformProvider.notifier);
-    
-    // Initial state should be 'All'
-    expect(container.read(selectedPlatformProvider), 'All');
-    
-    // Select platform
-    notifier.selectPlatform('Switch');
-    expect(container.read(selectedPlatformProvider), 'Switch');
-    
-    // Reset to all
-    notifier.resetToAll();
-    expect(container.read(selectedPlatformProvider), 'All');
-  });
-
-  testWidgets('section expansion should toggle correctly', (tester) async {
-    final container = createContainer();
-    final notifier = container.read(sectionExpansionProvider.notifier);
-    
-    final initialState = container.read(sectionExpansionProvider);
-    expect(initialState['Playing'], isTrue);
-    expect(initialState['Backlog'], isFalse);
-    
-    // Toggle playing section
-    notifier.toggleSection('Playing');
-    final afterToggle = container.read(sectionExpansionProvider);
-    expect(afterToggle['Playing'], isFalse);
-    
-    // Expand backlog section
-    notifier.expandSection('Backlog');
-    final afterExpand = container.read(sectionExpansionProvider);
-    expect(afterExpand['Backlog'], isTrue);
-  });
-});
-```
-
-### Testing Provider Dependencies
-
-```dart
-group('Provider Dependencies Tests', () {
-  testWidgets('filtered games should react to search query changes', (tester) async {
-    final container = createContainer();
-    
-    // Set initial filters
-    container.read(selectedPlatformProvider.notifier).selectPlatform('PC');
-    container.read(searchQueryProvider.notifier).updateQuery('zelda');
-    
-    final initialResults = container.read(
-      fullyFilteredGamesProvider(GameStatus.backlog, 'PC', 'zelda')
-    );
-    
-    // Change search query
-    container.read(searchQueryProvider.notifier).updateQuery('mario');
-    
-    final newResults = container.read(
-      fullyFilteredGamesProvider(GameStatus.backlog, 'PC', 'mario')
-    );
-    
-    expect(newResults, isNot(equals(initialResults)));
-  });
-});
-```
-
-### Mocking External Dependencies
-
-```dart
-// For providers that depend on external services
-class MockGameRepository extends Mock implements GameRepository {}
-
-group('Game Provider with Repository Tests', () {
-  testWidgets('should load games from repository', (tester) async {
-    final mockRepository = MockGameRepository();
-    
-    when(mockRepository.getAllGames()).thenReturn([
-      GameItem(id: '1', title: 'Mock Game', platform: 'PC', status: GameStatus.backlog, addedDate: DateTime.now()),
-    ]);
-    
-    final container = createContainer(
+// test/test_helpers.dart provides streaming-compatible testing
+class TestHelpers {
+  static ProviderContainer createTestContainer() {
+    return ProviderContainer(
       overrides: [
-        gameRepositoryProvider.overrideWithValue(mockRepository),
+        gameListProvider.overrideWith(() => TestGameListNotifier()),
       ],
     );
-    
-    final games = container.read(gameListProvider);
-    verify(mockRepository.getAllGames()).called(1);
-    expect(games.length, 1);
-    expect(games.first.title, 'Mock Game');
-  });
-});
-```
+  }
 
-### Integration Testing
-
-```dart
-group('Provider Integration Tests', () {
-  testWidgets('complete game management workflow', (tester) async {
-    final container = createContainer();
-    
-    // Add a game
-    final gameNotifier = container.read(gameListProvider.notifier);
-    final testGame = GameItem(
-      id: 'integration-test',
-      title: 'Integration Game',
-      platform: 'Switch',
-      status: GameStatus.backlog,
-      addedDate: DateTime.now(),
-    );
-    gameNotifier.addGame(testGame);
-    
-    // Filter to show only Switch games
-    container.read(selectedPlatformProvider.notifier).selectPlatform('Switch');
-    
-    // Search for the game
-    container.read(searchQueryProvider.notifier).updateQuery('integration');
-    
-    // Check filtered results
-    final filteredGames = container.read(
-      fullyFilteredGamesProvider(GameStatus.backlog, 'Switch', 'integration')
-    );
-    
-    expect(filteredGames.length, 1);
-    expect(filteredGames.first.id, 'integration-test');
-    
-    // Start playing the game
-    gameNotifier.startPlaying('integration-test');
-    
-    // Verify status changed
-    final playingGames = container.read(
-      gamesByStatusProvider(GameStatus.playing)
-    );
-    expect(playingGames.any((game) => game.id == 'integration-test'), isTrue);
-  });
-});
-```
-
-### Test Utilities
-
-Create a helper file `test/test_utils.dart`:
-
-```dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_test/riverpod_test.dart';
-
-ProviderContainer createContainer({
-  List<Override> overrides = const [],
-}) {
-  return createProviderContainer(
-    overrides: overrides,
-  );
-}
-
-// Helper to create test games
-GameItem createTestGame({
-  String? id,
-  String? title,
-  String? platform,
-  GameStatus? status,
-}) {
-  return GameItem(
-    id: id ?? 'test-${DateTime.now().millisecondsSinceEpoch}',
-    title: title ?? 'Test Game',
-    platform: platform ?? 'PC',
-    status: status ?? GameStatus.backlog,
-    addedDate: DateTime.now(),
-  );
+  static Future<List<GameItem>> waitForGames(ProviderContainer container) async {
+    // Helper for async data loading in tests
+  }
 }
 ```
 
-### Running Tests
+### **Testing Async Operations**
+```dart
+test('should add game and update stream', () async {
+  final container = TestHelpers.createTestContainer();
 
-```bash
-# Run all tests
-flutter test
+  // Perform async operation
+  await container.read(gameListProvider.notifier).addGame(testGame);
 
-# Run only provider tests
-flutter test test/providers/
+  // Verify state change
+  final games = container.read(gameListProvider);
+  expect(games.contains(testGame), true);
 
-# Run with coverage
-flutter test --coverage
-genhtml coverage/lcov.info -o coverage/html
+  container.dispose();
+});
 ```
 
-### Best Practices
+### **Testing Stream Integration**
+```dart
+test('should filter games reactively', () async {
+  final container = TestHelpers.createTestContainer();
+  await TestHelpers.waitForGames(container);
 
-1. **Test Provider Logic, Not Implementation**: Focus on testing the behavior and state changes
-2. **Use Container Isolation**: Each test should use a fresh container
-3. **Test Edge Cases**: Empty states, invalid inputs, boundary conditions
-4. **Mock External Dependencies**: Use mocks for repositories, APIs, etc.
-5. **Test Provider Interactions**: Verify how providers work together
-6. **Keep Tests Fast**: Avoid unnecessary delays or complex setup
-7. **Descriptive Test Names**: Make test purposes clear from the name
+  // Test reactive filtering
+  final playingGames = container.read(
+    gamesByStatusProvider(GameStatus.playing),
+  );
+
+  expect(playingGames.every((g) => g.status == GameStatus.playing), true);
+  container.dispose();
+});
+```
+
+## 📝 **Migration Guide**
+
+### **From Synchronous to Streaming**
+
+**Before:**
+```dart
+@riverpod
+class GameList extends _$GameList {
+  @override
+  List<GameItem> build() => sampleGames; // Static data
+
+  void addGame(GameItem game) {
+    state = [...state, game]; // Direct state mutation
+  }
+}
+```
+
+**After:**
+```dart
+@riverpod
+class GameList extends _$GameList {
+  @override
+  Stream<List<GameItem>> build() {
+    return ref.read(gameRepositoryProvider).watchGames(); // Streaming data
+  }
+
+  Future<void> addGame(GameItem game) async {
+    await ref.read(gameRepositoryProvider).createGame(game); // Repository mutation
+    // Stream automatically updates UI
+  }
+}
+```
+
+### **UI Consumption Changes**
+
+**Before:**
+```dart
+final games = ref.watch(gameListProvider); // Direct list access
+```
+
+**After:**
+```dart
+// Option 1: Use stream with AsyncValue
+final gamesAsync = ref.watch(gamesStreamProvider);
+return gamesAsync.when(
+  loading: () => LoadingWidget(),
+  error: (error, stack) => ErrorWidget(error),
+  data: (games) => GamesList(games),
+);
+
+// Option 2: Use current state (may be empty during loading)
+final games = ref.watch(gameListProvider);
+```
+
+## 🚀 **Next Steps**
+
+Ready for implementation:
+1. **Persistent Storage**: Implement `HiveGameRepository` or `SqliteGameRepository`
+2. **Cloud Sync**: Add `FirebaseGameRepository` with offline support
+3. **External APIs**: Create `ApiGameRepository` for game metadata
+4. **Caching**: Implement intelligent caching strategies in repositories
+5. **Background Sync**: Add background data synchronisation
+
+The streaming architecture is production-ready and will seamlessly integrate with any storage solution!

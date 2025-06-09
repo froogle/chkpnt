@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
-import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 
 /// Reusable game image widget used across detail and edit screens

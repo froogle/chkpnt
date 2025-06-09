@@ -15,6 +15,8 @@ void main() {
         title: 'Test Game',
         platform: 'PS5',
         status: GameStatus.playing,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
         imagePath: null,
       );
     });

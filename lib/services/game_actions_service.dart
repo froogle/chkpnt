@@ -18,7 +18,7 @@ class GameActionsService {
     await Future.delayed(const Duration(milliseconds: 100));
 
     // Actually move the game
-    _ref.read(gameListProvider.notifier).startPlaying(game.id);
+    await _ref.read(gameListProvider.notifier).startPlaying(game.id);
 
     // Small delay before showing feedback
     await Future.delayed(const Duration(milliseconds: 200));
@@ -36,7 +36,7 @@ class GameActionsService {
 
   /// Handles marking a game as completed
   Future<void> markGameCompleted(GameItem game, BuildContext context) async {
-    _ref.read(gameListProvider.notifier).markCompleted(game.id);
+    await _ref.read(gameListProvider.notifier).markCompleted(game.id);
 
     if (context.mounted) {
       _showGameActionFeedback(
@@ -55,7 +55,7 @@ class GameActionsService {
     BuildContext context,
   ) async {
     // Update the game in the provider
-    _ref.read(gameListProvider.notifier).updateGame(updatedGame);
+    await _ref.read(gameListProvider.notifier).updateGame(updatedGame);
 
     // Determine what changed for appropriate feedback
     final titleChanged = originalGame.title != updatedGame.title;
@@ -94,23 +94,28 @@ class GameActionsService {
 
   /// Handles adding a new game
   Future<void> addGame(GameItem newGame, BuildContext context) async {
-    // Generate a new ID for the game
-    final gameWithId = newGame.copyWith(id: GameId.generate());
-
-    // Add the game to the provider
-    _ref.read(gameListProvider.notifier).addGame(gameWithId);
+    // Use the provider's createGame method for automatic timestamp handling
+    await _ref
+        .read(gameListProvider.notifier)
+        .createGame(
+          title: newGame.title,
+          platform: newGame.platform,
+          status: newGame.status,
+          imagePath: newGame.imagePath,
+          remoteImageUrl: newGame.remoteImageUrl,
+        );
 
     // Expand the relevant section for the new game's status
-    final statusName = _getStatusDisplayName(gameWithId.status);
+    final statusName = _getStatusDisplayName(newGame.status);
     _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
 
     // Show feedback
     if (context.mounted) {
       _showGameActionFeedback(
         context: context,
-        message: '${gameWithId.title} added to $statusName!',
-        icon: _getStatusIcon(gameWithId.status),
-        color: _getStatusColor(gameWithId.status),
+        message: '${newGame.title} added to $statusName!',
+        icon: _getStatusIcon(newGame.status),
+        color: _getStatusColor(newGame.status),
       );
     }
   }
