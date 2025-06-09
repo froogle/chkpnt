@@ -39,7 +39,7 @@ class StatusButton extends StatelessWidget {
         children: [
           _buildIcon(),
           SizedBox(width: InputStyles.statusButtonVerticalSpacing),
-          _buildLabel(),
+          Flexible(child: _buildLabel()),
         ],
       ),
     );
@@ -57,6 +57,8 @@ class StatusButton extends StatelessWidget {
     return Text(
       _getStatusLabel(),
       style: InputStyles.statusButtonTextStyle(isSelected),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
     );
   }
 

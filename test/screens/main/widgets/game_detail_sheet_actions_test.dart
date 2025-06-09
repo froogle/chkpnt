@@ -231,12 +231,15 @@ void main() {
       expect(find.text('Save'), findsOneWidget);
       expect(find.text('Delete'), findsOneWidget);
 
-      // Check that the buttons are part of the expected widget types
-      expect(find.byType(OutlinedButton), findsNWidgets(2)); // Edit and Delete
+      // Check that the buttons use custom gradient containers
       expect(
         find.byType(Container),
-        findsAtLeastNWidgets(1),
-      ); // Save button uses Container wrapper
+        findsAtLeastNWidgets(3),
+      ); // All buttons use Container wrapper
+      expect(
+        find.byType(InkWell),
+        findsNWidgets(3),
+      ); // All buttons use InkWell for interaction
     });
 
     testWidgets('should handle multiple button taps correctly', (
@@ -312,9 +315,9 @@ void main() {
       final saveTextWidget = find.text('Save');
       expect(saveTextWidget, findsOneWidget);
 
-      // Check that the save button text has the disabled colour
+      // Check that the save button text has the disabled colour (grey)
       final saveText = tester.widget<Text>(saveTextWidget);
-      expect(saveText.style?.color, AppColors.expandIcon);
+      expect(saveText.style?.color, Colors.grey[500]);
     });
 
     testWidgets('should enable Save button when hasChanges is true', (

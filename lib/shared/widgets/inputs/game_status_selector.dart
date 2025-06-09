@@ -50,12 +50,14 @@ class GameStatusSelector extends StatelessWidget {
     // Set maximum buttons per row based on orientation
     final maxButtonsPerRow = isPortrait ? 3 : 4;
 
+    // Calculate minimum button width needed for content
+    // Account for: horizontal padding (16) + icon (16) + spacing (4) + text (~40-60)
+    final minButtonWidth = isPortrait ? 90.0 : 85.0;
+
     // Calculate optimal buttons per row within the limit
     int buttonsPerRow = maxButtonsPerRow;
 
     // Check if we can fit the maximum buttons with reasonable size
-    final minButtonWidth =
-        isPortrait ? 85.0 : 75.0; // Slightly larger for portrait
     final widthNeededForMax =
         (minButtonWidth * maxButtonsPerRow) +
         (spacing * (maxButtonsPerRow - 1));
@@ -66,8 +68,13 @@ class GameStatusSelector extends StatelessWidget {
       if (buttonsPerRow < 2) buttonsPerRow = 2; // Minimum 2 buttons per row
     }
 
-    final buttonWidth =
+    // Ensure calculated button width meets minimum requirements
+    final calculatedButtonWidth =
         (availableWidth - (spacing * (buttonsPerRow - 1))) / buttonsPerRow;
+    final buttonWidth =
+        calculatedButtonWidth < minButtonWidth
+            ? minButtonWidth
+            : calculatedButtonWidth;
 
     return Wrap(
       spacing: spacing,

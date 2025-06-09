@@ -95,7 +95,7 @@ void main() {
         );
 
         expect(find.text('Current Status: Backlog'), findsOneWidget);
-        expect(find.byIcon(Icons.playlist_add), findsOneWidget);
+        expect(find.byIcon(Icons.list), findsOneWidget);
       });
 
       testWidgets('should display wishlist status correctly', (
@@ -110,7 +110,7 @@ void main() {
         );
 
         expect(find.text('Current Status: Wishlist'), findsOneWidget);
-        expect(find.byIcon(Icons.favorite_outline), findsOneWidget);
+        expect(find.byIcon(Icons.favorite), findsOneWidget);
       });
 
       testWidgets('should display ordered status correctly', (
