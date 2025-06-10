@@ -34,18 +34,26 @@ class ImageSelectionBottomSheet extends StatelessWidget {
       padding: ImageSelectionStyles.headerPadding,
       child: Column(
         children: [
-          Container(
-            width: ImageSelectionStyles.dragHandleWidth,
-            height: ImageSelectionStyles.dragHandleHeight,
-            decoration: ImageSelectionStyles.dragHandleDecoration,
-          ),
+          _buildDragHandle(),
           const SizedBox(height: ImageSelectionStyles.dragHandleSpacing),
-          const Text(
-            'Select Image',
-            style: ImageSelectionStyles.headerTitleStyle,
-          ),
+          _buildHeaderTitle(),
         ],
       ),
+    );
+  }
+
+  Widget _buildDragHandle() {
+    return Container(
+      width: ImageSelectionStyles.dragHandleWidth,
+      height: ImageSelectionStyles.dragHandleHeight,
+      decoration: ImageSelectionStyles.dragHandleDecoration,
+    );
+  }
+
+  Widget _buildHeaderTitle() {
+    return const Text(
+      'Select Image',
+      style: ImageSelectionStyles.headerTitleStyle,
     );
   }
 
@@ -54,35 +62,46 @@ class ImageSelectionBottomSheet extends StatelessWidget {
       padding: ImageSelectionStyles.optionsPadding,
       child: Column(
         children: [
-          _buildOptionTile(
-            context: context,
-            icon: Icons.photo_library,
-            title: 'Photo Gallery',
-            subtitle: 'Choose from your photos',
-            onTap:
-                () => _handleSourceSelection(context, GameImageSource.gallery),
-          ),
+          _buildGalleryOption(context),
           const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
-          _buildOptionTile(
-            context: context,
-            icon: Icons.folder,
-            title: 'File Browser',
-            subtitle: 'Choose from files',
-            onTap: () => _handleSourceSelection(context, GameImageSource.files),
-          ),
+          _buildFilesOption(context),
           if (hasExistingImage) ...[
             const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
-            _buildOptionTile(
-              context: context,
-              icon: Icons.delete_outline,
-              title: 'Remove Image',
-              subtitle: 'Use placeholder instead',
-              onTap: () => _handleRemoveImage(context),
-              isDestructive: true,
-            ),
+            _buildRemoveOption(context),
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildGalleryOption(BuildContext context) {
+    return _buildOptionTile(
+      context: context,
+      icon: Icons.photo_library,
+      title: 'Photo Gallery',
+      subtitle: 'Choose from your photos',
+      onTap: () => _handleSourceSelection(context, GameImageSource.gallery),
+    );
+  }
+
+  Widget _buildFilesOption(BuildContext context) {
+    return _buildOptionTile(
+      context: context,
+      icon: Icons.folder,
+      title: 'File Browser',
+      subtitle: 'Choose from files',
+      onTap: () => _handleSourceSelection(context, GameImageSource.files),
+    );
+  }
+
+  Widget _buildRemoveOption(BuildContext context) {
+    return _buildOptionTile(
+      context: context,
+      icon: Icons.delete_outline,
+      title: 'Remove Image',
+      subtitle: 'Use placeholder instead',
+      onTap: () => _handleRemoveImage(context),
+      isDestructive: true,
     );
   }
 
@@ -104,49 +123,58 @@ class ImageSelectionBottomSheet extends StatelessWidget {
         decoration: ImageSelectionStyles.optionTileDecoration,
         child: Row(
           children: [
-            Container(
-              width: ImageSelectionStyles.iconContainerSize,
-              height: ImageSelectionStyles.iconContainerSize,
-              decoration: ImageSelectionStyles.getIconContainerDecoration(
-                isDestructive: isDestructive,
-              ),
-              child: Icon(
-                icon,
-                color: ImageSelectionStyles.getIconColor(
-                  isDestructive: isDestructive,
-                ),
-                size: ImageSelectionStyles.iconSize,
-              ),
-            ),
+            _buildOptionIcon(icon, isDestructive),
             const SizedBox(width: ImageSelectionStyles.iconSpacing),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: ImageSelectionStyles.getOptionTitleStyle(
-                      isDestructive: isDestructive,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: ImageSelectionStyles.titleSubtitleSpacing,
-                  ),
-                  Text(
-                    subtitle,
-                    style: ImageSelectionStyles.optionSubtitleStyle,
-                  ),
-                ],
-              ),
+              child: _buildOptionContent(title, subtitle, isDestructive),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: ImageSelectionStyles.arrowIconSize,
-              color: ImageSelectionStyles.arrowIconColor,
-            ),
+            _buildArrowIcon(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildOptionIcon(IconData icon, bool isDestructive) {
+    return Container(
+      width: ImageSelectionStyles.iconContainerSize,
+      height: ImageSelectionStyles.iconContainerSize,
+      decoration: ImageSelectionStyles.getIconContainerDecoration(
+        isDestructive: isDestructive,
+      ),
+      child: Icon(
+        icon,
+        color: ImageSelectionStyles.getIconColor(isDestructive: isDestructive),
+        size: ImageSelectionStyles.iconSize,
+      ),
+    );
+  }
+
+  Widget _buildOptionContent(
+    String title,
+    String subtitle,
+    bool isDestructive,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: ImageSelectionStyles.getOptionTitleStyle(
+            isDestructive: isDestructive,
+          ),
+        ),
+        const SizedBox(height: ImageSelectionStyles.titleSubtitleSpacing),
+        Text(subtitle, style: ImageSelectionStyles.optionSubtitleStyle),
+      ],
+    );
+  }
+
+  Widget _buildArrowIcon() {
+    return const Icon(
+      Icons.arrow_forward_ios,
+      size: ImageSelectionStyles.arrowIconSize,
+      color: ImageSelectionStyles.arrowIconColor,
     );
   }
 
