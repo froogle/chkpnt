@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/services/game_image_service.dart';
+import 'package:chkpnt/styles/styles.dart';
 
 class ImageSelectionBottomSheet extends StatelessWidget {
   final bool hasExistingImage;
@@ -14,48 +15,34 @@ class ImageSelectionBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: _buildSheetDecoration(),
+      decoration: ImageSelectionStyles.sheetDecoration,
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildHeader(),
             _buildOptions(context),
-            const SizedBox(height: 16),
+            const SizedBox(height: ImageSelectionStyles.bottomSpacing),
           ],
         ),
       ),
     );
   }
 
-  BoxDecoration _buildSheetDecoration() {
-    return const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    );
-  }
-
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: ImageSelectionStyles.headerPadding,
       child: Column(
         children: [
           Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
+            width: ImageSelectionStyles.dragHandleWidth,
+            height: ImageSelectionStyles.dragHandleHeight,
+            decoration: ImageSelectionStyles.dragHandleDecoration,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: ImageSelectionStyles.dragHandleSpacing),
           const Text(
             'Select Image',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
+            style: ImageSelectionStyles.headerTitleStyle,
           ),
         ],
       ),
@@ -64,7 +51,7 @@ class ImageSelectionBottomSheet extends StatelessWidget {
 
   Widget _buildOptions(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: ImageSelectionStyles.optionsPadding,
       child: Column(
         children: [
           _buildOptionTile(
@@ -75,7 +62,7 @@ class ImageSelectionBottomSheet extends StatelessWidget {
             onTap:
                 () => _handleSourceSelection(context, GameImageSource.gallery),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
           _buildOptionTile(
             context: context,
             icon: Icons.folder,
@@ -84,7 +71,7 @@ class ImageSelectionBottomSheet extends StatelessWidget {
             onTap: () => _handleSourceSelection(context, GameImageSource.files),
           ),
           if (hasExistingImage) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
             _buildOptionTile(
               context: context,
               icon: Icons.delete_outline,
@@ -109,50 +96,54 @@ class ImageSelectionBottomSheet extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(
+        ImageSelectionStyles.optionTileBorderRadius,
+      ),
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[200]!),
-          borderRadius: BorderRadius.circular(12),
-        ),
+        padding: ImageSelectionStyles.optionTilePadding,
+        decoration: ImageSelectionStyles.optionTileDecoration,
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: isDestructive ? Colors.red[50] : Colors.blue[50],
-                borderRadius: BorderRadius.circular(12),
+              width: ImageSelectionStyles.iconContainerSize,
+              height: ImageSelectionStyles.iconContainerSize,
+              decoration: ImageSelectionStyles.getIconContainerDecoration(
+                isDestructive: isDestructive,
               ),
               child: Icon(
                 icon,
-                color: isDestructive ? Colors.red[600] : Colors.blue[600],
-                size: 24,
+                color: ImageSelectionStyles.getIconColor(
+                  isDestructive: isDestructive,
+                ),
+                size: ImageSelectionStyles.iconSize,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: ImageSelectionStyles.iconSpacing),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: isDestructive ? Colors.red[700] : Colors.black87,
+                    style: ImageSelectionStyles.getOptionTitleStyle(
+                      isDestructive: isDestructive,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(
+                    height: ImageSelectionStyles.titleSubtitleSpacing,
+                  ),
                   Text(
                     subtitle,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    style: ImageSelectionStyles.optionSubtitleStyle,
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: ImageSelectionStyles.arrowIconSize,
+              color: ImageSelectionStyles.arrowIconColor,
+            ),
           ],
         ),
       ),
