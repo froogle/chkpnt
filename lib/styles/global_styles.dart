@@ -335,4 +335,25 @@ class AppLayout {
     color: AppColors.primaryText,
     letterSpacing: 0.3,
   );
+
+  // ========================================
+  // Button Text Styles (Standardized)
+  // ========================================
+
+  /// Standard action button text styles
+  static const TextStyle actionButtonTextStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
+  );
+
+  static TextStyle actionButtonDisabledTextStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.expandIcon,
+  );
+
+  /// Action button icon size
+  static const double actionButtonIconSize = 16.0;
+  static const double actionButtonIconSpacing = 6.0;
 }

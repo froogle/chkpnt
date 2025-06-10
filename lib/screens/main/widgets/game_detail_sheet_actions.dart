@@ -19,140 +19,73 @@ class GameDetailSheetActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _buildDeleteButton(),
+        Expanded(child: _buildDeleteButton()),
         SizedBox(width: InputStyles.actionButtonSpacing),
-        _buildEditButton(),
+        Expanded(child: _buildEditButton()),
         SizedBox(width: InputStyles.actionButtonSpacing),
-        _buildSaveButton(),
+        Expanded(child: _buildSaveButton()),
       ],
     );
   }
 
+  Widget _buildDeleteButton() {
+    return _ActionButton(
+      onPressed: onDeletePressed,
+      label: 'Delete',
+      icon: Icons.delete,
+      gradient: InputStyles.deleteActionButtonGradient,
+      shadowColour: InputStyles.deleteActionButtonShadowColour,
+    );
+  }
+
   Widget _buildEditButton() {
-    return Expanded(
-      child: _buildGradientButton(
-        onPressed: onEditPressed,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.edit, size: 16, color: Colors.white),
-            const SizedBox(width: 6),
-            const Text(
-              'Edit',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        gradient: AppGradients.buttonGradient,
-        shadowColor: AppColors.primaryPurple.withValues(alpha: 0.3),
-      ),
+    return _ActionButton(
+      onPressed: onEditPressed,
+      label: 'Edit',
+      icon: Icons.edit,
+      gradient: AppGradients.buttonGradient,
+      shadowColour: AppColors.primaryPurple.withValues(alpha: 0.3),
     );
   }
 
   Widget _buildSaveButton() {
-    return Expanded(
-      child: _buildGradientButton(
-        onPressed: hasChanges ? onSavePressed : null,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.save,
-              size: 16,
-              color: hasChanges ? Colors.white : Colors.grey[500],
-            ),
-            const SizedBox(width: 6),
-            Text(
-              'Save',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: hasChanges ? Colors.white : Colors.grey[500],
-              ),
-            ),
-          ],
-        ),
-        gradient:
-            hasChanges
-                ? AppGradients.buttonGradient
-                : LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Colors.grey[100]!, Colors.grey[300]!],
-                ),
-        shadowColor:
-            hasChanges ? AppColors.primaryPurple.withValues(alpha: 0.3) : null,
-        enabled: hasChanges,
-      ),
+    return _ActionButton(
+      onPressed: hasChanges ? onSavePressed : null,
+      label: 'Save',
+      icon: Icons.save,
+      gradient:
+          hasChanges
+              ? AppGradients.buttonGradient
+              : InputStyles.disabledActionButtonGradient,
+      shadowColour:
+          hasChanges ? AppColors.primaryPurple.withValues(alpha: 0.3) : null,
+      enabled: hasChanges,
     );
   }
+}
 
-  Widget _buildDeleteButton() {
-    return Expanded(
-      child: _buildGradientButton(
-        onPressed: onDeletePressed,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.delete, size: 16, color: Colors.white),
-            const SizedBox(width: 6),
-            const Text(
-              'Delete',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        gradient: AppGradients.buttonGradient,
-        shadowColor: AppColors.primaryPurple.withValues(alpha: 0.3),
-      ),
-    );
-  }
+class _ActionButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String label;
+  final IconData icon;
+  final LinearGradient gradient;
+  final Color? shadowColour;
+  final bool enabled;
 
-  Widget _buildGradientButton({
-    required Widget child,
-    required VoidCallback? onPressed,
-    required LinearGradient gradient,
-    Color? shadowColor,
-    bool enabled = true,
-  }) {
+  const _ActionButton({
+    required this.onPressed,
+    required this.label,
+    required this.icon,
+    required this.gradient,
+    this.shadowColour,
+    this.enabled = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: InputStyles.actionButtonCompactHeight,
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: InputStyles.actionButtonBorderRadius,
-        boxShadow:
-            enabled && shadowColor != null
-                ? [
-                  BoxShadow(
-                    color: shadowColor,
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                    spreadRadius: 0,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                    spreadRadius: 0,
-                  ),
-                ]
-                : [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
-                    spreadRadius: 0,
-                  ),
-                ],
-      ),
+      decoration: _buildButtonDecoration(),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -160,10 +93,79 @@ class GameDetailSheetActions extends StatelessWidget {
           borderRadius: InputStyles.actionButtonBorderRadius,
           child: Container(
             padding: InputStyles.actionButtonCompactPadding,
-            child: Center(child: child),
+            child: Center(child: _buildButtonContent()),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildButtonContent() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildButtonIcon(),
+        SizedBox(width: AppLayout.actionButtonIconSpacing),
+        _buildButtonText(),
+      ],
+    );
+  }
+
+  Widget _buildButtonIcon() {
+    return Icon(
+      icon,
+      size: AppLayout.actionButtonIconSize,
+      color: _getContentColour(),
+    );
+  }
+
+  Widget _buildButtonText() {
+    return Text(label, style: _getTextStyle());
+  }
+
+  BoxDecoration _buildButtonDecoration() {
+    return BoxDecoration(
+      gradient: gradient,
+      borderRadius: InputStyles.actionButtonBorderRadius,
+      boxShadow: _buildButtonShadow(),
+    );
+  }
+
+  List<BoxShadow> _buildButtonShadow() {
+    if (enabled && shadowColour != null) {
+      return [
+        BoxShadow(
+          color: shadowColour!,
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+          spreadRadius: 0,
+        ),
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+          spreadRadius: 0,
+        ),
+      ];
+    }
+
+    return [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.05),
+        blurRadius: 4,
+        offset: const Offset(0, 1),
+        spreadRadius: 0,
+      ),
+    ];
+  }
+
+  Color _getContentColour() {
+    return enabled ? Colors.white : AppColors.expandIcon;
+  }
+
+  TextStyle _getTextStyle() {
+    return enabled
+        ? AppLayout.actionButtonTextStyle
+        : AppLayout.actionButtonDisabledTextStyle;
   }
 }

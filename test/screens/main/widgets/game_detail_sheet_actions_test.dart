@@ -316,7 +316,7 @@ void main() {
 
       // Check that the save button text has the disabled colour (grey)
       final saveText = tester.widget<Text>(saveTextWidget);
-      expect(saveText.style?.color, Colors.grey[500]);
+      expect(saveText.style?.color, const Color(0xFF64748B));
     });
 
     testWidgets('should enable Save button when hasChanges is true', (

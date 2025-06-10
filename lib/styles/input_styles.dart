@@ -331,6 +331,28 @@ class InputStyles {
     horizontal: 16,
     vertical: 8,
   );
+
+  // ========================================
+  // Action Button Gradients
+  // ========================================
+
+  /// Disabled button gradient
+  static LinearGradient get disabledActionButtonGradient => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Colors.grey[100]!, Colors.grey[300]!],
+  );
+
+  /// Delete button gradient (red theme)
+  static LinearGradient get deleteActionButtonGradient => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFEF4444), Color(0xFFF87171)],
+  );
+
+  /// Enhanced shadow colour for delete button
+  static Color get deleteActionButtonShadowColour =>
+      Color(0xFFEF4444).withValues(alpha: 0.3);
 }
 
 /// Styles for dropdown components
