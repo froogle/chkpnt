@@ -51,13 +51,23 @@ class GameDetailSheetInfo extends StatelessWidget {
   }
 
   Widget _buildPortraitPlatformAndStatus() {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PlatformBadge(platform: game.platform, onTap: onEditPressed),
-        const SizedBox(width: 12),
-        _buildCurrentStatusIcon(),
-        const SizedBox(width: 8),
-        Expanded(child: _buildCurrentStatusText()),
+        Row(
+          children: [
+            PlatformBadge(platform: game.platform, onTap: onEditPressed),
+            const SizedBox(width: 12),
+            _buildCurrentStatusIcon(),
+            const SizedBox(width: 8),
+            Expanded(child: _buildCurrentStatusText()),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: _buildStatusChangedText(),
+        ),
       ],
     );
   }
@@ -74,6 +84,11 @@ class GameDetailSheetInfo extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(child: _buildCurrentStatusText()),
           ],
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: _buildStatusChangedText(),
         ),
       ],
     );
@@ -244,6 +259,40 @@ class GameDetailSheetInfo extends StatelessWidget {
         return 'Wishlist';
       case GameStatus.ordered:
         return 'Ordered';
+    }
+  }
+
+  Widget _buildStatusChangedText() {
+    return Text(
+      'Status changed: ${_getStatusChangedDisplayText(game.lastStatusChange)}',
+      style: AppLayout.detailSubtitleStyle.copyWith(
+        fontSize: 12,
+        color: AppColors.expandIcon.withValues(alpha: 0.8),
+      ),
+    );
+  }
+
+  String _getStatusChangedDisplayText(DateTime statusChanged) {
+    final now = DateTime.now();
+    final difference = now.difference(statusChanged);
+    
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks week${weeks == 1 ? '' : 's'} ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months month${months == 1 ? '' : 's'} ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years year${years == 1 ? '' : 's'} ago';
     }
   }
 }
