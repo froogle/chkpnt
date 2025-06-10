@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:chkpnt/styles/styles.dart';
 
 class PlatformEntryScreen extends StatefulWidget {
   final String initialPlatform;

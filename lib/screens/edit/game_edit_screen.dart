@@ -60,9 +60,18 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   void _onTitleChanged() {
-    ref
-        .read(gameEditStateProvider(_editContext).notifier)
-        .updateTitle(_titleController.text);
+    // Only update if the widget is mounted and the text actually changed
+    if (mounted) {
+      final currentState = ref.read(gameEditStateProvider(_editContext));
+      final newTitle = _titleController.text;
+
+      // Only update the provider if the title actually changed from the initial state
+      if (newTitle != currentState.title) {
+        ref
+            .read(gameEditStateProvider(_editContext).notifier)
+            .updateTitle(newTitle);
+      }
+    }
   }
 
   @override

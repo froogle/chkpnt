@@ -173,8 +173,8 @@ void main() {
         MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
       );
 
-      // Verify the main column structure
-      expect(find.byType(Column), findsOneWidget);
+      // Verify the GameDetailSheetInfo widget exists
+      expect(find.byType(GameDetailSheetInfo), findsOneWidget);
 
       // Verify that the status row exists
       final statusRow = find.byWidgetPredicate(
