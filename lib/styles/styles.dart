@@ -12,6 +12,7 @@ export 'layout_styles.dart';
 export 'input_styles.dart';
 export 'edit_screen_styles.dart';
 export 'image_selection_styles.dart';
+export 'platform_entry_styles.dart';
 
 // Export the legacy compatibility class for backward compatibility
 export 'main_screen_styles.dart';
