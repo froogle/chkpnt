@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/screens/edit/widgets/platform_entry_screen.dart';
+import 'android13_text_field_wrapper.dart';
 
 class PlatformEditDropdown extends StatefulWidget {
   final String selectedPlatform;
@@ -88,26 +89,28 @@ class _PlatformEditDropdownState extends State<PlatformEditDropdown> {
       builder:
           (context) => AlertDialog(
             title: const Text('Enter Platform'),
-            content: TextField(
-              controller: _textController,
-              decoration: const InputDecoration(
-                hintText: 'Enter platform name',
-                border: OutlineInputBorder(),
+            content: Android13TextFieldWrapper(
+              child: TextField(
+                controller: _textController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter platform name',
+                  border: OutlineInputBorder(),
+                ),
+                textCapitalization: TextCapitalization.words,
+                autofocus: true,
+                onSubmitted: (value) {
+                  final platform = value.trim();
+                  Navigator.of(context).pop();
+                  if (platform.isNotEmpty &&
+                      platform != widget.selectedPlatform) {
+                    final abbreviatedPlatform = _getAbbreviatedPlatformName(
+                      platform,
+                    );
+                    widget.onPlatformChanged(abbreviatedPlatform);
+                    _textController.text = abbreviatedPlatform;
+                  }
+                },
               ),
-              textCapitalization: TextCapitalization.words,
-              autofocus: true,
-              onSubmitted: (value) {
-                final platform = value.trim();
-                Navigator.of(context).pop();
-                if (platform.isNotEmpty &&
-                    platform != widget.selectedPlatform) {
-                  final abbreviatedPlatform = _getAbbreviatedPlatformName(
-                    platform,
-                  );
-                  widget.onPlatformChanged(abbreviatedPlatform);
-                  _textController.text = abbreviatedPlatform;
-                }
-              },
             ),
             actions: [
               TextButton(
@@ -240,8 +243,20 @@ class _PlatformEditDropdownState extends State<PlatformEditDropdown> {
               leading: const Icon(
                 Icons.gamepad_outlined,
                 size: EditScreenStyles.platformListIconSize,
+                color:
+                    AppColors
+                        .primaryText, // Explicit icon colour for Android 13
               ),
-              title: Text(platform),
+              title: Text(
+                platform,
+                style: const TextStyle(
+                  color:
+                      AppColors
+                          .primaryText, // Explicit text colour for Android 13
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               trailing:
                   isSelected
                       ? const Icon(

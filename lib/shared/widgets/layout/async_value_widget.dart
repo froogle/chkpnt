@@ -68,7 +68,11 @@ class AsyncValueWidget<T> extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               error.toString(),
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              style: const TextStyle(
+                fontSize: 14,
+                color:
+                    AppColors.expandIcon, // Use explicit colour for Android 13
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -158,7 +162,11 @@ class AsyncValueRetryWidget<T> extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               error.toString(),
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              style: const TextStyle(
+                fontSize: 14,
+                color:
+                    AppColors.expandIcon, // Use explicit colour for Android 13
+              ),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[

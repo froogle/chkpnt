@@ -43,7 +43,7 @@ class GameEditInfoSection extends ConsumerWidget {
       controller: titleController,
       style: GameDetailSheetStyles.gameTitleStyle,
       decoration: EditScreenStyles.titleFieldDecoration,
-      maxLines: null,
+      maxLines: 1, // Single line only - fixes multi-line issue
       textCapitalization: TextCapitalization.words,
       isAddMode: isAddMode,
     );

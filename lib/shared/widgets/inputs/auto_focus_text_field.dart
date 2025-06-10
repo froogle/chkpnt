@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'android13_text_field_wrapper.dart';
 
 class AutoFocusTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -50,13 +51,15 @@ class _AutoFocusTextFieldState extends State<AutoFocusTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: widget.controller,
-      focusNode: _focusNode,
-      style: widget.style,
-      decoration: widget.decoration,
-      maxLines: widget.maxLines,
-      textCapitalization: widget.textCapitalization,
+    return Android13TextFieldWrapper(
+      child: TextField(
+        controller: widget.controller,
+        focusNode: _focusNode,
+        style: widget.style,
+        decoration: widget.decoration,
+        maxLines: widget.maxLines,
+        textCapitalization: widget.textCapitalization,
+      ),
     );
   }
 }

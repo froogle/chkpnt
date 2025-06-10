@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'android13_text_field_wrapper.dart';
 
 class CompactSearchBar extends ConsumerWidget {
   final String? hintText;
@@ -20,18 +21,20 @@ class CompactSearchBar extends ConsumerWidget {
     return Container(
       height: InputStyles.compactSearchHeight,
       decoration: InputStyles.compactSearchBarDecoration,
-      child: TextField(
-        onChanged: (value) {
-          ref.read(searchQueryProvider.notifier).updateQuery(value);
-        },
-        onTap: onTap,
-        readOnly: readOnly,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: AppColors.primaryText,
+      child: Android13TextFieldWrapper(
+        child: TextField(
+          onChanged: (value) {
+            ref.read(searchQueryProvider.notifier).updateQuery(value);
+          },
+          onTap: onTap,
+          readOnly: readOnly,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.primaryText,
+          ),
+          decoration: _buildInputDecoration(),
         ),
-        decoration: _buildInputDecoration(),
       ),
     );
   }

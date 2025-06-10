@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../styles/platform_entry_styles.dart';
+import '../../../shared/widgets/inputs/android13_text_field_wrapper.dart';
 
 class PlatformEntryScreen extends StatefulWidget {
   final String initialPlatform;
@@ -129,14 +130,16 @@ class _PlatformEntryScreenState extends State<PlatformEntryScreen> {
   }
 
   Widget _buildTextField() {
-    return TextField(
-      controller: _controller,
-      focusNode: _focusNode,
-      style: PlatformEntryStyles.textInputStyle,
-      decoration: PlatformEntryStyles.textInputDecoration,
-      textCapitalization: TextCapitalization.words,
-      onChanged: _handleTextChanged,
-      onSubmitted: _handleTextSubmitted,
+    return Android13TextFieldWrapper(
+      child: TextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        style: PlatformEntryStyles.textInputStyle,
+        decoration: PlatformEntryStyles.textInputDecoration,
+        textCapitalization: TextCapitalization.words,
+        onChanged: _handleTextChanged,
+        onSubmitted: _handleTextSubmitted,
+      ),
     );
   }
 
