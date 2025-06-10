@@ -226,6 +226,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       isPortrait: isPortrait,
       showPlatformAndStatus: showPlatformAndStatus,
       showTitle: showTitle,
+      isAddMode: widget.isAddMode,
     );
   }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/screens/main/widgets/game_detail_sheet_actions.dart';
-import 'package:chkpnt/styles/styles.dart';
 
 void main() {
   group('GameDetailSheetActions Widget Tests', () {

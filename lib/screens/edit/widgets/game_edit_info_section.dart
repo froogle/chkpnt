@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/shared/widgets/inputs/platform_edit_dropdown.dart';
+import 'package:chkpnt/shared/widgets/inputs/auto_focus_text_field.dart';
 
 class GameEditInfoSection extends ConsumerWidget {
   final TextEditingController titleController;
@@ -11,6 +12,7 @@ class GameEditInfoSection extends ConsumerWidget {
   final bool isPortrait;
   final bool showPlatformAndStatus;
   final bool showTitle;
+  final bool isAddMode;
 
   const GameEditInfoSection({
     super.key,
@@ -20,6 +22,7 @@ class GameEditInfoSection extends ConsumerWidget {
     this.isPortrait = true,
     this.showPlatformAndStatus = true,
     this.showTitle = true,
+    this.isAddMode = false,
   });
 
   @override
@@ -36,12 +39,13 @@ class GameEditInfoSection extends ConsumerWidget {
   }
 
   Widget _buildTitleField() {
-    return TextField(
+    return AutoFocusTextField(
       controller: titleController,
       style: GameDetailSheetStyles.gameTitleStyle,
       decoration: EditScreenStyles.titleFieldDecoration,
       maxLines: null,
       textCapitalization: TextCapitalization.words,
+      isAddMode: isAddMode,
     );
   }
 
@@ -67,6 +71,7 @@ class GameEditInfoSection extends ConsumerWidget {
             selectedPlatform: selectedPlatform,
             platforms: platforms,
             onPlatformChanged: onPlatformChanged,
+            isAddMode: isAddMode,
           ),
         ),
       ],
@@ -81,6 +86,7 @@ class GameEditInfoSection extends ConsumerWidget {
           selectedPlatform: selectedPlatform,
           platforms: platforms,
           onPlatformChanged: onPlatformChanged,
+          isAddMode: isAddMode,
         ),
       ],
     );

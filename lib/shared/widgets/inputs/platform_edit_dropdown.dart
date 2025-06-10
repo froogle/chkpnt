@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/screens/edit/widgets/platform_entry_screen.dart';
 
 class PlatformEditDropdown extends StatefulWidget {
   final String selectedPlatform;
   final List<String> platforms;
   final ValueChanged<String> onPlatformChanged;
+  final bool isAddMode;
 
   const PlatformEditDropdown({
     super.key,
     required this.selectedPlatform,
     required this.platforms,
     required this.onPlatformChanged,
+    this.isAddMode = false,
   });
 
   @override
@@ -65,47 +68,95 @@ class _PlatformEditDropdownState extends State<PlatformEditDropdown> {
   }
 
   void _showPlatformOptions() {
-    showModalBottomSheet<void>(
+    // If there are no platforms and we're in add mode, show a simple dialog
+    if (widget.platforms.isEmpty && widget.isAddMode) {
+      _showCustomPlatformDialog();
+    } else {
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        useSafeArea: true,
+        builder: (context) => _buildBottomSheet(),
+      );
+    }
+  }
+
+  void _showCustomPlatformDialog() {
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildBottomSheet(),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Enter Platform'),
+            content: TextField(
+              controller: _textController,
+              decoration: const InputDecoration(
+                hintText: 'Enter platform name',
+                border: OutlineInputBorder(),
+              ),
+              textCapitalization: TextCapitalization.words,
+              autofocus: true,
+              onSubmitted: (value) {
+                final platform = value.trim();
+                Navigator.of(context).pop();
+                if (platform.isNotEmpty &&
+                    platform != widget.selectedPlatform) {
+                  final abbreviatedPlatform = _getAbbreviatedPlatformName(
+                    platform,
+                  );
+                  widget.onPlatformChanged(abbreviatedPlatform);
+                  _textController.text = abbreviatedPlatform;
+                }
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  final platform = _textController.text.trim();
+                  Navigator.of(context).pop();
+                  if (platform.isNotEmpty &&
+                      platform != widget.selectedPlatform) {
+                    final abbreviatedPlatform = _getAbbreviatedPlatformName(
+                      platform,
+                    );
+                    widget.onPlatformChanged(abbreviatedPlatform);
+                    _textController.text = abbreviatedPlatform;
+                  }
+                },
+                child: const Text('Add'),
+              ),
+            ],
+          ),
     );
   }
 
   Widget _buildBottomSheet() {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    final availableHeight = screenHeight - keyboardHeight;
-    final maxSheetHeight =
-        availableHeight * EditScreenStyles.bottomSheetMaxHeightFactor;
-
-    return Container(
-      constraints: BoxConstraints(maxHeight: maxSheetHeight),
-      padding: EditScreenStyles.bottomSheetPadding.copyWith(
-        bottom: keyboardHeight + 20,
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      decoration: EditScreenStyles.bottomSheetDecoration,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBottomSheetHeader(),
-          const SizedBox(height: 16),
-          Flexible(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCustomPlatformInput(),
-                  const SizedBox(height: 20),
-                  _buildPlatformList(),
-                ],
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: EditScreenStyles.bottomSheetDecoration,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildBottomSheetHeader(),
+            const SizedBox(height: 16),
+            _buildCustomPlatformInput(),
+            if (widget.platforms.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Flexible(
+                child: SingleChildScrollView(child: _buildPlatformList()),
               ),
-            ),
-          ),
-        ],
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -134,31 +185,35 @@ class _PlatformEditDropdownState extends State<PlatformEditDropdown> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Or enter custom platform:',
+          'Or add a new platform:',
           style: EditScreenStyles.customPlatformLabelStyle,
-        ),
-        const SizedBox(height: EditScreenStyles.customPlatformSpacing),
-        TextField(
-          controller: _textController,
-          decoration: EditScreenStyles.customPlatformInputDecoration,
-          textCapitalization: TextCapitalization.words,
-          onSubmitted: (value) {
-            _handlePlatformSelection(value.trim());
-          },
         ),
         const SizedBox(height: EditScreenStyles.customPlatformSpacing),
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              _handlePlatformSelection(_textController.text.trim());
-            },
+          child: ElevatedButton.icon(
+            onPressed: _navigateToCustomPlatformEntry,
             style: EditScreenStyles.customPlatformButtonStyle,
-            child: const Text(EditScreenStyles.customPlatformButtonText),
+            icon: const Icon(Icons.add, size: 20),
+            label: const Text('Add Custom Platform'),
           ),
         ),
       ],
     );
+  }
+
+  Future<void> _navigateToCustomPlatformEntry() async {
+    Navigator.of(context).pop(); // Close the bottom sheet first
+
+    final result = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (context) => const PlatformEntryScreen()),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      final abbreviatedPlatform = _getAbbreviatedPlatformName(result);
+      widget.onPlatformChanged(abbreviatedPlatform);
+      _textController.text = abbreviatedPlatform;
+    }
   }
 
   Widget _buildPlatformList() {

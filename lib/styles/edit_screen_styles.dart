@@ -31,11 +31,24 @@ class EditScreenStyles {
 
   // Title field styles
   static InputDecoration get titleFieldDecoration => InputDecoration(
-    border: InputBorder.none,
+    filled: true,
+    fillColor: Colors.grey[50],
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Colors.blue, width: 2),
+    ),
     hintText: 'Enter game title',
     hintStyle: titleFieldHintStyle,
-    contentPadding: EdgeInsets.zero,
-    isDense: true,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    isDense: false,
   );
 
   static TextStyle get titleFieldHintStyle =>
