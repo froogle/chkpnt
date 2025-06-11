@@ -178,12 +178,12 @@ final selectedPlatformProvider =
     );
 
 typedef _$SelectedPlatform = AutoDisposeNotifier<String>;
-String _$sectionExpansionHash() => r'03ee4ee269679ad2231bc25d639acbeda372451b';
+String _$sectionExpansionHash() => r'79ca889a67f8cbe9c5a620b8418adebea60cd433';
 
 /// See also [SectionExpansion].
 @ProviderFor(SectionExpansion)
 final sectionExpansionProvider =
-    AutoDisposeNotifierProvider<SectionExpansion, Map<String, bool>>.internal(
+    NotifierProvider<SectionExpansion, Map<String, bool>>.internal(
       SectionExpansion.new,
       name: r'sectionExpansionProvider',
       debugGetCreateSourceHash:
@@ -194,7 +194,7 @@ final sectionExpansionProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$SectionExpansion = AutoDisposeNotifier<Map<String, bool>>;
+typedef _$SectionExpansion = Notifier<Map<String, bool>>;
 String _$gameEditStateHash() => r'22b62fcfa3434f171365c348cb882afc8ad0622d';
 
 abstract class _$GameEditState

@@ -155,13 +155,10 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     );
 
     // Update section expansion based on content
+    // Only update wishlist sections - don't pass main screen sections to avoid overriding them
     ref
         .read(sectionExpansionProvider.notifier)
         .updateExpansionBasedOnResults(
-          playingGames: [], // Not used on wishlist screen
-          backlogGames: [], // Not used on wishlist screen
-          completedGames: [], // Not used on wishlist screen
-          abandonedGames: [], // Not used on wishlist screen
           orderedGames: orderedGames,
           wishlistGames: wishlistGames,
         );
