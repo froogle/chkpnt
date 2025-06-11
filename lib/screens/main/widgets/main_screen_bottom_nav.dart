@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/styles/main_screen_styles.dart';
+import 'package:chkpnt/styles/global_styles.dart';
 
 class MainScreenBottomNav extends StatelessWidget {
   final Function(int)? onNavItemPressed;
@@ -26,7 +27,7 @@ class MainScreenBottomNav extends StatelessWidget {
   Widget _buildNavButton(IconData icon, int index) {
     return IconButton(
       onPressed: () => onNavItemPressed?.call(index),
-      icon: Icon(icon, color: const Color(0xFFDFB268)),
+      icon: Icon(icon, color: AppColors.primaryPurple),
     );
   }
 }
