@@ -6,11 +6,13 @@ import '../buttons/status_button.dart';
 class GameStatusSelector extends StatelessWidget {
   final GameStatus selectedStatus;
   final ValueChanged<GameStatus> onStatusChanged;
+  final bool isAddMode;
 
   const GameStatusSelector({
     super.key,
     required this.selectedStatus,
     required this.onStatusChanged,
+    this.isAddMode = false,
   });
 
   @override
@@ -30,6 +32,18 @@ class GameStatusSelector extends StatelessWidget {
 
   /// Determines which status options to show based on the current game status
   List<GameStatus> _getAvailableStatuses() {
+    // If this is add mode (new game), show all available statuses
+    if (isAddMode) {
+      return [
+        GameStatus.playing,
+        GameStatus.backlog,
+        GameStatus.completed,
+        GameStatus.abandoned,
+        GameStatus.wishlist,
+        GameStatus.ordered,
+      ];
+    }
+
     // If the game is currently wishlist or ordered, show only wishlist flow options
     if (selectedStatus == GameStatus.wishlist ||
         selectedStatus == GameStatus.ordered) {

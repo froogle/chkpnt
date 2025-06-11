@@ -286,5 +286,49 @@ void main() {
         container.dispose();
       });
     });
+
+    group('Add Game Status Selection Bug Fix', () {
+      testWidgets('shows all status options when adding a new game', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+        );
+
+        await tester.pump();
+
+        // Should show ALL status options for new games
+        expect(find.text('Playing'), findsOneWidget);
+        expect(find.text('Backlog'), findsOneWidget);
+        expect(find.text('Completed'), findsOneWidget);
+        expect(find.text('Abandoned'), findsOneWidget);
+        expect(find.text('Wishlist'), findsOneWidget);
+        expect(find.text('Ordered'), findsOneWidget);
+      });
+
+      testWidgets('allows selecting any status when adding a new game', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+        );
+
+        await tester.pump();
+
+        // Should be able to select wishlist status (which would be filtered out in edit mode for playing games)
+        await tester.tap(find.text('Wishlist'));
+        await tester.pump();
+
+        // Wishlist should still be visible and selectable
+        expect(find.text('Wishlist'), findsOneWidget);
+        expect(find.text('Ordered'), findsOneWidget);
+
+        // All other statuses should still be visible too
+        expect(find.text('Playing'), findsOneWidget);
+        expect(find.text('Backlog'), findsOneWidget);
+        expect(find.text('Completed'), findsOneWidget);
+        expect(find.text('Abandoned'), findsOneWidget);
+      });
+    });
   });
 }

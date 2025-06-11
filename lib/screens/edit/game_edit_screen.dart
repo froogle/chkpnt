@@ -245,6 +245,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     return GameStatusSelector(
       selectedStatus: editState.status,
       onStatusChanged: _handleStatusChange,
+      isAddMode: widget.isAddMode,
     );
   }
 
