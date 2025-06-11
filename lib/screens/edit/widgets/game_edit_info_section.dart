@@ -41,7 +41,7 @@ class GameEditInfoSection extends ConsumerWidget {
   Widget _buildTitleField() {
     return AutoFocusTextField(
       controller: titleController,
-      style: GameDetailSheetStyles.gameTitleStyle,
+      style: EditScreenStyles.titleFieldTextStyle,
       decoration: EditScreenStyles.titleFieldDecoration,
       maxLines: 1, // Single line only - fixes multi-line issue
       textCapitalization: TextCapitalization.words,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'game_detail_sheet_styles.dart';
 
 class EditScreenStyles {
   // Save button styles
@@ -29,43 +28,41 @@ class EditScreenStyles {
   static const double saveButtonIconSize = 20.0;
   static const double saveButtonIconSpacing = 8.0;
 
-  // Title field styles - Enhanced visibility for Android
+  // Title field styles - Mobile-optimised for smaller, cleaner appearance
   static InputDecoration get titleFieldDecoration => InputDecoration(
     filled: true,
-    fillColor: Colors.grey[100], // Darker background for better contrast
+    fillColor: Colors.grey[50], // Lighter, more subtle background
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Colors.grey[400]!,
-        width: 1.5,
-      ), // Stronger border
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(color: Colors.grey[300]!, width: 1.0),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Colors.grey[400]!,
-        width: 1.5,
-      ), // More visible border
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(color: Colors.grey[300]!, width: 1.0),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(
-        color: Colors.blue,
-        width: 2.5,
-      ), // Thicker focus border
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: Colors.blue, width: 2.0),
     ),
     hintText: 'Enter game title',
     hintStyle: titleFieldHintStyle,
     contentPadding: const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 14,
-    ), // Slightly more padding
-    isDense: false,
+      horizontal: 12,
+      vertical: 8,
+    ), // Reduced padding for compact appearance
+    isDense: true, // Enables more compact field
   );
 
-  static TextStyle get titleFieldHintStyle => GameDetailSheetStyles
-      .gameTitleStyle
-      .copyWith(color: Colors.grey[500]); // Darker hint text
+  // Mobile-appropriate text style for title field
+  static const TextStyle titleFieldTextStyle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: Colors.black87,
+    letterSpacing: 0.1,
+  );
+
+  static TextStyle get titleFieldHintStyle =>
+      titleFieldTextStyle.copyWith(color: Colors.grey[500]);
 
   // Section spacing
   static const double sectionSpacing = 16.0;

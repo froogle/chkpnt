@@ -23,6 +23,8 @@ void main() {
         'Backlog': false,
         'Completed': false,
         'Abandoned': false,
+        'Ordered': true,
+        'Wish List': false,
       });
     });
 
@@ -68,6 +70,8 @@ void main() {
       expect(expansion['Backlog'], true);
       expect(expansion['Completed'], true);
       expect(expansion['Abandoned'], true);
+      expect(expansion['Ordered'], true);
+      expect(expansion['Wish List'], true);
     });
 
     test('should collapse all sections', () {
@@ -80,6 +84,8 @@ void main() {
       expect(expansion['Backlog'], false);
       expect(expansion['Completed'], false);
       expect(expansion['Abandoned'], false);
+      expect(expansion['Ordered'], false);
+      expect(expansion['Wish List'], false);
     });
 
     group('updateExpansionBasedOnResults', () {
@@ -167,6 +173,103 @@ void main() {
         expect(expansion['Backlog'], true);
         expect(expansion['Completed'], true);
         expect(expansion['Abandoned'], true);
+      });
+
+      test('should preserve manually controlled sections', () {
+        final notifier = container.read(sectionExpansionProvider.notifier);
+
+        // User manually expands Backlog
+        notifier.toggleSection('Backlog');
+        expect(container.read(sectionExpansionProvider)['Backlog'], true);
+
+        // System tries to collapse it based on empty results
+        notifier.updateExpansionBasedOnResults(
+          playingGames: [],
+          backlogGames: [], // Empty - would normally collapse
+          completedGames: [],
+          abandonedGames: [],
+        );
+
+        final expansion = container.read(sectionExpansionProvider);
+        expect(
+          expansion['Backlog'],
+          true,
+        ); // Should remain expanded due to manual control
+        expect(
+          expansion['Playing'],
+          false,
+        ); // Should be collapsed since not manually controlled
+      });
+
+      test('should only update sections that are provided', () {
+        final notifier = container.read(sectionExpansionProvider.notifier);
+
+        // Initially, Playing is true, Backlog is false
+        expect(container.read(sectionExpansionProvider)['Playing'], true);
+        expect(container.read(sectionExpansionProvider)['Backlog'], false);
+
+        // Update only wishlist sections (like when on wishlist screen)
+        notifier.updateExpansionBasedOnResults(
+          orderedGames: [],
+          wishlistGames: [],
+        );
+
+        final expansion = container.read(sectionExpansionProvider);
+        // Main screen sections should remain unchanged
+        expect(expansion['Playing'], true);
+        expect(expansion['Backlog'], false);
+        // Wishlist sections should be updated
+        expect(expansion['Ordered'], false);
+        expect(expansion['Wish List'], false);
+      });
+    });
+
+    group('Manual Control Tracking', () {
+      test('should track manually controlled sections', () {
+        final notifier = container.read(sectionExpansionProvider.notifier);
+
+        // Reset any existing manual control
+        notifier.resetManualControl();
+
+        // Initially, automatic updates should work
+        notifier.updateExpansionBasedOnResults(
+          playingGames: [],
+          backlogGames: [],
+        );
+
+        expect(container.read(sectionExpansionProvider)['Playing'], false);
+        expect(container.read(sectionExpansionProvider)['Backlog'], false);
+
+        // User manually toggles Backlog
+        notifier.toggleSection('Backlog');
+        expect(container.read(sectionExpansionProvider)['Backlog'], true);
+
+        // Automatic update should not affect manually controlled Backlog
+        notifier.updateExpansionBasedOnResults(
+          playingGames: [],
+          backlogGames: [], // Still empty
+        );
+
+        final expansion = container.read(sectionExpansionProvider);
+        expect(expansion['Playing'], false); // Can still be auto-updated
+        expect(expansion['Backlog'], true); // Preserved due to manual control
+      });
+
+      test('should reset manual control when requested', () {
+        final notifier = container.read(sectionExpansionProvider.notifier);
+
+        // User manually controls a section
+        notifier.toggleSection('Completed');
+
+        // Reset manual control
+        notifier.resetManualControl();
+
+        // Now automatic updates should work again
+        notifier.updateExpansionBasedOnResults(
+          completedGames: [], // Empty
+        );
+
+        expect(container.read(sectionExpansionProvider)['Completed'], false);
       });
     });
   });

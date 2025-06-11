@@ -9,8 +9,13 @@ import 'package:chkpnt/styles/input_styles.dart';
 
 class MainScreenHeader extends ConsumerWidget {
   final VoidCallback? onAddGamePressed;
+  final List<String>? customPlatforms;
 
-  const MainScreenHeader({super.key, this.onAddGamePressed});
+  const MainScreenHeader({
+    super.key,
+    this.onAddGamePressed,
+    this.customPlatforms,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +35,8 @@ class MainScreenHeader extends ConsumerWidget {
 
   Widget _buildPlatformFilter(WidgetRef ref) {
     final selectedPlatform = ref.watch(selectedPlatformProvider);
-    final availablePlatforms = ref.watch(availablePlatformsProvider);
+    final defaultPlatforms = ref.watch(availablePlatformsProvider);
+    final availablePlatforms = customPlatforms ?? defaultPlatforms;
 
     return PlatformFilterDropdown(
       selectedPlatform: selectedPlatform,

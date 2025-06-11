@@ -36,8 +36,8 @@ class SelectedPlatform extends _$SelectedPlatform {
   }
 }
 
-// Section expansion state
-@riverpod
+// Section expansion state - Using Notifier to preserve state across navigation
+@Riverpod(keepAlive: true)
 class SectionExpansion extends _$SectionExpansion {
   @override
   Map<String, bool> build() => {
@@ -45,40 +45,91 @@ class SectionExpansion extends _$SectionExpansion {
     'Backlog': false,
     'Completed': false,
     'Abandoned': false,
+    'Ordered': true,
+    'Wish List': false,
   };
 
+  // Track which sections have been manually controlled by the user
+  final Set<String> _manuallyControlledSections = <String>{};
+
   void toggleSection(String sectionName) {
+    // Mark this section as manually controlled
+    _manuallyControlledSections.add(sectionName);
     state = {...state, sectionName: !(state[sectionName] ?? false)};
   }
 
   void expandSection(String sectionName) {
+    // Mark this section as manually controlled
+    _manuallyControlledSections.add(sectionName);
     state = {...state, sectionName: true};
   }
 
   void collapseSection(String sectionName) {
+    // Mark this section as manually controlled
+    _manuallyControlledSections.add(sectionName);
     state = {...state, sectionName: false};
   }
 
   void expandAll() {
+    // Mark all sections as manually controlled
+    _manuallyControlledSections.addAll(state.keys);
     state = {for (final key in state.keys) key: true};
   }
 
   void collapseAll() {
+    // Mark all sections as manually controlled
+    _manuallyControlledSections.addAll(state.keys);
     state = {for (final key in state.keys) key: false};
   }
 
   void updateExpansionBasedOnResults({
-    required List<GameItem> playingGames,
-    required List<GameItem> backlogGames,
-    required List<GameItem> completedGames,
-    required List<GameItem> abandonedGames,
+    List<GameItem>? playingGames,
+    List<GameItem>? backlogGames,
+    List<GameItem>? completedGames,
+    List<GameItem>? abandonedGames,
+    List<GameItem>? orderedGames,
+    List<GameItem>? wishlistGames,
   }) {
-    state = {
-      'Playing': playingGames.isNotEmpty,
-      'Backlog': backlogGames.isNotEmpty,
-      'Completed': completedGames.isNotEmpty,
-      'Abandoned': abandonedGames.isNotEmpty,
-    };
+    // Only update sections that are explicitly provided AND not manually controlled
+    final newState = <String, bool>{};
+
+    // Update main screen sections only if provided and not manually controlled
+    if (playingGames != null &&
+        !_manuallyControlledSections.contains('Playing')) {
+      newState['Playing'] = playingGames.isNotEmpty;
+    }
+    if (backlogGames != null &&
+        !_manuallyControlledSections.contains('Backlog')) {
+      newState['Backlog'] = backlogGames.isNotEmpty;
+    }
+    if (completedGames != null &&
+        !_manuallyControlledSections.contains('Completed')) {
+      newState['Completed'] = completedGames.isNotEmpty;
+    }
+    if (abandonedGames != null &&
+        !_manuallyControlledSections.contains('Abandoned')) {
+      newState['Abandoned'] = abandonedGames.isNotEmpty;
+    }
+
+    // Update wishlist sections only if provided and not manually controlled
+    if (orderedGames != null &&
+        !_manuallyControlledSections.contains('Ordered')) {
+      newState['Ordered'] = orderedGames.isNotEmpty;
+    }
+    if (wishlistGames != null &&
+        !_manuallyControlledSections.contains('Wish List')) {
+      newState['Wish List'] = wishlistGames.isNotEmpty;
+    }
+
+    // Merge with existing state, only updating the sections that were provided and not manually controlled
+    if (newState.isNotEmpty) {
+      state = {...state, ...newState};
+    }
+  }
+
+  // Method to reset manual control (useful for testing or app reset)
+  void resetManualControl() {
+    _manuallyControlledSections.clear();
   }
 }
 

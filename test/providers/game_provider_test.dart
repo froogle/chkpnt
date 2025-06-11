@@ -231,6 +231,126 @@ void main() {
         expect(upperCaseResults.length, mixedCaseResults.length);
       });
     });
+
+    group('wishlistPlatforms', () {
+      test('should include "All" as first option', () {
+        final platforms = container.read(wishlistPlatformsProvider);
+
+        expect(platforms.first, 'All');
+      });
+
+      test('should only include platforms from wishlist and ordered games', () {
+        // Create games with different statuses and platforms
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Wishlist Game',
+              platform: 'WishlistPlatform',
+              status: GameStatus.wishlist,
+            );
+
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Ordered Game',
+              platform: 'OrderedPlatform',
+              status: GameStatus.ordered,
+            );
+
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Playing Game',
+              platform: 'PlayingPlatform',
+              status: GameStatus.playing,
+            );
+
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Completed Game',
+              platform: 'CompletedPlatform',
+              status: GameStatus.completed,
+            );
+
+        final wishlistPlatforms = container.read(wishlistPlatformsProvider);
+        final allPlatforms = container.read(availablePlatformsProvider);
+
+        // Wishlist platforms should only include wishlist and ordered game platforms
+        expect(wishlistPlatforms.contains('WishlistPlatform'), true);
+        expect(wishlistPlatforms.contains('OrderedPlatform'), true);
+        expect(wishlistPlatforms.contains('PlayingPlatform'), false);
+        expect(wishlistPlatforms.contains('CompletedPlatform'), false);
+
+        // All platforms should include all game platforms
+        expect(allPlatforms.contains('WishlistPlatform'), true);
+        expect(allPlatforms.contains('OrderedPlatform'), true);
+        expect(allPlatforms.contains('PlayingPlatform'), true);
+        expect(allPlatforms.contains('CompletedPlatform'), true);
+
+        // Wishlist platforms should be fewer than all platforms
+        expect(wishlistPlatforms.length < allPlatforms.length, true);
+      });
+
+      test('should return platforms in sorted order', () {
+        // Create games with platforms that will test sorting
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Game Z',
+              platform: 'ZZZ Platform',
+              status: GameStatus.wishlist,
+            );
+
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Game A',
+              platform: 'AAA Platform',
+              status: GameStatus.ordered,
+            );
+
+        final platforms = container.read(wishlistPlatformsProvider);
+        final platformsWithoutAll = platforms.skip(1).toList();
+        final sortedPlatforms = [...platformsWithoutAll]..sort();
+
+        expect(platformsWithoutAll, sortedPlatforms);
+      });
+
+      test(
+        'should return only "All" when no wishlist or ordered games exist',
+        () {
+          // Remove all existing games
+          final existingGames = container.read(gameListProvider);
+          for (final game in existingGames) {
+            container.read(gameListProvider.notifier).removeGame(game.id);
+          }
+
+          // Add games that are not wishlist or ordered
+          container
+              .read(gameListProvider.notifier)
+              .createGame(
+                title: 'Playing Game',
+                platform: 'PC',
+                status: GameStatus.playing,
+              );
+
+          container
+              .read(gameListProvider.notifier)
+              .createGame(
+                title: 'Completed Game',
+                platform: 'Switch',
+                status: GameStatus.completed,
+              );
+
+          final platforms = container.read(wishlistPlatformsProvider);
+
+          // Should only contain "All"
+          expect(platforms.length, 1);
+          expect(platforms.first, 'All');
+        },
+      );
+    });
   });
 
   group('GameList mutations', () {

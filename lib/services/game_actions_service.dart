@@ -241,7 +241,7 @@ class GameActionsService {
       case GameStatus.abandoned:
         return Colors.grey;
       case GameStatus.wishlist:
-        return Colors.red;
+        return Colors.green;
       case GameStatus.ordered:
         return Colors.purple;
     }

@@ -1,12 +1,14 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Flutter Development Rules - Comprehensive Guide
 
 ## 🎯 Core Principles
 
+- **🚨 CRITICAL: Always use explicit colours** - Never rely on Material Design defaults (Android 13 compatibility)
+- **🚫 NEVER RUN THE APP** - The developer will always run the app themselves; AI should never execute `flutter run` or attempt to launch the application
 - **Always use British English spellings** (colour, centre, organisation, etc.)
 - **Extract Complex Build Methods** using `_buildXXX()` pattern
 - **Separate Business Logic** from UI rendering
@@ -121,7 +123,7 @@ Widget _buildHeader() {
 All widget builder methods must follow the `_buildXXX()` convention:
 
 - `_buildHeader()` - Header sections
-- `_buildContent()` - Main content areas  
+- `_buildContent()` - Main content areas
 - `_buildActionButton()` - Interactive elements
 - `_buildContainer()` - Container wrappers
 - `_buildList()` - List and grid layouts
@@ -220,6 +222,197 @@ Container(
 )
 ```
 
+## 🚨 Android Compatibility & Explicit Styling - CRITICAL
+
+### ⚠️ **NEVER** Rely on Material Design Defaults
+**CRITICAL RULE**: Android 13 and older versions handle Material Design theming differently, causing text and UI elements to become invisible or unreadable. Always use **explicit colour and style declarations**.
+
+#### ❌ **FORBIDDEN PATTERNS** - These cause Android 13 invisibility issues:
+```dart
+// NEVER use theme-based text styling
+Text('Hello', style: Theme.of(context).textTheme.bodyMedium)
+Text('Hello', style: Theme.of(context).textTheme.labelLarge)
+
+// NEVER use theme colours
+Text('Hello', style: TextStyle(color: Theme.of(context).primaryColor))
+Container(color: Theme.of(context).cardColor)
+
+// NEVER use undefined Card colours
+Card(child: Text('Hello')) // Background colour undefined on Android 13
+
+// NEVER use TextStyle without explicit colours
+Text('Hello', style: TextStyle(fontSize: 16)) // No colour = invisible text
+
+// NEVER use default ListTile styling
+ListTile(title: Text('Item')) // Text may be invisible
+
+// NEVER use default button styling without colours
+ElevatedButton(onPressed: () {}, child: Text('Click')) // May be invisible when disabled
+```
+
+#### ✅ **REQUIRED PATTERNS** - Always use explicit styling:
+```dart
+// ALWAYS use explicit colours from AppColors
+Text('Hello', style: TextStyle(
+  fontSize: 16,
+  color: AppColors.primaryText, // Explicit colour required
+  fontWeight: FontWeight.w500,
+))
+
+// ALWAYS specify Card colours explicitly
+Card(
+  color: Colors.white, // Explicit background
+  child: Text('Hello', style: TextStyle(color: AppColors.primaryText)),
+)
+
+// ALWAYS use explicit button styling
+ElevatedButton(
+  onPressed: onPressed,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: AppColors.primaryPurple, // Explicit enabled colour
+    foregroundColor: Colors.white, // Explicit text colour
+    disabledBackgroundColor: Colors.grey[300], // Explicit disabled colour
+    disabledForegroundColor: Colors.grey[600], // Explicit disabled text
+  ),
+  child: Text('Click'),
+)
+
+// ALWAYS use explicit ListTile styling
+ListTile(
+  title: Text(
+    'Item',
+    style: TextStyle(
+      color: AppColors.primaryText, // Explicit colour
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    ),
+  ),
+  leading: Icon(
+    Icons.item,
+    color: AppColors.primaryText, // Explicit icon colour
+  ),
+)
+```
+
+### 🎯 **Mandatory Explicit Styling Rules**
+
+#### 1. **Text Styling Requirements**
+- [ ] **EVERY Text widget** must have explicit `color` property
+- [ ] **EVERY TextStyle** must specify `color: AppColors.xxxxx`
+- [ ] **NO Theme.of(context).textTheme** usage allowed
+- [ ] **ALL RichText** must use explicit TextSpan colours
+
+```dart
+// ✅ CORRECT - Always explicit
+const TextStyle explicitStyle = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.w500,
+  color: AppColors.primaryText, // REQUIRED
+  height: 1.4,
+);
+
+// ❌ FORBIDDEN - Theme dependent
+final themeStyle = Theme.of(context).textTheme.bodyMedium; // NEVER USE
+```
+
+#### 2. **Container & Background Requirements**
+- [ ] **EVERY Card** must have explicit `color` property
+- [ ] **EVERY Container** with decoration must specify colours
+- [ ] **ALL background colours** must be explicit
+- [ ] **NO system default backgrounds** allowed
+
+```dart
+// ✅ CORRECT - Explicit background colours
+Card(
+  color: Colors.white, // REQUIRED
+  elevation: 2,
+  child: Container(
+    decoration: BoxDecoration(
+      color: Colors.grey[50], // REQUIRED
+      border: Border.all(color: AppColors.divider), // REQUIRED
+    ),
+  ),
+)
+```
+
+#### 3. **Button Styling Requirements**
+- [ ] **ALL buttons** must have explicit enabled/disabled colours
+- [ ] **EVERY ElevatedButton** must specify backgroundColor/foregroundColor
+- [ ] **ALL disabled states** must be explicitly styled
+- [ ] **NO default button styling** allowed
+
+```dart
+// ✅ REQUIRED button pattern
+ElevatedButton(
+  onPressed: enabled ? onPressed : null,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: AppColors.primaryPurple, // REQUIRED
+    foregroundColor: Colors.white, // REQUIRED
+    disabledBackgroundColor: Colors.grey[300], // REQUIRED
+    disabledForegroundColor: Colors.grey[600], // REQUIRED
+    elevation: enabled ? 2 : 0,
+  ),
+  child: Text('Action'),
+)
+```
+
+#### 4. **Icon & Interactive Element Requirements**
+- [ ] **ALL Icons** must have explicit `color` property
+- [ ] **EVERY interactive element** must specify states
+- [ ] **ALL IconButtons** must have explicit colours
+- [ ] **NO system default icon colours** allowed
+
+### 🔧 **Android 13 Testing Protocol**
+
+#### Pre-Release Checklist
+- [ ] **Visual Test on Android 13** - All text must be clearly readable
+- [ ] **Button Visibility Test** - All buttons visible in enabled/disabled states
+- [ ] **Card Background Test** - All cards have visible, defined backgrounds
+- [ ] **Icon Visibility Test** - All icons clearly visible with proper contrast
+- [ ] **Text Contrast Test** - All text has sufficient contrast against backgrounds
+
+#### Code Review Requirements
+- [ ] **No Theme.of(context) usage** in new code
+- [ ] **Every TextStyle has explicit colour**
+- [ ] **All Card widgets have colour property**
+- [ ] **All buttons have explicit styling**
+- [ ] **All colours use AppColors constants**
+
+### 📋 **AppColors Usage Standards**
+
+#### Standard Colour Palette
+```dart
+// ALWAYS use these explicit colours instead of theme
+AppColors.primaryText = Color(0xFF1E293B) // Dark text
+AppColors.expandIcon = Color(0xFF64748B)  // Medium grey text
+AppColors.primaryPurple = Color(0xFF8B5CF6) // App primary colour
+AppColors.background = Color(0xFFF8FAFC)  // Light background
+AppColors.divider = Color(0xFFE2E8F0)     // Borders and dividers
+```
+
+#### Colour Assignment Rules
+- **Primary text**: Use `AppColors.primaryText` for main content
+- **Secondary text**: Use `AppColors.expandIcon` for subtitles
+- **Interactive elements**: Use `AppColors.primaryPurple` for buttons/links
+- **Backgrounds**: Use `AppColors.background` or explicit whites/greys
+- **Borders**: Use `AppColors.divider` for subtle boundaries
+
+### 🚨 **CRITICAL ENFORCEMENT**
+
+#### Development Rules
+1. **Code Review Requirement**: All PRs must verify no theme dependencies
+2. **Automated Checks**: CI/CD should flag Theme.of(context) usage
+3. **Testing Requirement**: Android 13 visual testing mandatory
+4. **Documentation**: Every style file must use explicit colours
+
+#### Quality Gates
+- **Flutter Analyze**: Must pass with no theme dependency warnings
+- **Visual Regression**: Screenshot tests on Android 13
+- **Code Coverage**: Style usage must be covered in tests
+- **Manual Review**: UI team approval for all styling changes
+
+**This is a CRITICAL requirement for Android compatibility. Non-compliance results in invisible UI on Android 13 devices.**
+
 ## 🔄 State Management with Riverpod
 
 ### 🎯 Riverpod Family Providers - Preferred Pattern
@@ -237,12 +430,12 @@ Container(
 class GameEditContext {
   final bool isAddMode;
   final GameItem? game;
-  
+
   const GameEditContext({required this.isAddMode, this.game});
-  
+
   @override
   bool operator ==(Object other) => /* implement */;
-  
+
   @override
   int get hashCode => Object.hash(isAddMode, game);
 }
@@ -259,7 +452,7 @@ class GameEditState extends _$GameEditState {
       return GameEditFormState.fromGame(context.game!);
     }
   }
-  
+
   // State modification methods
   void updateTitle(String title) => state = state.copyWith(title: title);
 }
@@ -308,22 +501,22 @@ void initState() {
 ```dart
 testWidgets('provider state initializes correctly', (tester) async {
   final container = ProviderContainer();
-  
+
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
       child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
     ),
   );
-  
+
   await tester.pump(); // No pumpAndSettle() needed!
-  
+
   final editContext = GameEditContext(isAddMode: false, game: testGame);
   final state = container.read(gameEditStateProvider(editContext));
-  
+
   expect(state.title, equals('Test Game'));
   expect(state.hasUnsavedChanges, isFalse);
-  
+
   container.dispose();
 });
 ```
@@ -512,6 +705,7 @@ Before committing any code changes, **ALWAYS** run these commands:
 ## ✅ Benefits
 
 This architecture provides:
+- **🚨 Android Compatibility** - Explicit styling ensures visibility across all Android versions
 - **Readable Code** - Clear structure visible at the top level
 - **Easy Maintenance** - Changes isolated to specific methods
 - **Better Testing** - Individual methods can be tested independently
@@ -522,6 +716,7 @@ This architecture provides:
 - **Reliable State Management** - Family providers eliminate async timing issues
 - **Predictable Testing** - No more flaky tests due to provider initialization
 - **Clean Architecture** - Context-based state instead of runtime modification
+- **Cross-Platform Reliability** - No invisible UI elements on any Android version
 
-This comprehensive guide ensures consistent, high-quality Flutter development with robust state management across the entire project! 🚀
+This comprehensive guide ensures consistent, high-quality Flutter development with robust state management and critical Android compatibility across the entire project! 🚀
 
