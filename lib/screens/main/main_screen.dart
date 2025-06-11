@@ -175,7 +175,18 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   void _handleNavigation(int index) {
-    // Handle bottom navigation
-    // This will be implemented when you add additional screens
+    switch (index) {
+      case 0: // Home - current screen, do nothing
+        break;
+      case 1: // Backlog
+        // TODO: Navigate to backlog screen when implemented
+        break;
+      case 2: // Wish List
+        Navigator.of(context).pushReplacementNamed('/wishlist');
+        break;
+      case 3: // Profile
+        // TODO: Navigate to profile screen when implemented
+        break;
+    }
   }
 }

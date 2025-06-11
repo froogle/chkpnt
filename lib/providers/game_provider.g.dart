@@ -44,7 +44,7 @@ final gamesStreamProvider = AutoDisposeStreamProvider<List<GameItem>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GamesStreamRef = AutoDisposeStreamProviderRef<List<GameItem>>;
-String _$gamesByStatusHash() => r'dbd2059c3d530ecb935a0cd8cfeac380b78aac17';
+String _$gamesByStatusHash() => r'45d6d324604fda49dea09eef5f550adc486e7918';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -198,7 +198,7 @@ class _GamesByStatusProviderElement
   GameStatus get status => (origin as GamesByStatusProvider).status;
 }
 
-String _$gamesByPlatformHash() => r'a550db69946b0b9aac6dc43738305bdb78d374cd';
+String _$gamesByPlatformHash() => r'21dd4122b1604adff6f25f7d4d5d9b96d0e2bc18';
 
 /// Provider for games filtered by platform - automatically updates when games change
 ///
@@ -331,7 +331,7 @@ class _GamesByPlatformProviderElement
   String get platform => (origin as GamesByPlatformProvider).platform;
 }
 
-String _$filteredGamesHash() => r'df4e44265ab0fe2b70cbe710eb39fd113d453ee8';
+String _$filteredGamesHash() => r'd1f3b3343b67d06a34d4a3ecafe4924476d8e0d5';
 
 /// Provider for games filtered by both status and platform
 ///
@@ -497,8 +497,28 @@ final availablePlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AvailablePlatformsRef = AutoDisposeProviderRef<List<String>>;
+String _$wishlistPlatformsHash() => r'7981d1f387461db3e44e19ddf010e221f9f8ebcd';
+
+/// Provider for platforms from wishlist and ordered games only
+///
+/// Copied from [wishlistPlatforms].
+@ProviderFor(wishlistPlatforms)
+final wishlistPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
+  wishlistPlatforms,
+  name: r'wishlistPlatformsProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wishlistPlatformsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WishlistPlatformsRef = AutoDisposeProviderRef<List<String>>;
 String _$searchFilteredGamesHash() =>
-    r'37e66aaa485e65cab9e2c9e294c3085f193e6f1e';
+    r'0733619fa4354af160e7218bb16dce56244c4497';
 
 /// Provider for games filtered by search query
 ///
@@ -634,7 +654,7 @@ class _SearchFilteredGamesProviderElement
 }
 
 String _$fullyFilteredGamesHash() =>
-    r'6abe4c102fd579422ca6a6d4cf6ca1c8364aa0f2';
+    r'f80022e694fd263411de7188aea8096b4c7bfd36';
 
 /// Provider for games filtered by status, platform, and search
 ///

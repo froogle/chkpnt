@@ -19,19 +19,32 @@ class GameStatusSelector extends StatelessWidget {
   }
 
   Widget _buildStatusGrid() {
-    const statuses = [
-      GameStatus.playing,
-      GameStatus.backlog,
-      GameStatus.completed,
-      GameStatus.abandoned,
-      GameStatus.wishlist,
-    ];
+    final statuses = _getAvailableStatuses();
 
     return LayoutBuilder(
       builder:
           (context, constraints) =>
               _buildResponsiveStatusGrid(context, statuses, constraints),
     );
+  }
+
+  /// Determines which status options to show based on the current game status
+  List<GameStatus> _getAvailableStatuses() {
+    // If the game is currently wishlist or ordered, show only wishlist flow options
+    if (selectedStatus == GameStatus.wishlist ||
+        selectedStatus == GameStatus.ordered) {
+      return [GameStatus.wishlist, GameStatus.ordered, GameStatus.backlog];
+    }
+
+    // For all other statuses, show all available options
+    return [
+      GameStatus.playing,
+      GameStatus.backlog,
+      GameStatus.completed,
+      GameStatus.abandoned,
+      GameStatus.wishlist,
+      GameStatus.ordered,
+    ];
   }
 
   Widget _buildResponsiveStatusGrid(

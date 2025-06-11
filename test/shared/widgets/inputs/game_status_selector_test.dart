@@ -25,7 +25,9 @@ void main() {
       expect(find.byType(Wrap), findsOneWidget);
     });
 
-    testWidgets('displays all game statuses', (tester) async {
+    testWidgets('displays filtered statuses for wishlist games', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -39,15 +41,88 @@ void main() {
         ),
       );
 
-      // Should show all 5 status buttons
+      // Should show only 3 wishlist flow options
       expect(find.text('Wishlist'), findsOneWidget);
-      expect(find.text('Abandoned'), findsOneWidget);
-      expect(find.text('Completed'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
       expect(find.text('Backlog'), findsOneWidget);
+
+      // Should NOT show other statuses
+      expect(find.text('Playing'), findsNothing);
+      expect(find.text('Completed'), findsNothing);
+      expect(find.text('Abandoned'), findsNothing);
+    });
+
+    testWidgets('displays filtered statuses for ordered games', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: GameStatusSelector(
+                selectedStatus: GameStatus.ordered,
+                onStatusChanged: (status) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Should show only 3 wishlist flow options
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
+      expect(find.text('Backlog'), findsOneWidget);
+
+      // Should NOT show other statuses
+      expect(find.text('Playing'), findsNothing);
+      expect(find.text('Completed'), findsNothing);
+      expect(find.text('Abandoned'), findsNothing);
+    });
+
+    testWidgets('displays all statuses for non-wishlist games', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: GameStatusSelector(
+                selectedStatus: GameStatus.playing,
+                onStatusChanged: (status) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Should show all 6 status options
       expect(find.text('Playing'), findsOneWidget);
+      expect(find.text('Backlog'), findsOneWidget);
+      expect(find.text('Completed'), findsOneWidget);
+      expect(find.text('Abandoned'), findsOneWidget);
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
     });
 
     testWidgets('calls onStatusChanged when status is tapped', (tester) async {
+      GameStatus? changedStatus;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: GameStatusSelector(
+                selectedStatus: GameStatus.playing,
+                onStatusChanged: (status) => changedStatus = status,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Completed'));
+      await tester.pump();
+
+      expect(changedStatus, equals(GameStatus.completed));
+    });
+
+    testWidgets('calls onStatusChanged for wishlist flow', (tester) async {
       GameStatus? changedStatus;
 
       await tester.pumpWidget(
@@ -63,10 +138,10 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Completed'));
+      await tester.tap(find.text('Ordered'));
       await tester.pump();
 
-      expect(changedStatus, equals(GameStatus.completed));
+      expect(changedStatus, equals(GameStatus.ordered));
     });
 
     testWidgets('handles different selected statuses', (tester) async {
@@ -89,7 +164,7 @@ void main() {
       }
     });
 
-    testWidgets('renders responsive layout', (tester) async {
+    testWidgets('renders responsive layout for wishlist', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -107,9 +182,34 @@ void main() {
       expect(find.byType(LayoutBuilder), findsOneWidget);
       // Should use Wrap layout
       expect(find.byType(Wrap), findsOneWidget);
-      // Should display all status buttons
+      // Should display wishlist flow status buttons
       expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
+      expect(find.text('Backlog'), findsOneWidget);
+    });
+
+    testWidgets('renders responsive layout for playing', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: GameStatusSelector(
+                selectedStatus: GameStatus.playing,
+                onStatusChanged: (status) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Should have LayoutBuilder for responsive behavior
+      expect(find.byType(LayoutBuilder), findsOneWidget);
+      // Should use Wrap layout
+      expect(find.byType(Wrap), findsOneWidget);
+      // Should display all status buttons
       expect(find.text('Playing'), findsOneWidget);
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
     });
 
     testWidgets('maintains proper structure', (tester) async {
@@ -118,7 +218,7 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: GameStatusSelector(
-                selectedStatus: GameStatus.wishlist,
+                selectedStatus: GameStatus.backlog,
                 onStatusChanged: (status) {},
               ),
             ),
@@ -129,12 +229,15 @@ void main() {
       // Should have responsive layout structure
       expect(find.byType(Wrap), findsOneWidget);
       expect(find.byType(LayoutBuilder), findsOneWidget);
-      // Should have all status buttons regardless of layout
-      expect(find.text('Wishlist'), findsOneWidget);
+      // Should have all status buttons for backlog status
+      expect(find.text('Backlog'), findsOneWidget);
       expect(find.text('Playing'), findsOneWidget);
+      expect(find.text('Wishlist'), findsOneWidget);
     });
 
-    testWidgets('handles status changes correctly', (tester) async {
+    testWidgets('handles status changes correctly for all statuses', (
+      tester,
+    ) async {
       final statusChanges = <GameStatus>[];
 
       await tester.pumpWidget(
@@ -158,6 +261,34 @@ void main() {
 
       expect(statusChanges, contains(GameStatus.playing));
       expect(statusChanges, contains(GameStatus.completed));
+    });
+
+    testWidgets('handles status changes correctly for wishlist flow', (
+      tester,
+    ) async {
+      final statusChanges = <GameStatus>[];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: GameStatusSelector(
+                selectedStatus: GameStatus.wishlist,
+                onStatusChanged: statusChanges.add,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Tap wishlist flow statuses
+      await tester.tap(find.text('Ordered'));
+      await tester.pump();
+      await tester.tap(find.text('Backlog'));
+      await tester.pump();
+
+      expect(statusChanges, contains(GameStatus.ordered));
+      expect(statusChanges, contains(GameStatus.backlog));
     });
 
     testWidgets('is a StatelessWidget', (tester) async {
@@ -212,7 +343,7 @@ void main() {
               body: SizedBox(
                 width: 300, // Narrow width
                 child: GameStatusSelector(
-                  selectedStatus: GameStatus.wishlist,
+                  selectedStatus: GameStatus.playing,
                   onStatusChanged: (status) {},
                 ),
               ),
@@ -235,7 +366,7 @@ void main() {
               body: SizedBox(
                 width: 500, // Wide width
                 child: GameStatusSelector(
-                  selectedStatus: GameStatus.wishlist,
+                  selectedStatus: GameStatus.playing,
                   onStatusChanged: (status) {},
                 ),
               ),
@@ -250,7 +381,9 @@ void main() {
       expect(find.byType(LayoutBuilder), findsOneWidget);
     });
 
-    testWidgets('calculates button widths correctly', (tester) async {
+    testWidgets('calculates button widths correctly for wishlist flow', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -267,12 +400,47 @@ void main() {
         ),
       );
 
-      // Should render all buttons
+      // Should render wishlist flow buttons only
       expect(find.text('Wishlist'), findsOneWidget);
-      expect(find.text('Abandoned'), findsOneWidget);
-      expect(find.text('Completed'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
       expect(find.text('Backlog'), findsOneWidget);
+
+      // Should NOT render other buttons
+      expect(find.text('Playing'), findsNothing);
+      expect(find.text('Completed'), findsNothing);
+      expect(find.text('Abandoned'), findsNothing);
+
+      // Should have proper responsive structure
+      expect(find.byType(Wrap), findsOneWidget);
+      expect(find.byType(LayoutBuilder), findsOneWidget);
+    });
+
+    testWidgets('calculates button widths correctly for all statuses', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: SizedBox(
+                width: 400,
+                child: GameStatusSelector(
+                  selectedStatus: GameStatus.playing,
+                  onStatusChanged: (status) {},
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Should render all buttons for non-wishlist status
       expect(find.text('Playing'), findsOneWidget);
+      expect(find.text('Backlog'), findsOneWidget);
+      expect(find.text('Completed'), findsOneWidget);
+      expect(find.text('Abandoned'), findsOneWidget);
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
 
       // Should have proper responsive structure
       expect(find.byType(Wrap), findsOneWidget);

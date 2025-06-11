@@ -45,6 +45,8 @@ class SectionExpansion extends _$SectionExpansion {
     'Backlog': false,
     'Completed': false,
     'Abandoned': false,
+    'Ordered': true,
+    'Wish List': false,
   };
 
   void toggleSection(String sectionName) {
@@ -72,13 +74,25 @@ class SectionExpansion extends _$SectionExpansion {
     required List<GameItem> backlogGames,
     required List<GameItem> completedGames,
     required List<GameItem> abandonedGames,
+    List<GameItem>? orderedGames,
+    List<GameItem>? wishlistGames,
   }) {
-    state = {
+    final newState = {
       'Playing': playingGames.isNotEmpty,
       'Backlog': backlogGames.isNotEmpty,
       'Completed': completedGames.isNotEmpty,
       'Abandoned': abandonedGames.isNotEmpty,
     };
+
+    // Add wishlist sections if provided
+    if (orderedGames != null) {
+      newState['Ordered'] = orderedGames.isNotEmpty;
+    }
+    if (wishlistGames != null) {
+      newState['Wish List'] = wishlistGames.isNotEmpty;
+    }
+
+    state = {...state, ...newState};
   }
 }
 

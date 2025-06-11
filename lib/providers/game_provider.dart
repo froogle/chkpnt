@@ -111,26 +111,50 @@ class GameList extends _$GameList {
 @riverpod
 List<GameItem> gamesByStatus(Ref ref, GameStatus status) {
   final games = ref.watch(gameListProvider);
-  return games.where((game) => game.status == status).toList();
+  final filteredGames = games.where((game) => game.status == status).toList();
+
+  // Sort alphabetically by title (case insensitive)
+  filteredGames.sort(
+    (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+  );
+
+  return filteredGames;
 }
 
 /// Provider for games filtered by platform - automatically updates when games change
 @riverpod
 List<GameItem> gamesByPlatform(Ref ref, String platform) {
   final games = ref.watch(gameListProvider);
-  if (platform == 'All') return games;
-  return games.where((game) => game.platform == platform).toList();
+  final filteredGames =
+      platform == 'All'
+          ? games.toList()
+          : games.where((game) => game.platform == platform).toList();
+
+  // Sort alphabetically by title (case insensitive)
+  filteredGames.sort(
+    (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+  );
+
+  return filteredGames;
 }
 
 /// Provider for games filtered by both status and platform
 @riverpod
 List<GameItem> filteredGames(Ref ref, GameStatus status, String platform) {
   final games = ref.watch(gameListProvider);
-  return games.where((game) {
-    final matchesStatus = game.status == status;
-    final matchesPlatform = platform == 'All' || game.platform == platform;
-    return matchesStatus && matchesPlatform;
-  }).toList();
+  final filteredGames =
+      games.where((game) {
+        final matchesStatus = game.status == status;
+        final matchesPlatform = platform == 'All' || game.platform == platform;
+        return matchesStatus && matchesPlatform;
+      }).toList();
+
+  // Sort alphabetically by title (case insensitive)
+  filteredGames.sort(
+    (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+  );
+
+  return filteredGames;
 }
 
 /// Provider for available platforms - automatically updates when games change
@@ -142,17 +166,44 @@ List<String> availablePlatforms(Ref ref) {
   return ['All', ...platforms];
 }
 
+/// Provider for platforms from wishlist and ordered games only
+@riverpod
+List<String> wishlistPlatforms(Ref ref) {
+  final games = ref.watch(gameListProvider);
+  final wishlistAndOrderedGames =
+      games
+          .where(
+            (game) =>
+                game.status == GameStatus.wishlist ||
+                game.status == GameStatus.ordered,
+          )
+          .toList();
+
+  final platforms =
+      wishlistAndOrderedGames.map((game) => game.platform).toSet().toList();
+  platforms.sort();
+  return ['All', ...platforms];
+}
+
 /// Provider for games filtered by search query
 @riverpod
 List<GameItem> searchFilteredGames(Ref ref, String searchQuery) {
   final games = ref.watch(gameListProvider);
-  if (searchQuery.isEmpty) return games;
+  final filteredGames =
+      searchQuery.isEmpty
+          ? games.toList()
+          : games.where((game) {
+            final query = searchQuery.toLowerCase();
+            return game.title.toLowerCase().contains(query) ||
+                game.platform.toLowerCase().contains(query);
+          }).toList();
 
-  return games.where((game) {
-    final query = searchQuery.toLowerCase();
-    return game.title.toLowerCase().contains(query) ||
-        game.platform.toLowerCase().contains(query);
-  }).toList();
+  // Sort alphabetically by title (case insensitive)
+  filteredGames.sort(
+    (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+  );
+
+  return filteredGames;
 }
 
 /// Provider for games filtered by status, platform, and search
@@ -164,20 +215,28 @@ List<GameItem> fullyFilteredGames(
   String searchQuery,
 ) {
   final games = ref.watch(gameListProvider);
-  return games.where((game) {
-    final matchesStatus = game.status == status;
-    final matchesPlatform = platform == 'All' || game.platform == platform;
+  final filteredGames =
+      games.where((game) {
+        final matchesStatus = game.status == status;
+        final matchesPlatform = platform == 'All' || game.platform == platform;
 
-    bool matchesSearch = true;
-    if (searchQuery.isNotEmpty) {
-      final query = searchQuery.toLowerCase();
-      matchesSearch =
-          game.title.toLowerCase().contains(query) ||
-          game.platform.toLowerCase().contains(query);
-    }
+        bool matchesSearch = true;
+        if (searchQuery.isNotEmpty) {
+          final query = searchQuery.toLowerCase();
+          matchesSearch =
+              game.title.toLowerCase().contains(query) ||
+              game.platform.toLowerCase().contains(query);
+        }
 
-    return matchesStatus && matchesPlatform && matchesSearch;
-  }).toList();
+        return matchesStatus && matchesPlatform && matchesSearch;
+      }).toList();
+
+  // Sort alphabetically by title (case insensitive)
+  filteredGames.sort(
+    (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+  );
+
+  return filteredGames;
 }
 
 // === ASYNC STATE PROVIDERS ===

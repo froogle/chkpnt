@@ -178,7 +178,7 @@ final selectedPlatformProvider =
     );
 
 typedef _$SelectedPlatform = AutoDisposeNotifier<String>;
-String _$sectionExpansionHash() => r'37f7ddb7448649f53c94d0d90e4dd73e8dda3d71';
+String _$sectionExpansionHash() => r'03ee4ee269679ad2231bc25d639acbeda372451b';
 
 /// See also [SectionExpansion].
 @ProviderFor(SectionExpansion)
