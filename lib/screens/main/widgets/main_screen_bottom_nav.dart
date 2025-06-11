@@ -14,10 +14,10 @@ class MainScreenBottomNav extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildNavButton(Icons.bookmark_outline, 0),
-          _buildNavButton(Icons.grid_view_outlined, 1),
-          _buildNavButton(Icons.person_outline, 2),
-          _buildNavButton(Icons.circle_outlined, 3),
+          _buildNavButton(Icons.home_outlined, 0),
+          _buildNavButton(Icons.list_alt_outlined, 1),
+          _buildNavButton(Icons.favorite_outline, 2),
+          _buildNavButton(Icons.person_outline, 3),
         ],
       ),
     );
