@@ -191,8 +191,18 @@ class _OnboardingSubscriptionOverlayState
 class _SubscriptionMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final defaultStyle = Theme.of(context).textTheme.bodyMedium;
-    final boldStyle = defaultStyle?.copyWith(fontWeight: FontWeight.bold);
+    // Use explicit colours instead of theme for Android 13 compatibility
+    const defaultStyle = TextStyle(
+      fontSize: 16,
+      color: AppColors.primaryText, // Explicit dark color
+      height: 1.4,
+    );
+    const boldStyle = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: AppColors.primaryText, // Explicit dark color
+      height: 1.4,
+    );
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
@@ -237,6 +247,10 @@ class _SubscriptionTile extends StatelessWidget {
           selected
               ? OnboardingOverlayStyles.tileElevationSelected
               : OnboardingOverlayStyles.tileElevationUnselected,
+      color:
+          selected
+              ? const Color(0xFFF3F4F6)
+              : Colors.white, // Explicit background colours for Android 13
       shape: _buildCardShape(context),
       margin: OnboardingOverlayStyles.tileMargin,
       child: InkWell(
@@ -261,7 +275,10 @@ class _SubscriptionTile extends StatelessWidget {
         OnboardingOverlayStyles.tileBorderRadius,
       ),
       side: BorderSide(
-        color: selected ? Theme.of(context).primaryColor : Colors.transparent,
+        color:
+            selected
+                ? const Color(0xFF8B5CF6)
+                : Colors.transparent, // Explicit purple border for Android 13
         width: OnboardingOverlayStyles.tileBorderWidth,
       ),
     );
@@ -274,9 +291,22 @@ class _SubscriptionTile extends StatelessWidget {
       children: [
         Text(option.title, style: OnboardingOverlayStyles.tileTitleStyle),
         const SizedBox(height: OnboardingOverlayStyles.landscapeSpacing),
-        Text(option.subtitle, textAlign: TextAlign.center),
+        Text(
+          option.subtitle,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: AppColors.primaryText,
+          ), // Explicit colour
+        ),
         const SizedBox(height: OnboardingOverlayStyles.landscapeBottomSpacing),
-        Text(option.price, style: Theme.of(context).textTheme.labelLarge),
+        Text(
+          option.price,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryText, // Explicit colour
+          ),
+        ),
       ],
     );
   }
@@ -289,11 +319,23 @@ class _SubscriptionTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(option.title, style: OnboardingOverlayStyles.tileTitleStyle),
-              Text(option.subtitle),
+              Text(
+                option.subtitle,
+                style: const TextStyle(
+                  color: AppColors.primaryText,
+                ), // Explicit colour
+              ),
             ],
           ),
         ),
-        Text(option.price, style: Theme.of(context).textTheme.labelLarge),
+        Text(
+          option.price,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryText, // Explicit colour
+          ),
+        ),
       ],
     );
   }

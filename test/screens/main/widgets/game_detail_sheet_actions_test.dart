@@ -6,11 +6,7 @@ void main() {
   group('GameDetailSheetActions Widget Tests', () {
     late bool editPressed;
     late bool savePressed;
-
-    setUp(() {
-      editPressed = false;
-      savePressed = false;
-    });
+    late bool deletePressed;
 
     void onEditPressed() {
       editPressed = true;
@@ -20,28 +16,37 @@ void main() {
       savePressed = true;
     }
 
-    testWidgets('should render both Edit and Save buttons', (
-      WidgetTester tester,
-    ) async {
+    void onDeletePressed() {
+      deletePressed = true;
+    }
+
+    setUp(() {
+      editPressed = false;
+      savePressed = false;
+      deletePressed = false;
+    });
+
+    testWidgets('should render all three buttons', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: GameDetailSheetActions(
               onEditPressed: onEditPressed,
               onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
               hasChanges: false,
             ),
           ),
         ),
       );
 
-      // Check that both buttons are present
-      expect(find.text('Edit Game'), findsOneWidget);
-      expect(find.text('Save Changes'), findsOneWidget);
+      // Check that the main widget is present
+      expect(find.byType(GameDetailSheetActions), findsOneWidget);
 
-      // Check that the buttons have the correct icons
-      expect(find.byIcon(Icons.edit), findsOneWidget);
-      expect(find.byIcon(Icons.save), findsOneWidget);
+      // Check that all three buttons are present
+      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Delete'), findsOneWidget);
     });
 
     testWidgets('should call onEditPressed when Edit button is tapped', (
@@ -53,6 +58,7 @@ void main() {
             body: GameDetailSheetActions(
               onEditPressed: onEditPressed,
               onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
               hasChanges: false,
             ),
           ),
@@ -60,10 +66,33 @@ void main() {
       );
 
       // Tap the Edit button
-      await tester.tap(find.text('Edit Game'));
+      await tester.tap(find.text('Edit'));
       await tester.pump();
 
       expect(editPressed, true);
+    });
+
+    testWidgets('should call onDeletePressed when Delete button is tapped', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GameDetailSheetActions(
+              onEditPressed: onEditPressed,
+              onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
+              hasChanges: false,
+            ),
+          ),
+        ),
+      );
+
+      // Tap the Delete button
+      await tester.tap(find.text('Delete'));
+      await tester.pump();
+
+      expect(deletePressed, true);
     });
 
     testWidgets(
@@ -75,6 +104,7 @@ void main() {
               body: GameDetailSheetActions(
                 onEditPressed: onEditPressed,
                 onSavePressed: onSavePressed,
+                onDeletePressed: onDeletePressed,
                 hasChanges: true,
               ),
             ),
@@ -82,7 +112,7 @@ void main() {
         );
 
         // Tap the Save button - should work since hasChanges is true
-        await tester.tap(find.text('Save Changes'));
+        await tester.tap(find.text('Save'));
         await tester.pump();
 
         expect(savePressed, true);
@@ -98,6 +128,7 @@ void main() {
             body: GameDetailSheetActions(
               onEditPressed: onEditPressed,
               onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
               hasChanges: false,
             ),
           ),
@@ -105,7 +136,7 @@ void main() {
       );
 
       // Tap the Save button - should not work since hasChanges is false
-      await tester.tap(find.text('Save Changes'));
+      await tester.tap(find.text('Save'));
       await tester.pump();
 
       expect(savePressed, false);
@@ -120,6 +151,7 @@ void main() {
             body: GameDetailSheetActions(
               onEditPressed: null,
               onSavePressed: null,
+              onDeletePressed: null,
               hasChanges: false,
             ),
           ),
@@ -130,8 +162,9 @@ void main() {
       expect(tester.takeException(), isNull);
 
       // Buttons should still be present
-      expect(find.text('Edit Game'), findsOneWidget);
-      expect(find.text('Save Changes'), findsOneWidget);
+      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Delete'), findsOneWidget);
     });
 
     testWidgets('should render without errors', (WidgetTester tester) async {
@@ -141,6 +174,7 @@ void main() {
             body: GameDetailSheetActions(
               onEditPressed: onEditPressed,
               onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
               hasChanges: false,
             ),
           ),
@@ -158,6 +192,7 @@ void main() {
             body: GameDetailSheetActions(
               onEditPressed: onEditPressed,
               onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
               hasChanges: false,
             ),
           ),
@@ -180,6 +215,7 @@ void main() {
             body: GameDetailSheetActions(
               onEditPressed: onEditPressed,
               onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
               hasChanges: false,
             ),
           ),
@@ -189,13 +225,20 @@ void main() {
       // Check that the main widget is present
       expect(find.byType(GameDetailSheetActions), findsOneWidget);
 
-      // Check that both buttons are present
-      expect(find.text('Edit Game'), findsOneWidget);
-      expect(find.text('Save Changes'), findsOneWidget);
+      // Check that all three buttons are present
+      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Delete'), findsOneWidget);
 
-      // Check that both button icons are present (more reliable than checking button types)
-      expect(find.byIcon(Icons.edit), findsOneWidget);
-      expect(find.byIcon(Icons.save), findsOneWidget);
+      // Check that the buttons use custom gradient containers
+      expect(
+        find.byType(Container),
+        findsAtLeastNWidgets(3),
+      ); // All buttons use Container wrapper
+      expect(
+        find.byType(InkWell),
+        findsNWidgets(3),
+      ); // All buttons use InkWell for interaction
     });
 
     testWidgets('should handle multiple button taps correctly', (
@@ -203,6 +246,7 @@ void main() {
     ) async {
       int editCount = 0;
       int saveCount = 0;
+      int deleteCount = 0;
 
       void countingEditPressed() {
         editCount++;
@@ -212,12 +256,17 @@ void main() {
         saveCount++;
       }
 
+      void countingDeletePressed() {
+        deleteCount++;
+      }
+
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: GameDetailSheetActions(
               onEditPressed: countingEditPressed,
               onSavePressed: countingSavePressed,
+              onDeletePressed: countingDeletePressed,
               hasChanges: true,
             ),
           ),
@@ -225,84 +274,92 @@ void main() {
       );
 
       // Tap Edit button multiple times
-      await tester.tap(find.text('Edit Game'));
+      await tester.tap(find.text('Edit'));
       await tester.pump();
-      await tester.tap(find.text('Edit Game'));
+      await tester.tap(find.text('Edit'));
       await tester.pump();
 
       // Tap Save button multiple times
-      await tester.tap(find.text('Save Changes'));
+      await tester.tap(find.text('Save'));
       await tester.pump();
-      await tester.tap(find.text('Save Changes'));
+      await tester.tap(find.text('Save'));
+      await tester.pump();
+
+      // Tap Delete button multiple times
+      await tester.tap(find.text('Delete'));
       await tester.pump();
 
       expect(editCount, 2);
       expect(saveCount, 2);
+      expect(deleteCount, 1);
     });
 
-    group('Button state tests', () {
-      testWidgets('should show enabled Save button when hasChanges is true', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: GameDetailSheetActions(
-                onEditPressed: onEditPressed,
-                onSavePressed: onSavePressed,
-                hasChanges: true,
-              ),
+    testWidgets('should disable Save button when hasChanges is false', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GameDetailSheetActions(
+              onEditPressed: onEditPressed,
+              onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
+              hasChanges: false,
             ),
           ),
-        );
+        ),
+      );
 
-        // Save button should be tappable
-        await tester.tap(find.text('Save Changes'));
-        await tester.pump();
-        expect(savePressed, true);
-      });
+      // Find the Save button wrapper and check if it has the disabled styling
+      final saveTextWidget = find.text('Save');
+      expect(saveTextWidget, findsOneWidget);
 
-      testWidgets('should show disabled Save button when hasChanges is false', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: GameDetailSheetActions(
-                onEditPressed: onEditPressed,
-                onSavePressed: onSavePressed,
-                hasChanges: false,
-              ),
+      // Check that the save button text has the disabled colour (grey)
+      final saveText = tester.widget<Text>(saveTextWidget);
+      expect(saveText.style?.color, const Color(0xFF64748B));
+    });
+
+    testWidgets('should enable Save button when hasChanges is true', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GameDetailSheetActions(
+              onEditPressed: onEditPressed,
+              onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
+              hasChanges: true,
             ),
           ),
-        );
+        ),
+      );
 
-        // Save button should not trigger callback
-        await tester.tap(find.text('Save Changes'));
-        await tester.pump();
-        expect(savePressed, false);
-      });
+      // Find the Save button and check if it has the enabled styling
+      final saveTextWidget = find.text('Save');
+      expect(saveTextWidget, findsOneWidget);
 
-      testWidgets('should always enable Edit button', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: GameDetailSheetActions(
-                onEditPressed: onEditPressed,
-                onSavePressed: onSavePressed,
-                hasChanges: false,
-              ),
+      // Check that the save button text has the enabled colour
+      final saveText = tester.widget<Text>(saveTextWidget);
+      expect(saveText.style?.color, Colors.white);
+    });
+
+    testWidgets('should have responsive layout', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GameDetailSheetActions(
+              onEditPressed: onEditPressed,
+              onSavePressed: onSavePressed,
+              onDeletePressed: onDeletePressed,
+              hasChanges: false,
             ),
           ),
-        );
+        ),
+      );
 
-        // Edit button should always be tappable
-        await tester.tap(find.text('Edit Game'));
-        await tester.pump();
-        expect(editPressed, true);
-      });
+      // Check that we have the right number of Expanded widgets (3 for the 3 buttons)
+      expect(find.byType(Expanded), findsNWidgets(3));
     });
 
     testWidgets('should display correct button icons and text', (
@@ -314,19 +371,17 @@ void main() {
             body: GameDetailSheetActions(
               onEditPressed: onEditPressed,
               onSavePressed: onSavePressed,
-              hasChanges: false,
+              onDeletePressed: onDeletePressed,
+              hasChanges: true,
             ),
           ),
         ),
       );
 
-      // Verify button texts
-      expect(find.text('Edit Game'), findsOneWidget);
-      expect(find.text('Save Changes'), findsOneWidget);
-
-      // Verify button icons
-      expect(find.byIcon(Icons.edit), findsOneWidget);
-      expect(find.byIcon(Icons.save), findsOneWidget);
+      // Check button texts
+      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Delete'), findsOneWidget);
     });
   });
 }

@@ -27,7 +27,10 @@ class Games extends Table {
 /// Drift database definition
 @DriftDatabase(tables: [Games])
 class GameDatabase extends _$GameDatabase {
-  GameDatabase() : super(_openConnection());
+  GameDatabase() : super(_openConnection()) {
+    // Suppress multiple database warnings in tests
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+  }
 
   @override
   int get schemaVersion => 1;

@@ -21,28 +21,30 @@ class GameCardStyles {
   static const EdgeInsets smallIconPadding = EdgeInsets.all(8);
   static const EdgeInsets tinyIconPadding = EdgeInsets.all(6);
 
-  // Modern card decorations with gradient borders
+  // Modern card decorations with shadow
   static BoxDecoration get gameCardDecoration => BoxDecoration(
-    gradient: AppGradients.cardGradient,
-    borderRadius: BorderRadius.all(Radius.circular(20)),
-    border: _createGradientBorder(width: 3.0),
-    boxShadow: AppShadows.cardElevation,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.1),
+        blurRadius: 8,
+        offset: Offset(0, 2),
+        spreadRadius: 0,
+      ),
+    ],
   );
 
   static BoxDecoration get landscapeGameCardDecoration => BoxDecoration(
-    gradient: AppGradients.cardGradient,
-    borderRadius: BorderRadius.all(Radius.circular(16)),
-    border: _createGradientBorder(width: 2.5),
-    boxShadow: AppShadows.subtleElevation,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.1),
+        blurRadius: 8,
+        offset: Offset(0, 2),
+        spreadRadius: 0,
+      ),
+    ],
   );
-
-  // Helper method to create gradient border effect with enhanced visibility
-  static Border _createGradientBorder({double width = 3.0}) {
-    return Border.all(
-      color: AppColors.primaryPurple.withValues(alpha: 0.4),
-      width: width,
-    );
-  }
 
   // Enhanced gradient border decoration for special cards
   static BoxDecoration get gradientBorderCardDecoration => BoxDecoration(
@@ -105,8 +107,7 @@ class GameCardStyles {
 
   // Enhanced text styles for better readability
   static const TextStyle landscapeGameCardTitleStyle = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
+    fontSize: 12,
     color: Colors.white,
     shadows: AppShadows.gameCardText,
     letterSpacing: 0.5,
@@ -129,8 +130,7 @@ class GameCardStyles {
 
   // Enhanced text styles for portrait cards
   static const TextStyle portraitGameCardTitleStyle = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
+    fontSize: 12,
     color: Colors.white,
     shadows: AppShadows.gameCardPortraitText,
     letterSpacing: 0.5,

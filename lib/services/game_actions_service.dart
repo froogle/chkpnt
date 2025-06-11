@@ -120,6 +120,20 @@ class GameActionsService {
     }
   }
 
+  /// Handles deleting a game
+  Future<void> deleteGame(GameItem game, BuildContext context) async {
+    await _ref.read(gameListProvider.notifier).removeGame(game.id);
+
+    if (context.mounted) {
+      _showGameActionFeedback(
+        context: context,
+        message: '${game.title} deleted!',
+        icon: Icons.delete_forever,
+        color: Colors.red,
+      );
+    }
+  }
+
   /// Updates section expansion based on current filters
   void updateSectionExpansionForFilters() {
     final platform = _ref.read(selectedPlatformProvider);

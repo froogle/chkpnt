@@ -119,8 +119,18 @@ class _OnboardingDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultStyle = Theme.of(context).textTheme.bodyMedium;
-    final boldStyle = defaultStyle?.copyWith(fontWeight: FontWeight.bold);
+    // Use explicit colours instead of theme for Android 13 compatibility
+    const defaultStyle = TextStyle(
+      fontSize: 16,
+      color: AppColors.primaryText, // Explicit dark color
+      height: 1.4,
+    );
+    const boldStyle = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: AppColors.primaryText, // Explicit dark color
+      height: 1.4,
+    );
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(

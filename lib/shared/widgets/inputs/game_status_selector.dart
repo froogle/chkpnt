@@ -15,77 +15,89 @@ class GameStatusSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildStatusSectionTitle(),
-        const SizedBox(height: 12),
-        _buildStatusGrid(),
-      ],
-    );
-  }
-
-  Widget _buildStatusSectionTitle() {
-    return const Text(
-      'Change Status',
-      style: GameDetailSheetStyles.sectionTitleStyle,
-    );
+    return _buildStatusGrid();
   }
 
   Widget _buildStatusGrid() {
     const statuses = [
-      GameStatus.wishlist,
-      GameStatus.abandoned,
-      GameStatus.completed,
-      GameStatus.backlog,
       GameStatus.playing,
+      GameStatus.backlog,
+      GameStatus.completed,
+      GameStatus.abandoned,
+      GameStatus.wishlist,
     ];
 
     return LayoutBuilder(
       builder:
           (context, constraints) =>
-              _buildResponsiveStatusGrid(statuses, constraints),
+              _buildResponsiveStatusGrid(context, statuses, constraints),
     );
   }
 
   Widget _buildResponsiveStatusGrid(
+    BuildContext context,
     List<GameStatus> statuses,
     BoxConstraints constraints,
   ) {
-    final isWide = constraints.maxWidth > 400;
-    final crossAxisCount = isWide ? 5 : 2;
+    // Calculate button width based on available space
+    const spacing = InputStyles.statusButtonSpacing;
+    final availableWidth = constraints.maxWidth;
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: _buildStatusGridDelegate(crossAxisCount, isWide),
-      itemCount: statuses.length,
-      itemBuilder: (context, index) => _buildStatusGridItem(statuses[index]),
+    // Determine orientation to set maximum buttons per row
+    final orientation = MediaQuery.of(context).orientation;
+    final isPortrait = orientation == Orientation.portrait;
+
+    // Set maximum buttons per row based on orientation
+    final maxButtonsPerRow = isPortrait ? 3 : 4;
+
+    // Calculate minimum button width needed for content
+    // Account for: horizontal padding (16) + icon (16) + spacing (4) + text (~40-60)
+    final minButtonWidth = isPortrait ? 90.0 : 85.0;
+
+    // Calculate optimal buttons per row within the limit
+    int buttonsPerRow = maxButtonsPerRow;
+
+    // Check if we can fit the maximum buttons with reasonable size
+    final widthNeededForMax =
+        (minButtonWidth * maxButtonsPerRow) +
+        (spacing * (maxButtonsPerRow - 1));
+
+    if (availableWidth < widthNeededForMax) {
+      // If we can't fit the maximum, reduce to fit
+      buttonsPerRow = maxButtonsPerRow - 1;
+      if (buttonsPerRow < 2) buttonsPerRow = 2; // Minimum 2 buttons per row
+    }
+
+    // Ensure calculated button width meets minimum requirements
+    final calculatedButtonWidth =
+        (availableWidth - (spacing * (buttonsPerRow - 1))) / buttonsPerRow;
+    final buttonWidth =
+        calculatedButtonWidth < minButtonWidth
+            ? minButtonWidth
+            : calculatedButtonWidth;
+
+    return Wrap(
+      spacing: spacing,
+      runSpacing: spacing,
+      alignment: WrapAlignment.start,
+      children:
+          statuses
+              .map((status) => _buildStatusButton(status, buttonWidth))
+              .toList(),
     );
   }
 
-  SliverGridDelegateWithFixedCrossAxisCount _buildStatusGridDelegate(
-    int crossAxisCount,
-    bool isWide,
-  ) {
-    return SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: crossAxisCount,
-      childAspectRatio:
-          isWide
-              ? GameDetailSheetStyles.statusButtonAspectRatioWide
-              : GameDetailSheetStyles.statusButtonAspectRatio,
-      crossAxisSpacing: GameDetailSheetStyles.statusGridCrossAxisSpacing,
-      mainAxisSpacing: GameDetailSheetStyles.statusGridMainAxisSpacing,
-    );
-  }
-
-  Widget _buildStatusGridItem(GameStatus status) {
+  Widget _buildStatusButton(GameStatus status, double buttonWidth) {
     final isSelected = status == selectedStatus;
 
-    return StatusButton(
-      status: status,
-      isSelected: isSelected,
-      onTap: () => onStatusChanged(status),
+    return SizedBox(
+      width: buttonWidth,
+      height: InputStyles.statusButtonHeight,
+      child: StatusButton(
+        status: status,
+        isSelected: isSelected,
+        onTap: () => onStatusChanged(status),
+      ),
     );
   }
 }

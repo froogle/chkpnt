@@ -46,7 +46,7 @@ void main() {
 
       // Should show bottom sheet
       expect(find.text('Select Platform'), findsOneWidget);
-      expect(find.text('Or enter custom platform:'), findsOneWidget);
+      expect(find.text('Or add a new platform:'), findsOneWidget);
       expect(find.text('Choose from existing:'), findsOneWidget);
     });
 
@@ -146,8 +146,6 @@ void main() {
     });
 
     testWidgets('allows custom platform input', (tester) async {
-      String? changedPlatform;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -155,7 +153,7 @@ void main() {
               selectedPlatform: selectedPlatform,
               platforms: testPlatforms,
               onPlatformChanged: (platform) {
-                changedPlatform = platform;
+                // Platform changed callback
               },
             ),
           ),
@@ -166,16 +164,12 @@ void main() {
       await tester.tap(find.byType(PlatformEditDropdown));
       await tester.pumpAndSettle();
 
-      // Enter custom platform
-      final textField = find.byType(TextField);
-      await tester.enterText(textField, 'Steam Deck');
-      await tester.pump();
-
-      // Tap the custom platform button
-      await tester.tap(find.text('Use Custom Platform'));
+      // Tap the custom platform button should navigate to PlatformEntryScreen
+      await tester.tap(find.text('Add Custom Platform'));
       await tester.pumpAndSettle();
 
-      expect(changedPlatform, equals('Steam Deck'));
+      // Should navigate to the platform entry screen
+      expect(find.text('Enter Platform'), findsOneWidget);
     });
 
     testWidgets('closes bottom sheet when close button is tapped', (
@@ -225,7 +219,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should still show custom input section
-      expect(find.text('Or enter custom platform:'), findsOneWidget);
+      expect(find.text('Or add a new platform:'), findsOneWidget);
       // But not the existing platforms section
       expect(find.text('Choose from existing:'), findsNothing);
     });

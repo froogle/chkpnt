@@ -29,17 +29,43 @@ class EditScreenStyles {
   static const double saveButtonIconSize = 20.0;
   static const double saveButtonIconSpacing = 8.0;
 
-  // Title field styles
+  // Title field styles - Enhanced visibility for Android
   static InputDecoration get titleFieldDecoration => InputDecoration(
-    border: InputBorder.none,
+    filled: true,
+    fillColor: Colors.grey[100], // Darker background for better contrast
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(
+        color: Colors.grey[400]!,
+        width: 1.5,
+      ), // Stronger border
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(
+        color: Colors.grey[400]!,
+        width: 1.5,
+      ), // More visible border
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(
+        color: Colors.blue,
+        width: 2.5,
+      ), // Thicker focus border
+    ),
     hintText: 'Enter game title',
     hintStyle: titleFieldHintStyle,
-    contentPadding: EdgeInsets.zero,
-    isDense: true,
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 14,
+    ), // Slightly more padding
+    isDense: false,
   );
 
-  static TextStyle get titleFieldHintStyle =>
-      GameDetailSheetStyles.gameTitleStyle.copyWith(color: Colors.grey[400]);
+  static TextStyle get titleFieldHintStyle => GameDetailSheetStyles
+      .gameTitleStyle
+      .copyWith(color: Colors.grey[500]); // Darker hint text
 
   // Section spacing
   static const double sectionSpacing = 16.0;

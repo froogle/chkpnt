@@ -30,10 +30,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      decoration: AppLayout.sheetDecoration,
       child: _buildContent(),
     );
   }
@@ -52,49 +49,30 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
   }
 
   Widget _buildPortraitContent() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: GameDetailSheetStyles.contentPadding,
-        child: _buildPortraitColumn(),
-      ),
-    );
-  }
-
-  Widget _buildPortraitColumn() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildPortraitLayout(),
-        _buildSectionSpacing(),
-        _buildStatusSelector(),
-        _buildSectionSpacing(),
-        _buildActions(),
-      ],
-    );
-  }
-
-  Widget _buildLandscapeContent() {
     return Padding(
-      padding: GameDetailSheetStyles.contentPaddingLandscape,
+      padding: AppLayout.sheetContentPadding,
       child: Column(
         children: [
-          Expanded(child: _buildLandscapeScrollableContent()),
-          _buildLandscapeSpacing(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: _buildPortraitScrollableContent(),
+            ),
+          ),
           _buildActions(),
         ],
       ),
     );
   }
 
-  Widget _buildLandscapeScrollableContent() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildLandscapeLayout(),
-          _buildLandscapeSpacing(),
-          _buildStatusSelector(),
-        ],
-      ),
+  Widget _buildPortraitScrollableContent() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildPortraitLayout(),
+        _buildSectionSpacing(),
+        _buildStatusSelector(),
+        const SizedBox(height: 16), // Spacing before bottom action area
+      ],
     );
   }
 
@@ -151,6 +129,40 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     );
   }
 
+  Widget _buildLandscapeContent() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        24,
+        12,
+        12,
+        20,
+      ), // Reduced top and bottom padding
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: _buildLandscapeScrollableContent(),
+            ),
+          ),
+          _buildActions(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLandscapeScrollableContent() {
+    return Column(
+      children: [
+        _buildLandscapeLayout(),
+        _buildLandscapeSpacing(),
+        _buildStatusSelector(),
+        const SizedBox(
+          height: 8,
+        ), // Further reduced spacing before bottom action area
+      ],
+    );
+  }
+
   Widget _buildLandscapeLayout() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,18 +207,17 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     return GameDetailSheetActions(
       onEditPressed: widget.onEditPressed,
       onSavePressed: _saveChanges,
+      onDeletePressed: _showDeleteConfirmation,
       hasChanges: _hasStatusChanged(),
     );
   }
 
   Widget _buildSectionSpacing() {
-    return const SizedBox(height: GameDetailSheetStyles.sectionSpacing);
+    return const SizedBox(height: AppLayout.sheetSectionSpacing);
   }
 
   Widget _buildLandscapeSpacing() {
-    return const SizedBox(
-      height: GameDetailSheetStyles.sectionSpacingLandscape,
-    );
+    return const SizedBox(height: 12); // Further reduced from 16px
   }
 
   // Business logic methods
@@ -231,6 +242,55 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
 
     if (mounted) {
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _showDeleteConfirmation() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Game'),
+            content: Text(
+              'Are you sure you want to delete "${widget.game.title}"?\n\nThis action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed == true && mounted) {
+      await _deleteGame();
+    }
+  }
+
+  Future<void> _deleteGame() async {
+    try {
+      // Close the detail sheet first
+      Navigator.of(context).pop();
+
+      // Then delete the game with feedback
+      final gameActionsService = ref.read(gameActionsServiceProvider);
+      await gameActionsService.deleteGame(widget.game, context);
+    } catch (e) {
+      // If there's an error, show a simple error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete ${widget.game.title}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

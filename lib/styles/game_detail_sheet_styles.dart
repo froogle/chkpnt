@@ -110,42 +110,47 @@ class GameDetailSheetStyles {
 
   // Enhanced typography
   static const TextStyle gameTitleStyle = TextStyle(
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: FontWeight.bold,
     color: AppColors.primaryText,
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   );
 
   static const TextStyle currentStatusStyle = TextStyle(
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.expandIcon,
     letterSpacing: 0.2,
   );
 
   static const TextStyle sectionTitleStyle = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
     color: AppColors.primaryText,
     letterSpacing: 0.3,
   );
 
   // Enhanced status buttons
   static const EdgeInsets statusGridPadding = EdgeInsets.all(0);
-  static const double statusGridCrossAxisSpacing = 12.0;
-  static const double statusGridMainAxisSpacing = 12.0;
-  static const double statusButtonAspectRatio = 3.2;
-  static const double statusButtonAspectRatioWide = 3.0;
+  static const double statusGridCrossAxisSpacing = 4.0;
+  static const double statusGridMainAxisSpacing = 4.0;
+  static const double statusButtonHeight =
+      36.0; // Slightly taller for horizontal layout
+  static const double statusButtonAspectRatio =
+      2.5; // More reasonable for GridView fallback
+  static const double statusButtonAspectRatioWide = 2.2;
   static const BorderRadius statusButtonBorderRadius = BorderRadius.all(
-    Radius.circular(16),
+    Radius.circular(18), // More rounded for pill-like appearance
   );
   static const EdgeInsets statusButtonContentPadding = EdgeInsets.symmetric(
-    horizontal: 12,
-    vertical: 4,
+    horizontal: 8,
+    vertical: 6,
   );
-  static const double statusButtonIconSize = 22.0;
+  static const double statusButtonIconSize = 16.0;
   static const double statusButtonSpacing = 10.0;
-  static const double statusButtonFontSize = 11.0;
+  static const double statusButtonVerticalSpacing =
+      4.0; // Space between icon and text
+  static const double statusButtonFontSize = 10.0;
 
   static BoxDecoration statusButtonDecoration(bool isSelected) => BoxDecoration(
     gradient:
@@ -179,10 +184,15 @@ class GameDetailSheetStyles {
   static const EdgeInsets actionButtonPadding = EdgeInsets.symmetric(
     vertical: 16,
   );
+  static const EdgeInsets actionButtonCompactPadding = EdgeInsets.symmetric(
+    vertical: 8,
+    horizontal: 16,
+  );
+  static const double actionButtonCompactHeight = 36.0;
   static const BorderRadius actionButtonBorderRadius = BorderRadius.all(
     Radius.circular(12),
   );
-  static const double actionButtonSpacing = 20.0;
+  static const double actionButtonSpacing = 12.0;
 
   // Close button integration
   static const double closeButtonTopMargin = 6.0;

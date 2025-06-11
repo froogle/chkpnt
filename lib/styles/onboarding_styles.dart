@@ -55,17 +55,26 @@ class OnboardingOverlayStyles {
     horizontal: 12,
   );
 
-  // Text styles for subscription tiles
+  // Text styles for subscription tiles - Android 13 compatible
   static const TextStyle tileTitleStyle = TextStyle(
     fontWeight: FontWeight.bold,
+    color: Color(
+      0xFF1E293B,
+    ), // Explicit dark color for Android 13 compatibility
+    fontSize: 16,
   );
   static const double landscapeSpacing = 4.0;
   static const double landscapeBottomSpacing = 8.0;
 
-  // Subscribe button style
+  // Subscribe button style - Enhanced for Android 13 visibility
   static ButtonStyle subscribeButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: Color(0xFF8B5CF6), // Explicit purple background
+    foregroundColor: Colors.white, // Explicit white text
+    disabledBackgroundColor: Color(0xFFE5E7EB), // Light grey when disabled
+    disabledForegroundColor: Color(0xFF9CA3AF), // Dark grey text when disabled
     elevation: 8,
     shadowColor: Colors.black.withValues(alpha: 0.25),
+    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
   );
 
   // Shared onboarding content styles

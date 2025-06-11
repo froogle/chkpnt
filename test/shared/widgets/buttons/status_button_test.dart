@@ -127,7 +127,7 @@ void main() {
         );
 
         expect(find.text('Playing'), findsOneWidget);
-        expect(find.byIcon(Icons.play_circle_fill), findsOneWidget);
+        expect(find.byIcon(Icons.play_circle_filled), findsOneWidget);
       });
 
       testWidgets('should render Abandoned status correctly', (
@@ -165,7 +165,7 @@ void main() {
         );
 
         expect(find.text('Backlog'), findsOneWidget);
-        expect(find.byIcon(Icons.playlist_add), findsOneWidget);
+        expect(find.byIcon(Icons.list), findsOneWidget);
       });
 
       testWidgets('should render Wishlist status correctly', (
@@ -184,7 +184,7 @@ void main() {
         );
 
         expect(find.text('Wishlist'), findsOneWidget);
-        expect(find.byIcon(Icons.favorite_outline), findsOneWidget);
+        expect(find.byIcon(Icons.favorite), findsOneWidget);
       });
 
       testWidgets('should render Ordered status correctly', (
