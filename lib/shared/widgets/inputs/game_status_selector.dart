@@ -36,7 +36,21 @@ class GameStatusSelector extends StatelessWidget {
       return [GameStatus.wishlist, GameStatus.ordered, GameStatus.backlog];
     }
 
-    // For all other statuses, show all available options
+    // If the game is in playing, backlog, completed, or abandoned states,
+    // exclude wishlist and ordered options as they don't make sense in this context
+    if (selectedStatus == GameStatus.playing ||
+        selectedStatus == GameStatus.backlog ||
+        selectedStatus == GameStatus.completed ||
+        selectedStatus == GameStatus.abandoned) {
+      return [
+        GameStatus.playing,
+        GameStatus.backlog,
+        GameStatus.completed,
+        GameStatus.abandoned,
+      ];
+    }
+
+    // Fallback case - show all available options (should not be reached with current enum)
     return [
       GameStatus.playing,
       GameStatus.backlog,

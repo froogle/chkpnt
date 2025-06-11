@@ -75,7 +75,7 @@ void main() {
       expect(find.byIcon(Icons.close), findsNothing);
     });
 
-    testWidgets('should render all status buttons', (
+    testWidgets('should render appropriate status buttons for playing game', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
@@ -87,12 +87,40 @@ void main() {
         ),
       );
 
-      // Check that all status options are displayed
-      expect(find.text('Wishlist'), findsOneWidget);
+      // Check that only non-wishlist status options are displayed for playing game
+      expect(find.text('Playing'), findsOneWidget);
       expect(find.text('Abandoned'), findsOneWidget);
       expect(find.text('Completed'), findsOneWidget);
       expect(find.text('Backlog'), findsOneWidget);
-      expect(find.text('Playing'), findsOneWidget);
+
+      // Wishlist and ordered should NOT be displayed for playing game
+      expect(find.text('Wishlist'), findsNothing);
+      expect(find.text('Ordered'), findsNothing);
+    });
+
+    testWidgets('should render appropriate status buttons for wishlist game', (
+      WidgetTester tester,
+    ) async {
+      final wishlistGame = testGame.copyWith(status: GameStatus.wishlist);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: Scaffold(body: GameDetailSheet(game: wishlistGame)),
+          ),
+        ),
+      );
+
+      // Check that only wishlist flow options are displayed for wishlist game
+      expect(find.text('Wishlist'), findsOneWidget);
+      expect(find.text('Ordered'), findsOneWidget);
+      expect(find.text('Backlog'), findsOneWidget);
+
+      // Non-wishlist options should NOT be displayed for wishlist game
+      expect(find.text('Playing'), findsNothing);
+      expect(find.text('Completed'), findsNothing);
+      expect(find.text('Abandoned'), findsNothing);
     });
 
     testWidgets('should highlight current status', (WidgetTester tester) async {
