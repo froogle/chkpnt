@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/styles/profile_styles.dart';
 import 'package:chkpnt/styles/main_screen_styles.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
@@ -48,12 +49,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildContent() {
     return OrientationBuilder(
       builder: (context, orientation) {
+        final isLandscape = orientation == Orientation.landscape;
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
-          child:
-              orientation == Orientation.landscape
-                  ? _buildLandscapeLayout()
-                  : _buildPortraitLayout(),
+          child: isLandscape ? _buildLandscapeLayout() : _buildPortraitLayout(),
         );
       },
     );
@@ -66,9 +65,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const ProfileHeader(),
         const SizedBox(height: 24),
         const ProfileSubscriptionSection(),
-        const SizedBox(height: 32),
+        SizedBox(height: ProfileStyles.getSectionSpacing(false)),
         const ProfileVisualisationSection(),
-        const SizedBox(height: 32),
+        SizedBox(height: ProfileStyles.getSectionSpacing(false)),
         const ProfileIncomingGamesSection(),
         const SizedBox(height: 24),
       ],
@@ -82,7 +81,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const ProfileHeader(),
         const SizedBox(height: 12),
         const ProfileSubscriptionSection(),
-        const SizedBox(height: 16),
+        SizedBox(height: ProfileStyles.getSectionSpacing(true)),
         // In landscape, show visualisation and incoming games side by side
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +91,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             const Expanded(flex: 1, child: ProfileIncomingGamesSection()),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: ProfileStyles.getSectionSpacing(true)),
       ],
     );
   }
