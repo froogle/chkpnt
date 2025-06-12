@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/shared/widgets/layout/slim_section_header.dart';
-import 'package:chkpnt/shared/widgets/layout/empty_state_widget.dart';
 import 'package:chkpnt/shared/widgets/cards/game_card.dart';
+import 'package:chkpnt/styles/backlog_styles.dart';
 import 'package:chkpnt/utils/ui_utils.dart';
 
 class GridLayoutConfiguration {
@@ -57,7 +57,7 @@ class BacklogPlatformSection extends ConsumerWidget {
           isEmpty: false,
           gameCount: games.length,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: BacklogStyles.platformSectionHeaderSpacing),
         _buildGrid(games),
       ],
     );
