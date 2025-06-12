@@ -221,7 +221,9 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       case 2: // Wish List - current screen, do nothing
         break;
       case 3: // Profile
-        // TODO: Navigate to profile screen when implemented
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/profile', (route) => false);
         break;
     }
   }

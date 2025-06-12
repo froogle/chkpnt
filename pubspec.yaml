@@ -56,6 +56,9 @@ dependencies:
   path: ^1.8.3
   image: ^4.1.7
 
+  # Charts
+  fl_chart: ^0.69.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -193,7 +193,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         ).pushNamedAndRemoveUntil('/wishlist', (route) => false);
         break;
       case 3: // Profile
-        // TODO: Navigate to profile screen when implemented
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/profile', (route) => false);
         break;
     }
   }

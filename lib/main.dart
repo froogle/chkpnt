@@ -5,6 +5,7 @@ import 'screens/main/main_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/wishlist/wishlist_screen.dart';
 import 'screens/backlog/backlog_screen.dart';
+import 'screens/profile/profile_screen.dart';
 import 'styles/styles.dart';
 
 void main() {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/onboarding': (context) => const OnboardingScreen(),
         '/wishlist': (context) => const WishlistScreen(),
         '/backlog': (context) => const BacklogScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
