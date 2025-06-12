@@ -119,6 +119,50 @@ class TestHelpers {
   }
 }
 
+/// Empty test notifier that provides no data (for testing empty states)
+class EmptyGameListNotifier extends GameList {
+  @override
+  List<GameItem> build() {
+    return [];
+  }
+
+  @override
+  Future<void> addGame(GameItem game) async {
+    // Empty implementation for testing
+  }
+
+  @override
+  Future<void> createGame({
+    required String title,
+    required String platform,
+    required GameStatus status,
+    String? imagePath,
+    String? remoteImageUrl,
+  }) async {
+    // Empty implementation for testing
+  }
+
+  @override
+  Future<void> updateGame(GameItem updatedGame) async {
+    // Empty implementation for testing
+  }
+
+  @override
+  Future<void> removeGame(GameId gameId) async {
+    // Empty implementation for testing
+  }
+
+  @override
+  Future<void> startPlaying(GameId gameId) async {
+    // Empty implementation for testing
+  }
+
+  @override
+  Future<void> markCompleted(GameId gameId) async {
+    // Empty implementation for testing
+  }
+}
+
 /// Test notifier that provides immediate synchronous data
 class TestGameListNotifier extends GameList {
   static final List<GameItem> _staticGames = List.from(TestHelpers.sampleGames);

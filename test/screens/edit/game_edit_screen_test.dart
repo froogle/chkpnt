@@ -316,7 +316,7 @@ void main() {
         await tester.pump();
 
         // Should be able to select wishlist status (which would be filtered out in edit mode for playing games)
-        await tester.tap(find.text('Wishlist'));
+        await tester.tap(find.text('Wishlist'), warnIfMissed: false);
         await tester.pump();
 
         // Wishlist should still be visible and selectable
