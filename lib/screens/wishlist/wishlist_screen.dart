@@ -32,6 +32,8 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     // Update section expansion based on content when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateWishlistSectionExpansion();
+      // Set current screen for nav indicator
+      ref.read(currentScreenProvider.notifier).setScreen(2);
     });
   }
 
@@ -207,10 +209,14 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   void _handleNavigation(int index) {
     switch (index) {
       case 0: // Home
-        Navigator.of(context).pushReplacementNamed('/main');
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/main', (route) => false);
         break;
       case 1: // Backlog
-        // TODO: Navigate to backlog screen when implemented
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/backlog', (route) => false);
         break;
       case 2: // Wish List - current screen, do nothing
         break;

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'package:chkpnt/repositories/drift_game_repository.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 
 part 'game_provider.g.dart';
 
@@ -260,4 +261,91 @@ bool isGamesLoading(Ref ref) {
 String? gamesError(Ref ref) {
   final gamesAsync = ref.watch(gamesAsyncProvider);
   return gamesAsync.hasError ? gamesAsync.error.toString() : null;
+}
+
+// === BACKLOG SPECIFIC PROVIDERS ===
+
+/// Provider for backlog games sorted and grouped by platform
+@riverpod
+Map<String, List<GameItem>> sortedBacklogGamesByPlatform(Ref ref) {
+  final games = ref.watch(gameListProvider);
+  final selectedPlatform = ref.watch(selectedPlatformProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+  final sortType = ref.watch(backlogSortProvider);
+  final sortDirection = ref.watch(backlogSortDirectionStateProvider);
+
+  // Filter to backlog games only
+  List<GameItem> backlogGames =
+      games.where((game) => game.status == GameStatus.backlog).toList();
+
+  // Apply platform filter
+  if (selectedPlatform != 'All') {
+    backlogGames =
+        backlogGames
+            .where((game) => game.platform == selectedPlatform)
+            .toList();
+  }
+
+  // Apply search filter
+  if (searchQuery.isNotEmpty) {
+    final query = searchQuery.toLowerCase();
+    backlogGames =
+        backlogGames.where((game) {
+          return game.title.toLowerCase().contains(query) ||
+              game.platform.toLowerCase().contains(query);
+        }).toList();
+  }
+
+  // Group by platform
+  final Map<String, List<GameItem>> groupedGames = {};
+  for (final game in backlogGames) {
+    if (!groupedGames.containsKey(game.platform)) {
+      groupedGames[game.platform] = [];
+    }
+    groupedGames[game.platform]!.add(game);
+  }
+
+  // Sort games within each platform group
+  for (final platform in groupedGames.keys) {
+    final gamesList = groupedGames[platform]!;
+
+    switch (sortType) {
+      case BacklogSortType.title:
+        gamesList.sort((a, b) {
+          final comparison = a.title.toLowerCase().compareTo(
+            b.title.toLowerCase(),
+          );
+          return sortDirection == SortDirection.ascending
+              ? comparison
+              : -comparison;
+        });
+        break;
+      case BacklogSortType.dateAdded:
+        gamesList.sort((a, b) {
+          final comparison = a.lastStatusChange.compareTo(b.lastStatusChange);
+          return sortDirection == SortDirection.ascending
+              ? comparison
+              : -comparison;
+        });
+        break;
+    }
+  }
+
+  // Sort platform keys alphabetically
+  final sortedMap = Map<String, List<GameItem>>.fromEntries(
+    groupedGames.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
+  );
+
+  return sortedMap;
+}
+
+/// Provider for platforms available in backlog
+@riverpod
+List<String> backlogPlatforms(Ref ref) {
+  final games = ref.watch(gameListProvider);
+  final backlogGames =
+      games.where((game) => game.status == GameStatus.backlog).toList();
+  final platforms = backlogGames.map((game) => game.platform).toSet().toList();
+  platforms.sort();
+  return ['All', ...platforms];
 }

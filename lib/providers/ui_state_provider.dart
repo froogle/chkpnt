@@ -6,6 +6,11 @@ import 'dart:io';
 
 part 'ui_state_provider.g.dart';
 
+// Backlog sorting enum
+enum BacklogSortType { title, dateAdded }
+
+enum SortDirection { ascending, descending }
+
 // Search query state
 @riverpod
 class SearchQuery extends _$SearchQuery {
@@ -33,6 +38,45 @@ class SelectedPlatform extends _$SelectedPlatform {
 
   void resetToAll() {
     state = 'All';
+  }
+}
+
+// Backlog sorting state
+@riverpod
+class BacklogSort extends _$BacklogSort {
+  @override
+  BacklogSortType build() => BacklogSortType.title;
+
+  void setSortType(BacklogSortType sortType) {
+    state = sortType;
+  }
+}
+
+@riverpod
+class BacklogSortDirectionState extends _$BacklogSortDirectionState {
+  @override
+  SortDirection build() => SortDirection.ascending;
+
+  void setSortDirection(SortDirection direction) {
+    state = direction;
+  }
+
+  void toggleDirection() {
+    state =
+        state == SortDirection.ascending
+            ? SortDirection.descending
+            : SortDirection.ascending;
+  }
+}
+
+// Current screen tracking for nav indicator
+@riverpod
+class CurrentScreen extends _$CurrentScreen {
+  @override
+  int build() => 0; // Default to home screen
+
+  void setScreen(int screenIndex) {
+    state = screenIndex;
   }
 }
 

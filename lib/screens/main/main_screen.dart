@@ -28,6 +28,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   void initState() {
     super.initState();
     _setupProviderListeners();
+    // Set current screen for nav indicator
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(currentScreenProvider.notifier).setScreen(0);
+    });
   }
 
   void _setupProviderListeners() {
@@ -179,10 +183,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       case 0: // Home - current screen, do nothing
         break;
       case 1: // Backlog
-        // TODO: Navigate to backlog screen when implemented
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/backlog', (route) => false);
         break;
       case 2: // Wish List
-        Navigator.of(context).pushReplacementNamed('/wishlist');
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/wishlist', (route) => false);
         break;
       case 3: // Profile
         // TODO: Navigate to profile screen when implemented

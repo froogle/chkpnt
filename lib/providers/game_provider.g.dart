@@ -881,6 +881,49 @@ final gamesErrorProvider = AutoDisposeProvider<String?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GamesErrorRef = AutoDisposeProviderRef<String?>;
+String _$sortedBacklogGamesByPlatformHash() =>
+    r'31ebef683d71ec9ca0dd967f0d79b3749cd27cdb';
+
+/// Provider for backlog games sorted and grouped by platform
+///
+/// Copied from [sortedBacklogGamesByPlatform].
+@ProviderFor(sortedBacklogGamesByPlatform)
+final sortedBacklogGamesByPlatformProvider =
+    AutoDisposeProvider<Map<String, List<GameItem>>>.internal(
+      sortedBacklogGamesByPlatform,
+      name: r'sortedBacklogGamesByPlatformProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$sortedBacklogGamesByPlatformHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SortedBacklogGamesByPlatformRef =
+    AutoDisposeProviderRef<Map<String, List<GameItem>>>;
+String _$backlogPlatformsHash() => r'559414a2dad7cc7e0344a16bd56d597be8310944';
+
+/// Provider for platforms available in backlog
+///
+/// Copied from [backlogPlatforms].
+@ProviderFor(backlogPlatforms)
+final backlogPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
+  backlogPlatforms,
+  name: r'backlogPlatformsProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$backlogPlatformsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef BacklogPlatformsRef = AutoDisposeProviderRef<List<String>>;
 String _$gameListHash() => r'ccef18181e2af687735a74b5f13831a219c8a7a4';
 
 /// Current games list provider - provides latest snapshot for UI

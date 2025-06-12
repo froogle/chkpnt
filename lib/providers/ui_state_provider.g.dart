@@ -178,6 +178,60 @@ final selectedPlatformProvider =
     );
 
 typedef _$SelectedPlatform = AutoDisposeNotifier<String>;
+String _$backlogSortHash() => r'54af127d0200d61743356b7ea674516dfe069da4';
+
+/// See also [BacklogSort].
+@ProviderFor(BacklogSort)
+final backlogSortProvider =
+    AutoDisposeNotifierProvider<BacklogSort, BacklogSortType>.internal(
+      BacklogSort.new,
+      name: r'backlogSortProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$backlogSortHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$BacklogSort = AutoDisposeNotifier<BacklogSortType>;
+String _$backlogSortDirectionStateHash() =>
+    r'3d6b312cde1edd6aaec3430729c7a7e4a7d22fb6';
+
+/// See also [BacklogSortDirectionState].
+@ProviderFor(BacklogSortDirectionState)
+final backlogSortDirectionStateProvider = AutoDisposeNotifierProvider<
+  BacklogSortDirectionState,
+  SortDirection
+>.internal(
+  BacklogSortDirectionState.new,
+  name: r'backlogSortDirectionStateProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$backlogSortDirectionStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$BacklogSortDirectionState = AutoDisposeNotifier<SortDirection>;
+String _$currentScreenHash() => r'aaff6e1b0d0540586b2b99f6de3ca7140af288c1';
+
+/// See also [CurrentScreen].
+@ProviderFor(CurrentScreen)
+final currentScreenProvider =
+    AutoDisposeNotifierProvider<CurrentScreen, int>.internal(
+      CurrentScreen.new,
+      name: r'currentScreenProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$currentScreenHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$CurrentScreen = AutoDisposeNotifier<int>;
 String _$sectionExpansionHash() => r'79ca889a67f8cbe9c5a620b8418adebea60cd433';
 
 /// See also [SectionExpansion].
