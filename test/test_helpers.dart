@@ -3,6 +3,7 @@ import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'dart:async';
+import 'dart:convert';
 
 /// Test utilities for streaming provider tests
 class TestHelpers {
@@ -365,5 +366,58 @@ class TestGameRepository implements GameRepository {
   @override
   Future<void> dispose() async {
     await _controller.close();
+  }
+
+  @override
+  Future<String> exportDatabaseToJson() async {
+    final jsonData =
+        _games
+            .map(
+              (game) => {
+                'id': game.id.value,
+                'title': game.title,
+                'platform': game.platform,
+                'status': game.status.index,
+                'lastModified': game.lastModified.toIso8601String(),
+                'lastStatusChange': game.lastStatusChange.toIso8601String(),
+                'imagePath': game.imagePath,
+                'remoteImageUrl': game.remoteImageUrl,
+              },
+            )
+            .toList();
+
+    return jsonEncode({
+      'version': 1,
+      'exportDate': DateTime.now().toIso8601String(),
+      'games': jsonData,
+    });
+  }
+
+  @override
+  Future<void> importFromJson(String jsonString) async {
+    final data = jsonDecode(jsonString) as Map<String, dynamic>;
+    final games =
+        (data['games'] as List).map((gameData) {
+          return GameItem(
+            id: GameId(gameData['id']),
+            title: gameData['title'],
+            platform: gameData['platform'],
+            status: GameStatus.values[gameData['status']],
+            lastModified: DateTime.parse(gameData['lastModified']),
+            lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
+            imagePath: gameData['imagePath'],
+            remoteImageUrl: gameData['remoteImageUrl'],
+          );
+        }).toList();
+
+    _games.clear();
+    _games.addAll(games);
+    _controller.add(List.from(_games));
+  }
+
+  @override
+  Future<String?> getDatabasePath() async {
+    // Test repository doesn't have a physical file
+    return null;
   }
 }

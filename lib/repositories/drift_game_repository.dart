@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,6 +35,29 @@ class GameDatabase extends _$GameDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      // Handle future schema migrations
+      // if (from == 1 && to == 2) {
+      //   await m.addColumn(games, games.newColumn);
+      // }
+    },
+    beforeOpen: (details) async {
+      // Ensure database integrity before opening
+      await customStatement('PRAGMA foreign_keys = ON');
+
+      // Verify database is not corrupted
+      final result = await customSelect('PRAGMA integrity_check').get();
+      if (result.isNotEmpty && result.first.data['integrity_check'] != 'ok') {
+        throw Exception('Database corruption detected');
+      }
+    },
+  );
 
   /// Convert Drift Game to GameItem model
   GameItem _gameToGameItem(Game game) {
@@ -276,6 +300,72 @@ class DriftGameRepository implements GameRepository {
   Future<void> dispose() async {
     await _gamesController.close();
     await _database.close();
+  }
+
+  /// Backup functionality for data protection
+  Future<String> exportDatabaseToJson() async {
+    try {
+      final games = await getAllGames();
+      final jsonData =
+          games
+              .map(
+                (game) => {
+                  'id': game.id.value,
+                  'title': game.title,
+                  'platform': game.platform,
+                  'status': game.status.index,
+                  'lastModified': game.lastModified.toIso8601String(),
+                  'lastStatusChange': game.lastStatusChange.toIso8601String(),
+                  'imagePath': game.imagePath,
+                  'remoteImageUrl': game.remoteImageUrl,
+                },
+              )
+              .toList();
+
+      return jsonEncode({
+        'version': 1,
+        'exportDate': DateTime.now().toIso8601String(),
+        'games': jsonData,
+      });
+    } catch (e) {
+      throw StorageException('Failed to export database', originalError: e);
+    }
+  }
+
+  /// Import functionality for data restoration
+  Future<void> importFromJson(String jsonString) async {
+    try {
+      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+      final games =
+          (data['games'] as List).map((gameData) {
+            return GameItem(
+              id: GameId(gameData['id']),
+              title: gameData['title'],
+              platform: gameData['platform'],
+              status: GameStatus.values[gameData['status']],
+              lastModified: DateTime.parse(gameData['lastModified']),
+              lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
+              imagePath: gameData['imagePath'],
+              remoteImageUrl: gameData['remoteImageUrl'],
+            );
+          }).toList();
+
+      // Clear existing data and import
+      await _database.transaction(() async {
+        await _database.delete(_database.games).go();
+        for (final game in games) {
+          await _database.insertGame(game);
+        }
+      });
+    } catch (e) {
+      throw StorageException('Failed to import database', originalError: e);
+    }
+  }
+
+  /// Get database file path for manual backup
+  Future<String> getDatabasePath() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    return p.join(dbFolder.path, 'chkpnt.db');
   }
 }
 

@@ -38,6 +38,15 @@ abstract class GameRepository {
 
   /// Close/dispose the repository
   Future<void> dispose();
+
+  /// Export database to JSON for backup
+  Future<String> exportDatabaseToJson();
+
+  /// Import database from JSON for restoration
+  Future<void> importFromJson(String jsonString);
+
+  /// Get database file path for manual backup (if applicable)
+  Future<String?> getDatabasePath();
 }
 
 /// Repository exceptions for error handling
