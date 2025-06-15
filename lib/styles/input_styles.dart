@@ -73,6 +73,8 @@ class InputStyles {
   static const double statusButtonSpacing = 10.0;
   static const double statusButtonVerticalSpacing = 4.0;
   static const double statusButtonFontSize = 10.0;
+  static const double statusGridCrossAxisSpacing = 4.0;
+  static const double statusGridMainAxisSpacing = 4.0;
   static const BorderRadius statusButtonBorderRadius = BorderRadius.all(
     Radius.circular(18), // Pill-like appearance
   );

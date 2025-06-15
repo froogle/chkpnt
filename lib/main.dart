@@ -8,6 +8,9 @@ import 'screens/backlog/backlog_screen.dart';
 import 'screens/profile/profile_screen.dart';
 import 'styles/styles.dart';
 
+// Global navigator key for accessing navigation state from anywhere
+final navigatorKey = GlobalKey<NavigatorState>();
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -19,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'ChkPnt',
       theme: retroBacklogTheme,
       darkTheme: retroBacklogDarkTheme,

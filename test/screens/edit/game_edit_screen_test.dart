@@ -272,7 +272,7 @@ void main() {
         await tester.pump();
 
         // Create the expected context for this add session
-        final editContext = GameEditContext(isAddMode: true, game: null);
+        final editContext = GameEditContext(isAddMode: true);
 
         // Verify the provider state is correctly initialized
         final providerState = container.read(

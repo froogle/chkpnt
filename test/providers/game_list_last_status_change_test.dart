@@ -389,10 +389,8 @@ void main() {
           );
 
           expect(completedGame.status, equals(GameStatus.completed));
-          // Simplified to avoid timestamp precision issues
-          expect(completedGame.title, testGame.title);
-          // Simplified to avoid timestamp precision issues
-          expect(completedGame.platform, testGame.platform);
+          expect(completedGame.lastStatusChange.isAfter(playingTime), isTrue);
+          expect(completedGame.lastModified.isAfter(playingTime), isTrue);
         },
       );
     });

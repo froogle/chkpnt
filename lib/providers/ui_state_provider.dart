@@ -188,19 +188,29 @@ Future<File?> gameImage(Ref ref, String imagePath) async {
 class GameEditContext {
   final bool isAddMode;
   final GameItem? game;
+  final List<GameStatus>? availableStatuses;
+  final GameStatus? defaultStatus;
 
-  const GameEditContext({required this.isAddMode, this.game});
+  const GameEditContext({
+    required this.isAddMode,
+    this.game,
+    this.availableStatuses,
+    this.defaultStatus,
+  });
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is GameEditContext &&
         other.isAddMode == isAddMode &&
-        other.game == game;
+        other.game == game &&
+        other.availableStatuses == availableStatuses &&
+        other.defaultStatus == defaultStatus;
   }
 
   @override
-  int get hashCode => Object.hash(isAddMode, game);
+  int get hashCode =>
+      Object.hash(isAddMode, game, availableStatuses, defaultStatus);
 }
 
 // Game edit form state data class
@@ -225,12 +235,13 @@ class GameEditFormState {
     GameStatus? status,
     String? imagePath,
     bool? hasUnsavedChanges,
+    bool clearImagePath = false,
   }) {
     return GameEditFormState(
       title: title ?? this.title,
       platform: platform ?? this.platform,
       status: status ?? this.status,
-      imagePath: imagePath ?? this.imagePath,
+      imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
       hasUnsavedChanges: hasUnsavedChanges ?? this.hasUnsavedChanges,
     );
   }
@@ -259,10 +270,11 @@ class GameEditState extends _$GameEditState {
   GameEditFormState build(GameEditContext context) {
     // Initialize state based on context - no runtime modification needed
     if (context.isAddMode) {
-      return const GameEditFormState(
+      final defaultStatus = context.defaultStatus ?? GameStatus.backlog;
+      return GameEditFormState(
         title: 'New Game',
         platform: '',
-        status: GameStatus.backlog,
+        status: defaultStatus,
         imagePath: null,
         hasUnsavedChanges: false,
       );
@@ -291,7 +303,11 @@ class GameEditState extends _$GameEditState {
   }
 
   void updateImagePath(String? imagePath) {
-    state = state.copyWith(imagePath: imagePath, hasUnsavedChanges: true);
+    if (imagePath == null) {
+      state = state.copyWith(clearImagePath: true, hasUnsavedChanges: true);
+    } else {
+      state = state.copyWith(imagePath: imagePath, hasUnsavedChanges: true);
+    }
   }
 
   bool get hasChanges => state.hasUnsavedChanges;

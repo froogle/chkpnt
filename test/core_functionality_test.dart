@@ -394,6 +394,89 @@ void main() {
 
         expect(emptySearchResults.length, allGames.length);
       });
+
+      test('should find games with word-based matching', () {
+        // Add test games that should match word-based search
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Super Metroid',
+              platform: 'SNES',
+              status: GameStatus.playing,
+            );
+
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Metroid Fusion',
+              platform: 'GBA',
+              status: GameStatus.completed,
+            );
+
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Metroid: Zero Mission',
+              platform: 'GBA',
+              status: GameStatus.backlog,
+            );
+
+        // Search for "Metroid" should find all three games
+        final metroidResults = container.read(
+          searchFilteredGamesProvider('metroid'),
+        );
+
+        expect(metroidResults.length, 3);
+        expect(metroidResults.any((g) => g.title == 'Super Metroid'), true);
+        expect(metroidResults.any((g) => g.title == 'Metroid Fusion'), true);
+        expect(
+          metroidResults.any((g) => g.title == 'Metroid: Zero Mission'),
+          true,
+        );
+      });
+
+      test('should handle partial word matches in titles', () {
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'The Legend of Zelda: Breath of the Wild',
+              platform: 'Nintendo Switch',
+              status: GameStatus.playing,
+            );
+
+        // Should find partial matches
+        final results = container.read(searchFilteredGamesProvider('legend'));
+        expect(results.length, 1);
+        expect(results.first.title, 'The Legend of Zelda: Breath of the Wild');
+      });
+
+      test('should handle search with numbers', () {
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Persona 5 Royal',
+              platform: 'PS4',
+              status: GameStatus.completed,
+            );
+
+        final results = container.read(searchFilteredGamesProvider('persona'));
+        expect(results.length, 1);
+        expect(results.first.title, 'Persona 5 Royal');
+      });
+
+      test('should not match unrelated games', () {
+        container
+            .read(gameListProvider.notifier)
+            .createGame(
+              title: 'Dark Souls',
+              platform: 'PC',
+              status: GameStatus.playing,
+            );
+
+        // Should not find unrelated games
+        final results = container.read(searchFilteredGamesProvider('zelda'));
+        expect(results.length, 0);
+      });
     });
   });
 }

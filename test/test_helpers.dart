@@ -349,11 +349,22 @@ class TestGameRepository implements GameRepository {
   Future<List<GameItem>> searchGames(String query) async {
     if (query.isEmpty) return List.from(_games);
 
-    final lowerQuery = query.toLowerCase();
-    return _games.where((game) {
-      return game.title.toLowerCase().contains(lowerQuery) ||
-          game.platform.toLowerCase().contains(lowerQuery);
-    }).toList();
+    return _games
+        .where((game) => _testMatchesSearchQuery(game, query))
+        .toList();
+  }
+
+  /// Simple search matching logic for tests
+  bool _testMatchesSearchQuery(GameItem game, String searchQuery) {
+    final query = searchQuery.toLowerCase().trim();
+    final title = game.title.toLowerCase();
+    final platform = game.platform.toLowerCase();
+
+    // If query is empty, match everything
+    if (query.isEmpty) return true;
+
+    // Simple substring match - this will find "Super Metroid" when searching "metroid"
+    return title.contains(query) || platform.contains(query);
   }
 
   @override

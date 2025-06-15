@@ -15,8 +15,16 @@ import 'widgets/image_selection_bottom_sheet.dart';
 class GameEditScreen extends ConsumerStatefulWidget {
   final GameItem? game;
   final bool isAddMode;
+  final List<GameStatus>? availableStatuses;
+  final GameStatus? defaultStatus;
 
-  const GameEditScreen._({super.key, this.game, required this.isAddMode});
+  const GameEditScreen._({
+    super.key,
+    this.game,
+    required this.isAddMode,
+    this.availableStatuses,
+    this.defaultStatus,
+  });
 
   // Factory constructor for editing existing games
   factory GameEditScreen.edit({Key? key, required GameItem game}) {
@@ -24,8 +32,18 @@ class GameEditScreen extends ConsumerStatefulWidget {
   }
 
   // Factory constructor for adding new games
-  factory GameEditScreen.add({Key? key}) {
-    return GameEditScreen._(key: key, game: null, isAddMode: true);
+  factory GameEditScreen.add({
+    Key? key,
+    List<GameStatus>? availableStatuses,
+    GameStatus? defaultStatus,
+  }) {
+    return GameEditScreen._(
+      key: key,
+      game: null,
+      isAddMode: true,
+      availableStatuses: availableStatuses,
+      defaultStatus: defaultStatus,
+    );
   }
 
   @override
@@ -44,6 +62,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     _editContext = GameEditContext(
       isAddMode: widget.isAddMode,
       game: widget.game,
+      availableStatuses: widget.availableStatuses,
+      defaultStatus: widget.defaultStatus,
     );
 
     // Set up title controller with initial value from provider
@@ -246,6 +266,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       selectedStatus: editState.status,
       onStatusChanged: _handleStatusChange,
       isAddMode: widget.isAddMode,
+      availableStatuses: widget.availableStatuses,
+      defaultStatus: widget.defaultStatus,
     );
   }
 

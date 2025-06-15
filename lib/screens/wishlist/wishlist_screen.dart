@@ -201,9 +201,14 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   }
 
   void _handleAddGame() {
-    Navigator.of(
-      context,
-    ).push(EditScreenPageRoute(child: GameEditScreen.add()));
+    Navigator.of(context).push(
+      EditScreenPageRoute(
+        child: GameEditScreen.add(
+          availableStatuses: [GameStatus.wishlist, GameStatus.ordered],
+          defaultStatus: GameStatus.wishlist,
+        ),
+      ),
+    );
   }
 
   void _handleNavigation(int index) {

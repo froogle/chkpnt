@@ -194,9 +194,7 @@ List<GameItem> searchFilteredGames(Ref ref, String searchQuery) {
       searchQuery.isEmpty
           ? games.toList()
           : games.where((game) {
-            final query = searchQuery.toLowerCase();
-            return game.title.toLowerCase().contains(query) ||
-                game.platform.toLowerCase().contains(query);
+            return _matchesSearchQuery(game, searchQuery);
           }).toList();
 
   // Sort alphabetically by title (case insensitive)
@@ -223,10 +221,7 @@ List<GameItem> fullyFilteredGames(
 
         bool matchesSearch = true;
         if (searchQuery.isNotEmpty) {
-          final query = searchQuery.toLowerCase();
-          matchesSearch =
-              game.title.toLowerCase().contains(query) ||
-              game.platform.toLowerCase().contains(query);
+          matchesSearch = _matchesSearchQuery(game, searchQuery);
         }
 
         return matchesStatus && matchesPlatform && matchesSearch;
@@ -238,6 +233,19 @@ List<GameItem> fullyFilteredGames(
   );
 
   return filteredGames;
+}
+
+/// Simple search matching logic using case-insensitive substring matching
+bool _matchesSearchQuery(GameItem game, String searchQuery) {
+  final query = searchQuery.toLowerCase().trim();
+  final title = game.title.toLowerCase();
+  final platform = game.platform.toLowerCase();
+
+  // If query is empty, match everything
+  if (query.isEmpty) return true;
+
+  // Simple substring match - this will find "Super Metroid" when searching "metroid"
+  return title.contains(query) || platform.contains(query);
 }
 
 // === ASYNC STATE PROVIDERS ===
@@ -288,11 +296,9 @@ Map<String, List<GameItem>> sortedBacklogGamesByPlatform(Ref ref) {
 
   // Apply search filter
   if (searchQuery.isNotEmpty) {
-    final query = searchQuery.toLowerCase();
     backlogGames =
         backlogGames.where((game) {
-          return game.title.toLowerCase().contains(query) ||
-              game.platform.toLowerCase().contains(query);
+          return _matchesSearchQuery(game, searchQuery);
         }).toList();
   }
 
