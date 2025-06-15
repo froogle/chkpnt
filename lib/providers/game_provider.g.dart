@@ -518,7 +518,7 @@ final wishlistPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 // ignore: unused_element
 typedef WishlistPlatformsRef = AutoDisposeProviderRef<List<String>>;
 String _$searchFilteredGamesHash() =>
-    r'0733619fa4354af160e7218bb16dce56244c4497';
+    r'44ecf6aa25aeb6bb4c5077b56c9442c7e55c2882';
 
 /// Provider for games filtered by search query
 ///
@@ -654,7 +654,7 @@ class _SearchFilteredGamesProviderElement
 }
 
 String _$fullyFilteredGamesHash() =>
-    r'f80022e694fd263411de7188aea8096b4c7bfd36';
+    r'e196b0ff88c81ac171e96af171a9be6fbf83408a';
 
 /// Provider for games filtered by status, platform, and search
 ///
@@ -882,7 +882,7 @@ final gamesErrorProvider = AutoDisposeProvider<String?>.internal(
 // ignore: unused_element
 typedef GamesErrorRef = AutoDisposeProviderRef<String?>;
 String _$sortedBacklogGamesByPlatformHash() =>
-    r'31ebef683d71ec9ca0dd967f0d79b3749cd27cdb';
+    r'3e25300be07e6dd3b2fb91af0daf9e346cc31266';
 
 /// Provider for backlog games sorted and grouped by platform
 ///

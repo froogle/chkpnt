@@ -51,9 +51,9 @@ class GameImage extends ConsumerWidget {
     final imageAsync = ref.watch(gameImageProvider(imagePath!));
 
     return imageAsync.when(
-      data: (imageFile) {
-        if (imageFile != null) {
-          return _buildActualImage(imageFile);
+      data: (imagePath) {
+        if (imagePath != null) {
+          return _buildActualImage(File(imagePath));
         }
         return _buildPlaceholder();
       },

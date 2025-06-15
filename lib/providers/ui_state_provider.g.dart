@@ -6,7 +6,7 @@ part of 'ui_state_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameImageHash() => r'c049c5e4d3f4bb0c4144932ccd015b8f17b7e71f';
+String _$gameImageHash() => r'fdf973fe399f1ff49676445525ce980114f90df4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,7 @@ class _SystemHash {
 const gameImageProvider = GameImageFamily();
 
 /// See also [gameImage].
-class GameImageFamily extends Family<AsyncValue<File?>> {
+class GameImageFamily extends Family<AsyncValue<String?>> {
   /// See also [gameImage].
   const GameImageFamily();
 
@@ -64,7 +64,7 @@ class GameImageFamily extends Family<AsyncValue<File?>> {
 }
 
 /// See also [gameImage].
-class GameImageProvider extends AutoDisposeFutureProvider<File?> {
+class GameImageProvider extends AutoDisposeFutureProvider<String?> {
   /// See also [gameImage].
   GameImageProvider(String imagePath)
     : this._internal(
@@ -94,7 +94,7 @@ class GameImageProvider extends AutoDisposeFutureProvider<File?> {
 
   @override
   Override overrideWith(
-    FutureOr<File?> Function(GameImageRef provider) create,
+    FutureOr<String?> Function(GameImageRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -111,7 +111,7 @@ class GameImageProvider extends AutoDisposeFutureProvider<File?> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<File?> createElement() {
+  AutoDisposeFutureProviderElement<String?> createElement() {
     return _GameImageProviderElement(this);
   }
 
@@ -131,12 +131,13 @@ class GameImageProvider extends AutoDisposeFutureProvider<File?> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GameImageRef on AutoDisposeFutureProviderRef<File?> {
+mixin GameImageRef on AutoDisposeFutureProviderRef<String?> {
   /// The parameter `imagePath` of this provider.
   String get imagePath;
 }
 
-class _GameImageProviderElement extends AutoDisposeFutureProviderElement<File?>
+class _GameImageProviderElement
+    extends AutoDisposeFutureProviderElement<String?>
     with GameImageRef {
   _GameImageProviderElement(super.provider);
 
@@ -249,7 +250,7 @@ final sectionExpansionProvider =
     );
 
 typedef _$SectionExpansion = Notifier<Map<String, bool>>;
-String _$gameEditStateHash() => r'22b62fcfa3434f171365c348cb882afc8ad0622d';
+String _$gameEditStateHash() => r'e5f3554569dba357c2b2181af6a375a2a9d31ec7';
 
 abstract class _$GameEditState
     extends BuildlessAutoDisposeNotifier<GameEditFormState> {

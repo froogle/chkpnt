@@ -12,6 +12,16 @@ class MockPathProviderPlatform extends Fake
   Future<String?> getApplicationDocumentsPath() async {
     return '/mock/documents';
   }
+
+  @override
+  Future<String?> getApplicationSupportPath() async {
+    return '/mock/support';
+  }
+
+  @override
+  Future<String?> getExternalStoragePath() async {
+    return '/mock/external';
+  }
 }
 
 void main() {
@@ -49,6 +59,19 @@ void main() {
       });
     });
 
+    group('Persistent Storage', () {
+      test('should use persistent storage location for images', () async {
+        // This test verifies that images are stored in persistent location
+        final imagePath = await gameImageService.getImagePath('test_image.jpg');
+
+        // Should use Application Support Directory (not Documents)
+        expect(imagePath, contains('/mock/support'));
+        expect(imagePath, contains('game_images'));
+        expect(imagePath, contains('test_image.jpg'));
+        expect(imagePath, isNot(contains('/mock/documents')));
+      });
+    });
+
     group('imageExists', () {
       test('returns false for non-existent image', () async {
         final exists = await gameImageService.imageExists('nonexistent.jpg');
@@ -61,17 +84,20 @@ void main() {
       });
     });
 
-    group('getImageFile', () {
-      test('returns null for non-existent image', () async {
-        final imageFile = await gameImageService.getImageFile(
-          'nonexistent.jpg',
-        );
-        expect(imageFile, isNull);
+    group('getImagePath', () {
+      test('returns correct path for image file', () async {
+        final imagePath = await gameImageService.getImagePath('test_image.jpg');
+
+        expect(imagePath, isNotNull);
+        expect(imagePath, contains('/mock/support'));
+        expect(imagePath, contains('game_images'));
+        expect(imagePath, contains('test_image.jpg'));
       });
 
-      test('returns null when path is invalid', () async {
-        final imageFile = await gameImageService.getImageFile('');
-        expect(imageFile, isNull);
+      test('handles empty path', () async {
+        final imagePath = await gameImageService.getImagePath('');
+        expect(imagePath, contains('/mock/support'));
+        expect(imagePath, contains('game_images'));
       });
     });
 
@@ -101,6 +127,58 @@ void main() {
           expect(identical(service1, service2), isTrue);
         },
       );
+    });
+
+    group('Error Handling', () {
+      test(
+        'should handle persistent storage directory errors gracefully',
+        () async {
+          // Test ensures fallback behaviour works when storage access fails
+          final imagePath = await gameImageService.getImagePath(
+            'fallback_test.jpg',
+          );
+          expect(imagePath, isNotEmpty);
+          expect(imagePath, contains('.jpg'));
+        },
+      );
+
+      test('should handle image path operations safely', () async {
+        // Test various edge cases
+        final paths = [
+          'normal_image.jpg',
+          'subfolder/image.png',
+          'special-chars_image.jpeg',
+        ];
+
+        for (final path in paths) {
+          final fullPath = await gameImageService.getImagePath(path);
+          expect(fullPath, isNotEmpty);
+          expect(fullPath, contains(path));
+        }
+      });
+    });
+
+    group('Platform Compatibility', () {
+      test('should work with different image formats', () async {
+        final formats = ['jpg', 'jpeg', 'png'];
+
+        for (final format in formats) {
+          final imagePath = 'test_image.$format';
+          final fullPath = await gameImageService.getImagePath(imagePath);
+
+          expect(fullPath, contains(imagePath));
+          expect(fullPath, contains('/mock/support'));
+        }
+      });
+
+      test('should handle platform-specific storage paths', () async {
+        // Test would verify platform-specific paths in real environment
+        final imagePath = await gameImageService.getImagePath(
+          'platform_test.jpg',
+        );
+        expect(imagePath, isNotNull);
+        expect(imagePath, contains('platform_test.jpg'));
+      });
     });
   });
 

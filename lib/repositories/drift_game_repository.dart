@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -369,16 +370,54 @@ class DriftGameRepository implements GameRepository {
   /// Get database file path for manual backup
   @override
   Future<String> getDatabasePath() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
+    final dbFolder = await _getPersistentStorageDirectory();
     return p.join(dbFolder.path, 'chkpnt.db');
   }
 }
 
-/// Database connection setup
+/// Database connection setup with persistent storage locations
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
+    final dbFolder = await _getPersistentStorageDirectory();
     final file = File(p.join(dbFolder.path, 'chkpnt.db'));
     return NativeDatabase.createInBackground(file);
   });
+}
+
+/// Get the most persistent storage directory for each platform
+///
+/// This ensures data survives app updates and debugging sessions:
+/// - iOS/macOS: Uses Application Support Directory (persists across updates, backed up to iCloud)
+/// - Android: Uses External Storage with app subfolder (persists across updates and uninstalls)
+/// - Other platforms: Falls back to Application Support Directory
+Future<Directory> _getPersistentStorageDirectory() async {
+  try {
+    if (Platform.isIOS || Platform.isMacOS) {
+      // iOS/macOS: Use Application Support Directory
+      // This persists across app updates and is backed up to iCloud
+      return await getApplicationSupportDirectory();
+    } else if (Platform.isAndroid) {
+      // Android: Use External Storage Directory for user data
+      // This persists across app updates and uninstalls
+      final externalDir = await getExternalStorageDirectory();
+      if (externalDir != null) {
+        // Create app-specific subdirectory
+        final appDir = Directory('${externalDir.path}/ChkPnt');
+        if (!await appDir.exists()) {
+          await appDir.create(recursive: true);
+        }
+        return appDir;
+      } else {
+        // Fallback to Application Support Directory if external storage unavailable
+        return await getApplicationSupportDirectory();
+      }
+    } else {
+      // Linux/Windows/Other: Use Application Support Directory
+      return await getApplicationSupportDirectory();
+    }
+  } catch (e) {
+    // Fallback to documents directory if all else fails
+    debugPrint('Failed to get persistent storage directory: $e');
+    return await getApplicationDocumentsDirectory();
+  }
 }

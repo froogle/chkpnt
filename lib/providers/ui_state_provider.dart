@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/services/game_image_service.dart';
-import 'dart:io';
 
 part 'ui_state_provider.g.dart';
 
@@ -179,9 +178,9 @@ class SectionExpansion extends _$SectionExpansion {
 
 // Game image Family provider - replaces FutureBuilder pattern
 @riverpod
-Future<File?> gameImage(Ref ref, String imagePath) async {
+Future<String?> gameImage(Ref ref, String imagePath) async {
   final imageService = ref.read(gameImageServiceProvider);
-  return await imageService.getImageFile(imagePath);
+  return await imageService.getImagePath(imagePath);
 }
 
 // Game edit context data class to identify the editing context
