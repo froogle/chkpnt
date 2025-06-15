@@ -125,11 +125,13 @@ class GameDatabase extends _$GameDatabase {
   }
 
   Future<List<GameItem>> searchGamesInternal(String query) async {
-    final lowerQuery = query.toLowerCase();
+    if (query.isEmpty) return await getAllGamesInternal();
+
+    final searchPattern = '%${query.toLowerCase()}%';
     final searchQuery = select(games)..where(
       (t) =>
-          t.title.lower().contains(lowerQuery) |
-          t.platform.lower().contains(lowerQuery),
+          t.title.lower().like(searchPattern) |
+          t.platform.lower().like(searchPattern),
     );
     final results = await searchQuery.get();
     return results.map(_gameToGameItem).toList();
@@ -303,6 +305,7 @@ class DriftGameRepository implements GameRepository {
   }
 
   /// Backup functionality for data protection
+  @override
   Future<String> exportDatabaseToJson() async {
     try {
       final games = await getAllGames();
@@ -333,6 +336,7 @@ class DriftGameRepository implements GameRepository {
   }
 
   /// Import functionality for data restoration
+  @override
   Future<void> importFromJson(String jsonString) async {
     try {
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
@@ -363,6 +367,7 @@ class DriftGameRepository implements GameRepository {
   }
 
   /// Get database file path for manual backup
+  @override
   Future<String> getDatabasePath() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     return p.join(dbFolder.path, 'chkpnt.db');
