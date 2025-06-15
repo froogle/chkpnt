@@ -436,7 +436,14 @@ void main() {
       });
 
       test('should handle partial word matches in titles', () {
-        container
+        // Create a fresh container with isolated data for this test
+        final testContainer = ProviderContainer(
+          overrides: [
+            gameListProvider.overrideWith(() => IsolatedTestGameListNotifier()),
+          ],
+        );
+
+        testContainer
             .read(gameListProvider.notifier)
             .createGame(
               title: 'The Legend of Zelda: Breath of the Wild',
@@ -445,9 +452,13 @@ void main() {
             );
 
         // Should find partial matches
-        final results = container.read(searchFilteredGamesProvider('legend'));
+        final results = testContainer.read(
+          searchFilteredGamesProvider('legend'),
+        );
         expect(results.length, 1);
         expect(results.first.title, 'The Legend of Zelda: Breath of the Wild');
+
+        testContainer.dispose();
       });
 
       test('should handle search with numbers', () {
@@ -465,7 +476,14 @@ void main() {
       });
 
       test('should not match unrelated games', () {
-        container
+        // Create a fresh container with isolated data for this test
+        final testContainer = ProviderContainer(
+          overrides: [
+            gameListProvider.overrideWith(() => IsolatedTestGameListNotifier()),
+          ],
+        );
+
+        testContainer
             .read(gameListProvider.notifier)
             .createGame(
               title: 'Dark Souls',
@@ -474,8 +492,12 @@ void main() {
             );
 
         // Should not find unrelated games
-        final results = container.read(searchFilteredGamesProvider('zelda'));
+        final results = testContainer.read(
+          searchFilteredGamesProvider('zelda'),
+        );
         expect(results.length, 0);
+
+        testContainer.dispose();
       });
     });
   });

@@ -164,6 +164,92 @@ class EmptyGameListNotifier extends GameList {
   }
 }
 
+/// Isolated test notifier that starts empty and allows adding games for isolated testing
+class IsolatedTestGameListNotifier extends GameList {
+  final List<GameItem> _games = [];
+
+  @override
+  List<GameItem> build() {
+    return List.from(_games);
+  }
+
+  @override
+  Future<void> addGame(GameItem game) async {
+    _games.add(game);
+    ref.invalidateSelf();
+  }
+
+  @override
+  Future<void> createGame({
+    required String title,
+    required String platform,
+    required GameStatus status,
+    String? imagePath,
+    String? remoteImageUrl,
+  }) async {
+    final game = GameItem.create(
+      title: title,
+      platform: platform,
+      status: status,
+      imagePath: imagePath,
+      remoteImageUrl: remoteImageUrl,
+    );
+    await addGame(game);
+  }
+
+  @override
+  Future<void> updateGame(GameItem updatedGame) async {
+    final index = _games.indexWhere((g) => g.id == updatedGame.id);
+    if (index != -1) {
+      final existingGame = _games[index];
+
+      // Update timestamps appropriately - preserve lastStatusChange if status didn't change
+      final gameWithTimestamps = updatedGame.copyWith(
+        lastModified: DateTime.now(),
+        lastStatusChange:
+            existingGame.status != updatedGame.status
+                ? DateTime.now()
+                : existingGame.lastStatusChange,
+      );
+
+      _games[index] = gameWithTimestamps;
+      ref.invalidateSelf();
+    }
+  }
+
+  @override
+  Future<void> removeGame(GameId gameId) async {
+    _games.removeWhere((g) => g.id == gameId);
+    ref.invalidateSelf();
+  }
+
+  @override
+  Future<void> startPlaying(GameId gameId) async {
+    final index = _games.indexWhere((g) => g.id == gameId);
+    if (index != -1) {
+      _games[index] = _games[index].copyWith(
+        status: GameStatus.playing,
+        lastStatusChange: DateTime.now(),
+        lastModified: DateTime.now(),
+      );
+      ref.invalidateSelf();
+    }
+  }
+
+  @override
+  Future<void> markCompleted(GameId gameId) async {
+    final index = _games.indexWhere((g) => g.id == gameId);
+    if (index != -1) {
+      _games[index] = _games[index].copyWith(
+        status: GameStatus.completed,
+        lastStatusChange: DateTime.now(),
+        lastModified: DateTime.now(),
+      );
+      ref.invalidateSelf();
+    }
+  }
+}
+
 /// Test notifier that provides immediate synchronous data
 class TestGameListNotifier extends GameList {
   static final List<GameItem> _staticGames = List.from(TestHelpers.sampleGames);
