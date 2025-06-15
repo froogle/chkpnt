@@ -426,8 +426,9 @@ void main() {
       container.dispose();
     });
 
-    test('initialises with default state for new games', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+    test('should initialize with default values for add mode', () {
+      final context = GameEditContext(isAddMode: true);
+
       final state = container.read(gameEditStateProvider(context));
 
       expect(state.title, equals('New Game'));
@@ -437,21 +438,25 @@ void main() {
       expect(state.hasUnsavedChanges, isFalse);
     });
 
-    test('initialises for add mode correctly', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+    test('should initialize with custom default status when provided', () {
+      final context = GameEditContext(
+        isAddMode: true,
+        defaultStatus: GameStatus.wishlist,
+      );
+
       final state = container.read(gameEditStateProvider(context));
 
       expect(state.title, equals('New Game'));
       expect(state.platform, equals(''));
-      expect(state.status, equals(GameStatus.backlog));
+      expect(state.status, equals(GameStatus.wishlist));
       expect(state.imagePath, isNull);
       expect(state.hasUnsavedChanges, isFalse);
     });
 
-    test('initialises for edit mode correctly', () {
+    test('should initialize with game data for edit mode', () {
       final testGame = GameItem(
         id: GameId.generate(),
-        title: 'Existing Game',
+        title: 'Test Game',
         platform: 'PS5',
         status: GameStatus.playing,
         lastModified: DateTime.now(),
@@ -460,17 +465,18 @@ void main() {
       );
 
       final context = GameEditContext(isAddMode: false, game: testGame);
+
       final state = container.read(gameEditStateProvider(context));
 
-      expect(state.title, equals('Existing Game'));
+      expect(state.title, equals('Test Game'));
       expect(state.platform, equals('PS5'));
       expect(state.status, equals(GameStatus.playing));
       expect(state.imagePath, equals('/path/to/image.jpg'));
       expect(state.hasUnsavedChanges, isFalse);
     });
 
-    test('updates title correctly', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+    test('should update title and mark as changed', () {
+      final context = GameEditContext(isAddMode: true);
       final notifier = container.read(gameEditStateProvider(context).notifier);
 
       notifier.updateTitle('Updated Title');
@@ -480,41 +486,55 @@ void main() {
       expect(state.hasUnsavedChanges, isTrue);
     });
 
-    test('updates platform correctly', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+    test('should update platform and mark as changed', () {
+      final context = GameEditContext(isAddMode: true);
       final notifier = container.read(gameEditStateProvider(context).notifier);
 
-      notifier.updatePlatform('Xbox');
+      notifier.updatePlatform('PS5');
 
       final state = container.read(gameEditStateProvider(context));
-      expect(state.platform, equals('Xbox'));
+      expect(state.platform, equals('PS5'));
       expect(state.hasUnsavedChanges, isTrue);
     });
 
-    test('updates status correctly', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+    test('should update status and mark as changed', () {
+      final context = GameEditContext(isAddMode: true);
       final notifier = container.read(gameEditStateProvider(context).notifier);
 
-      notifier.updateStatus(GameStatus.playing);
+      notifier.updateStatus(GameStatus.completed);
 
       final state = container.read(gameEditStateProvider(context));
-      expect(state.status, equals(GameStatus.playing));
+      expect(state.status, equals(GameStatus.completed));
       expect(state.hasUnsavedChanges, isTrue);
     });
 
-    test('updates image path correctly', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+    test('should update image path and mark as changed', () {
+      final context = GameEditContext(isAddMode: true);
       final notifier = container.read(gameEditStateProvider(context).notifier);
 
-      notifier.updateImagePath('/new/path/image.jpg');
+      notifier.updateImagePath('/path/to/image.jpg');
 
       final state = container.read(gameEditStateProvider(context));
-      expect(state.imagePath, equals('/new/path/image.jpg'));
+      expect(state.imagePath, equals('/path/to/image.jpg'));
+      expect(state.hasUnsavedChanges, isTrue);
+    });
+
+    test('should remove image path and mark as changed', () {
+      final context = GameEditContext(isAddMode: true);
+      final notifier = container.read(gameEditStateProvider(context).notifier);
+
+      // First set an image
+      notifier.updateImagePath('/path/to/image.jpg');
+      // Then remove it
+      notifier.updateImagePath(null);
+
+      final state = container.read(gameEditStateProvider(context));
+      expect(state.imagePath, isNull);
       expect(state.hasUnsavedChanges, isTrue);
     });
 
     test('calculates hasChanges correctly for add mode', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+      final context = GameEditContext(isAddMode: true);
       final notifier = container.read(gameEditStateProvider(context).notifier);
 
       // Initially no changes
@@ -565,7 +585,7 @@ void main() {
     });
 
     test('hasChanges getter works correctly', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+      final context = GameEditContext(isAddMode: true);
       final notifier = container.read(gameEditStateProvider(context).notifier);
 
       expect(notifier.hasChanges, isFalse);
@@ -575,7 +595,7 @@ void main() {
     });
 
     test('handles multiple field updates correctly', () {
-      final context = GameEditContext(isAddMode: true, game: null);
+      final context = GameEditContext(isAddMode: true);
       final notifier = container.read(gameEditStateProvider(context).notifier);
 
       notifier.updateTitle('Multi Game');
@@ -589,6 +609,49 @@ void main() {
       expect(state.status, equals(GameStatus.completed));
       expect(state.imagePath, equals('/path/to/multi.jpg'));
       expect(state.hasUnsavedChanges, isTrue);
+    });
+
+    test('tracks unsaved changes correctly', () {
+      final context = GameEditContext(isAddMode: true);
+      final notifier = container.read(gameEditStateProvider(context).notifier);
+
+      // Initially no changes
+      expect(notifier.hasChanges, isFalse);
+
+      // After updating title
+      notifier.updateTitle('Changed Title');
+      expect(notifier.hasChanges, isTrue);
+    });
+
+    test('maintains separate state for different contexts', () {
+      final testGame = GameItem(
+        id: GameId.generate(),
+        title: 'Test Game',
+        platform: 'PC',
+        status: GameStatus.playing,
+        lastModified: DateTime.now(),
+        lastStatusChange: DateTime.now(),
+      );
+
+      final addContext = GameEditContext(isAddMode: true);
+      final editContext = GameEditContext(isAddMode: false, game: testGame);
+
+      final addNotifier = container.read(
+        gameEditStateProvider(addContext).notifier,
+      );
+      final editNotifier = container.read(
+        gameEditStateProvider(editContext).notifier,
+      );
+
+      // Update add context
+      addNotifier.updateTitle('Add Title');
+
+      // Check states are separate
+      final addState = container.read(gameEditStateProvider(addContext));
+      final editState = container.read(gameEditStateProvider(editContext));
+
+      expect(addState.title, equals('Add Title'));
+      expect(editState.title, equals('Test Game')); // Unchanged
     });
   });
 }

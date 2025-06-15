@@ -7,16 +7,27 @@ class GameStatusSelector extends StatelessWidget {
   final GameStatus selectedStatus;
   final ValueChanged<GameStatus> onStatusChanged;
   final bool isAddMode;
+  final List<GameStatus>? availableStatuses;
+  final GameStatus? defaultStatus;
 
   const GameStatusSelector({
     super.key,
     required this.selectedStatus,
     required this.onStatusChanged,
     this.isAddMode = false,
+    this.availableStatuses,
+    this.defaultStatus,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Set default status if provided and current status doesn't match
+    if (defaultStatus != null && selectedStatus != defaultStatus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        onStatusChanged(defaultStatus!);
+      });
+    }
+
     return _buildStatusGrid();
   }
 
@@ -32,6 +43,11 @@ class GameStatusSelector extends StatelessWidget {
 
   /// Determines which status options to show based on the current game status
   List<GameStatus> _getAvailableStatuses() {
+    // If availableStatuses is provided, use it (for screen-specific behaviour)
+    if (availableStatuses != null) {
+      return availableStatuses!;
+    }
+
     // If this is add mode (new game), show all available statuses
     if (isAddMode) {
       return [
@@ -80,52 +96,41 @@ class GameStatusSelector extends StatelessWidget {
     List<GameStatus> statuses,
     BoxConstraints constraints,
   ) {
-    // Calculate button width based on available space
-    const spacing = InputStyles.statusButtonSpacing;
-    final availableWidth = constraints.maxWidth;
+    final buttonWidth = _calculateButtonWidth(constraints, statuses.length);
+    final buttonHeight = InputStyles.statusButtonHeight;
 
-    // Determine orientation to set maximum buttons per row
-    final orientation = MediaQuery.of(context).orientation;
-    final isPortrait = orientation == Orientation.portrait;
-
-    // Set maximum buttons per row based on orientation
-    final maxButtonsPerRow = isPortrait ? 3 : 4;
-
-    // Calculate minimum button width needed for content
-    // Account for: horizontal padding (16) + icon (16) + spacing (4) + text (~40-60)
-    final minButtonWidth = isPortrait ? 90.0 : 85.0;
-
-    // Calculate optimal buttons per row within the limit
-    int buttonsPerRow = maxButtonsPerRow;
-
-    // Check if we can fit the maximum buttons with reasonable size
-    final widthNeededForMax =
-        (minButtonWidth * maxButtonsPerRow) +
-        (spacing * (maxButtonsPerRow - 1));
-
-    if (availableWidth < widthNeededForMax) {
-      // If we can't fit the maximum, reduce to fit
-      buttonsPerRow = maxButtonsPerRow - 1;
-      if (buttonsPerRow < 2) buttonsPerRow = 2; // Minimum 2 buttons per row
-    }
-
-    // Ensure calculated button width meets minimum requirements
-    final calculatedButtonWidth =
-        (availableWidth - (spacing * (buttonsPerRow - 1))) / buttonsPerRow;
-    final buttonWidth =
-        calculatedButtonWidth < minButtonWidth
-            ? minButtonWidth
-            : calculatedButtonWidth;
-
-    return Wrap(
-      spacing: spacing,
-      runSpacing: spacing,
-      alignment: WrapAlignment.start,
-      children:
-          statuses
-              .map((status) => _buildStatusButton(status, buttonWidth))
-              .toList(),
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _calculateCrossAxisCount(constraints),
+        childAspectRatio: buttonWidth / buttonHeight,
+        crossAxisSpacing: InputStyles.statusGridCrossAxisSpacing,
+        mainAxisSpacing: InputStyles.statusGridMainAxisSpacing,
+      ),
+      itemCount: statuses.length,
+      itemBuilder: (context, index) {
+        final status = statuses[index];
+        return _buildStatusButton(status, buttonWidth);
+      },
     );
+  }
+
+  double _calculateButtonWidth(BoxConstraints constraints, int statusCount) {
+    final crossAxisCount = _calculateCrossAxisCount(constraints);
+    final availableWidth =
+        constraints.maxWidth -
+        (InputStyles.statusGridCrossAxisSpacing * (crossAxisCount - 1));
+    return availableWidth / crossAxisCount;
+  }
+
+  int _calculateCrossAxisCount(BoxConstraints constraints) {
+    if (constraints.maxWidth > 600) {
+      return 3;
+    } else if (constraints.maxWidth > 400) {
+      return 2;
+    }
+    return 1;
   }
 
   Widget _buildStatusButton(GameStatus status, double buttonWidth) {

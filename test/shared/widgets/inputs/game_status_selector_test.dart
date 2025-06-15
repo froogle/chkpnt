@@ -105,7 +105,7 @@ void main() {
 
         // Should have responsive layout structure
         expect(find.byType(LayoutBuilder), findsOneWidget);
-        expect(find.byType(Wrap), findsOneWidget);
+        expect(find.byType(GridView), findsOneWidget);
       });
 
       testWidgets('displays filtered statuses for wishlist games', (

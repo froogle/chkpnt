@@ -4,7 +4,6 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/shared/widgets/layout/slim_section_header.dart';
 import 'package:chkpnt/shared/widgets/cards/game_card.dart';
 import 'package:chkpnt/styles/backlog_styles.dart';
-import 'package:chkpnt/utils/ui_utils.dart';
 
 class GridLayoutConfiguration {
   final int columns;
