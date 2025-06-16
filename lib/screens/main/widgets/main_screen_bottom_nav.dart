@@ -36,7 +36,7 @@ class MainScreenBottomNav extends ConsumerWidget {
         color:
             isActive
                 ? AppColors.primaryPurple
-                : AppColors.primaryPurple.withOpacity(0.5),
+                : AppColors.primaryPurple.withValues(alpha: 0.5),
         size: isActive ? 26 : 24,
       ),
     );

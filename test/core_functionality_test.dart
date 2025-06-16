@@ -234,8 +234,6 @@ void main() {
 
     group('Game Creation and Management', () {
       test('should create game with auto-generated timestamps', () {
-        final beforeCreate = DateTime.now();
-
         container
             .read(gameListProvider.notifier)
             .createGame(

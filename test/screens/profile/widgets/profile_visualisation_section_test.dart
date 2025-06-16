@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_visualisation_section.dart';
 import 'package:chkpnt/providers/game_provider.dart';
-import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/services/chart_data_service.dart';
 import 'package:chkpnt/screens/profile/widgets/shared/chart_segmented_control.dart';
 

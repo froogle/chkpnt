@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
-import 'package:chkpnt/styles/backlog_styles.dart';
 import '../main/widgets/main_screen_header.dart';
 import '../main/widgets/main_screen_bottom_nav.dart';
 import '../main/widgets/animations/game_transition_animation.dart';

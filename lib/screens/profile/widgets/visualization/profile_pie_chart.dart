@@ -16,7 +16,7 @@ class ProfilePieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: ProfileStyles.getChartHeight(isLandscape),
       child: Column(
         children: [

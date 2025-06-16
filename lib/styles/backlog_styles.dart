@@ -39,21 +39,21 @@ class BacklogStyles {
 
   /// Inactive chip background color
   static Color get inactiveSortingChipColor =>
-      AppColors.primaryPurple.withOpacity(0.1);
+      AppColors.primaryPurple.withValues(alpha: 0.1);
 
   /// Active chip border color
   static const Color activeSortingChipBorderColor = AppColors.lightPurple;
 
   /// Inactive chip border color
   static Color get inactiveSortingChipBorderColor =>
-      AppColors.primaryPurple.withOpacity(0.2);
+      AppColors.primaryPurple.withValues(alpha: 0.2);
 
   /// Active chip text color
   static const Color activeSortingChipTextColor = Colors.white;
 
   /// Inactive chip text color
   static Color get inactiveSortingChipTextColor =>
-      AppColors.primaryPurple.withOpacity(0.8);
+      AppColors.primaryPurple.withValues(alpha: 0.8);
 
   /// Active chip icon color
   static const Color activeSortingChipIconColor = Colors.white;

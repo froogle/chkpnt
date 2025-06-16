@@ -7,9 +7,6 @@ import 'package:chkpnt/screens/profile/widgets/profile_subscription_section.dart
 import 'package:chkpnt/screens/profile/widgets/profile_visualisation_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_incoming_games_section.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
-import 'package:chkpnt/providers/game_provider.dart';
-import 'package:chkpnt/models/game_models.dart';
 
 void main() {
   group('ProfileScreen', () {

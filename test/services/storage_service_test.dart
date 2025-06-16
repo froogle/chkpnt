@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:chkpnt/services/storage_service.dart';
 
 // Mock PathProviderPlatform for testing

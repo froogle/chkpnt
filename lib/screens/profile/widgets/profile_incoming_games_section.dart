@@ -63,7 +63,7 @@ class ProfileIncomingGamesSection extends ConsumerWidget {
             '($displayedGames of $totalGames)',
             style: TextStyle(
               fontSize: 12,
-              color: AppColors.primaryText.withOpacity(0.6),
+              color: AppColors.primaryText.withValues(alpha: 0.6),
             ),
           ),
       ],
@@ -189,7 +189,7 @@ class _GameListItem extends StatelessWidget {
     return Icon(
       Icons.arrow_forward_ios,
       size: isLandscape ? 10 : 12,
-      color: AppColors.primaryText.withOpacity(0.3),
+      color: AppColors.primaryText.withValues(alpha: 0.3),
     );
   }
 }

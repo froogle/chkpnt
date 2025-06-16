@@ -639,9 +639,6 @@ void main() {
       final addNotifier = container.read(
         gameEditStateProvider(addContext).notifier,
       );
-      final editNotifier = container.read(
-        gameEditStateProvider(editContext).notifier,
-      );
 
       // Update add context
       addNotifier.updateTitle('Add Title');

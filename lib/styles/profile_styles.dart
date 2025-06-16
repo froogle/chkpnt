@@ -68,7 +68,7 @@ class ProfileStyles {
 
   static TextStyle get profileSubtitleStyle => TextStyle(
     fontSize: profileSubtitleFontSize,
-    color: AppColors.primaryText.withOpacity(0.7),
+    color: AppColors.primaryText.withValues(alpha: 0.7),
   );
 
   static TextStyle get subscriptionTitleStyle => const TextStyle(
@@ -86,12 +86,12 @@ class ProfileStyles {
   static TextStyle subscriptionComingSoonStyle(bool isLandscape) => TextStyle(
     fontSize: isLandscape ? 16 : 24,
     fontWeight: FontWeight.bold,
-    color: AppColors.primaryText.withOpacity(0.4),
+    color: AppColors.primaryText.withValues(alpha: 0.4),
   );
 
   static TextStyle subscriptionDescriptionStyle(bool isLandscape) => TextStyle(
     fontSize: isLandscape ? 11 : 14,
-    color: AppColors.primaryText.withOpacity(0.6),
+    color: AppColors.primaryText.withValues(alpha: 0.6),
   );
 
   static TextStyle get emptyStateTitleStyle => TextStyle(
@@ -100,8 +100,10 @@ class ProfileStyles {
     color: AppColors.emptyStateText,
   );
 
-  static TextStyle get emptyStateSubtitleStyle =>
-      TextStyle(fontSize: 14, color: AppColors.emptyStateText.withOpacity(0.7));
+  static TextStyle get emptyStateSubtitleStyle => TextStyle(
+    fontSize: 14,
+    color: AppColors.emptyStateText.withValues(alpha: 0.7),
+  );
 
   static TextStyle emptyStateLandscapeTitleStyle(bool isLandscape) => TextStyle(
     fontSize: isLandscape ? 14 : 16,
@@ -112,7 +114,7 @@ class ProfileStyles {
   static TextStyle emptyStateLandscapeSubtitleStyle(bool isLandscape) =>
       TextStyle(
         fontSize: isLandscape ? 12 : 14,
-        color: AppColors.emptyStateText.withOpacity(0.7),
+        color: AppColors.emptyStateText.withValues(alpha: 0.7),
       );
 
   static TextStyle gameItemTitleStyle(bool isLandscape) => TextStyle(
@@ -123,7 +125,7 @@ class ProfileStyles {
 
   static TextStyle gameItemPlatformStyle(bool isLandscape) => TextStyle(
     fontSize: isLandscape ? 11 : 12,
-    color: AppColors.primaryText.withOpacity(0.6),
+    color: AppColors.primaryText.withValues(alpha: 0.6),
   );
 
   static const TextStyle chartTitleStyle = TextStyle(
@@ -153,7 +155,10 @@ class ProfileStyles {
   static BoxDecoration get gameItemDecoration => BoxDecoration(
     color: AppColors.background,
     borderRadius: BorderRadius.circular(gameItemBorderRadius),
-    border: Border.all(color: AppColors.divider.withOpacity(0.5), width: 1),
+    border: Border.all(
+      color: AppColors.divider.withValues(alpha: 0.5),
+      width: 1,
+    ),
   );
 
   static BoxDecoration get profileAvatarDecoration => BoxDecoration(
