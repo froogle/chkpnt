@@ -58,6 +58,9 @@ dependencies:
 
   # Charts
   fl_chart: ^0.69.0
+  
+  # Device info for Android version detection
+  device_info_plus: ^10.1.0
 
 dev_dependencies:
   flutter_test:
