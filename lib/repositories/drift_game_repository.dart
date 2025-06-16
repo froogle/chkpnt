@@ -3,11 +3,10 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
+import 'package:chkpnt/services/storage_service.dart';
 
 part 'drift_game_repository.g.dart';
 
@@ -29,7 +28,8 @@ class Games extends Table {
 /// Drift database definition
 @DriftDatabase(tables: [Games])
 class GameDatabase extends _$GameDatabase {
-  GameDatabase() : super(_openConnection()) {
+  GameDatabase(StorageService storageService)
+    : super(_openConnection(storageService)) {
     // Suppress multiple database warnings in tests
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   }
@@ -165,7 +165,8 @@ class DriftGameRepository implements GameRepository {
   final GameDatabase _database;
   late final StreamController<List<GameItem>> _gamesController;
 
-  DriftGameRepository() : _database = GameDatabase() {
+  DriftGameRepository(StorageService storageService)
+    : _database = GameDatabase(storageService) {
     _gamesController = StreamController<List<GameItem>>.broadcast();
   }
 
@@ -370,84 +371,17 @@ class DriftGameRepository implements GameRepository {
   /// Get database file path for manual backup
   @override
   Future<String> getDatabasePath() async {
-    final dbFolder = await _getPersistentStorageDirectory();
+    final storageService = StorageService(); // TODO: This should be injected
+    final dbFolder = await storageService.getPersistentStorageDirectory();
     return p.join(dbFolder.path, 'chkpnt.db');
   }
 }
 
 /// Database connection setup with persistent storage locations
-LazyDatabase _openConnection() {
+LazyDatabase _openConnection(StorageService storageService) {
   return LazyDatabase(() async {
-    final dbFolder = await _getPersistentStorageDirectory();
+    final dbFolder = await storageService.getPersistentStorageDirectory();
     final file = File(p.join(dbFolder.path, 'chkpnt.db'));
     return NativeDatabase.createInBackground(file);
   });
-}
-
-/// Get the most persistent storage directory for each platform using a hybrid approach
-///
-/// This hybrid strategy balances data persistence with Android 14+ compatibility:
-/// - iOS/macOS: Uses Application Support Directory (persists across updates, backed up to iCloud)
-/// - Android 14+: Uses Application Support Directory (avoids scoped storage permission issues)
-/// - Android 13 and below: Uses External Storage with app subfolder (persists across dev rebuilds and uninstalls)
-/// - Other platforms: Falls back to Application Support Directory
-Future<Directory> _getPersistentStorageDirectory() async {
-  try {
-    if (Platform.isIOS || Platform.isMacOS) {
-      // iOS/macOS: Use Application Support Directory
-      // This persists across app updates and is backed up to iCloud
-      return await getApplicationSupportDirectory();
-    } else if (Platform.isAndroid) {
-      // Check Android version to determine storage strategy
-      final isAndroid14OrLater = await _isAndroid14OrLater();
-
-      if (isAndroid14OrLater) {
-        // Android 14+: Use Application Support Directory to avoid scoped storage issues
-        // Data persists through app updates but not development rebuilds
-        return await getApplicationSupportDirectory();
-      } else {
-        // Android 13 and below: Use External Storage Directory for maximum persistence
-        // This persists across app updates, uninstalls, and development rebuilds
-        final externalDir = await getExternalStorageDirectory();
-        if (externalDir != null) {
-          // Create app-specific subdirectory
-          final appDir = Directory('${externalDir.path}/ChkPnt');
-          if (!await appDir.exists()) {
-            await appDir.create(recursive: true);
-          }
-          return appDir;
-        } else {
-          // Fallback to Application Support Directory if external storage unavailable
-          return await getApplicationSupportDirectory();
-        }
-      }
-    } else {
-      // Linux/Windows/Other: Use Application Support Directory
-      return await getApplicationSupportDirectory();
-    }
-  } catch (e) {
-    // Fallback to documents directory if all else fails
-    return await getApplicationDocumentsDirectory();
-  }
-}
-
-/// Check if the current Android version is 14 (API 34) or later
-/// This helps determine the appropriate storage strategy
-Future<bool> _isAndroid14OrLater() async {
-  try {
-    if (!Platform.isAndroid) return false;
-
-    final deviceInfo = DeviceInfoPlugin();
-    final androidInfo = await deviceInfo.androidInfo.timeout(
-      const Duration(seconds: 5),
-      onTimeout: () => throw TimeoutException('Device info timeout'),
-    );
-
-    // Android 14 is API level 34
-    final sdkInt = androidInfo.version.sdkInt;
-    return sdkInt >= 34;
-  } catch (e) {
-    // If we can't determine the version, assume it's a newer version for safety
-    return true;
-  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'package:chkpnt/repositories/drift_game_repository.dart';
+import 'package:chkpnt/services/storage_service.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 
 part 'game_provider.g.dart';
@@ -13,7 +14,8 @@ part 'game_provider.g.dart';
 /// Repository provider - this is where you can swap storage implementations
 @riverpod
 GameRepository gameRepository(Ref ref) {
-  final repository = DriftGameRepository();
+  final storageService = ref.read(storageServiceProvider);
+  final repository = DriftGameRepository(storageService);
   ref.onDispose(() => repository.dispose());
   return repository;
 }

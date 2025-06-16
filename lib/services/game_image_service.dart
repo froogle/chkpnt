@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
+import 'storage_service.dart';
 
 enum GameImageSource { gallery, files }
 
 final gameImageServiceProvider = Provider<GameImageService>((ref) {
-  return GameImageService();
+  return GameImageService(ref.read(storageServiceProvider));
 });
 
 class GameImageService {
@@ -20,7 +20,10 @@ class GameImageService {
   static const String imageDirectory = 'game_images';
   static const List<String> supportedExtensions = ['jpg', 'jpeg', 'png'];
 
+  final StorageService _storageService;
   final ImagePicker _imagePicker = ImagePicker();
+
+  GameImageService(this._storageService);
 
   /// Selects an image from the specified source
   Future<String?> selectAndSaveImage(GameImageSource source) async {
@@ -53,7 +56,8 @@ class GameImageService {
 
   /// Gets the full file path for an image using persistent storage
   Future<File> _getImageFile(String imagePath) async {
-    final Directory appDir = await _getPersistentImageDirectory();
+    final Directory appDir =
+        await _storageService.getPersistentStorageDirectory();
     return File(path.join(appDir.path, imagePath));
   }
 
@@ -70,7 +74,8 @@ class GameImageService {
 
   /// Gets the full file path for display
   Future<String> getImagePath(String imagePath) async {
-    final Directory appDir = await _getPersistentImageDirectory();
+    final Directory appDir =
+        await _storageService.getPersistentStorageDirectory();
     // If imagePath already includes game_images directory, use it as-is
     // Otherwise, construct the full path with game_images subdirectory
     if (imagePath.startsWith(imageDirectory)) {
@@ -153,7 +158,8 @@ class GameImageService {
     final String filename = 'game_${timestamp}_$randomSuffix.jpg';
 
     // Ensure directory exists using persistent storage
-    final Directory appDir = await _getPersistentImageDirectory();
+    final Directory appDir =
+        await _storageService.getPersistentStorageDirectory();
     final Directory imageDir = Directory(
       path.join(appDir.path, imageDirectory),
     );
@@ -168,39 +174,5 @@ class GameImageService {
 
     // Return relative path for storage in model
     return path.join(imageDirectory, filename);
-  }
-
-  /// Get the persistent image directory that matches database storage location
-  ///
-  /// This ensures images are stored in the same persistent location as the database
-  /// and survive app updates and debugging sessions
-  Future<Directory> _getPersistentImageDirectory() async {
-    try {
-      if (Platform.isIOS || Platform.isMacOS) {
-        // iOS/macOS: Use Application Support Directory
-        return await getApplicationSupportDirectory();
-      } else if (Platform.isAndroid) {
-        // Android: Use External Storage Directory for user data
-        final externalDir = await getExternalStorageDirectory();
-        if (externalDir != null) {
-          // Use same app-specific subdirectory as database
-          final appDir = Directory('${externalDir.path}/ChkPnt');
-          if (!await appDir.exists()) {
-            await appDir.create(recursive: true);
-          }
-          return appDir;
-        } else {
-          // Fallback to Application Support Directory
-          return await getApplicationSupportDirectory();
-        }
-      } else {
-        // Linux/Windows/Other: Use Application Support Directory
-        return await getApplicationSupportDirectory();
-      }
-    } catch (e) {
-      // Fallback to documents directory if all else fails
-      debugPrint('Failed to get persistent image directory: $e');
-      return await getApplicationDocumentsDirectory();
-    }
   }
 }

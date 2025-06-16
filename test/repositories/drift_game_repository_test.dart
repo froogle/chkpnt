@@ -1,18 +1,51 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/repositories/drift_game_repository.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
+import 'package:chkpnt/services/storage_service.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+// Mock PathProviderPlatform for testing
+class MockPathProviderPlatform extends Fake
+    with MockPlatformInterfaceMixin
+    implements PathProviderPlatform {
+  @override
+  Future<String?> getApplicationDocumentsPath() async {
+    return '/mock/documents';
+  }
+
+  @override
+  Future<String?> getApplicationSupportPath() async {
+    return '/mock/support';
+  }
+
+  @override
+  Future<String?> getExternalStoragePath() async {
+    return '/mock/external';
+  }
+}
 
 void main() {
+  late StorageService storageService;
+
+  setUpAll(() {
+    PathProviderPlatform.instance = MockPathProviderPlatform();
+  });
+
+  setUp(() {
+    storageService = StorageService();
+  });
+
   group('DriftGameRepository', () {
     group('Repository Interface', () {
       test('should implement GameRepository interface', () {
-        final repository = DriftGameRepository();
+        final repository = DriftGameRepository(storageService);
         expect(repository, isA<GameRepository>());
         repository.dispose();
       });
 
       test('should have required methods', () {
-        final repository = DriftGameRepository();
+        final repository = DriftGameRepository(storageService);
 
         // Verify methods exist without calling them to avoid DB creation
         expect(repository.getAllGames, isA<Function>());
@@ -30,13 +63,13 @@ void main() {
 
     group('Basic Functionality', () {
       test('should be instantiable', () {
-        expect(() => DriftGameRepository(), returnsNormally);
-        final repository = DriftGameRepository();
+        expect(() => DriftGameRepository(storageService), returnsNormally);
+        final repository = DriftGameRepository(storageService);
         repository.dispose();
       });
 
       test('should be disposable', () {
-        final repository = DriftGameRepository();
+        final repository = DriftGameRepository(storageService);
         expect(() => repository.dispose(), returnsNormally);
       });
     });
