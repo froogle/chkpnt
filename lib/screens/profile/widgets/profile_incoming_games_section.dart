@@ -14,99 +14,131 @@ class ProfileIncomingGamesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final orderedGames = ref.watch(gamesByStatusProvider(GameStatus.ordered));
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-
-    // Sort by oldest status change first (likely to arrive first)
-    final sortedOrderedGames = [...orderedGames]
-      ..sort((a, b) => a.lastStatusChange.compareTo(b.lastStatusChange));
-
-    // In landscape, limit to first 3 games to prevent overflow
-    final displayGames =
-        isLandscape && sortedOrderedGames.length > 3
-            ? sortedOrderedGames.take(3).toList()
-            : sortedOrderedGames;
-
     return Container(
       width: double.infinity,
       decoration: ProfileStyles.sectionDecoration,
       child: Padding(
         padding: const EdgeInsets.all(ProfileStyles.sectionPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(
-              isLandscape,
-              sortedOrderedGames.length,
-              displayGames.length,
-            ),
-            SizedBox(height: isLandscape ? 12 : 16),
-            _buildContent(displayGames, isLandscape, context),
-          ],
-        ),
+        child: _buildSectionContent(context, ref),
       ),
     );
   }
 
-  Widget _buildHeader(bool isLandscape, int totalGames, int displayedGames) {
-    return Row(
+  Widget _buildSectionContent(BuildContext context, WidgetRef ref) {
+    final orderedGames = ref.watch(gamesByStatusProvider(GameStatus.ordered));
+    final isLandscape = _isLandscapeOrientation(context);
+    final sortedGames = _getSortedGames(orderedGames);
+    final displayGames = _getDisplayGames(sortedGames, isLandscape);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: AppHeadingStyles.gradientHeading(
-            'Incoming Games',
-            fontSize: 16,
-          ),
+        _buildSectionHeader(
+          isLandscape,
+          sortedGames.length,
+          displayGames.length,
         ),
-        if (isLandscape && totalGames > 3)
-          Text(
-            '($displayedGames of $totalGames)',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.primaryText.withValues(alpha: 0.6),
-            ),
-          ),
+        SizedBox(height: _getHeaderSpacing(isLandscape)),
+        _buildGamesContent(displayGames, isLandscape, context),
       ],
     );
   }
 
-  Widget _buildContent(
+  Widget _buildSectionHeader(
+    bool isLandscape,
+    int totalGames,
+    int displayedGames,
+  ) {
+    return _ProfileIncomingGamesHeader(
+      isLandscape: isLandscape,
+      totalGames: totalGames,
+      displayedGames: displayedGames,
+    );
+  }
+
+  Widget _buildGamesContent(
     List<GameItem> displayGames,
     bool isLandscape,
     BuildContext context,
   ) {
-    if (displayGames.isEmpty) {
-      return ProfileEmptyState(
-        icon: Icons.local_shipping_outlined,
-        title: 'No games on the way',
-        subtitle: 'Games you mark as "ordered" will appear here',
-        isLandscape: isLandscape,
-      );
+    if (_isEmptyState(displayGames)) {
+      return _buildEmptyState(isLandscape);
     }
 
+    return _buildGamesList(displayGames, isLandscape, context);
+  }
+
+  Widget _buildEmptyState(bool isLandscape) {
+    return ProfileEmptyState(
+      icon: Icons.local_shipping_outlined,
+      title: 'No games on the way',
+      subtitle: 'Games you mark as "ordered" will appear here',
+      isLandscape: isLandscape,
+    );
+  }
+
+  Widget _buildGamesList(
+    List<GameItem> games,
+    bool isLandscape,
+    BuildContext context,
+  ) {
     return Column(
       children:
-          displayGames
-              .map(
-                (game) => _GameListItem(
-                  game: game,
-                  isLandscape: isLandscape,
-                  onTap: () => _handleGameTap(game, context),
-                ),
-              )
+          games
+              .map((game) => _buildGameListItem(game, isLandscape, context))
               .toList(),
     );
   }
 
-  void _handleGameTap(GameItem game, BuildContext context) {
-    GameDetailSheetAnimation.show(
-      context,
-      game,
-      onEditPressed: () => _handleEditGame(game, context),
+  Widget _buildGameListItem(
+    GameItem game,
+    bool isLandscape,
+    BuildContext context,
+  ) {
+    return _ProfileIncomingGameItem(
+      game: game,
+      isLandscape: isLandscape,
+      onTap: () => _handleGameItemTap(game, context),
     );
   }
 
-  void _handleEditGame(GameItem game, BuildContext context) {
+  // Business Logic Methods
+  bool _isLandscapeOrientation(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.landscape;
+  }
+
+  List<GameItem> _getSortedGames(List<GameItem> games) {
+    return [...games]
+      ..sort((a, b) => a.lastStatusChange.compareTo(b.lastStatusChange));
+  }
+
+  List<GameItem> _getDisplayGames(
+    List<GameItem> sortedGames,
+    bool isLandscape,
+  ) {
+    const maxLandscapeGames = 3;
+    return isLandscape && sortedGames.length > maxLandscapeGames
+        ? sortedGames.take(maxLandscapeGames).toList()
+        : sortedGames;
+  }
+
+  double _getHeaderSpacing(bool isLandscape) {
+    return isLandscape ? 12.0 : 16.0;
+  }
+
+  bool _isEmptyState(List<GameItem> games) {
+    return games.isEmpty;
+  }
+
+  void _handleGameItemTap(GameItem game, BuildContext context) {
+    GameDetailSheetAnimation.show(
+      context,
+      game,
+      onEditPressed: () => _navigateToEditGame(game, context),
+    );
+  }
+
+  void _navigateToEditGame(GameItem game, BuildContext context) {
     Navigator.of(context).pop(); // Close the detail sheet first
     Navigator.of(
       context,
@@ -114,9 +146,51 @@ class ProfileIncomingGamesSection extends ConsumerWidget {
   }
 }
 
-/// Extracted game list item widget to reduce nesting
-class _GameListItem extends StatelessWidget {
-  const _GameListItem({
+/// Header widget for the incoming games section
+class _ProfileIncomingGamesHeader extends StatelessWidget {
+  const _ProfileIncomingGamesHeader({
+    required this.isLandscape,
+    required this.totalGames,
+    required this.displayedGames,
+  });
+
+  final bool isLandscape;
+  final int totalGames;
+  final int displayedGames;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: _buildTitle()),
+        if (_shouldShowGameCounter()) _buildGameCounter(),
+      ],
+    );
+  }
+
+  Widget _buildTitle() {
+    return AppHeadingStyles.gradientHeading('Incoming Games', fontSize: 16);
+  }
+
+  Widget _buildGameCounter() {
+    return Text(
+      '($displayedGames of $totalGames)',
+      style: TextStyle(
+        fontSize: 12,
+        color: AppColors.primaryText.withValues(alpha: 0.6),
+        fontWeight: FontWeight.w400,
+      ),
+    );
+  }
+
+  bool _shouldShowGameCounter() {
+    return isLandscape && totalGames > 3;
+  }
+}
+
+/// Individual game item widget for the incoming games list
+class _ProfileIncomingGameItem extends StatelessWidget {
+  const _ProfileIncomingGameItem({
     required this.game,
     required this.isLandscape,
     required this.onTap,
@@ -129,32 +203,38 @@ class _GameListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(
-        bottom: ProfileStyles.getGameItemSpacing(isLandscape),
+      margin: EdgeInsets.only(bottom: _getItemSpacing()),
+      child: _buildTappableContainer(),
+    );
+  }
+
+  Widget _buildTappableContainer() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(ProfileStyles.gameItemBorderRadius),
+        child: _buildItemContainer(),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(
-            ProfileStyles.gameItemBorderRadius,
-          ),
-          child: Container(
-            padding: EdgeInsets.all(
-              ProfileStyles.getGameItemPadding(isLandscape),
-            ),
-            decoration: ProfileStyles.gameItemDecoration,
-            child: Row(
-              children: [
-                _buildStatusIndicator(),
-                const SizedBox(width: 12),
-                Expanded(child: _buildGameInfo()),
-                _buildArrowIcon(),
-              ],
-            ),
-          ),
-        ),
-      ),
+    );
+  }
+
+  Widget _buildItemContainer() {
+    return Container(
+      padding: EdgeInsets.all(_getItemPadding()),
+      decoration: ProfileStyles.gameItemDecoration,
+      child: _buildItemContent(),
+    );
+  }
+
+  Widget _buildItemContent() {
+    return Row(
+      children: [
+        _buildStatusIndicator(),
+        const SizedBox(width: 12),
+        Expanded(child: _buildGameInformation()),
+        _buildNavigationArrow(),
+      ],
     );
   }
 
@@ -166,30 +246,55 @@ class _GameListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildGameInfo() {
+  Widget _buildGameInformation() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          game.title,
-          style: ProfileStyles.gameItemTitleStyle(isLandscape),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        SizedBox(height: isLandscape ? 1 : 2),
-        Text(
-          game.platform,
-          style: ProfileStyles.gameItemPlatformStyle(isLandscape),
-        ),
+        _buildGameTitle(),
+        SizedBox(height: _getTitlePlatformSpacing()),
+        _buildGamePlatform(),
       ],
     );
   }
 
-  Widget _buildArrowIcon() {
+  Widget _buildGameTitle() {
+    return Text(
+      game.title,
+      style: ProfileStyles.gameItemTitleStyle(isLandscape),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildGamePlatform() {
+    return Text(
+      game.platform,
+      style: ProfileStyles.gameItemPlatformStyle(isLandscape),
+    );
+  }
+
+  Widget _buildNavigationArrow() {
     return Icon(
       Icons.arrow_forward_ios,
-      size: isLandscape ? 10 : 12,
+      size: _getArrowSize(),
       color: AppColors.primaryText.withValues(alpha: 0.3),
     );
+  }
+
+  // Style Helper Methods
+  double _getItemSpacing() {
+    return ProfileStyles.getGameItemSpacing(isLandscape);
+  }
+
+  double _getItemPadding() {
+    return ProfileStyles.getGameItemPadding(isLandscape);
+  }
+
+  double _getTitlePlatformSpacing() {
+    return isLandscape ? 1.0 : 2.0;
+  }
+
+  double _getArrowSize() {
+    return isLandscape ? 10.0 : 12.0;
   }
 }
