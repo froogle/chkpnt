@@ -4,6 +4,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/shared/widgets/layout/slim_section_header.dart';
 import 'package:chkpnt/shared/widgets/cards/game_card.dart';
 import 'package:chkpnt/styles/backlog_styles.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 
 class GridLayoutConfiguration {
   final int columns;
@@ -45,19 +46,27 @@ class BacklogPlatformSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
+    final sectionExpansion = ref.watch(sectionExpansionProvider);
+    final isExpanded =
+        sectionExpansion[platform] ?? true; // Default to expanded for platforms
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SlimSectionHeader(
           title: platform,
-          isExpanded: true, // Always expanded for backlog
+          isExpanded: isExpanded,
           onToggle:
-              () {}, // Empty callback since we don't want toggle functionality
+              () => ref
+                  .read(sectionExpansionProvider.notifier)
+                  .toggleSection(platform),
           isEmpty: false,
           gameCount: games.length,
         ),
-        SizedBox(height: BacklogStyles.platformSectionHeaderSpacing),
-        _buildGrid(games),
+        if (isExpanded) ...[
+          SizedBox(height: BacklogStyles.platformSectionHeaderSpacing),
+          _buildGrid(games),
+        ],
       ],
     );
   }
