@@ -154,21 +154,7 @@ class GameCard extends ConsumerWidget {
   Widget _buildGradientOverlay() {
     switch (layout) {
       case GameCardLayout.compact:
-        return Positioned.fill(
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Color(0x40000000), // Light overlay for text readability
-                ],
-                stops: [0.0, 1.0],
-              ),
-            ),
-          ),
-        );
+        return _buildCompactGradientOverlay();
       case GameCardLayout.overlay:
         return Positioned.fill(
           child: Container(
@@ -184,73 +170,90 @@ class GameCard extends ConsumerWidget {
     }
   }
 
+  Widget _buildCompactGradientOverlay() {
+    final hasCustomImage = _hasCustomImage();
+    final gradientDecoration =
+        hasCustomImage
+            ? GameCardStyles.compactGameCardGradientWithImage
+            : GameCardStyles.compactGameCardGradientDefault;
+
+    return Positioned.fill(child: Container(decoration: gradientDecoration));
+  }
+
   Widget _buildCompactText() {
     return Stack(
       children: [
-        // Game title at top left
-        Positioned(
-          left: 12,
-          top: 12,
-          right: 12,
-          child: Text(
-            game.title,
-            style: const TextStyle(
-              fontSize: 10,
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        // Platform at bottom with orange styling
-        Positioned(
-          left: 12,
-          bottom: 12,
-          right:
-              game.status == GameStatus.backlog
-                  ? 50
-                  : 12, // Space for play button if backlog
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.orange,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              game.platform,
-              style: const TextStyle(
-                fontSize: 10,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-        // Play button for backlog games
+        _buildCompactTitle(),
+        _buildCompactPlatform(),
         if (game.status == GameStatus.backlog && onPlayPressed != null)
-          Positioned(
-            right: 8,
-            bottom: 8,
-            child: GestureDetector(
-              onTap: onPlayPressed,
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.play_arrow,
-                  color: Colors.white,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
+          _buildCompactPlayButton(),
       ],
+    );
+  }
+
+  Widget _buildCompactTitle() {
+    final hasCustomImage = _hasCustomImage();
+    final titleStyle =
+        hasCustomImage
+            ? GameCardStyles.compactGameCardTitleStyleWithImage
+            : GameCardStyles.compactGameCardTitleStyleDefault;
+
+    return Positioned(
+      left: 12,
+      top: 12,
+      right: 12,
+      child: Text(
+        game.title,
+        style: titleStyle,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _buildCompactPlatform() {
+    return Positioned(
+      left: 12,
+      bottom: 12,
+      right:
+          game.status == GameStatus.backlog
+              ? 50
+              : 12, // Space for play button if backlog
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.orange,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          game.platform,
+          style: const TextStyle(
+            fontSize: 10,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactPlayButton() {
+    return Positioned(
+      right: 8,
+      bottom: 8,
+      child: GestureDetector(
+        onTap: onPlayPressed,
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Icon(Icons.play_arrow, color: Colors.white, size: 16),
+        ),
+      ),
     );
   }
 
@@ -541,5 +544,10 @@ class GameCard extends ConsumerWidget {
       case GameStatus.ordered:
         return 'Ordered';
     }
+  }
+
+  /// Determines if the game has a custom image set (not using placeholder)
+  bool _hasCustomImage() {
+    return game.imagePath != null && game.imagePath!.isNotEmpty;
   }
 }

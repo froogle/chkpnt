@@ -105,6 +105,32 @@ class GameCardStyles {
     borderRadius: BorderRadius.all(Radius.circular(20)),
   );
 
+  // Compact card gradient overlays - for different image states
+  static const BoxDecoration compactGameCardGradientDefault = BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Colors.transparent,
+        Color(0x10000000), // Very light overlay for placeholder
+      ],
+      stops: [0.0, 1.0],
+    ),
+  );
+
+  static const BoxDecoration compactGameCardGradientWithImage = BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0x60000000), // Darker at top for text readability
+        Color(0x30000000), // Medium in middle
+        Colors.transparent, // No shading at bottom
+      ],
+      stops: [0.0, 0.4, 1.0],
+    ),
+  );
+
   // Enhanced text styles for better readability
   static const TextStyle landscapeGameCardTitleStyle = TextStyle(
     fontSize: 12,
@@ -149,6 +175,24 @@ class GameCardStyles {
     fontWeight: FontWeight.w600,
     shadows: AppShadows.gameCardPortraitText,
     letterSpacing: 0.3,
+  );
+
+  // Compact card text styles - for when no custom image is set (default)
+  static const TextStyle compactGameCardTitleStyleDefault = TextStyle(
+    fontSize: 10,
+    color: Colors.black87,
+    fontWeight: FontWeight.w500,
+  );
+
+  // Compact card text styles - for when custom image is set (enhanced readability)
+  static const TextStyle compactGameCardTitleStyleWithImage = TextStyle(
+    fontSize: 10,
+    color: Colors.white,
+    fontWeight: FontWeight.w600,
+    shadows: [
+      Shadow(blurRadius: 4, color: Colors.black, offset: Offset(1, 1)),
+      Shadow(blurRadius: 8, color: Colors.black54, offset: Offset(0, 0)),
+    ],
   );
 
   // Modern gradient action button decorations
