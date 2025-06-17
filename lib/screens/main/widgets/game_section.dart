@@ -135,8 +135,6 @@ class GameSection extends ConsumerWidget {
         duration: const Duration(milliseconds: 200),
         child: GameCard(
           game: game,
-          layout: GameCardLayout.compact,
-          size: GameCardSize.small,
           onTap: () => onGameTap(game),
           onPlayPressed: () => onPlayPressed?.call(game),
         ),
@@ -155,8 +153,6 @@ class GameSection extends ConsumerWidget {
             opacity: opacity,
             child: GameCard(
               game: game,
-              layout: GameCardLayout.compact,
-              size: GameCardSize.small,
               onTap: () => onGameTap(game),
               onPlayPressed: null, // No play button for playing games
             ),
@@ -168,8 +164,6 @@ class GameSection extends ConsumerWidget {
     // Default state - fully visible
     return GameCard(
       game: game,
-      layout: GameCardLayout.compact,
-      size: GameCardSize.small,
       onTap: () => onGameTap(game),
       onPlayPressed:
           game.status == GameStatus.backlog

@@ -113,8 +113,6 @@ class BacklogPlatformSection extends ConsumerWidget {
         duration: const Duration(milliseconds: 200),
         child: GameCard(
           game: game,
-          layout: GameCardLayout.compact,
-          size: GameCardSize.small,
           onTap: () => onGameTap(game),
           onPlayPressed: () => onPlayPressed?.call(game),
         ),
@@ -124,8 +122,6 @@ class BacklogPlatformSection extends ConsumerWidget {
     // Default state - fully visible
     return GameCard(
       game: game,
-      layout: GameCardLayout.compact,
-      size: GameCardSize.small,
       onTap: () => onGameTap(game),
       onPlayPressed: () => onPlayPressed?.call(game),
     );
