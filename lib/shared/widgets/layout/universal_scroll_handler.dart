@@ -26,6 +26,9 @@ class UniversalScrollHandler extends ConsumerStatefulWidget {
 
 class _UniversalScrollHandlerState
     extends ConsumerState<UniversalScrollHandler> {
+  /// Stores pending scroll intent when keys aren't available yet
+  String? _pendingScrollIntent;
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +41,25 @@ class _UniversalScrollHandlerState
         _handleScrollRequest(current);
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(UniversalScrollHandler oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if we have a pending scroll intent and keys have become available
+    if (_pendingScrollIntent != null &&
+        widget.sectionKeys.containsKey(_pendingScrollIntent) &&
+        widget.sectionKeys[_pendingScrollIntent]?.currentContext != null) {
+      // Keys are now available, attempt the scroll
+      final targetKey = _pendingScrollIntent!;
+      _pendingScrollIntent = null; // Clear the intent
+
+      // Schedule the scroll attempt for the next frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _attemptScrollToSection(targetKey);
+      });
+    }
   }
 
   @override
@@ -54,32 +76,31 @@ class _UniversalScrollHandlerState
     // Add delay to allow UI to settle (section expansion, etc.)
     await Future.delayed(MainScreenStyles.scrollRequestDelay);
 
-    // Find the target section and scroll to it
-    await _scrollToSection(request.targetKey);
+    // Attempt to scroll immediately
+    final success = await _attemptScrollToSection(request.targetKey);
+
+    // If unsuccessful, register the intent for when keys become available
+    if (!success) {
+      _pendingScrollIntent = request.targetKey;
+    }
   }
 
-  Future<void> _scrollToSection(String targetKey) async {
-    // Try multiple times in case the key isn't available yet
-    for (int attempt = 0; attempt < 3; attempt++) {
-      final targetKey_ = widget.sectionKeys[targetKey];
-      if (targetKey_?.currentContext != null) {
-        final targetContext = targetKey_!.currentContext!;
-        final targetRenderBox = targetContext.findRenderObject() as RenderBox?;
-        if (targetRenderBox != null) {
-          // Calculate the target scroll position
-          final targetPosition = _calculateScrollPosition(targetRenderBox);
+  /// Attempts to scroll to a section, returns true if successful
+  Future<bool> _attemptScrollToSection(String targetKey) async {
+    final targetKey_ = widget.sectionKeys[targetKey];
+    if (targetKey_?.currentContext != null) {
+      final targetContext = targetKey_!.currentContext!;
+      final targetRenderBox = targetContext.findRenderObject() as RenderBox?;
+      if (targetRenderBox != null) {
+        // Calculate the target scroll position
+        final targetPosition = _calculateScrollPosition(targetRenderBox);
 
-          // Animate to the target position
-          await _animateToPosition(targetPosition);
-          return; // Success!
-        }
-      }
-
-      // Wait a bit before trying again
-      if (attempt < 2) {
-        await Future.delayed(const Duration(milliseconds: 100));
+        // Animate to the target position
+        await _animateToPosition(targetPosition);
+        return true; // Success!
       }
     }
+    return false; // Failed to scroll
   }
 
   double _calculateScrollPosition(RenderBox targetRenderBox) {
