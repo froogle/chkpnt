@@ -386,7 +386,30 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         imagePath: editState.imagePath,
       );
 
-      await gameActionsService.addGame(newGame, context);
+      // Check if we're adding a backlog game that should be handled by the backlog screen
+      final isBacklogGame = newGame.status == GameStatus.backlog;
+
+      if (isBacklogGame) {
+        // For backlog games, just add without scroll and let the calling screen handle it
+        await gameActionsService.addGame(
+          newGame,
+          context,
+          isBacklogScreen: false, // Don't scroll automatically
+        );
+
+        // Return the game to the calling screen for custom handling
+        if (mounted) {
+          Navigator.of(context).pop(newGame);
+        }
+        return;
+      } else {
+        // For non-backlog games, use the normal flow
+        await gameActionsService.addGame(
+          newGame,
+          context,
+          isBacklogScreen: false,
+        );
+      }
     } else {
       // Editing existing game
       final updatedGame = widget.game!.copyWith(

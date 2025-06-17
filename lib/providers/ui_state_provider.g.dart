@@ -383,5 +383,22 @@ class _GameEditStateProviderElement
   GameEditContext get context => (origin as GameEditStateProvider).context;
 }
 
+String _$scrollToSectionHash() => r'b80bdb2173953660f9dd72743f6fd7747b412218';
+
+/// See also [ScrollToSection].
+@ProviderFor(ScrollToSection)
+final scrollToSectionProvider =
+    AutoDisposeNotifierProvider<ScrollToSection, ScrollRequest?>.internal(
+      ScrollToSection.new,
+      name: r'scrollToSectionProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$scrollToSectionHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$ScrollToSection = AutoDisposeNotifier<ScrollRequest?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

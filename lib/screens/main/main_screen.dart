@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'widgets/main_screen_header.dart';
 import 'widgets/main_screen_bottom_nav.dart';
+import 'package:chkpnt/shared/widgets/layout/universal_scroll_handler.dart';
 import 'widgets/game_section.dart';
 import 'widgets/animations/game_transition_animation.dart';
 import 'widgets/animations/game_detail_sheet_animation.dart';
@@ -23,15 +24,34 @@ class MainScreen extends ConsumerStatefulWidget {
 class _MainScreenState extends ConsumerState<MainScreen> {
   GameItem? _animatingGame;
   bool _isAnimating = false;
+  late ScrollController _scrollController;
+  late Map<String, GlobalKey> _sectionKeys;
 
   @override
   void initState() {
     super.initState();
+    _setupScrollingComponents();
     _setupProviderListeners();
     // Set current screen for nav indicator
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(currentScreenProvider.notifier).setScreen(0);
     });
+  }
+
+  void _setupScrollingComponents() {
+    _scrollController = ScrollController();
+    _sectionKeys = {
+      'Playing': GlobalKey(),
+      'Backlog': GlobalKey(),
+      'Completed': GlobalKey(),
+      'Abandoned': GlobalKey(),
+    };
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _setupProviderListeners() {
@@ -48,11 +68,15 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _buildMainScaffold(),
-        if (_isAnimating && _animatingGame != null) _buildAnimationOverlay(),
-      ],
+    return UniversalScrollHandler(
+      scrollController: _scrollController,
+      sectionKeys: _sectionKeys,
+      child: Stack(
+        children: [
+          _buildMainScaffold(),
+          if (_isAnimating && _animatingGame != null) _buildAnimationOverlay(),
+        ],
+      ),
     );
   }
 
@@ -89,6 +113,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   Widget _buildContent(bool isLandscape) {
     return SingleChildScrollView(
+      controller: _scrollController,
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,16 +132,19 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   Widget _buildGameSection(String title, GameStatus status, bool isLandscape) {
-    return GameSection(
-      title: title,
-      status: status,
-      isLandscape: isLandscape,
-      crossAxisCount:
-          isLandscape ? UIUtils.calculateGridColumns(context) : null,
-      animatingGame: _animatingGame,
-      isAnimating: _isAnimating,
-      onGameTap: _handleGameTap,
-      onPlayPressed: _handleStartPlaying,
+    return Container(
+      key: _sectionKeys[title],
+      child: GameSection(
+        title: title,
+        status: status,
+        isLandscape: isLandscape,
+        crossAxisCount:
+            isLandscape ? UIUtils.calculateGridColumns(context) : null,
+        animatingGame: _animatingGame,
+        isAnimating: _isAnimating,
+        onGameTap: _handleGameTap,
+        onPlayPressed: _handleStartPlaying,
+      ),
     );
   }
 

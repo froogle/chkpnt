@@ -6,7 +6,7 @@ part of 'game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameRepositoryHash() => r'5e4d7f8e2c807598cdf6b5627966e8ba9b64f458';
+String _$gameRepositoryHash() => r'599e946c0b77acdd2cf39bbca4e0703b3141b176';
 
 /// Repository provider - this is where you can swap storage implementations
 ///
