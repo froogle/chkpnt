@@ -62,4 +62,80 @@ class PlatformUtils {
     }
     return false;
   }
+
+  /// Platform name abbreviation mapping
+  static const Map<String, String> _platformAbbreviations = {
+    // Game Boy family
+    'game boy advance': 'GBA',
+    'gameboy advance': 'GBA',
+    'game boy color': 'GBC',
+    'gameboy color': 'GBC',
+    'game boy': 'GB',
+    'gameboy': 'GB',
+
+    // Nintendo consoles
+    'nintendo switch': 'Switch',
+    'nintendo 3ds': '3DS',
+    'nintendo ds': 'DS',
+    'nintendo entertainment system': 'NES',
+    'nes': 'NES',
+    'super nintendo': 'SNES',
+    'super nintendo entertainment system': 'SNES',
+    'snes': 'SNES',
+    'nintendo 64': 'N64',
+    'nintendo gamecube': 'GameCube',
+    'gamecube': 'GameCube',
+    'nintendo wii': 'Wii',
+    'nintendo wii u': 'Wii U',
+
+    // PlayStation family
+    'playstation': 'PS1',
+    'playstation 1': 'PS1',
+    'playstation 2': 'PS2',
+    'playstation 3': 'PS3',
+    'playstation 4': 'PS4',
+    'playstation 5': 'PS5',
+    'playstation portable': 'PSP',
+    'playstation vita': 'PS Vita',
+
+    // Xbox family
+    'xbox': 'Xbox',
+    'original xbox': 'Xbox',
+    'xbox 360': 'Xbox 360',
+    'xbox one': 'Xbox One',
+    'xbox series x': 'Xbox Series',
+    'xbox series s': 'Xbox Series',
+    'xbox series x/s': 'Xbox Series',
+
+    // PC and mobile
+    'steam deck': 'Steam Deck',
+    'personal computer': 'PC',
+  };
+
+  /// Platforms that should be kept as-is (mobile platforms)
+  static const Set<String> _preservedPlatforms = {'mobile', 'ios', 'android'};
+
+  /// Abbreviates platform names to standardised short forms
+  ///
+  /// Takes a platform name and returns an abbreviated version suitable for display.
+  /// This helps maintain consistency across the app and reduces clutter in the UI.
+  static String abbreviatePlatformName(String platform) {
+    final normalised = platform.trim().toLowerCase();
+
+    // Check if it's a preserved platform (mobile platforms)
+    if (_preservedPlatforms.contains(normalised)) {
+      return platform.trim(); // Return with original casing
+    }
+
+    // Look up abbreviation
+    final abbreviation = _platformAbbreviations[normalised];
+    if (abbreviation != null) {
+      return abbreviation;
+    }
+
+    // For unknown platforms, keep original if reasonable length
+    // or truncate if too long
+    final trimmed = platform.trim();
+    return trimmed.length > 12 ? '${trimmed.substring(0, 12)}...' : trimmed;
+  }
 }
