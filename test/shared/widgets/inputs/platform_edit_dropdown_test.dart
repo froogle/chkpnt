@@ -9,15 +9,13 @@ void main() {
     const selectedPlatform = 'Switch';
 
     testWidgets('renders correctly with basic props', (tester) async {
-      String? changedPlatform;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: PlatformEditDropdown(
               selectedPlatform: selectedPlatform,
               platforms: testPlatforms,
-              onPlatformChanged: (platform) => changedPlatform = platform,
+              onPlatformChanged: (platform) {},
             ),
           ),
         ),
@@ -50,15 +48,13 @@ void main() {
     testWidgets('shows platform selection bottom sheet when tapped', (
       tester,
     ) async {
-      String? changedPlatform;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: PlatformEditDropdown(
               selectedPlatform: selectedPlatform,
               platforms: testPlatforms,
-              onPlatformChanged: (platform) => changedPlatform = platform,
+              onPlatformChanged: (platform) {},
             ),
           ),
         ),
@@ -125,15 +121,13 @@ void main() {
       testWidgets(
         'shows custom platform dialog when platforms list is empty and isAddMode is true',
         (tester) async {
-          String? changedPlatform;
-
           await tester.pumpWidget(
             MaterialApp(
               home: Scaffold(
                 body: PlatformEditDropdown(
                   selectedPlatform: selectedPlatform,
                   platforms: const [], // Empty platforms list
-                  onPlatformChanged: (platform) => changedPlatform = platform,
+                  onPlatformChanged: (platform) {},
                   isAddMode: true,
                 ),
               ),
@@ -155,15 +149,13 @@ void main() {
       testWidgets(
         'shows bottom sheet when platforms list is not empty even in add mode',
         (tester) async {
-          String? changedPlatform;
-
           await tester.pumpWidget(
             MaterialApp(
               home: Scaffold(
                 body: PlatformEditDropdown(
                   selectedPlatform: selectedPlatform,
                   platforms: testPlatforms, // Non-empty platforms list
-                  onPlatformChanged: (platform) => changedPlatform = platform,
+                  onPlatformChanged: (platform) {},
                   isAddMode: true,
                 ),
               ),
