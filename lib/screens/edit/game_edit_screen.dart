@@ -69,29 +69,12 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     // Set up title controller with initial value from provider
     final initialState = ref.read(gameEditStateProvider(_editContext));
     _titleController = TextEditingController(text: initialState.title);
-    _titleController.addListener(_onTitleChanged);
   }
 
   @override
   void dispose() {
-    _titleController.removeListener(_onTitleChanged);
     _titleController.dispose();
     super.dispose();
-  }
-
-  void _onTitleChanged() {
-    // Only update if the widget is mounted and the text actually changed
-    if (mounted) {
-      final currentState = ref.read(gameEditStateProvider(_editContext));
-      final newTitle = _titleController.text;
-
-      // Only update the provider if the title actually changed from the initial state
-      if (newTitle != currentState.title) {
-        ref
-            .read(gameEditStateProvider(_editContext).notifier)
-            .updateTitle(newTitle);
-      }
-    }
   }
 
   @override
@@ -139,43 +122,57 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildPortraitContent() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: GameDetailSheetStyles.contentPadding,
-        child: AnimatedEditForm(
-          children: [
-            _buildPortraitLayout(),
-            const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-            _buildStatusSelector(),
-            const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-            _buildActionButtons(),
-          ],
+    return GestureDetector(
+      onTap: () {
+        // Clear focus when tapping on empty areas
+        FocusScope.of(context).unfocus();
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: GameDetailSheetStyles.contentPadding,
+          child: AnimatedEditForm(
+            children: [
+              _buildPortraitLayout(),
+              const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
+              _buildStatusSelector(),
+              const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
+              _buildActionButtons(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildLandscapeContent() {
-    return Padding(
-      padding: GameDetailSheetStyles.contentPaddingLandscape,
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: AnimatedEditForm(
-                children: [
-                  _buildLandscapeLayout(),
-                  const SizedBox(
-                    height: GameDetailSheetStyles.sectionSpacingLandscape,
-                  ),
-                  _buildStatusSelector(),
-                ],
+    return GestureDetector(
+      onTap: () {
+        // Clear focus when tapping on empty areas
+        FocusScope.of(context).unfocus();
+      },
+      child: Padding(
+        padding: GameDetailSheetStyles.contentPaddingLandscape,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: AnimatedEditForm(
+                  children: [
+                    _buildLandscapeLayout(),
+                    const SizedBox(
+                      height: GameDetailSheetStyles.sectionSpacingLandscape,
+                    ),
+                    _buildStatusSelector(),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
-          _buildActionButtons(),
-        ],
+            const SizedBox(
+              height: GameDetailSheetStyles.sectionSpacingLandscape,
+            ),
+            _buildActionButtons(),
+          ],
+        ),
       ),
     );
   }
@@ -252,6 +249,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       titleController: _titleController,
       selectedPlatform: editState.platform,
       onPlatformChanged: _handlePlatformChange,
+      editContext: _editContext,
       isPortrait: isPortrait,
       showPlatformAndStatus: showPlatformAndStatus,
       showTitle: showTitle,
@@ -284,7 +282,12 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   // Business logic methods
 
   Future<void> _handleImageTap() async {
+    // Add a small delay to ensure any focus changes are processed
+    await Future.delayed(const Duration(milliseconds: 50));
+
     final editState = ref.read(gameEditStateProvider(_editContext));
+
+    if (!mounted) return;
 
     final result = await ImageSelectionBottomSheet.show(
       context: context,
@@ -368,6 +371,11 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Future<void> _saveChanges() async {
+    // Update provider with current title before saving
+    ref
+        .read(gameEditStateProvider(_editContext).notifier)
+        .updateTitle(_titleController.text);
+
     final editState = ref.read(gameEditStateProvider(_editContext));
 
     if (!editState.hasUnsavedChanges) {

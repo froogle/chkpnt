@@ -27,6 +27,7 @@ class GameImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imageWidget = GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         height: GameDetailSheetStyles.gameImageHeight,
         decoration: GameDetailSheetStyles.gameImageDecoration,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
-import 'android13_text_field_wrapper.dart';
 
 class CompactSearchBar extends ConsumerStatefulWidget {
   final String? hintText;
@@ -20,13 +19,20 @@ class CompactSearchBar extends ConsumerStatefulWidget {
   ConsumerState<CompactSearchBar> createState() => _CompactSearchBarState();
 }
 
-class _CompactSearchBarState extends ConsumerState<CompactSearchBar> {
+class _CompactSearchBarState extends ConsumerState<CompactSearchBar>
+    with WidgetsBindingObserver {
   late TextEditingController _controller;
+  late FocusNode _focusNode;
+  bool _keyboardWasVisible = false;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _focusNode = FocusNode();
+
+    // Listen for keyboard visibility changes
+    WidgetsBinding.instance.addObserver(this);
 
     // Sync controller with provider state
     final currentQuery = ref.read(searchQueryProvider);
@@ -35,8 +41,34 @@ class _CompactSearchBarState extends ConsumerState<CompactSearchBar> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+
+    // Check if keyboard visibility changed
+    final bottomInset =
+        WidgetsBinding
+            .instance
+            .platformDispatcher
+            .views
+            .first
+            .viewInsets
+            .bottom;
+    final isKeyboardVisible = bottomInset > 0;
+
+    if (_keyboardWasVisible && !isKeyboardVisible && _focusNode.hasFocus) {
+      // Keyboard was visible, now it's gone, and we still have focus - unfocus
+      _focusNode.unfocus();
+    }
+
+    // Update keyboard visibility state
+    _keyboardWasVisible = isKeyboardVisible;
   }
 
   @override
@@ -52,21 +84,20 @@ class _CompactSearchBarState extends ConsumerState<CompactSearchBar> {
     return Container(
       height: InputStyles.compactSearchHeight,
       decoration: InputStyles.compactSearchBarDecoration,
-      child: Android13TextFieldWrapper(
-        child: TextField(
-          controller: _controller,
-          onChanged: (value) {
-            ref.read(searchQueryProvider.notifier).updateQuery(value);
-          },
-          onTap: widget.onTap,
-          readOnly: widget.readOnly,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.primaryText,
-          ),
-          decoration: _buildInputDecoration(searchQuery),
+      child: TextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        onChanged: (value) {
+          ref.read(searchQueryProvider.notifier).updateQuery(value);
+        },
+        onTap: widget.onTap,
+        readOnly: widget.readOnly,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: AppColors.primaryText,
         ),
+        decoration: _buildInputDecoration(searchQuery),
       ),
     );
   }

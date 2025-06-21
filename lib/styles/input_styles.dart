@@ -427,32 +427,5 @@ class DropdownStyles {
 
 /// Styles for Android 13 text field wrapper components
 class Android13TextFieldStyles {
-  // Done button positioning and layout
-  static const EdgeInsets doneButtonMargin = EdgeInsets.all(16.0);
-  static const EdgeInsets doneButtonPadding = EdgeInsets.symmetric(
-    horizontal: 16.0,
-    vertical: 8.0,
-  );
-  static const double doneButtonSpacing = 8.0;
-  static const double doneButtonIconSize = 18.0;
-  static const BorderRadius doneButtonBorderRadius = BorderRadius.all(
-    Radius.circular(20.0),
-  );
-
-  // Done button styling
-  static BoxDecoration get doneButtonDecoration => BoxDecoration(
-    color: Colors.blue,
-    borderRadius: doneButtonBorderRadius,
-    boxShadow: const [
-      BoxShadow(color: Colors.black26, blurRadius: 8.0, offset: Offset(0, 4)),
-    ],
-  );
-
-  static const Color doneButtonIconColour = Colors.white;
-
-  static const TextStyle doneButtonTextStyle = TextStyle(
-    fontSize: 16.0,
-    fontWeight: FontWeight.w600,
-    color: Colors.white,
-  );
+  // Android 13 done button styles removed - using native input handling
 }

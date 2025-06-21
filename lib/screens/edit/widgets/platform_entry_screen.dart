@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../styles/platform_entry_styles.dart';
-import '../../../shared/widgets/inputs/android13_text_field_wrapper.dart';
 
 class PlatformEntryScreen extends StatefulWidget {
   final String initialPlatform;
@@ -13,13 +12,11 @@ class PlatformEntryScreen extends StatefulWidget {
 
 class _PlatformEntryScreenState extends State<PlatformEntryScreen> {
   late TextEditingController _controller;
-  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     _initializeControllers();
-    _setupAutoFocus();
   }
 
   @override
@@ -39,28 +36,10 @@ class _PlatformEntryScreenState extends State<PlatformEntryScreen> {
 
   void _initializeControllers() {
     _controller = TextEditingController(text: widget.initialPlatform);
-    _focusNode = FocusNode();
-  }
-
-  void _setupAutoFocus() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
-      if (widget.initialPlatform.isEmpty) {
-        _selectAllText();
-      }
-    });
-  }
-
-  void _selectAllText() {
-    _controller.selection = TextSelection(
-      baseOffset: 0,
-      extentOffset: _controller.text.length,
-    );
   }
 
   void _disposeControllers() {
     _controller.dispose();
-    _focusNode.dispose();
   }
 
   PreferredSizeWidget _buildAppBar() {
@@ -130,16 +109,14 @@ class _PlatformEntryScreenState extends State<PlatformEntryScreen> {
   }
 
   Widget _buildTextField() {
-    return Android13TextFieldWrapper(
-      child: TextField(
-        controller: _controller,
-        focusNode: _focusNode,
-        style: PlatformEntryStyles.textInputStyle,
-        decoration: PlatformEntryStyles.textInputDecoration,
-        textCapitalization: TextCapitalization.words,
-        onChanged: _handleTextChanged,
-        onSubmitted: _handleTextSubmitted,
-      ),
+    return TextField(
+      controller: _controller,
+      autofocus: true,
+      style: PlatformEntryStyles.textInputStyle,
+      decoration: PlatformEntryStyles.textInputDecoration,
+      textCapitalization: TextCapitalization.words,
+      onChanged: _handleTextChanged,
+      onSubmitted: _handleTextSubmitted,
     );
   }
 

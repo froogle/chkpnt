@@ -15,19 +15,15 @@ class PlatformUtils {
     // Allow test override
     if (_testAndroid13Override != null) return _testAndroid13Override!;
 
-    if (!Platform.isAndroid) return false;
-
-    // Android 13 is API level 33
-    // We'll use a simple heuristic - if we can't determine the exact version,
-    // we'll assume it might be Android 13 for safety
-    return true; // For now, assume all Android devices might need this
+    // Disabled - let Android handle all input natively
+    return false;
   }
 
   /// Check if the current platform needs a "done" button for text input
   ///
   /// This is specifically for Android 13's full screen text editor issue
   static bool get needsTextInputDoneButton {
-    return isAndroid13;
+    return false; // Disabled - let Android handle input natively
   }
 
   /// Override platform detection for testing purposes

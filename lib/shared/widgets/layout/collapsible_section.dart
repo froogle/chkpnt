@@ -38,7 +38,11 @@ class CollapsibleSection extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: onToggle,
+          onTap: () {
+            // Clear focus from any text fields before handling the tap
+            FocusManager.instance.primaryFocus?.unfocus();
+            onToggle();
+          },
           child: Padding(
             padding: MainScreenStyles.collapsibleSectionHeaderPadding,
             child: _buildHeaderContent(),

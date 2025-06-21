@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/utils/platform_utils.dart';
-import 'android13_text_field_wrapper.dart';
 
 class CustomPlatformDialog extends StatefulWidget {
   final String initialValue;
@@ -30,17 +29,15 @@ class _CustomPlatformDialogState extends State<CustomPlatformDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Enter Platform'),
-      content: Android13TextFieldWrapper(
-        child: TextField(
-          controller: _controller,
-          decoration: const InputDecoration(
-            hintText: 'Enter platform name',
-            border: OutlineInputBorder(),
-          ),
-          textCapitalization: TextCapitalization.words,
-          autofocus: true,
-          onSubmitted: _handleSubmit,
+      content: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(
+          hintText: 'Enter platform name',
+          border: OutlineInputBorder(),
         ),
+        textCapitalization: TextCapitalization.words,
+        autofocus: true,
+        onSubmitted: _handleSubmit,
       ),
       actions: [
         TextButton(
