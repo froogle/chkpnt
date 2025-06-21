@@ -1,20 +1,20 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
+import 'package:chkpnt/services/storage_service.dart';
 
 /// Service for managing database backups and data protection
 class BackupService {
   final GameRepository _repository;
+  final StorageService _storageService;
 
-  BackupService(this._repository);
+  BackupService(this._repository, this._storageService);
 
   /// Create a timestamped backup file
   Future<File> createBackup() async {
     final jsonData = await _repository.exportDatabaseToJson();
     final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
 
-    final backupDir = await _getPersistentBackupDirectory();
+    final backupDir = await _storageService.getPersistentBackupDirectory();
     final backupFile = File('${backupDir.path}/chkpnt_backup_$timestamp.json');
 
     await backupFile.writeAsString(jsonData);
@@ -33,7 +33,7 @@ class BackupService {
 
   /// List all available backup files
   Future<List<File>> getAvailableBackups() async {
-    final backupDir = await _getPersistentBackupDirectory();
+    final backupDir = await _storageService.getPersistentBackupDirectory();
     final files =
         backupDir
             .listSync()
@@ -82,50 +82,5 @@ class BackupService {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
-  }
-
-  /// Get the persistent backup directory that matches database storage location
-  ///
-  /// This ensures backups are stored in the same persistent location as the database
-  /// and survive app updates and debugging sessions
-  Future<Directory> _getPersistentBackupDirectory() async {
-    try {
-      Directory baseDir;
-
-      if (Platform.isIOS || Platform.isMacOS) {
-        // iOS/macOS: Use Application Support Directory
-        baseDir = await getApplicationSupportDirectory();
-      } else if (Platform.isAndroid) {
-        // Android: Use External Storage Directory for user data
-        final externalDir = await getExternalStorageDirectory();
-        if (externalDir != null) {
-          // Use same app-specific subdirectory as database
-          baseDir = Directory('${externalDir.path}/ChkPnt');
-        } else {
-          // Fallback to Application Support Directory
-          baseDir = await getApplicationSupportDirectory();
-        }
-      } else {
-        // Linux/Windows/Other: Use Application Support Directory
-        baseDir = await getApplicationSupportDirectory();
-      }
-
-      // Create backups subdirectory
-      final backupDir = Directory('${baseDir.path}/backups');
-      if (!await backupDir.exists()) {
-        await backupDir.create(recursive: true);
-      }
-
-      return backupDir;
-    } catch (e) {
-      // Fallback to documents directory if all else fails
-      debugPrint('Failed to get persistent backup directory: $e');
-      final documentsDir = await getApplicationDocumentsDirectory();
-      final backupDir = Directory('${documentsDir.path}/backups');
-      if (!await backupDir.exists()) {
-        await backupDir.create(recursive: true);
-      }
-      return backupDir;
-    }
   }
 }

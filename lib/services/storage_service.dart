@@ -13,27 +13,24 @@ class StorageService {
   static const String _appDirectoryName = 'ChkPnt';
   static const Duration _deviceInfoTimeout = Duration(seconds: 5);
 
-  /// Get the most persistent storage directory for each platform using a hybrid approach
+  /// Get the most persistent storage directory for each platform
   ///
   /// This hybrid strategy balances data persistence with Android 14+ compatibility:
   /// - iOS/macOS: Uses Application Support Directory (persists across updates, backed up to iCloud)
-  /// - Android 14+: Uses Application Support Directory (avoids scoped storage permission issues)
-  /// - Android 13 and below: Uses External Storage with app subfolder (persists across dev rebuilds and uninstalls)
+  /// - Android: Uses External Storage when possible for development persistence,
+  ///   with Application Support fallback for Android 14+ permission compatibility
   /// - Other platforms: Falls back to Application Support Directory
   Future<Directory> getPersistentStorageDirectory() async {
-    try {
-      if (Platform.isIOS || Platform.isMacOS) {
-        return await _getAppleStorageDirectory();
-      }
+    return await _getPersistentDirectory();
+  }
 
-      if (Platform.isAndroid) {
-        return await _getAndroidStorageDirectory();
-      }
-
-      return await _getDefaultStorageDirectory();
-    } catch (e) {
-      return await _getFallbackStorageDirectory(e);
-    }
+  /// Get the persistent backup directory that matches database storage location
+  ///
+  /// This ensures backups are stored in the same persistent location as the database
+  /// and survive app updates and debugging sessions
+  Future<Directory> getPersistentBackupDirectory() async {
+    final baseDir = await _getPersistentDirectory();
+    return await _createSubdirectory(baseDir, 'backups');
   }
 
   /// Check if the current Android version is 14 (API 34) or later
@@ -58,6 +55,23 @@ class StorageService {
     }
   }
 
+  /// Core method to get the most persistent directory for the current platform
+  Future<Directory> _getPersistentDirectory() async {
+    try {
+      if (Platform.isIOS || Platform.isMacOS) {
+        return await _getAppleStorageDirectory();
+      }
+
+      if (Platform.isAndroid) {
+        return await _getAndroidStorageDirectory();
+      }
+
+      return await _getDefaultStorageDirectory();
+    } catch (e) {
+      return await _getFallbackStorageDirectory(e);
+    }
+  }
+
   /// Get storage directory for iOS/macOS platforms
   Future<Directory> _getAppleStorageDirectory() async {
     // iOS/macOS: Use Application Support Directory
@@ -65,36 +79,22 @@ class StorageService {
     return await getApplicationSupportDirectory();
   }
 
-  /// Get storage directory for Android platforms based on version
+  /// Get storage directory for Android platforms with development-friendly approach
   Future<Directory> _getAndroidStorageDirectory() async {
-    final isAndroid14OrLater = await this.isAndroid14OrLater();
-
-    if (isAndroid14OrLater) {
-      return await _getAndroid14StorageDirectory();
+    try {
+      // Always try External Storage first for maximum development persistence
+      final externalDir = await getExternalStorageDirectory();
+      if (externalDir != null) {
+        // Use app-specific subdirectory for better organisation
+        return await _createAppSpecificDirectory(externalDir);
+      }
+    } catch (e) {
+      debugPrint('External storage unavailable: $e');
     }
 
-    return await _getAndroid13StorageDirectory();
-  }
-
-  /// Get storage directory for Android 14+ (uses Application Support)
-  Future<Directory> _getAndroid14StorageDirectory() async {
-    // Android 14+: Use Application Support Directory to avoid scoped storage issues
-    // Data persists through app updates but not development rebuilds
+    // Fallback to Application Support Directory
+    // This is safer for Android 14+ but less persistent during development
     return await getApplicationSupportDirectory();
-  }
-
-  /// Get storage directory for Android 13 and below (uses External Storage)
-  Future<Directory> _getAndroid13StorageDirectory() async {
-    // Android 13 and below: Use External Storage Directory for maximum persistence
-    // This persists across app updates, uninstalls, and development rebuilds
-    final externalDir = await getExternalStorageDirectory();
-
-    if (externalDir == null) {
-      // Fallback to Application Support Directory if external storage unavailable
-      return await getApplicationSupportDirectory();
-    }
-
-    return await _createAppSpecificDirectory(externalDir);
   }
 
   /// Get storage directory for other platforms (Linux/Windows/etc.)
@@ -114,9 +114,24 @@ class StorageService {
     return appDir;
   }
 
+  /// Create a subdirectory within the given base directory
+  Future<Directory> _createSubdirectory(
+    Directory baseDir,
+    String subdirName,
+  ) async {
+    final subDir = Directory('${baseDir.path}/$subdirName');
+
+    if (!await subDir.exists()) {
+      await subDir.create(recursive: true);
+    }
+
+    return subDir;
+  }
+
   /// Fallback storage directory if all else fails
   Future<Directory> _getFallbackStorageDirectory(dynamic error) async {
     debugPrint('Failed to get persistent storage directory: $error');
-    return await getApplicationDocumentsDirectory();
+    final documentsDir = await getApplicationDocumentsDirectory();
+    return await _createSubdirectory(documentsDir, _appDirectoryName);
   }
 }
