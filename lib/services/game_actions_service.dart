@@ -92,14 +92,8 @@ class GameActionsService {
     }
   }
 
-  /// Handles adding a new game with automatic scroll to appropriate section
-  /// - On main screen: scrolls to game status section
-  /// - On backlog screen: scrolls to platform section
-  Future<void> addGame(
-    GameItem newGame,
-    BuildContext context, {
-    bool isBacklogScreen = false,
-  }) async {
+  /// Handles adding a new game with user feedback
+  Future<void> addGame(GameItem newGame, BuildContext context) async {
     await _ref
         .read(gameListProvider.notifier)
         .addGame(
@@ -116,23 +110,11 @@ class GameActionsService {
     final statusName = _getStatusDisplayName(newGame.status);
     _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
 
-    // Request scroll - key depends on which screen we're on
-    if (isBacklogScreen) {
-      // On backlog screen, scroll to platform section
-      _ref
-          .read(scrollToSectionProvider.notifier)
-          .requestScrollTo(newGame.platform);
-    } else {
-      // On main screen, scroll to status section
-      _ref.read(scrollToSectionProvider.notifier).requestScrollTo(statusName);
-    }
-
     // Show feedback
     if (context.mounted) {
-      final targetSection = isBacklogScreen ? newGame.platform : statusName;
       _showGameActionFeedback(
         context: context,
-        message: '${newGame.title} added to $targetSection!',
+        message: '${newGame.title} added to $statusName!',
         icon: _getStatusIcon(newGame.status),
         color: _getStatusColor(newGame.status),
       );

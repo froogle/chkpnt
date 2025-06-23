@@ -3,14 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'widgets/main_screen_header.dart';
 import 'widgets/main_screen_bottom_nav.dart';
-import 'package:chkpnt/shared/widgets/layout/universal_scroll_handler.dart';
 import 'package:chkpnt/screens/main/widgets/game_section.dart';
 import 'package:chkpnt/screens/main/widgets/animations/game_transition_animation.dart';
 import 'package:chkpnt/screens/main/widgets/animations/game_detail_sheet_animation.dart';
 import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/utils/ui_utils.dart';
 
@@ -25,23 +23,11 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   GameItem? _animatingGame;
   bool _isAnimating = false;
   late ScrollController _scrollController;
-  late Map<String, GlobalKey> _sectionKeys;
 
   @override
   void initState() {
     super.initState();
-    _setupScrollingComponents();
-    _setupProviderListeners();
-  }
-
-  void _setupScrollingComponents() {
     _scrollController = ScrollController();
-    _sectionKeys = {
-      'Playing': GlobalKey(),
-      'Backlog': GlobalKey(),
-      'Completed': GlobalKey(),
-      'Abandoned': GlobalKey(),
-    };
   }
 
   @override
@@ -50,29 +36,13 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     super.dispose();
   }
 
-  void _setupProviderListeners() {
-    // Listen for platform filter changes and update section expansion
-    ref.listenManual(selectedPlatformProvider, (previous, current) {
-      _updateSectionExpansionForFilters();
-    });
-
-    // Listen for search query changes and update section expansion
-    ref.listenManual(searchQueryProvider, (previous, current) {
-      _updateSectionExpansionForFilters();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return UniversalScrollHandler(
-      scrollController: _scrollController,
-      sectionKeys: _sectionKeys,
-      child: Stack(
-        children: [
-          _buildMainScaffold(),
-          if (_isAnimating && _animatingGame != null) _buildAnimationOverlay(),
-        ],
-      ),
+    return Stack(
+      children: [
+        _buildMainScaffold(),
+        if (_isAnimating && _animatingGame != null) _buildAnimationOverlay(),
+      ],
     );
   }
 
@@ -128,19 +98,16 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   Widget _buildGameSection(String title, GameStatus status, bool isLandscape) {
-    return Container(
-      key: _sectionKeys[title],
-      child: GameSection(
-        title: title,
-        status: status,
-        isLandscape: isLandscape,
-        crossAxisCount:
-            isLandscape ? UIUtils.calculateGridColumns(context) : null,
-        animatingGame: _animatingGame,
-        isAnimating: _isAnimating,
-        onGameTap: _handleGameTap,
-        onPlayPressed: _handleStartPlaying,
-      ),
+    return GameSection(
+      title: title,
+      status: status,
+      isLandscape: isLandscape,
+      crossAxisCount:
+          isLandscape ? UIUtils.calculateGridColumns(context) : null,
+      animatingGame: _animatingGame,
+      isAnimating: _isAnimating,
+      onGameTap: _handleGameTap,
+      onPlayPressed: _handleStartPlaying,
     );
   }
 
@@ -156,11 +123,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   // Business logic methods
-
-  void _updateSectionExpansionForFilters() {
-    final gameActionsService = ref.read(gameActionsServiceProvider);
-    gameActionsService.updateSectionExpansionForFilters();
-  }
 
   Future<void> _handleStartPlaying(GameItem game) async {
     if (_isAnimating) return;

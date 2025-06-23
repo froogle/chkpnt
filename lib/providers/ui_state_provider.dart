@@ -300,37 +300,3 @@ class GameEditState extends _$GameEditState {
 
   bool get hasChanges => state.hasUnsavedChanges;
 }
-
-// Scroll request data class for tracking scroll-to-section requests
-class ScrollRequest {
-  final String targetKey;
-  final DateTime timestamp;
-
-  const ScrollRequest({required this.targetKey, required this.timestamp});
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is ScrollRequest &&
-        other.targetKey == targetKey &&
-        other.timestamp == timestamp;
-  }
-
-  @override
-  int get hashCode => Object.hash(targetKey, timestamp);
-}
-
-// Provider to track scroll requests for any screen sections
-@riverpod
-class ScrollToSection extends _$ScrollToSection {
-  @override
-  ScrollRequest? build() => null;
-
-  void requestScrollTo(String key) {
-    state = ScrollRequest(targetKey: key, timestamp: DateTime.now());
-  }
-
-  void clearRequest() {
-    state = null;
-  }
-}

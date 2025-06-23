@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/screens/backlog/backlog_screen.dart';
 
 void main() {
@@ -16,7 +15,7 @@ void main() {
       container.dispose();
     });
 
-    testWidgets('renders correctly with scroll handler integration', (
+    testWidgets('renders correctly and shows empty state by default', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -26,29 +25,12 @@ void main() {
         ),
       );
 
-      // Verify the backlog screen renders with scroll handler integration
+      // Verify the backlog screen renders
       expect(find.byType(BacklogScreen), findsOneWidget);
-      // The ScrollView is only present when there are games, so we just verify the screen renders
-    });
 
-    test('scroll integration with platform-based scrolling', () {
-      // Test that the scroll provider is integrated properly for platforms
-      final scrollNotifier = container.read(scrollToSectionProvider.notifier);
-
-      // Initial state
-      expect(container.read(scrollToSectionProvider), isNull);
-
-      // Simulate platform-based scroll request (from backlog screen)
-      scrollNotifier.requestScrollTo('PlayStation 5');
-
-      // Verify request was created for platform
-      final request = container.read(scrollToSectionProvider);
-      expect(request, isNotNull);
-      expect(request?.targetKey, 'PlayStation 5');
-
-      // Clear request (simulating scroll handler processing)
-      scrollNotifier.clearRequest();
-      expect(container.read(scrollToSectionProvider), isNull);
+      // Should show empty state when no games present
+      expect(find.text('No games in backlog'), findsOneWidget);
+      expect(find.text('Add some games to get started!'), findsOneWidget);
     });
 
     testWidgets('disposes scroll controller properly', (tester) async {

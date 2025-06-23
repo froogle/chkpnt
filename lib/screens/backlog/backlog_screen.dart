@@ -7,11 +7,9 @@ import '../main/widgets/animations/game_transition_animation.dart';
 import '../main/widgets/animations/game_detail_sheet_animation.dart';
 import 'widgets/backlog_sorting_controls.dart';
 import 'widgets/backlog_platform_section.dart';
-import 'package:chkpnt/shared/widgets/layout/universal_scroll_handler.dart';
 import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/utils/ui_utils.dart';
@@ -27,50 +25,11 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
   GameItem? _animatingGame;
   bool _isAnimating = false;
   late ScrollController _scrollController;
-  late Map<String, GlobalKey> _platformKeys;
 
   @override
   void initState() {
     super.initState();
-    _setupScrollingComponents();
-    _setupProviderListeners();
-  }
-
-  void _setupScrollingComponents() {
     _scrollController = ScrollController();
-    _platformKeys = <String, GlobalKey>{};
-
-    // Initialize platform keys immediately with current platforms
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final currentPlatforms = ref.read(backlogPlatformsProvider);
-      _updatePlatformKeys(currentPlatforms);
-    });
-  }
-
-  void _setupProviderListeners() {
-    // Listen for backlog platform changes and update platform keys proactively
-    ref.listenManual(backlogPlatformsProvider, (previous, current) {
-      _updatePlatformKeys(current);
-    });
-  }
-
-  void _updatePlatformKeys(Iterable<String> platforms) {
-    // Add keys for new platforms, keep existing ones
-    for (final platform in platforms) {
-      if (!_platformKeys.containsKey(platform)) {
-        _platformKeys[platform] = GlobalKey();
-      }
-    }
-
-    // Remove keys for platforms that no longer exist
-    final currentPlatforms = platforms.toSet();
-    final keysToRemove =
-        _platformKeys.keys
-            .where((platform) => !currentPlatforms.contains(platform))
-            .toList();
-    for (final keyToRemove in keysToRemove) {
-      _platformKeys.remove(keyToRemove);
-    }
   }
 
   @override
@@ -81,15 +40,11 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return UniversalScrollHandler(
-      scrollController: _scrollController,
-      sectionKeys: _platformKeys,
-      child: Stack(
-        children: [
-          _buildMainScaffold(),
-          if (_isAnimating && _animatingGame != null) _buildAnimationOverlay(),
-        ],
-      ),
+    return Stack(
+      children: [
+        _buildMainScaffold(),
+        if (_isAnimating && _animatingGame != null) _buildAnimationOverlay(),
+      ],
     );
   }
 
@@ -140,9 +95,6 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
       return _buildEmptyState();
     }
 
-    // Update platform keys based on current platforms
-    _updatePlatformKeys(groupedGames.keys);
-
     return SingleChildScrollView(
       controller: _scrollController,
       padding: MainScreenStyles.contentPadding,
@@ -166,19 +118,16 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
   ) {
     return Column(
       children: [
-        Container(
-          key: _platformKeys[platform],
-          child: BacklogPlatformSection(
-            platform: platform,
-            games: games,
-            isLandscape: isLandscape,
-            crossAxisCount:
-                isLandscape ? UIUtils.calculateGridColumns(context) : null,
-            animatingGame: _animatingGame,
-            isAnimating: _isAnimating,
-            onGameTap: _handleGameTap,
-            onPlayPressed: _handleStartPlaying,
-          ),
+        BacklogPlatformSection(
+          platform: platform,
+          games: games,
+          isLandscape: isLandscape,
+          crossAxisCount:
+              isLandscape ? UIUtils.calculateGridColumns(context) : null,
+          animatingGame: _animatingGame,
+          isAnimating: _isAnimating,
+          onGameTap: _handleGameTap,
+          onPlayPressed: _handleStartPlaying,
         ),
         SizedBox(height: BacklogStyles.platformSectionSpacing),
       ],
@@ -274,30 +223,23 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
       ),
     );
 
-    // If a game was added, handle the scroll
+    // If a game was added, show simple feedback
     if (result != null) {
-      await _handleGameAddedWithScroll(result);
+      _showGameAddedFeedback(result);
     }
   }
 
-  /// Handle game added with custom scroll logic for backlog screen
-  Future<void> _handleGameAddedWithScroll(GameItem newGame) async {
-    // Force update platform keys immediately with current state
-    final currentPlatforms = ref.read(backlogPlatformsProvider);
-    _updatePlatformKeys(currentPlatforms);
-
-    // Ensure the new platform key is created
-    if (!_platformKeys.containsKey(newGame.platform)) {
-      _platformKeys[newGame.platform] = GlobalKey();
+  /// Simple feedback for game added
+  void _showGameAddedFeedback(GameItem newGame) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${newGame.title} added to backlog!'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
-
-    // Wait a frame to ensure UI has been built
-    await Future.delayed(const Duration(milliseconds: 50));
-
-    // Now request the scroll
-    ref
-        .read(scrollToSectionProvider.notifier)
-        .requestScrollTo(newGame.platform);
   }
 
   void _handleNavigation(int index) {

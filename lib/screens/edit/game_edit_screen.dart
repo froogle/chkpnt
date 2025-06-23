@@ -398,12 +398,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       final isBacklogGame = newGame.status == GameStatus.backlog;
 
       if (isBacklogGame) {
-        // For backlog games, just add without scroll and let the calling screen handle it
-        await gameActionsService.addGame(
-          newGame,
-          context,
-          isBacklogScreen: false, // Don't scroll automatically
-        );
+        // For backlog games, add and let the calling screen handle feedback
+        await gameActionsService.addGame(newGame, context);
 
         // Return the game to the calling screen for custom handling
         if (mounted) {
@@ -412,11 +408,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         return;
       } else {
         // For non-backlog games, use the normal flow
-        await gameActionsService.addGame(
-          newGame,
-          context,
-          isBacklogScreen: false,
-        );
+        await gameActionsService.addGame(newGame, context);
       }
     } else {
       // Editing existing game

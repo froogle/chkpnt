@@ -282,12 +282,4 @@ class MainScreenStyles {
   static const List<Shadow> gameCardSubtextShadows = AppShadows.gameCardText;
   static const List<Shadow> gameCardPortraitTextShadows =
       AppShadows.gameCardPortraitText;
-
-  // Scroll animation styles for scroll-to-section feature
-  static const Duration scrollAnimationDuration = Duration(milliseconds: 800);
-  static const Curve scrollAnimationCurve = Curves.easeInOutCubic;
-  static const double scrollAnimationOffset = 20.0; // Extra offset from top
-  static const Duration scrollRequestDelay = Duration(
-    milliseconds: 300,
-  ); // Delay before scrolling to allow UI to settle
 }
