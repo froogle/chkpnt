@@ -10,6 +10,7 @@ import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
+import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/utils/ui_utils.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -22,17 +23,14 @@ class MainScreen extends ConsumerStatefulWidget {
 class _MainScreenState extends ConsumerState<MainScreen> {
   GameItem? _animatingGame;
   bool _isAnimating = false;
-  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -79,7 +77,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   Widget _buildContent(bool isLandscape) {
     return SingleChildScrollView(
-      controller: _scrollController,
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,24 +162,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   void _handleNavigation(int index) {
-    switch (index) {
-      case 0: // Home - current screen, do nothing
-        break;
-      case 1: // Backlog
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/backlog', (route) => false);
-        break;
-      case 2: // Wish List
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/wishlist', (route) => false);
-        break;
-      case 3: // Profile
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/profile', (route) => false);
-        break;
-    }
+    NavigationService.handleNavigation(context, index);
   }
 }

@@ -12,6 +12,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
+import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/utils/ui_utils.dart';
 
 class WishlistScreen extends ConsumerStatefulWidget {
@@ -210,24 +211,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   }
 
   void _handleNavigation(int index) {
-    switch (index) {
-      case 0: // Home
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/main', (route) => false);
-        break;
-      case 1: // Backlog
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/backlog', (route) => false);
-        break;
-      case 2: // Wish List - current screen, do nothing
-        break;
-      case 3: // Profile
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/profile', (route) => false);
-        break;
-    }
+    NavigationService.handleNavigation(context, index);
   }
 }

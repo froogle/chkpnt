@@ -4,6 +4,7 @@ import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/styles/profile_styles.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
+import 'package:chkpnt/services/navigation_service.dart';
 import 'widgets/profile_subscription_section.dart';
 import 'widgets/profile_visualisation_section.dart';
 import 'widgets/profile_incoming_games_section.dart';
@@ -95,24 +96,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _handleNavigation(int index) {
-    switch (index) {
-      case 0: // Home
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/main', (route) => false);
-        break;
-      case 1: // Backlog
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/backlog', (route) => false);
-        break;
-      case 2: // Wishlist
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/wishlist', (route) => false);
-        break;
-      case 3: // Profile - current screen, do nothing
-        break;
-    }
+    NavigationService.handleNavigation(context, index);
   }
 }

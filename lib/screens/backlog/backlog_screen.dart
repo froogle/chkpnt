@@ -12,6 +12,7 @@ import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
+import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/utils/ui_utils.dart';
 
 class BacklogScreen extends ConsumerStatefulWidget {
@@ -24,17 +25,14 @@ class BacklogScreen extends ConsumerStatefulWidget {
 class _BacklogScreenState extends ConsumerState<BacklogScreen> {
   GameItem? _animatingGame;
   bool _isAnimating = false;
-  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -96,7 +94,6 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
     }
 
     return SingleChildScrollView(
-      controller: _scrollController,
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,24 +240,6 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
   }
 
   void _handleNavigation(int index) {
-    switch (index) {
-      case 0: // Home
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/main', (route) => false);
-        break;
-      case 1: // Backlog - current screen, do nothing
-        break;
-      case 2: // Wish List
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/wishlist', (route) => false);
-        break;
-      case 3: // Profile
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/profile', (route) => false);
-        break;
-    }
+    NavigationService.handleNavigation(context, index);
   }
 }
