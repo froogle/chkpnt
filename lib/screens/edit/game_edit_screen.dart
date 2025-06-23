@@ -7,10 +7,10 @@ import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
-import 'widgets/game_edit_info_section.dart';
-import 'widgets/game_edit_actions.dart';
-import 'widgets/animations/animated_edit_form.dart';
-import 'widgets/image_selection_bottom_sheet.dart';
+import 'package:chkpnt/screens/edit/widgets/game_edit_info_section.dart';
+import 'package:chkpnt/screens/edit/widgets/game_edit_actions.dart';
+import 'package:chkpnt/screens/edit/widgets/animations/animated_edit_form.dart';
+import 'package:chkpnt/screens/edit/widgets/image_selection_bottom_sheet.dart';
 
 class GameEditScreen extends ConsumerStatefulWidget {
   final GameItem? game;

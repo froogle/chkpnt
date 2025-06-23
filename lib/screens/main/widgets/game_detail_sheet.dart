@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
-import 'game_detail_sheet_info.dart';
+import 'package:chkpnt/screens/main/widgets/game_detail_sheet_info.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
-import 'game_detail_sheet_actions.dart';
+import 'package:chkpnt/screens/main/widgets/game_detail_sheet_actions.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 
 class GameDetailSheet extends ConsumerStatefulWidget {
