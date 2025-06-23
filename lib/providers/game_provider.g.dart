@@ -924,7 +924,7 @@ final backlogPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef BacklogPlatformsRef = AutoDisposeProviderRef<List<String>>;
-String _$gameListHash() => r'ccef18181e2af687735a74b5f13831a219c8a7a4';
+String _$gameListHash() => r'6968151e9680eba4bf49558207dcfac29d8d5550';
 
 /// Current games list provider - provides latest snapshot for UI
 /// This is the main provider widgets should watch

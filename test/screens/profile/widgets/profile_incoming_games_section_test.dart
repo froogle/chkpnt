@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_incoming_games_section.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/models/game_models.dart';
+import '../../../test_helpers.dart';
 
 void main() {
   group('ProfileIncomingGamesSection', () {
@@ -60,19 +61,18 @@ void main() {
       setUp(() {
         final now = DateTime.now();
         orderedGames = [
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createTestGame(
             title: 'Ordered Game 1',
-            platform: 'PC',
             status: GameStatus.ordered,
+          ).copyWith(
             lastModified: now.subtract(const Duration(days: 2)),
             lastStatusChange: now.subtract(const Duration(days: 2)),
           ),
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createTestGame(
             title: 'Ordered Game 2',
             platform: 'PlayStation 5',
             status: GameStatus.ordered,
+          ).copyWith(
             lastModified: now.subtract(const Duration(days: 1)),
             lastStatusChange: now.subtract(const Duration(days: 1)),
           ),

@@ -240,38 +240,28 @@ void main() {
       });
 
       test('should only include platforms from wishlist and ordered games', () {
-        // Create games with different statuses and platforms
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Wishlist Game',
-              platform: 'WishlistPlatform',
-              status: GameStatus.wishlist,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Ordered Game',
-              platform: 'OrderedPlatform',
-              status: GameStatus.ordered,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Playing Game',
-              platform: 'PlayingPlatform',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Completed Game',
-              platform: 'CompletedPlatform',
-              status: GameStatus.completed,
-            );
+        // Create games with different statuses and platforms using helpers
+        final testGames = [
+          TestHelpers.createTestGame(
+            title: 'Wishlist Game',
+            platform: 'WishlistPlatform',
+            status: GameStatus.wishlist,
+          ),
+          TestHelpers.createTestGame(
+            title: 'Ordered Game',
+            platform: 'OrderedPlatform',
+            status: GameStatus.ordered,
+          ),
+          TestHelpers.createPlayingGame(
+            title: 'Playing Game',
+            platform: 'PlayingPlatform',
+          ),
+          TestHelpers.createCompletedGame(
+            title: 'Completed Game',
+            platform: 'CompletedPlatform',
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, testGames);
 
         final wishlistPlatforms = container.read(wishlistPlatformsProvider);
         final allPlatforms = container.read(availablePlatformsProvider);
@@ -293,22 +283,20 @@ void main() {
       });
 
       test('should return platforms in sorted order', () {
-        // Create games with platforms that will test sorting
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Game Z',
-              platform: 'ZZZ Platform',
-              status: GameStatus.wishlist,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Game A',
-              platform: 'AAA Platform',
-              status: GameStatus.ordered,
-            );
+        // Create games with platforms that will test sorting using helpers
+        final sortingTestGames = [
+          TestHelpers.createTestGame(
+            title: 'Game Z',
+            platform: 'ZZZ Platform',
+            status: GameStatus.wishlist,
+          ),
+          TestHelpers.createTestGame(
+            title: 'Game A',
+            platform: 'AAA Platform',
+            status: GameStatus.ordered,
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, sortingTestGames);
 
         final platforms = container.read(wishlistPlatformsProvider);
         final platformsWithoutAll = platforms.skip(1).toList();
@@ -326,22 +314,15 @@ void main() {
             container.read(gameListProvider.notifier).removeGame(game.id);
           }
 
-          // Add games that are not wishlist or ordered
-          container
-              .read(gameListProvider.notifier)
-              .createGame(
-                title: 'Playing Game',
-                platform: 'PC',
-                status: GameStatus.playing,
-              );
-
-          container
-              .read(gameListProvider.notifier)
-              .createGame(
-                title: 'Completed Game',
-                platform: 'Switch',
-                status: GameStatus.completed,
-              );
+          // Add games that are not wishlist or ordered using helpers
+          final nonWishlistGames = [
+            TestHelpers.createPlayingGame(title: 'Playing Game'),
+            TestHelpers.createCompletedGame(
+              title: 'Completed Game',
+              platform: 'Switch',
+            ),
+          ];
+          TestHelpers.addGamesToContainer(container, nonWishlistGames);
 
           final platforms = container.read(wishlistPlatformsProvider);
 
@@ -439,43 +420,44 @@ void main() {
         final initialGamesCount = container.read(gameListProvider).length;
 
         final beforeCreate = DateTime.now();
-        notifier.createGame(
+        final newGame = TestHelpers.createTestGame(
           title: 'New Game',
           platform: 'Switch',
           status: GameStatus.wishlist,
         );
+        notifier.addGame(newGame);
         final afterCreate = DateTime.now();
 
         final updatedGames = container.read(gameListProvider);
         expect(updatedGames.length, initialGamesCount + 1);
 
-        final newGame = updatedGames.last;
-        expect(newGame.title, 'New Game');
-        expect(newGame.platform, 'Switch');
-        expect(newGame.status, GameStatus.wishlist);
-        expect(newGame.id.value, isNotEmpty);
-        expect(newGame.imagePath, isNull);
-        expect(newGame.remoteImageUrl, isNull);
+        final addedGame = updatedGames.last;
+        expect(addedGame.title, 'New Game');
+        expect(addedGame.platform, 'Switch');
+        expect(addedGame.status, GameStatus.wishlist);
+        expect(addedGame.id.value, isNotEmpty);
+        expect(addedGame.imagePath, isNull);
+        expect(addedGame.remoteImageUrl, isNull);
 
         // Check timestamps are current
         expect(
-          newGame.lastModified.isAfter(beforeCreate) ||
-              newGame.lastModified.isAtSameMomentAs(beforeCreate),
+          addedGame.lastModified.isAfter(beforeCreate) ||
+              addedGame.lastModified.isAtSameMomentAs(beforeCreate),
           true,
         );
         expect(
-          newGame.lastModified.isBefore(afterCreate) ||
-              newGame.lastModified.isAtSameMomentAs(afterCreate),
+          addedGame.lastModified.isBefore(afterCreate) ||
+              addedGame.lastModified.isAtSameMomentAs(afterCreate),
           true,
         );
         expect(
-          newGame.lastStatusChange.isAfter(beforeCreate) ||
-              newGame.lastStatusChange.isAtSameMomentAs(beforeCreate),
+          addedGame.lastStatusChange.isAfter(beforeCreate) ||
+              addedGame.lastStatusChange.isAtSameMomentAs(beforeCreate),
           true,
         );
         expect(
-          newGame.lastStatusChange.isBefore(afterCreate) ||
-              newGame.lastStatusChange.isAtSameMomentAs(afterCreate),
+          addedGame.lastStatusChange.isBefore(afterCreate) ||
+              addedGame.lastStatusChange.isAtSameMomentAs(afterCreate),
           true,
         );
       });
@@ -484,13 +466,14 @@ void main() {
         final notifier = container.read(gameListProvider.notifier);
         final initialGamesCount = container.read(gameListProvider).length;
 
-        notifier.createGame(
+        final newGameWithImages = TestHelpers.createTestGame(
           title: 'New Game with Images',
           platform: 'PS5',
           status: GameStatus.playing,
           imagePath: '/path/to/local/image.jpg',
           remoteImageUrl: 'https://example.com/remote/image.jpg',
         );
+        notifier.addGame(newGameWithImages);
 
         final updatedGames = container.read(gameListProvider);
         expect(updatedGames.length, initialGamesCount + 1);
@@ -506,16 +489,14 @@ void main() {
       test('should generate unique IDs for multiple games', () {
         final notifier = container.read(gameListProvider.notifier);
 
-        notifier.createGame(
-          title: 'Game 1',
-          platform: 'PC',
-          status: GameStatus.backlog,
-        );
-        notifier.createGame(
+        final game1 = TestHelpers.createBacklogGame(title: 'Game 1');
+        final game2 = TestHelpers.createPlayingGame(
           title: 'Game 2',
           platform: 'Xbox',
-          status: GameStatus.playing,
         );
+
+        notifier.addGame(game1);
+        notifier.addGame(game2);
 
         final updatedGames = container.read(gameListProvider);
         final lastTwoGames =
@@ -542,13 +523,22 @@ void main() {
 
         final initialCount = container.read(gameListProvider).length;
 
-        for (int i = 0; i < statuses.length; i++) {
-          notifier.createGame(
-            title: 'Test Game ${i + 1}',
-            platform: 'PC',
-            status: statuses[i],
-          );
-        }
+        // Create games with different statuses using helpers
+        final testGames = [
+          TestHelpers.createPlayingGame(title: 'Test Game 1'),
+          TestHelpers.createCompletedGame(title: 'Test Game 2'),
+          TestHelpers.createBacklogGame(title: 'Test Game 3'),
+          TestHelpers.createAbandonedGame(title: 'Test Game 4'),
+          TestHelpers.createTestGame(
+            title: 'Test Game 5',
+            status: GameStatus.wishlist,
+          ),
+          TestHelpers.createTestGame(
+            title: 'Test Game 6',
+            status: GameStatus.ordered,
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, testGames);
 
         final updatedGames = container.read(gameListProvider);
         expect(updatedGames.length, initialCount + statuses.length);

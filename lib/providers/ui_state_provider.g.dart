@@ -383,7 +383,7 @@ class _GameEditStateProviderElement
   GameEditContext get context => (origin as GameEditStateProvider).context;
 }
 
-String _$scrollToSectionHash() => r'b80bdb2173953660f9dd72743f6fd7747b412218';
+String _$scrollToSectionHash() => r'9867b7e08fc66e34fa4b1c93f3eb606ebb9bc7e5';
 
 /// See also [ScrollToSection].
 @ProviderFor(ScrollToSection)

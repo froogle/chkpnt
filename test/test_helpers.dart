@@ -69,6 +69,122 @@ class TestHelpers {
     );
   }
 
+  /// Creates a basic test game with default values
+  static GameItem createTestGame({
+    String title = 'Test Game',
+    String platform = 'PC',
+    GameStatus status = GameStatus.backlog,
+    String? imagePath,
+    String? remoteImageUrl,
+  }) {
+    return GameItem.create(
+      title: title,
+      platform: platform,
+      status: status,
+      imagePath: imagePath,
+      remoteImageUrl: remoteImageUrl,
+    );
+  }
+
+  /// Creates a backlog game with specified platform
+  static GameItem createBacklogGame({
+    String title = 'Backlog Game',
+    String platform = 'PC',
+  }) {
+    return createTestGame(
+      title: title,
+      platform: platform,
+      status: GameStatus.backlog,
+    );
+  }
+
+  /// Creates a playing game with specified platform
+  static GameItem createPlayingGame({
+    String title = 'Playing Game',
+    String platform = 'PC',
+  }) {
+    return createTestGame(
+      title: title,
+      platform: platform,
+      status: GameStatus.playing,
+    );
+  }
+
+  /// Creates a completed game with specified platform
+  static GameItem createCompletedGame({
+    String title = 'Completed Game',
+    String platform = 'PC',
+  }) {
+    return createTestGame(
+      title: title,
+      platform: platform,
+      status: GameStatus.completed,
+    );
+  }
+
+  /// Creates an abandoned game with specified platform
+  static GameItem createAbandonedGame({
+    String title = 'Abandoned Game',
+    String platform = 'PC',
+  }) {
+    return createTestGame(
+      title: title,
+      platform: platform,
+      status: GameStatus.abandoned,
+    );
+  }
+
+  /// Creates multiple games for testing filter scenarios
+  static List<GameItem> createFilterTestGames() {
+    return [
+      createPlayingGame(title: 'PC Playing Game', platform: 'PC'),
+      createBacklogGame(title: 'Switch Backlog Game', platform: 'Switch'),
+      createCompletedGame(title: 'Cyberpunk PC Completed', platform: 'PC'),
+      createPlayingGame(title: 'Cyberpunk PS5 Playing', platform: 'PS5'),
+    ];
+  }
+
+  /// Creates games with unique platforms for testing platform filtering
+  static List<GameItem> createUniquePlatformGames() {
+    return [
+      createPlayingGame(title: 'Test Game Playing', platform: 'TestPlatform1'),
+      createBacklogGame(title: 'Test Game Backlog', platform: 'TestPlatform1'),
+      createCompletedGame(title: 'Different Game', platform: 'TestPlatform2'),
+    ];
+  }
+
+  /// Creates games for search testing with specific search-friendly titles
+  static List<GameItem> createSearchTestGames() {
+    return [
+      createTestGame(
+        title: 'Cyberpunk 2077',
+        platform: 'PC',
+        status: GameStatus.completed,
+      ),
+      createTestGame(
+        title: 'Cyberpunk Red',
+        platform: 'PS5',
+        status: GameStatus.playing,
+      ),
+      createTestGame(
+        title: 'The Witcher 3',
+        platform: 'PC',
+        status: GameStatus.backlog,
+      ),
+    ];
+  }
+
+  /// Adds a list of games to the container's game provider
+  static void addGamesToContainer(
+    ProviderContainer container,
+    List<GameItem> games,
+  ) {
+    final notifier = container.read(gameListProvider.notifier);
+    for (final game in games) {
+      notifier.addGame(game);
+    }
+  }
+
   /// Helper function to wait for games to load from the stream
   static Future<List<GameItem>> waitForGames(
     ProviderContainer container,

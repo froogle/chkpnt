@@ -100,15 +100,16 @@ class GameActionsService {
     BuildContext context, {
     bool isBacklogScreen = false,
   }) async {
-    // Use the provider's createGame method for automatic timestamp handling
     await _ref
         .read(gameListProvider.notifier)
-        .createGame(
-          title: newGame.title,
-          platform: newGame.platform,
-          status: newGame.status,
-          imagePath: newGame.imagePath,
-          remoteImageUrl: newGame.remoteImageUrl,
+        .addGame(
+          GameItem.create(
+            title: newGame.title,
+            platform: newGame.platform,
+            status: newGame.status,
+            imagePath: newGame.imagePath,
+            remoteImageUrl: newGame.remoteImageUrl,
+          ),
         );
 
     // Expand the relevant section for the new game's status

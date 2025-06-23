@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/shared/widgets/cards/game_card.dart';
+import '../../../test_helpers.dart';
 
 void main() {
   group('GameCard', () {
@@ -10,11 +11,7 @@ void main() {
     late VoidCallback onTapCallback;
 
     setUp(() {
-      testGame = GameItem.create(
-        title: 'Test Game',
-        platform: 'PC',
-        status: GameStatus.playing,
-      );
+      testGame = TestHelpers.createPlayingGame(title: 'Test Game');
       onTapCallback = () {};
     });
 

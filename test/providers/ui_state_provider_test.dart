@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/models/game_models.dart';
+import '../test_helpers.dart';
 
 void main() {
   group('SectionExpansion', () {
@@ -93,25 +94,14 @@ void main() {
         final notifier = container.read(sectionExpansionProvider.notifier);
 
         final playingGames = [
-          GameItem(
-            id: GameId.generate(),
-            title: 'Test Game 1',
-            platform: 'PS5',
-            status: GameStatus.playing,
-            lastModified: DateTime.now(),
-            lastStatusChange: DateTime.now(),
-          ),
+          TestHelpers.createPlayingGame(title: 'Test Game 1', platform: 'PS5'),
         ];
 
         final backlogGames = <GameItem>[];
         final completedGames = [
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createCompletedGame(
             title: 'Test Game 2',
             platform: 'Xbox',
-            status: GameStatus.completed,
-            lastModified: DateTime.now(),
-            lastStatusChange: DateTime.now(),
           ),
         ];
         final abandonedGames = <GameItem>[];
@@ -151,14 +141,7 @@ void main() {
         final notifier = container.read(sectionExpansionProvider.notifier);
 
         final gamesList = [
-          GameItem(
-            id: GameId.generate(),
-            title: 'Test Game',
-            platform: 'PS5',
-            status: GameStatus.playing,
-            lastModified: DateTime.now(),
-            lastStatusChange: DateTime.now(),
-          ),
+          TestHelpers.createPlayingGame(title: 'Test Game', platform: 'PS5'),
         ];
 
         notifier.updateExpansionBasedOnResults(

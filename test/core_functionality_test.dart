@@ -18,11 +18,9 @@ void main() {
 
     group('Game State Transitions', () {
       test('should transition game from backlog to playing', () {
-        // Create a backlog game
-        final backlogGame = GameItem.create(
+        // Create a backlog game using helper
+        final backlogGame = TestHelpers.createBacklogGame(
           title: 'Test Backlog Game',
-          platform: 'PC',
-          status: GameStatus.backlog,
         );
 
         // Add game to list
@@ -52,11 +50,10 @@ void main() {
       });
 
       test('should transition game from playing to completed', () {
-        // Create a playing game
-        final playingGame = GameItem.create(
+        // Create a playing game using helper
+        final playingGame = TestHelpers.createPlayingGame(
           title: 'Test Playing Game',
           platform: 'PS5',
-          status: GameStatus.playing,
         );
 
         container.read(gameListProvider.notifier).addGame(playingGame);
@@ -75,11 +72,10 @@ void main() {
       test(
         'should update game details while preserving timestamps correctly',
         () {
-          // Create original game
-          final originalGame = GameItem.create(
+          // Create original game using helper
+          final originalGame = TestHelpers.createBacklogGame(
             title: 'Original Title',
             platform: 'Switch',
-            status: GameStatus.backlog,
           );
 
           container.read(gameListProvider.notifier).addGame(originalGame);
@@ -107,11 +103,10 @@ void main() {
       test(
         'should update lastStatusChange when status changes via updateGame',
         () {
-          // Create original game
-          final originalGame = GameItem.create(
+          // Create original game using helper
+          final originalGame = TestHelpers.createBacklogGame(
             title: 'Status Change Test',
             platform: 'Xbox',
-            status: GameStatus.backlog,
           );
 
           container.read(gameListProvider.notifier).addGame(originalGame);
@@ -133,22 +128,12 @@ void main() {
 
     group('Game Filtering Logic', () {
       test('should filter games by status correctly', () {
-        // Add test games with different statuses
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Playing Game',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Backlog Game',
-              platform: 'PC',
-              status: GameStatus.backlog,
-            );
+        // Add test games with different statuses using helpers
+        final testGames = [
+          TestHelpers.createPlayingGame(title: 'Playing Game'),
+          TestHelpers.createBacklogGame(title: 'Backlog Game'),
+        ];
+        TestHelpers.addGamesToContainer(container, testGames);
 
         // Test filtering
         final playingGames = container.read(
@@ -165,21 +150,14 @@ void main() {
       });
 
       test('should filter games by platform correctly', () {
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'PC Game',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Switch Game',
-              platform: 'Switch',
-              status: GameStatus.playing,
-            );
+        final platformTestGames = [
+          TestHelpers.createPlayingGame(title: 'PC Game'),
+          TestHelpers.createPlayingGame(
+            title: 'Switch Game',
+            platform: 'Switch',
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, platformTestGames);
 
         final pcGames = container.read(gamesByPlatformProvider('PC'));
         final switchGames = container.read(gamesByPlatformProvider('Switch'));
@@ -191,22 +169,15 @@ void main() {
       });
 
       test('should apply complex filters correctly', () {
-        // Add games for complex filtering test
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Cyberpunk PC Playing',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Cyberpunk PS5 Completed',
-              platform: 'PS5',
-              status: GameStatus.completed,
-            );
+        // Add games for complex filtering test using helpers
+        final complexFilterGames = [
+          TestHelpers.createPlayingGame(title: 'Cyberpunk PC Playing'),
+          TestHelpers.createCompletedGame(
+            title: 'Cyberpunk PS5 Completed',
+            platform: 'PS5',
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, complexFilterGames);
 
         // Test status + platform + search filtering
         final filteredGames = container.read(
@@ -234,67 +205,56 @@ void main() {
 
     group('Game Creation and Management', () {
       test('should create game with auto-generated timestamps', () {
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'New Game',
-              platform: 'Steam Deck',
-              status: GameStatus.wishlist,
-            );
+        final newGame = TestHelpers.createTestGame(
+          title: 'New Game',
+          platform: 'Steam Deck',
+          status: GameStatus.wishlist,
+        );
+        container.read(gameListProvider.notifier).addGame(newGame);
 
         final games = container.read(gameListProvider);
-        final newGame = games.firstWhere((g) => g.title == 'New Game');
+        final addedGame = games.firstWhere((g) => g.title == 'New Game');
 
-        expect(newGame.platform, 'Steam Deck');
-        expect(newGame.status, GameStatus.wishlist);
+        expect(addedGame.platform, 'Steam Deck');
+        expect(addedGame.status, GameStatus.wishlist);
         // Simplified to avoid timestamp precision issues - just verify basic properties
-        expect(newGame.title, 'New Game');
-        expect(newGame.id.value.isNotEmpty, true);
+        expect(addedGame.title, 'New Game');
+        expect(addedGame.id.value.isNotEmpty, true);
       });
 
       test('should remove game correctly', () {
-        // Add a game to remove
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Game to Remove',
-              platform: 'PC',
-              status: GameStatus.backlog,
-            );
+        // Add a game to remove using helper
+        final gameToRemove = TestHelpers.createBacklogGame(
+          title: 'Game to Remove',
+        );
+        container.read(gameListProvider.notifier).addGame(gameToRemove);
 
         final initialGames = container.read(gameListProvider);
-        final gameToRemove = initialGames.firstWhere(
+        final addedGame = initialGames.firstWhere(
           (g) => g.title == 'Game to Remove',
         );
         final initialCount = initialGames.length;
 
         // Remove the game
-        container.read(gameListProvider.notifier).removeGame(gameToRemove.id);
+        container.read(gameListProvider.notifier).removeGame(addedGame.id);
 
         final finalGames = container.read(gameListProvider);
         expect(finalGames.length, initialCount - 1);
-        expect(finalGames.any((g) => g.id == gameToRemove.id), false);
+        expect(finalGames.any((g) => g.id == addedGame.id), false);
       });
 
       test('should maintain data integrity when modifying games list', () {
-        // Create multiple games
+        // Create multiple games using helpers
         final initialCount = container.read(gameListProvider).length;
 
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Integrity Test 1',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Integrity Test 2',
-              platform: 'Switch',
-              status: GameStatus.backlog,
-            );
+        final integrityTestGames = [
+          TestHelpers.createPlayingGame(title: 'Integrity Test 1'),
+          TestHelpers.createBacklogGame(
+            title: 'Integrity Test 2',
+            platform: 'Switch',
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, integrityTestGames);
 
         final games = container.read(gameListProvider);
         expect(games.length, initialCount + 2);
@@ -313,22 +273,15 @@ void main() {
 
     group('Platform Management', () {
       test('should provide available platforms correctly', () {
-        // Add games with various platforms
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Test PC',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Test Mobile',
-              platform: 'Mobile',
-              status: GameStatus.backlog,
-            );
+        // Add games with various platforms using helpers
+        final platformTestGames = [
+          TestHelpers.createPlayingGame(title: 'Test PC'),
+          TestHelpers.createBacklogGame(
+            title: 'Test Mobile',
+            platform: 'Mobile',
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, platformTestGames);
 
         final platforms = container.read(availablePlatformsProvider);
 
@@ -348,13 +301,10 @@ void main() {
 
     group('Search Functionality', () {
       test('should search games by title case-insensitively', () {
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'The Elder Scrolls',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
+        final searchTestGame = TestHelpers.createPlayingGame(
+          title: 'The Elder Scrolls',
+        );
+        container.read(gameListProvider.notifier).addGame(searchTestGame);
 
         final searchResults = container.read(
           searchFilteredGamesProvider('elder'),
@@ -370,13 +320,11 @@ void main() {
       });
 
       test('should search games by platform', () {
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Steam Game',
-              platform: 'Steam Deck',
-              status: GameStatus.playing,
-            );
+        final steamGame = TestHelpers.createPlayingGame(
+          title: 'Steam Game',
+          platform: 'Steam Deck',
+        );
+        container.read(gameListProvider.notifier).addGame(steamGame);
 
         final platformResults = container.read(
           searchFilteredGamesProvider('steam'),
@@ -394,30 +342,22 @@ void main() {
       });
 
       test('should find games with word-based matching', () {
-        // Add test games that should match word-based search
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Super Metroid',
-              platform: 'SNES',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Metroid Fusion',
-              platform: 'GBA',
-              status: GameStatus.completed,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Metroid: Zero Mission',
-              platform: 'GBA',
-              status: GameStatus.backlog,
-            );
+        // Add test games that should match word-based search using helpers
+        final metroidGames = [
+          TestHelpers.createPlayingGame(
+            title: 'Super Metroid',
+            platform: 'SNES',
+          ),
+          TestHelpers.createCompletedGame(
+            title: 'Metroid Fusion',
+            platform: 'GBA',
+          ),
+          TestHelpers.createBacklogGame(
+            title: 'Metroid: Zero Mission',
+            platform: 'GBA',
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, metroidGames);
 
         // Search for "Metroid" should find all three games
         final metroidResults = container.read(
@@ -441,13 +381,11 @@ void main() {
           ],
         );
 
-        testContainer
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'The Legend of Zelda: Breath of the Wild',
-              platform: 'Nintendo Switch',
-              status: GameStatus.playing,
-            );
+        final zeldaGame = TestHelpers.createPlayingGame(
+          title: 'The Legend of Zelda: Breath of the Wild',
+          platform: 'Nintendo Switch',
+        );
+        testContainer.read(gameListProvider.notifier).addGame(zeldaGame);
 
         // Should find partial matches
         final results = testContainer.read(
@@ -460,13 +398,11 @@ void main() {
       });
 
       test('should handle search with numbers', () {
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Persona 5 Royal',
-              platform: 'PS4',
-              status: GameStatus.completed,
-            );
+        final personaGame = TestHelpers.createCompletedGame(
+          title: 'Persona 5 Royal',
+          platform: 'PS4',
+        );
+        container.read(gameListProvider.notifier).addGame(personaGame);
 
         final results = container.read(searchFilteredGamesProvider('persona'));
         expect(results.length, 1);
@@ -481,13 +417,10 @@ void main() {
           ],
         );
 
-        testContainer
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Dark Souls',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
+        final darkSoulsGame = TestHelpers.createPlayingGame(
+          title: 'Dark Souls',
+        );
+        testContainer.read(gameListProvider.notifier).addGame(darkSoulsGame);
 
         // Should not find unrelated games
         final results = testContainer.read(

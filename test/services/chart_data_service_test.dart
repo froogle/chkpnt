@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/services/chart_data_service.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/screens/profile/widgets/shared/chart_segmented_control.dart';
+import '../test_helpers.dart';
 
 void main() {
   group('ChartDataService', () {
@@ -10,45 +11,26 @@ void main() {
 
     setUp(() {
       testGames = [
-        GameItem(
-          id: GameId.generate(),
+        TestHelpers.createPlayingGame(
           title: 'Game 1',
           platform: 'PlayStation 5',
-          status: GameStatus.playing,
-          lastStatusChange: DateTime.now(),
-          lastModified: DateTime.now(),
         ),
-        GameItem(
-          id: GameId.generate(),
+        TestHelpers.createCompletedGame(
           title: 'Game 2',
           platform: 'PlayStation 5',
-          status: GameStatus.completed,
-          lastStatusChange: DateTime.now(),
-          lastModified: DateTime.now(),
         ),
-        GameItem(
-          id: GameId.generate(),
+        TestHelpers.createBacklogGame(
           title: 'Game 3',
           platform: 'Xbox Series X',
-          status: GameStatus.backlog,
-          lastStatusChange: DateTime.now(),
-          lastModified: DateTime.now(),
         ),
-        GameItem(
-          id: GameId.generate(),
+        TestHelpers.createPlayingGame(
           title: 'Game 4',
           platform: 'Nintendo Switch',
-          status: GameStatus.playing,
-          lastStatusChange: DateTime.now(),
-          lastModified: DateTime.now(),
         ),
-        GameItem(
-          id: GameId.generate(),
+        TestHelpers.createTestGame(
           title: 'Game 5',
           platform: 'PlayStation 5',
           status: GameStatus.wishlist,
-          lastStatusChange: DateTime.now(),
-          lastModified: DateTime.now(),
         ),
       ];
     });
@@ -89,21 +71,13 @@ void main() {
 
       test('handles single platform correctly', () {
         final singlePlatformGames = [
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createPlayingGame(
             title: 'Game 1',
             platform: 'PlayStation 5',
-            status: GameStatus.playing,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createCompletedGame(
             title: 'Game 2',
             platform: 'PlayStation 5',
-            status: GameStatus.completed,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
         ];
 
@@ -171,53 +145,31 @@ void main() {
 
       test('handles all game statuses', () {
         final allStatusGames = [
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createPlayingGame(
             title: 'Game 1',
             platform: 'PlayStation 5',
-            status: GameStatus.playing,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createCompletedGame(
             title: 'Game 2',
             platform: 'PlayStation 5',
-            status: GameStatus.completed,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createBacklogGame(
             title: 'Game 3',
             platform: 'PlayStation 5',
-            status: GameStatus.backlog,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createAbandonedGame(
             title: 'Game 4',
             platform: 'PlayStation 5',
-            status: GameStatus.abandoned,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createTestGame(
             title: 'Game 5',
             platform: 'PlayStation 5',
             status: GameStatus.wishlist,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
-          GameItem(
-            id: GameId.generate(),
+          TestHelpers.createTestGame(
             title: 'Game 6',
             platform: 'PlayStation 5',
             status: GameStatus.ordered,
-            lastStatusChange: DateTime.now(),
-            lastModified: DateTime.now(),
           ),
         ];
 

@@ -21,13 +21,7 @@ void main() {
     group('Game Actions Service', () {
       test('should correctly determine status display names', () {
         // Test private method indirectly through service behaviour
-
-        // Create games with different statuses
-        final testGame = GameItem.create(
-          title: 'Test Game',
-          platform: 'PC',
-          status: GameStatus.backlog,
-        );
+        final testGame = TestHelpers.createBacklogGame(title: 'Test Game');
 
         container.read(gameListProvider.notifier).addGame(testGame);
 
@@ -42,10 +36,8 @@ void main() {
 
       test('should handle game status transitions correctly', () {
         // Test backlog -> playing
-        final backlogGame = GameItem.create(
+        final backlogGame = TestHelpers.createBacklogGame(
           title: 'Backlog to Playing',
-          platform: 'PC',
-          status: GameStatus.backlog,
         );
 
         container.read(gameListProvider.notifier).addGame(backlogGame);
@@ -66,22 +58,18 @@ void main() {
       });
 
       test('should update section expansion based on filters', () {
-        // Add test games
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'PC Playing Game',
-              platform: 'PC',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Switch Backlog Game',
-              platform: 'Switch',
-              status: GameStatus.backlog,
-            );
+        // Add test games using helper
+        final testGames = [
+          TestHelpers.createPlayingGame(
+            title: 'PC Playing Game',
+            platform: 'PC',
+          ),
+          TestHelpers.createBacklogGame(
+            title: 'Switch Backlog Game',
+            platform: 'Switch',
+          ),
+        ];
+        TestHelpers.addGamesToContainer(container, testGames);
 
         // Apply PC filter
         container.read(selectedPlatformProvider.notifier).selectPlatform('PC');
@@ -98,22 +86,9 @@ void main() {
       });
 
       test('should handle complex filter scenarios', () {
-        // Add diverse test data
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Cyberpunk PC Completed',
-              platform: 'PC',
-              status: GameStatus.completed,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Cyberpunk PS5 Playing',
-              platform: 'PS5',
-              status: GameStatus.playing,
-            );
+        // Add diverse test data using helper
+        final testGames = TestHelpers.createFilterTestGames();
+        TestHelpers.addGamesToContainer(container, testGames);
 
         // Apply platform + search filters
         container.read(selectedPlatformProvider.notifier).selectPlatform('PC');
@@ -175,21 +150,11 @@ void main() {
       test('should update expansion based on game results', () {
         final notifier = container.read(sectionExpansionProvider.notifier);
 
-        // Mock filtered results
-        final playingGames = [
-          GameItem.create(
-            title: 'Game 1',
-            platform: 'PC',
-            status: GameStatus.playing,
-          ),
-        ];
+        // Mock filtered results using helpers
+        final playingGames = [TestHelpers.createPlayingGame(title: 'Game 1')];
         final emptyBacklog = <GameItem>[];
         final completedGames = [
-          GameItem.create(
-            title: 'Game 2',
-            platform: 'PC',
-            status: GameStatus.completed,
-          ),
+          TestHelpers.createCompletedGame(title: 'Game 2'),
         ];
         final emptyAbandoned = <GameItem>[];
 
@@ -261,29 +226,8 @@ void main() {
 
       test('should combine filters correctly', () {
         // Use unique platforms to avoid conflicts with sample data
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Test Game Playing',
-              platform: 'TestPlatform1',
-              status: GameStatus.playing,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Test Game Backlog',
-              platform: 'TestPlatform1',
-              status: GameStatus.backlog,
-            );
-
-        container
-            .read(gameListProvider.notifier)
-            .createGame(
-              title: 'Different Game',
-              platform: 'TestPlatform2',
-              status: GameStatus.completed,
-            );
+        final uniqueGames = TestHelpers.createUniquePlatformGames();
+        TestHelpers.addGamesToContainer(container, uniqueGames);
 
         // Test platform filter only
         final platform1Games = container.read(
@@ -317,11 +261,9 @@ void main() {
 
     group('Data Consistency', () {
       test('should maintain referential integrity', () {
-        // Create and add game
-        final originalGame = GameItem.create(
+        // Create and add game using helper
+        final originalGame = TestHelpers.createBacklogGame(
           title: 'Integrity Test',
-          platform: 'PC',
-          status: GameStatus.backlog,
         );
 
         container.read(gameListProvider.notifier).addGame(originalGame);
@@ -346,11 +288,9 @@ void main() {
       });
 
       test('should handle concurrent state changes', () {
-        // Create test game
-        final testGame = GameItem.create(
+        // Create test game using helper
+        final testGame = TestHelpers.createBacklogGame(
           title: 'Concurrent Test',
-          platform: 'PC',
-          status: GameStatus.backlog,
         );
 
         container.read(gameListProvider.notifier).addGame(testGame);
