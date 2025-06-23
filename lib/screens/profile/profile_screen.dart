@@ -5,10 +5,10 @@ import 'package:chkpnt/styles/profile_styles.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
 import 'package:chkpnt/services/navigation_service.dart';
-import 'widgets/profile_subscription_section.dart';
-import 'widgets/profile_visualisation_section.dart';
-import 'widgets/profile_incoming_games_section.dart';
-import 'widgets/profile_header.dart';
+import 'package:chkpnt/screens/profile/widgets/profile_subscription_section.dart';
+import 'package:chkpnt/screens/profile/widgets/profile_visualisation_section.dart';
+import 'package:chkpnt/screens/profile/widgets/profile_incoming_games_section.dart';
+import 'package:chkpnt/screens/profile/widgets/profile_header.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
-import 'widgets/main_screen_header.dart';
-import 'widgets/main_screen_bottom_nav.dart';
+import 'package:chkpnt/screens/main/widgets/main_screen_header.dart';
+import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
 import 'package:chkpnt/screens/main/widgets/game_section.dart';
 import 'package:chkpnt/screens/main/widgets/animations/game_transition_animation.dart';
 import 'package:chkpnt/screens/main/widgets/animations/game_detail_sheet_animation.dart';
