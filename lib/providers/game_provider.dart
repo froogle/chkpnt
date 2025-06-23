@@ -50,26 +50,6 @@ class GameList extends _$GameList {
     await repository.createGame(game);
   }
 
-  // /// Convenience method for creating new games without timestamp concerns.
-  // /// This is the preferred method for UI code to add games as it automatically
-  // /// handles timestamp generation.
-  // Future<void> createGame({
-  //   required String title,
-  //   required String platform,
-  //   required GameStatus status,
-  //   String? imagePath,
-  //   String? remoteImageUrl,
-  // }) async {
-  //   final game = GameItem.create(
-  //     title: title,
-  //     platform: platform,
-  //     status: status,
-  //     imagePath: imagePath,
-  //     remoteImageUrl: remoteImageUrl,
-  //   );
-  //   await addGame(game);
-  // }
-
   // Update an existing game
   Future<void> updateGame(GameItem updatedGame) async {
     final repository = ref.read(gameRepositoryProvider);
