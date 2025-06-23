@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/main_screen_styles.dart';
 import 'package:chkpnt/styles/global_styles.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
 
 class MainScreenBottomNav extends ConsumerWidget {
   final Function(int)? onNavItemPressed;
@@ -11,7 +10,8 @@ class MainScreenBottomNav extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentScreen = ref.watch(currentScreenProvider);
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final currentScreen = _getScreenIndexFromRoute(currentRoute);
 
     return Container(
       height: MainScreenStyles.bottomNavHeight,
@@ -40,5 +40,20 @@ class MainScreenBottomNav extends ConsumerWidget {
         size: isActive ? 26 : 24,
       ),
     );
+  }
+
+  int _getScreenIndexFromRoute(String? route) {
+    switch (route) {
+      case '/main':
+        return 0;
+      case '/backlog':
+        return 1;
+      case '/wishlist':
+        return 2;
+      case '/profile':
+        return 3;
+      default:
+        return 0;
+    }
   }
 }

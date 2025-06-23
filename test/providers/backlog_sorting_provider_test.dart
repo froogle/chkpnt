@@ -105,31 +105,6 @@ void main() {
     tearDown(() {
       container.dispose();
     });
-
-    test('should have default screen as home (0)', () {
-      final currentScreen = container.read(currentScreenProvider);
-      expect(currentScreen, 0);
-    });
-
-    test('should update current screen', () {
-      final notifier = container.read(currentScreenProvider.notifier);
-
-      // Navigate to backlog (index 1)
-      notifier.setScreen(1);
-      expect(container.read(currentScreenProvider), 1);
-
-      // Navigate to wishlist (index 2)
-      notifier.setScreen(2);
-      expect(container.read(currentScreenProvider), 2);
-
-      // Navigate back to home (index 0)
-      notifier.setScreen(0);
-      expect(container.read(currentScreenProvider), 0);
-
-      // Navigate to profile (index 3)
-      notifier.setScreen(3);
-      expect(container.read(currentScreenProvider), 3);
-    });
   });
 
   group('Backlog Sorting Integration', () {

@@ -34,10 +34,6 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
     super.initState();
     _setupScrollingComponents();
     _setupProviderListeners();
-    // Set current screen for nav indicator
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(currentScreenProvider.notifier).setScreen(1);
-    });
   }
 
   void _setupScrollingComponents() {

@@ -32,8 +32,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     // Update section expansion based on content when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateWishlistSectionExpansion();
-      // Set current screen for nav indicator
-      ref.read(currentScreenProvider.notifier).setScreen(2);
     });
   }
 

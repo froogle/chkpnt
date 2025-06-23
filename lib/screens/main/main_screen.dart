@@ -4,9 +4,9 @@ import 'package:chkpnt/styles/styles.dart';
 import 'widgets/main_screen_header.dart';
 import 'widgets/main_screen_bottom_nav.dart';
 import 'package:chkpnt/shared/widgets/layout/universal_scroll_handler.dart';
-import 'widgets/game_section.dart';
-import 'widgets/animations/game_transition_animation.dart';
-import 'widgets/animations/game_detail_sheet_animation.dart';
+import 'package:chkpnt/screens/main/widgets/game_section.dart';
+import 'package:chkpnt/screens/main/widgets/animations/game_transition_animation.dart';
+import 'package:chkpnt/screens/main/widgets/animations/game_detail_sheet_animation.dart';
 import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
@@ -32,10 +32,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     super.initState();
     _setupScrollingComponents();
     _setupProviderListeners();
-    // Set current screen for nav indicator
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(currentScreenProvider.notifier).setScreen(0);
-    });
   }
 
   void _setupScrollingComponents() {

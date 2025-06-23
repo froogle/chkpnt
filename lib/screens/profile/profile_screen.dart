@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/styles/profile_styles.dart';
 import 'package:chkpnt/styles/global_styles.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
 import 'widgets/profile_subscription_section.dart';
 import 'widgets/profile_visualisation_section.dart';
@@ -21,10 +20,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Set current screen for nav indicator
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(currentScreenProvider.notifier).setScreen(3);
-    });
   }
 
   @override

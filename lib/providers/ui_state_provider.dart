@@ -68,17 +68,6 @@ class BacklogSortDirectionState extends _$BacklogSortDirectionState {
   }
 }
 
-// Current screen tracking for nav indicator
-@riverpod
-class CurrentScreen extends _$CurrentScreen {
-  @override
-  int build() => 0; // Default to home screen
-
-  void setScreen(int screenIndex) {
-    state = screenIndex;
-  }
-}
-
 // Section expansion state - Using Notifier to preserve state across navigation
 @Riverpod(keepAlive: true)
 class SectionExpansion extends _$SectionExpansion {

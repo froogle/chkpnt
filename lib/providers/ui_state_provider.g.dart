@@ -216,23 +216,6 @@ final backlogSortDirectionStateProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$BacklogSortDirectionState = AutoDisposeNotifier<SortDirection>;
-String _$currentScreenHash() => r'aaff6e1b0d0540586b2b99f6de3ca7140af288c1';
-
-/// See also [CurrentScreen].
-@ProviderFor(CurrentScreen)
-final currentScreenProvider =
-    AutoDisposeNotifierProvider<CurrentScreen, int>.internal(
-      CurrentScreen.new,
-      name: r'currentScreenProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$currentScreenHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$CurrentScreen = AutoDisposeNotifier<int>;
 String _$sectionExpansionHash() => r'79ca889a67f8cbe9c5a620b8418adebea60cd433';
 
 /// See also [SectionExpansion].
