@@ -248,7 +248,6 @@ class EmptyGameListNotifier extends GameList {
     // Empty implementation for testing
   }
 
-  @override
   Future<void> createGame({
     required String title,
     required String platform,
@@ -295,7 +294,6 @@ class IsolatedTestGameListNotifier extends GameList {
     ref.invalidateSelf();
   }
 
-  @override
   Future<void> createGame({
     required String title,
     required String platform,
@@ -383,7 +381,6 @@ class TestGameListNotifier extends GameList {
     ref.invalidateSelf();
   }
 
-  @override
   Future<void> createGame({
     required String title,
     required String platform,

@@ -511,7 +511,6 @@ void main() {
       });
 
       test('should work with all game statuses', () {
-        final notifier = container.read(gameListProvider.notifier);
         final statuses = [
           GameStatus.playing,
           GameStatus.completed,
