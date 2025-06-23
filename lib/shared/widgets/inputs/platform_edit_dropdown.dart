@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/styles/edit_screen_styles.dart';
-import 'platform_selection_bottom_sheet.dart';
-import 'custom_platform_dialog.dart';
+import 'package:chkpnt/shared/widgets/inputs/platform_selection_bottom_sheet.dart';
+import 'package:chkpnt/shared/widgets/inputs/custom_platform_dialog.dart';
 
 class PlatformEditDropdown extends StatelessWidget {
   final String selectedPlatform;
