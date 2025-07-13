@@ -11,6 +11,7 @@ import 'package:chkpnt/screens/edit/widgets/game_edit_info_section.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_actions.dart';
 import 'package:chkpnt/screens/edit/widgets/animations/animated_edit_form.dart';
 import 'package:chkpnt/screens/edit/widgets/image_selection_bottom_sheet.dart';
+import 'package:chkpnt/screens/image_search/image_search_screen.dart';
 
 class GameEditScreen extends ConsumerStatefulWidget {
   final GameItem? game;
@@ -299,6 +300,17 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         _removeImage();
       } else if (result is GameImageSource) {
         await _selectImage(result);
+      } else if (result == 'search') {
+        final selectedImageUrl = await Navigator.of(context).push<String>(
+          MaterialPageRoute(
+            builder:
+                (context) =>
+                    ImageSearchScreen(initialQuery: _titleController.text),
+          ),
+        );
+        if (selectedImageUrl != null) {
+          await _selectImageFromUrl(selectedImageUrl);
+        }
       }
     }
   }
@@ -307,6 +319,18 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     final gameImageService = ref.read(gameImageServiceProvider);
     final imagePath = await gameImageService.selectAndSaveImage(source);
 
+    if (imagePath != null) {
+      ref
+          .read(gameEditStateProvider(_editContext).notifier)
+          .updateImagePath(imagePath);
+    }
+  }
+
+  Future<void> _selectImageFromUrl(String imageUrl) async {
+    final gameImageService = ref.read(gameImageServiceProvider);
+    final imagePath = await gameImageService.downloadAndSaveImageFromUrl(
+      imageUrl,
+    );
     if (imagePath != null) {
       ref
           .read(gameEditStateProvider(_editContext).notifier)

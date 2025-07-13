@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
+import 'package:http/http.dart' as http;
 import 'storage_service.dart';
 
 enum GameImageSource { gallery, files }
@@ -143,6 +144,23 @@ class GameImageService {
       return await _saveImageBytes(processedBytes);
     } catch (e) {
       debugPrint('Error processing image: $e');
+      return null;
+    }
+  }
+
+  /// Downloads an image from a URL and saves it to persistent storage
+  Future<String?> downloadAndSaveImageFromUrl(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        final Uint8List imageBytes = response.bodyBytes;
+        return await _saveImageBytes(imageBytes);
+      } else {
+        debugPrint('Failed to download image: HTTP ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error downloading image: $e');
       return null;
     }
   }

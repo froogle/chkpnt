@@ -65,6 +65,8 @@ class ImageSelectionBottomSheet extends StatelessWidget {
           _buildGalleryOption(context),
           const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
           _buildFilesOption(context),
+          const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
+          _buildSearchOption(context),
           if (hasExistingImage) ...[
             const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
             _buildRemoveOption(context),
@@ -91,6 +93,16 @@ class ImageSelectionBottomSheet extends StatelessWidget {
       title: 'File Browser',
       subtitle: 'Choose from files',
       onTap: () => _handleSourceSelection(context, GameImageSource.files),
+    );
+  }
+
+  Widget _buildSearchOption(BuildContext context) {
+    return _buildOptionTile(
+      context: context,
+      icon: Icons.search,
+      title: 'Search',
+      subtitle: 'Find a cover image online',
+      onTap: () => _handleSearchSelection(context),
     );
   }
 
@@ -184,6 +196,10 @@ class ImageSelectionBottomSheet extends StatelessWidget {
 
   void _handleRemoveImage(BuildContext context) {
     Navigator.of(context).pop('remove');
+  }
+
+  void _handleSearchSelection(BuildContext context) {
+    Navigator.of(context).pop('search');
   }
 
   /// Shows the image selection bottom sheet
