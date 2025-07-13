@@ -12,8 +12,8 @@ void main() {
     // Should show loading indicator
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     // Wait for search to complete
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-    // Should show empty state (no images found)
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+    // Should show empty state (no images found in test environment)
     expect(find.text('No images found.'), findsOneWidget);
   });
 }

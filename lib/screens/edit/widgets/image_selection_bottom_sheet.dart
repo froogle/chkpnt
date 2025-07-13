@@ -17,13 +17,15 @@ class ImageSelectionBottomSheet extends StatelessWidget {
     return Container(
       decoration: ImageSelectionStyles.sheetDecoration,
       child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildHeader(),
-            _buildOptions(context),
-            const SizedBox(height: ImageSelectionStyles.bottomSpacing),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeader(),
+              _buildOptions(context),
+              const SizedBox(height: ImageSelectionStyles.bottomSpacing),
+            ],
+          ),
         ),
       ),
     );
