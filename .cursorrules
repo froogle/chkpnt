@@ -12,128 +12,6 @@
 - **Test Everything** - All new functionality must have comprehensive tests
 - **Quality Assurance** - Always run Flutter Analyze and tests after changes
 
-## 📁 Project Architecture - Current Production Structure
-
-This is a **production-ready Flutter application** with **Drift/SQLite persistence**, **Riverpod streaming state management**, and **comprehensive screen features**:
-
-```
-lib/
-├── models/                         # Freezed immutable data models
-│   ├── game_models.dart           # Core GameItem with GameStatus enum
-│   ├── game_models.freezed.dart   # Generated immutable classes
-│   ├── game_models.g.dart         # Generated JSON serialization
-│   └── README.md
-├── providers/                      # Riverpod streaming state management
-│   ├── game_provider.dart         # Main game CRUD and streaming
-│   ├── game_provider.g.dart       # Generated Riverpod providers
-│   ├── ui_state_provider.dart     # UI state management
-│   ├── ui_state_provider.g.dart   # Generated UI providers
-│   └── README.md
-├── repositories/                   # Data access layer
-│   ├── game_repository.dart       # Abstract repository interface
-│   ├── drift_game_repository.dart # SQLite implementation with Drift
-│   ├── drift_game_repository.g.dart # Generated Drift database
-│   └── README.md
-├── services/                       # Business logic and domain services
-│   ├── game_actions_service.dart  # Game business logic
-│   ├── game_image_service.dart    # Image handling and processing
-│   ├── backup_service.dart        # Data backup and export
-│   ├── chart_data_service.dart    # Statistics and chart data
-│   ├── storage_service.dart       # File system abstraction
-│   └── README.md
-├── screens/                        # Feature-based screen organisation
-│   ├── main/                      # Main dashboard screen
-│   │   ├── widgets/               # Main screen specific widgets
-│   │   │   ├── animations/        # Game transitions and animations
-│   │   │   ├── game_detail_sheet.dart
-│   │   │   ├── game_detail_sheet_actions.dart
-│   │   │   ├── game_detail_sheet_info.dart
-│   │   │   └── main_screen_header.dart
-│   │   └── main_screen.dart
-│   ├── backlog/                   # Backlog management screen
-│   │   ├── widgets/
-│   │   │   ├── backlog_platform_section.dart
-│   │   │   ├── backlog_sorting_controls.dart
-│   │   │   └── sort_chip.dart
-│   │   └── backlog_screen.dart
-│   ├── wishlist/                  # Wishlist and ordered games
-│   │   └── wishlist_screen.dart
-│   ├── profile/                   # Statistics and visualizations
-│   │   ├── widgets/
-│   │   │   ├── shared/
-│   │   │   │   ├── chart_segmented_control.dart
-│   │   │   │   └── profile_empty_state.dart
-│   │   │   ├── visualization/
-│   │   │   │   └── profile_pie_chart.dart
-│   │   │   ├── profile_header.dart
-│   │   │   ├── profile_incoming_games_section.dart
-│   │   │   └── profile_subscription_section.dart
-│   │   └── profile_screen.dart
-│   ├── edit/                      # Game editing interface
-│   │   ├── widgets/
-│   │   │   ├── animations/
-│   │   │   │   ├── animated_edit_form.dart
-│   │   │   │   └── edit_screen_transition.dart
-│   │   │   ├── edit_screen_page_route.dart
-│   │   │   ├── game_edit_actions.dart
-│   │   │   ├── game_edit_info_section.dart
-│   │   │   ├── image_selection_bottom_sheet.dart
-│   │   │   └── platform_entry_screen.dart
-│   │   └── game_edit_screen.dart
-│   ├── onboarding/                # User onboarding flow
-│   │   ├── widgets/
-│   │   │   ├── onboarding_overlay.dart
-│   │   │   └── onboarding_subscription_overlay.dart
-│   │   └── onboarding_screen.dart
-│   └── splash/                    # Splash screen
-│       └── splash_screen.dart
-├── shared/                        # Truly reusable UI components
-│   └── widgets/                   # Components used by 2+ screens
-│       ├── cards/                 # Game display components
-│       │   ├── game_card.dart     # Primary game card component
-│       │   └── game_image.dart    # Game image with fallbacks
-│       ├── inputs/                # Form inputs and search controls
-│       │   ├── platform_edit_dropdown.dart
-│       │   ├── custom_platform_dialog.dart
-│       │   ├── platform_selection_bottom_sheet.dart
-│       │   ├── game_status_selector.dart
-│       │   ├── android13_text_field_wrapper.dart
-│       │   ├── auto_focus_text_field.dart
-│       │   ├── compact_search_bar.dart
-│       │   ├── platform_filter_dropdown.dart
-│       │   └── README.md
-│       ├── buttons/               # Interactive elements and badges
-│       │   ├── close_button.dart
-│       │   ├── platform_badge.dart
-│       │   └── status_button.dart
-│       └── layout/                # Layout helpers and containers
-│           ├── async_value_widget.dart
-│           ├── collapsible_section.dart
-│           ├── empty_state_widget.dart
-│           ├── responsive_layout.dart
-│           └── section_header.dart
-├── styles/                        # Centralised styling system
-│   ├── styles.dart               # Barrel export for all modules
-│   ├── themes.dart               # Global app themes (light/dark)
-│   ├── global_styles.dart        # Shared colours, shadows, text styles
-│   ├── game_card_styles.dart     # Game card specific styling
-│   ├── backlog_styles.dart       # Backlog screen styling
-│   ├── edit_screen_styles.dart   # Edit screen styling
-│   ├── game_detail_sheet_styles.dart # Detail sheet styling
-│   ├── image_selection_styles.dart # Image selection styling
-│   ├── input_styles.dart         # Form inputs styling
-│   ├── layout_styles.dart        # Layout and structural styling
-│   ├── main_screen_styles.dart   # Main screen styling
-│   ├── onboarding_styles.dart    # Onboarding and splash styling
-│   ├── platform_entry_styles.dart # Platform entry styling
-│   ├── profile_styles.dart       # Profile screen styling
-│   └── README.md
-├── utils/                         # Utility functions
-│   ├── platform_utils.dart      # Platform-specific utilities
-│   └── ui_utils.dart             # UI helper functions
-└── main.dart
-```
-
 ## 🔄 State Management - Riverpod Streaming Architecture
 
 ### 🎯 Core State Management Principles
@@ -319,6 +197,105 @@ Container(
 - **Animations** in `screens/[feature]/widgets/animations/`
 - **Truly reusable components** in `shared/widgets/`
 
+### 🚨 **CRITICAL: Avoid Excessive Nesting and Embedded Styles**
+
+#### ❌ **FORBIDDEN PATTERNS** - These create unmaintainable code:
+```dart
+// NEVER have deeply nested widget trees in build methods
+Widget _buildContent() {
+  return Column(
+    children: [
+      Expanded(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          child: Row(
+                            children: [
+                              // More nesting...
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+// NEVER use embedded styles with hardcoded values
+AppBar(
+  title: Text(
+    'Title',
+    style: TextStyle(
+      color: Colors.black87,        // ❌ Hardcoded colour
+      fontSize: 18,                 // ❌ Magic number
+      fontWeight: FontWeight.w600,  // ❌ Hardcoded style
+    ),
+  ),
+)
+
+// NEVER use magic numbers in layouts
+const SizedBox(width: 20),  // ❌ Magic number
+const SizedBox(height: 16), // ❌ Magic number
+```
+
+#### ✅ **REQUIRED PATTERNS** - Always extract widgets and use centralised styling:
+```dart
+// ALWAYS extract complex nested structures into separate widgets
+Widget _buildContent() {
+  return Column(
+    children: [
+      Expanded(child: _buildScrollableContent()),
+      _buildBottomSection(),
+    ],
+  );
+}
+
+Widget _buildScrollableContent() {
+  return SingleChildScrollView(
+    child: Column(
+      children: [
+        _buildHeaderSection(),
+        _buildMainContent(),
+      ],
+    ),
+  );
+}
+
+Widget _buildHeaderSection() {
+  return Row(
+    children: [
+      _buildImageSection(),
+      _buildInfoSection(),
+    ],
+  );
+}
+
+// ALWAYS use centralised styles for all styling
+AppBar(
+  title: Text(
+    'Title',
+    style: EditScreenStyles.appBarTitleStyle, // ✅ Centralised style
+  ),
+)
+
+// ALWAYS use named constants for spacing
+const SizedBox(width: EditScreenStyles.horizontalSpacing),  // ✅ Named constant
+const SizedBox(height: EditScreenStyles.verticalSpacing),   // ✅ Named constant
+```
+
 ### Extract Complex Build Methods Pattern
 ```dart
 @override
@@ -477,6 +454,9 @@ flutter test --coverage
 - **Magic numbers** - use named constants from styles
 - **Inline styling** - use centralised style classes
 - **Missing test coverage** for new functionality
+- **Excessive widget nesting** - extract complex structures into separate widgets
+- **Embedded styles** - never use inline TextStyle with hardcoded colours/fonts
+- **Deep widget trees** - break down complex layouts into smaller, focused widgets
 
 ## 🎯 Key Implementation Features
 

@@ -182,4 +182,20 @@ class EditScreenStyles {
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(platformListBorderRadius),
       );
+
+  // AppBar styles
+  static const TextStyle appBarTitleStyle = TextStyle(
+    color: Colors.black87,
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const Color appBarBackgroundColour = Colors.white;
+  static const Color appBarIconColour = Colors.black87;
+
+  // Layout spacing constants
+  static const double horizontalSpacing = 20.0;
+  static const double horizontalSpacingLandscape = 24.0;
+  static const double verticalSpacing = 16.0;
+  static const double gameImageWidthLandscape = 120.0;
 }
