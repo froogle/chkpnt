@@ -124,40 +124,6 @@ class GameDatabase extends _$GameDatabase {
   Future<void> deleteGameInternal(String gameId) async {
     await (delete(games)..where((t) => t.id.equals(gameId))).go();
   }
-
-  Future<List<GameItem>> searchGamesInternal(String query) async {
-    if (query.isEmpty) return await getAllGamesInternal();
-
-    final searchPattern = '%${query.toLowerCase()}%';
-    final searchQuery = select(games)..where(
-      (t) =>
-          t.title.lower().like(searchPattern) |
-          t.platform.lower().like(searchPattern),
-    );
-    final results = await searchQuery.get();
-    return results.map(_gameToGameItem).toList();
-  }
-
-  Future<List<GameItem>> getGamesByStatusInternal(int statusIndex) async {
-    final query = select(games)..where((t) => t.status.equals(statusIndex));
-    final results = await query.get();
-    return results.map(_gameToGameItem).toList();
-  }
-
-  Future<List<GameItem>> getGamesByPlatformInternal(String platform) async {
-    final query = select(games)..where((t) => t.platform.equals(platform));
-    final results = await query.get();
-    return results.map(_gameToGameItem).toList();
-  }
-
-  Future<List<String>> getDistinctPlatformsInternal() async {
-    final query = selectOnly(games, distinct: true)
-      ..addColumns([games.platform]);
-    final results = await query.get();
-    final platforms =
-        results.map((row) => row.read(games.platform)!).toList()..sort();
-    return ['All', ...platforms];
-  }
 }
 
 /// Drift repository implementation
@@ -190,28 +156,6 @@ class DriftGameRepository implements GameRepository {
       return await _database.getGameByIdInternal(gameId.value);
     } catch (e) {
       throw StorageException('Failed to get game by ID', originalError: e);
-    }
-  }
-
-  @override
-  Future<List<GameItem>> getGamesByStatus(GameStatus status) async {
-    try {
-      return await _database.getGamesByStatusInternal(status.index);
-    } catch (e) {
-      throw StorageException('Failed to get games by status', originalError: e);
-    }
-  }
-
-  @override
-  Future<List<GameItem>> getGamesByPlatform(String platform) async {
-    try {
-      if (platform == 'All') return await getAllGames();
-      return await _database.getGamesByPlatformInternal(platform);
-    } catch (e) {
-      throw StorageException(
-        'Failed to get games by platform',
-        originalError: e,
-      );
     }
   }
 
@@ -275,28 +219,6 @@ class DriftGameRepository implements GameRepository {
     } catch (e) {
       if (e is GameNotFoundException) rethrow;
       throw StorageException('Failed to delete game', originalError: e);
-    }
-  }
-
-  @override
-  Future<List<GameItem>> searchGames(String query) async {
-    try {
-      if (query.isEmpty) return await getAllGames();
-      return await _database.searchGamesInternal(query);
-    } catch (e) {
-      throw StorageException('Failed to search games', originalError: e);
-    }
-  }
-
-  @override
-  Future<List<String>> getDistinctPlatforms() async {
-    try {
-      return await _database.getDistinctPlatformsInternal();
-    } catch (e) {
-      throw StorageException(
-        'Failed to get distinct platforms',
-        originalError: e,
-      );
     }
   }
 

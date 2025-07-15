@@ -488,17 +488,6 @@ class TestGameRepository implements GameRepository {
   }
 
   @override
-  Future<List<GameItem>> getGamesByStatus(GameStatus status) async {
-    return _games.where((game) => game.status == status).toList();
-  }
-
-  @override
-  Future<List<GameItem>> getGamesByPlatform(String platform) async {
-    if (platform == 'All') return List.from(_games);
-    return _games.where((game) => game.platform == platform).toList();
-  }
-
-  @override
   Future<GameItem> createGame(GameItem game) async {
     final gameWithTimestamps = game.copyWith(
       lastModified: DateTime.now(),
@@ -542,35 +531,6 @@ class TestGameRepository implements GameRepository {
     }
 
     _controller.add(List.from(_games));
-  }
-
-  @override
-  Future<List<GameItem>> searchGames(String query) async {
-    if (query.isEmpty) return List.from(_games);
-
-    return _games
-        .where((game) => _testMatchesSearchQuery(game, query))
-        .toList();
-  }
-
-  /// Simple search matching logic for tests
-  bool _testMatchesSearchQuery(GameItem game, String searchQuery) {
-    final query = searchQuery.toLowerCase().trim();
-    final title = game.title.toLowerCase();
-    final platform = game.platform.toLowerCase();
-
-    // If query is empty, match everything
-    if (query.isEmpty) return true;
-
-    // Simple substring match - this will find "Super Metroid" when searching "metroid"
-    return title.contains(query) || platform.contains(query);
-  }
-
-  @override
-  Future<List<String>> getDistinctPlatforms() async {
-    final platforms = _games.map((game) => game.platform).toSet().toList();
-    platforms.sort();
-    return ['All', ...platforms];
   }
 
   @override

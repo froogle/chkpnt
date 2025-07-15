@@ -15,12 +15,6 @@ abstract class GameRepository {
   /// Get a specific game by ID
   Future<GameItem?> getGameById(GameId gameId);
 
-  /// Get games filtered by status
-  Future<List<GameItem>> getGamesByStatus(GameStatus status);
-
-  /// Get games filtered by platform
-  Future<List<GameItem>> getGamesByPlatform(String platform);
-
   /// Create a new game
   Future<GameItem> createGame(GameItem game);
 
@@ -29,12 +23,6 @@ abstract class GameRepository {
 
   /// Delete a game
   Future<void> deleteGame(GameId gameId);
-
-  /// Search games by title or platform
-  Future<List<GameItem>> searchGames(String query);
-
-  /// Get distinct platforms from all games
-  Future<List<String>> getDistinctPlatforms();
 
   /// Close/dispose the repository
   Future<void> dispose();

@@ -171,8 +171,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildPortraitLayout() {
-    // Use ref.read to avoid rebuilds that interfere with focus
-    final editState = ref.read(gameEditStateProvider(_editContext));
+    // Use ref.watch to listen for state changes (like image updates)
+    final editState = ref.watch(gameEditStateProvider(_editContext));
 
     return Column(
       children: [
@@ -207,8 +207,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildLandscapeLayout() {
-    // Use ref.read to avoid rebuilds that interfere with focus
-    final editState = ref.read(gameEditStateProvider(_editContext));
+    // Use ref.watch to listen for state changes (like image updates)
+    final editState = ref.watch(gameEditStateProvider(_editContext));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,8 +238,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     required bool showPlatformAndStatus,
     bool showTitle = true,
   }) {
-    // Use ref.read to avoid rebuilds that interfere with focus
-    final editState = ref.read(gameEditStateProvider(_editContext));
+    // Use ref.watch to listen for state changes (like image updates)
+    final editState = ref.watch(gameEditStateProvider(_editContext));
 
     return GameEditInfoSection(
       titleController: _titleController,
@@ -254,8 +254,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildStatusSelector() {
-    // Use ref.read to avoid rebuilds that interfere with focus
-    final editState = ref.read(gameEditStateProvider(_editContext));
+    // Use ref.watch to listen for state changes (like image updates)
+    final editState = ref.watch(gameEditStateProvider(_editContext));
 
     return GameStatusSelector(
       selectedStatus: editState.status,
@@ -285,6 +285,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
     final editState = ref.read(gameEditStateProvider(_editContext));
 
+    if (!mounted) return;
     final result = await ImageSelectionBottomSheet.show(
       context: currentContext,
       hasExistingImage: editState.imagePath != null,
@@ -296,6 +297,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       } else if (result is GameImageSource) {
         await _selectImage(result);
       } else if (result == 'search') {
+        if (!mounted) return;
         final selectedImageUrl = await Navigator.of(
           currentContext,
         ).push<String>(
@@ -305,7 +307,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
                     ImageSearchScreen(initialQuery: _titleController.text),
           ),
         );
-        if (selectedImageUrl != null) {
+        if (selectedImageUrl != null && mounted) {
           await _selectImageFromUrl(selectedImageUrl);
         }
       }
