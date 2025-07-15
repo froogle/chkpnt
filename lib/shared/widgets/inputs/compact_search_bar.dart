@@ -19,20 +19,15 @@ class CompactSearchBar extends ConsumerStatefulWidget {
   ConsumerState<CompactSearchBar> createState() => _CompactSearchBarState();
 }
 
-class _CompactSearchBarState extends ConsumerState<CompactSearchBar>
-    with WidgetsBindingObserver {
+class _CompactSearchBarState extends ConsumerState<CompactSearchBar> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
-  bool _keyboardWasVisible = false;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _focusNode = FocusNode();
-
-    // Listen for keyboard visibility changes
-    WidgetsBinding.instance.addObserver(this);
 
     // Sync controller with provider state
     final currentQuery = ref.read(searchQueryProvider);
@@ -41,34 +36,9 @@ class _CompactSearchBarState extends ConsumerState<CompactSearchBar>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-
-    // Check if keyboard visibility changed
-    final bottomInset =
-        WidgetsBinding
-            .instance
-            .platformDispatcher
-            .views
-            .first
-            .viewInsets
-            .bottom;
-    final isKeyboardVisible = bottomInset > 0;
-
-    if (_keyboardWasVisible && !isKeyboardVisible && _focusNode.hasFocus) {
-      // Keyboard was visible, now it's gone, and we still have focus - unfocus
-      _focusNode.unfocus();
-    }
-
-    // Update keyboard visibility state
-    _keyboardWasVisible = isKeyboardVisible;
   }
 
   @override

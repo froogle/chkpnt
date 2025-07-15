@@ -271,7 +271,7 @@ await ref.read(gameListProvider.notifier).createGame(
 final games = ref.watch(gameListProvider); // Always up-to-date
 
 // Advanced querying with filtering
-final filteredGames = ref.watch(filteredGamesProvider(
+final filteredGames = ref.watch(fullyFilteredGamesProvider(
   GameStatus.playing, 
   'Switch', 
   'zelda'

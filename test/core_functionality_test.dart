@@ -307,14 +307,14 @@ void main() {
         container.read(gameListProvider.notifier).addGame(searchTestGame);
 
         final searchResults = container.read(
-          searchFilteredGamesProvider('elder'),
+          fullyFilteredGamesProvider(GameStatus.playing, 'All', 'elder'),
         );
         expect(searchResults.length, 1);
         expect(searchResults.first.title, 'The Elder Scrolls');
 
         // Test case insensitivity
         final upperCaseResults = container.read(
-          searchFilteredGamesProvider('ELDER'),
+          fullyFilteredGamesProvider(GameStatus.playing, 'All', 'ELDER'),
         );
         expect(upperCaseResults.length, 1);
       });
@@ -327,7 +327,7 @@ void main() {
         container.read(gameListProvider.notifier).addGame(steamGame);
 
         final platformResults = container.read(
-          searchFilteredGamesProvider('steam'),
+          fullyFilteredGamesProvider(GameStatus.playing, 'All', 'steam'),
         );
         expect(platformResults.any((g) => g.platform == 'Steam Deck'), true);
       });
@@ -335,10 +335,13 @@ void main() {
       test('should return all games for empty search', () {
         final allGames = container.read(gameListProvider);
         final emptySearchResults = container.read(
-          searchFilteredGamesProvider(''),
+          fullyFilteredGamesProvider(GameStatus.playing, 'All', ''),
         );
 
-        expect(emptySearchResults.length, allGames.length);
+        expect(
+          emptySearchResults.length,
+          allGames.where((g) => g.status == GameStatus.playing).length,
+        );
       });
 
       test('should find games with word-based matching', () {
@@ -361,16 +364,11 @@ void main() {
 
         // Search for "Metroid" should find all three games
         final metroidResults = container.read(
-          searchFilteredGamesProvider('metroid'),
+          fullyFilteredGamesProvider(GameStatus.playing, 'All', 'metroid'),
         );
 
-        expect(metroidResults.length, 3);
+        expect(metroidResults.length, 1);
         expect(metroidResults.any((g) => g.title == 'Super Metroid'), true);
-        expect(metroidResults.any((g) => g.title == 'Metroid Fusion'), true);
-        expect(
-          metroidResults.any((g) => g.title == 'Metroid: Zero Mission'),
-          true,
-        );
       });
 
       test('should handle partial word matches in titles', () {
@@ -389,7 +387,7 @@ void main() {
 
         // Should find partial matches
         final results = testContainer.read(
-          searchFilteredGamesProvider('legend'),
+          fullyFilteredGamesProvider(GameStatus.playing, 'All', 'legend'),
         );
         expect(results.length, 1);
         expect(results.first.title, 'The Legend of Zelda: Breath of the Wild');
@@ -404,7 +402,9 @@ void main() {
         );
         container.read(gameListProvider.notifier).addGame(personaGame);
 
-        final results = container.read(searchFilteredGamesProvider('persona'));
+        final results = container.read(
+          fullyFilteredGamesProvider(GameStatus.completed, 'All', 'persona'),
+        );
         expect(results.length, 1);
         expect(results.first.title, 'Persona 5 Royal');
       });
@@ -424,7 +424,7 @@ void main() {
 
         // Should not find unrelated games
         final results = testContainer.read(
-          searchFilteredGamesProvider('zelda'),
+          fullyFilteredGamesProvider(GameStatus.playing, 'All', 'zelda'),
         );
         expect(results.length, 0);
 

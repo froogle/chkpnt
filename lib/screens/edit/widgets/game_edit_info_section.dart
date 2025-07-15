@@ -32,49 +32,19 @@ class GameEditInfoSection extends ConsumerStatefulWidget {
       _GameEditInfoSectionState();
 }
 
-class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection>
-    with WidgetsBindingObserver {
+class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection> {
   late FocusNode _titleFocusNode;
-  bool _keyboardWasVisible = false;
 
   @override
   void initState() {
     super.initState();
     _titleFocusNode = FocusNode();
-
-    // Listen for keyboard visibility changes
-    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _titleFocusNode.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-
-    // Check if keyboard visibility changed
-    final bottomInset =
-        WidgetsBinding
-            .instance
-            .platformDispatcher
-            .views
-            .first
-            .viewInsets
-            .bottom;
-    final isKeyboardVisible = bottomInset > 0;
-
-    if (_keyboardWasVisible && !isKeyboardVisible && _titleFocusNode.hasFocus) {
-      // Keyboard was visible, now it's gone, and we still have focus - unfocus
-      _titleFocusNode.unfocus();
-    }
-
-    // Update keyboard visibility state
-    _keyboardWasVisible = isKeyboardVisible;
   }
 
   @override
@@ -98,11 +68,18 @@ class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection>
       decoration: EditScreenStyles.titleFieldDecoration,
       maxLines: 1,
       textCapitalization: TextCapitalization.words,
+      onTap: () {
+        // Ensure focus is maintained on tap
+        if (!_titleFocusNode.hasFocus) {
+          _titleFocusNode.requestFocus();
+        }
+      },
     );
   }
 
   Widget _buildPlatformSection() {
-    final availablePlatforms = ref.watch(availablePlatformsProvider);
+    // Use ref.read instead of ref.watch to avoid unnecessary rebuilds
+    final availablePlatforms = ref.read(availablePlatformsProvider);
     // Remove 'All' from platforms list for editing
     final editablePlatforms =
         availablePlatforms.where((p) => p != 'All').toList();

@@ -50,9 +50,7 @@ class PlatformEditDropdown extends StatelessWidget {
   }
 
   void _showPlatformOptions(BuildContext context) {
-    // Call the general unfocus for any active text fields
-    FocusScope.of(context).unfocus();
-
+    // Only unfocus when actually showing platform options
     if (platforms.isEmpty && isAddMode) {
       _showCustomPlatformDialog(context);
     } else {

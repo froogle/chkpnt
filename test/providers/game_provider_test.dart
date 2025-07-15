@@ -187,51 +187,6 @@ void main() {
       });
     });
 
-    group('searchFilteredGames', () {
-      test('should return all games when search is empty', () {
-        final searchResults = container.read(searchFilteredGamesProvider(''));
-        final allGames = container.read(gameListProvider);
-
-        expect(searchResults.length, allGames.length);
-      });
-
-      test('should filter games by title', () {
-        final searchResults = container.read(
-          searchFilteredGamesProvider('god'),
-        );
-
-        expect(searchResults.length, 1);
-        expect(searchResults.first.title.toLowerCase().contains('god'), true);
-      });
-
-      test('should filter games by platform', () {
-        final searchResults = container.read(
-          searchFilteredGamesProvider('switch'),
-        );
-
-        expect(searchResults.length, 1);
-        expect(
-          searchResults.first.platform.toLowerCase().contains('switch'),
-          true,
-        );
-      });
-
-      test('should be case insensitive', () {
-        final lowerCaseResults = container.read(
-          searchFilteredGamesProvider('god'),
-        );
-        final upperCaseResults = container.read(
-          searchFilteredGamesProvider('GOD'),
-        );
-        final mixedCaseResults = container.read(
-          searchFilteredGamesProvider('God'),
-        );
-
-        expect(lowerCaseResults.length, upperCaseResults.length);
-        expect(upperCaseResults.length, mixedCaseResults.length);
-      });
-    });
-
     group('wishlistPlatforms', () {
       test('should include "All" as first option', () {
         final platforms = container.read(wishlistPlatformsProvider);

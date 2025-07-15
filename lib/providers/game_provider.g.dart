@@ -8,9 +8,7 @@ part of 'game_provider.dart';
 
 String _$gameRepositoryHash() => r'599e946c0b77acdd2cf39bbca4e0703b3141b176';
 
-/// Repository provider - this is where you can swap storage implementations
-///
-/// Copied from [gameRepository].
+/// See also [gameRepository].
 @ProviderFor(gameRepository)
 final gameRepositoryProvider = AutoDisposeProvider<GameRepository>.internal(
   gameRepository,
@@ -28,9 +26,7 @@ final gameRepositoryProvider = AutoDisposeProvider<GameRepository>.internal(
 typedef GameRepositoryRef = AutoDisposeProviderRef<GameRepository>;
 String _$gamesStreamHash() => r'73841ba4cc792fb58d831c17d031d5dfeece549d';
 
-/// Main games stream provider - replaces the synchronous gameListProvider
-///
-/// Copied from [gamesStream].
+/// See also [gamesStream].
 @ProviderFor(gamesStream)
 final gamesStreamProvider = AutoDisposeStreamProvider<List<GameItem>>.internal(
   gamesStream,
@@ -67,24 +63,16 @@ class _SystemHash {
   }
 }
 
-/// Provider for games filtered by status - automatically updates when games change
-///
-/// Copied from [gamesByStatus].
+/// See also [gamesByStatus].
 @ProviderFor(gamesByStatus)
 const gamesByStatusProvider = GamesByStatusFamily();
 
-/// Provider for games filtered by status - automatically updates when games change
-///
-/// Copied from [gamesByStatus].
+/// See also [gamesByStatus].
 class GamesByStatusFamily extends Family<List<GameItem>> {
-  /// Provider for games filtered by status - automatically updates when games change
-  ///
-  /// Copied from [gamesByStatus].
+  /// See also [gamesByStatus].
   const GamesByStatusFamily();
 
-  /// Provider for games filtered by status - automatically updates when games change
-  ///
-  /// Copied from [gamesByStatus].
+  /// See also [gamesByStatus].
   GamesByStatusProvider call(GameStatus status) {
     return GamesByStatusProvider(status);
   }
@@ -111,13 +99,9 @@ class GamesByStatusFamily extends Family<List<GameItem>> {
   String? get name => r'gamesByStatusProvider';
 }
 
-/// Provider for games filtered by status - automatically updates when games change
-///
-/// Copied from [gamesByStatus].
+/// See also [gamesByStatus].
 class GamesByStatusProvider extends AutoDisposeProvider<List<GameItem>> {
-  /// Provider for games filtered by status - automatically updates when games change
-  ///
-  /// Copied from [gamesByStatus].
+  /// See also [gamesByStatus].
   GamesByStatusProvider(GameStatus status)
     : this._internal(
         (ref) => gamesByStatus(ref as GamesByStatusRef, status),
@@ -200,24 +184,16 @@ class _GamesByStatusProviderElement
 
 String _$gamesByPlatformHash() => r'21dd4122b1604adff6f25f7d4d5d9b96d0e2bc18';
 
-/// Provider for games filtered by platform - automatically updates when games change
-///
-/// Copied from [gamesByPlatform].
+/// See also [gamesByPlatform].
 @ProviderFor(gamesByPlatform)
 const gamesByPlatformProvider = GamesByPlatformFamily();
 
-/// Provider for games filtered by platform - automatically updates when games change
-///
-/// Copied from [gamesByPlatform].
+/// See also [gamesByPlatform].
 class GamesByPlatformFamily extends Family<List<GameItem>> {
-  /// Provider for games filtered by platform - automatically updates when games change
-  ///
-  /// Copied from [gamesByPlatform].
+  /// See also [gamesByPlatform].
   const GamesByPlatformFamily();
 
-  /// Provider for games filtered by platform - automatically updates when games change
-  ///
-  /// Copied from [gamesByPlatform].
+  /// See also [gamesByPlatform].
   GamesByPlatformProvider call(String platform) {
     return GamesByPlatformProvider(platform);
   }
@@ -244,13 +220,9 @@ class GamesByPlatformFamily extends Family<List<GameItem>> {
   String? get name => r'gamesByPlatformProvider';
 }
 
-/// Provider for games filtered by platform - automatically updates when games change
-///
-/// Copied from [gamesByPlatform].
+/// See also [gamesByPlatform].
 class GamesByPlatformProvider extends AutoDisposeProvider<List<GameItem>> {
-  /// Provider for games filtered by platform - automatically updates when games change
-  ///
-  /// Copied from [gamesByPlatform].
+  /// See also [gamesByPlatform].
   GamesByPlatformProvider(String platform)
     : this._internal(
         (ref) => gamesByPlatform(ref as GamesByPlatformRef, platform),
@@ -331,157 +303,10 @@ class _GamesByPlatformProviderElement
   String get platform => (origin as GamesByPlatformProvider).platform;
 }
 
-String _$filteredGamesHash() => r'd1f3b3343b67d06a34d4a3ecafe4924476d8e0d5';
-
-/// Provider for games filtered by both status and platform
-///
-/// Copied from [filteredGames].
-@ProviderFor(filteredGames)
-const filteredGamesProvider = FilteredGamesFamily();
-
-/// Provider for games filtered by both status and platform
-///
-/// Copied from [filteredGames].
-class FilteredGamesFamily extends Family<List<GameItem>> {
-  /// Provider for games filtered by both status and platform
-  ///
-  /// Copied from [filteredGames].
-  const FilteredGamesFamily();
-
-  /// Provider for games filtered by both status and platform
-  ///
-  /// Copied from [filteredGames].
-  FilteredGamesProvider call(GameStatus status, String platform) {
-    return FilteredGamesProvider(status, platform);
-  }
-
-  @override
-  FilteredGamesProvider getProviderOverride(
-    covariant FilteredGamesProvider provider,
-  ) {
-    return call(provider.status, provider.platform);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'filteredGamesProvider';
-}
-
-/// Provider for games filtered by both status and platform
-///
-/// Copied from [filteredGames].
-class FilteredGamesProvider extends AutoDisposeProvider<List<GameItem>> {
-  /// Provider for games filtered by both status and platform
-  ///
-  /// Copied from [filteredGames].
-  FilteredGamesProvider(GameStatus status, String platform)
-    : this._internal(
-        (ref) => filteredGames(ref as FilteredGamesRef, status, platform),
-        from: filteredGamesProvider,
-        name: r'filteredGamesProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$filteredGamesHash,
-        dependencies: FilteredGamesFamily._dependencies,
-        allTransitiveDependencies:
-            FilteredGamesFamily._allTransitiveDependencies,
-        status: status,
-        platform: platform,
-      );
-
-  FilteredGamesProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.status,
-    required this.platform,
-  }) : super.internal();
-
-  final GameStatus status;
-  final String platform;
-
-  @override
-  Override overrideWith(
-    List<GameItem> Function(FilteredGamesRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: FilteredGamesProvider._internal(
-        (ref) => create(ref as FilteredGamesRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        status: status,
-        platform: platform,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeProviderElement<List<GameItem>> createElement() {
-    return _FilteredGamesProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is FilteredGamesProvider &&
-        other.status == status &&
-        other.platform == platform;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, status.hashCode);
-    hash = _SystemHash.combine(hash, platform.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin FilteredGamesRef on AutoDisposeProviderRef<List<GameItem>> {
-  /// The parameter `status` of this provider.
-  GameStatus get status;
-
-  /// The parameter `platform` of this provider.
-  String get platform;
-}
-
-class _FilteredGamesProviderElement
-    extends AutoDisposeProviderElement<List<GameItem>>
-    with FilteredGamesRef {
-  _FilteredGamesProviderElement(super.provider);
-
-  @override
-  GameStatus get status => (origin as FilteredGamesProvider).status;
-  @override
-  String get platform => (origin as FilteredGamesProvider).platform;
-}
-
 String _$availablePlatformsHash() =>
     r'13bf0d36662b8dcb436b3b37190a1b45f7fc5034';
 
-/// Provider for available platforms - automatically updates when games change
-///
-/// Copied from [availablePlatforms].
+/// See also [availablePlatforms].
 @ProviderFor(availablePlatforms)
 final availablePlatformsProvider = AutoDisposeProvider<List<String>>.internal(
   availablePlatforms,
@@ -499,9 +324,7 @@ final availablePlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 typedef AvailablePlatformsRef = AutoDisposeProviderRef<List<String>>;
 String _$wishlistPlatformsHash() => r'7981d1f387461db3e44e19ddf010e221f9f8ebcd';
 
-/// Provider for platforms from wishlist and ordered games only
-///
-/// Copied from [wishlistPlatforms].
+/// See also [wishlistPlatforms].
 @ProviderFor(wishlistPlatforms)
 final wishlistPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
   wishlistPlatforms,
@@ -517,163 +340,19 @@ final wishlistPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WishlistPlatformsRef = AutoDisposeProviderRef<List<String>>;
-String _$searchFilteredGamesHash() =>
-    r'44ecf6aa25aeb6bb4c5077b56c9442c7e55c2882';
-
-/// Provider for games filtered by search query
-///
-/// Copied from [searchFilteredGames].
-@ProviderFor(searchFilteredGames)
-const searchFilteredGamesProvider = SearchFilteredGamesFamily();
-
-/// Provider for games filtered by search query
-///
-/// Copied from [searchFilteredGames].
-class SearchFilteredGamesFamily extends Family<List<GameItem>> {
-  /// Provider for games filtered by search query
-  ///
-  /// Copied from [searchFilteredGames].
-  const SearchFilteredGamesFamily();
-
-  /// Provider for games filtered by search query
-  ///
-  /// Copied from [searchFilteredGames].
-  SearchFilteredGamesProvider call(String searchQuery) {
-    return SearchFilteredGamesProvider(searchQuery);
-  }
-
-  @override
-  SearchFilteredGamesProvider getProviderOverride(
-    covariant SearchFilteredGamesProvider provider,
-  ) {
-    return call(provider.searchQuery);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'searchFilteredGamesProvider';
-}
-
-/// Provider for games filtered by search query
-///
-/// Copied from [searchFilteredGames].
-class SearchFilteredGamesProvider extends AutoDisposeProvider<List<GameItem>> {
-  /// Provider for games filtered by search query
-  ///
-  /// Copied from [searchFilteredGames].
-  SearchFilteredGamesProvider(String searchQuery)
-    : this._internal(
-        (ref) =>
-            searchFilteredGames(ref as SearchFilteredGamesRef, searchQuery),
-        from: searchFilteredGamesProvider,
-        name: r'searchFilteredGamesProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$searchFilteredGamesHash,
-        dependencies: SearchFilteredGamesFamily._dependencies,
-        allTransitiveDependencies:
-            SearchFilteredGamesFamily._allTransitiveDependencies,
-        searchQuery: searchQuery,
-      );
-
-  SearchFilteredGamesProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.searchQuery,
-  }) : super.internal();
-
-  final String searchQuery;
-
-  @override
-  Override overrideWith(
-    List<GameItem> Function(SearchFilteredGamesRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: SearchFilteredGamesProvider._internal(
-        (ref) => create(ref as SearchFilteredGamesRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        searchQuery: searchQuery,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeProviderElement<List<GameItem>> createElement() {
-    return _SearchFilteredGamesProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SearchFilteredGamesProvider &&
-        other.searchQuery == searchQuery;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, searchQuery.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin SearchFilteredGamesRef on AutoDisposeProviderRef<List<GameItem>> {
-  /// The parameter `searchQuery` of this provider.
-  String get searchQuery;
-}
-
-class _SearchFilteredGamesProviderElement
-    extends AutoDisposeProviderElement<List<GameItem>>
-    with SearchFilteredGamesRef {
-  _SearchFilteredGamesProviderElement(super.provider);
-
-  @override
-  String get searchQuery => (origin as SearchFilteredGamesProvider).searchQuery;
-}
-
 String _$fullyFilteredGamesHash() =>
     r'e196b0ff88c81ac171e96af171a9be6fbf83408a';
 
-/// Provider for games filtered by status, platform, and search
-///
-/// Copied from [fullyFilteredGames].
+/// See also [fullyFilteredGames].
 @ProviderFor(fullyFilteredGames)
 const fullyFilteredGamesProvider = FullyFilteredGamesFamily();
 
-/// Provider for games filtered by status, platform, and search
-///
-/// Copied from [fullyFilteredGames].
+/// See also [fullyFilteredGames].
 class FullyFilteredGamesFamily extends Family<List<GameItem>> {
-  /// Provider for games filtered by status, platform, and search
-  ///
-  /// Copied from [fullyFilteredGames].
+  /// See also [fullyFilteredGames].
   const FullyFilteredGamesFamily();
 
-  /// Provider for games filtered by status, platform, and search
-  ///
-  /// Copied from [fullyFilteredGames].
+  /// See also [fullyFilteredGames].
   FullyFilteredGamesProvider call(
     GameStatus status,
     String platform,
@@ -704,13 +383,9 @@ class FullyFilteredGamesFamily extends Family<List<GameItem>> {
   String? get name => r'fullyFilteredGamesProvider';
 }
 
-/// Provider for games filtered by status, platform, and search
-///
-/// Copied from [fullyFilteredGames].
+/// See also [fullyFilteredGames].
 class FullyFilteredGamesProvider extends AutoDisposeProvider<List<GameItem>> {
-  /// Provider for games filtered by status, platform, and search
-  ///
-  /// Copied from [fullyFilteredGames].
+  /// See also [fullyFilteredGames].
   FullyFilteredGamesProvider(
     GameStatus status,
     String platform,
@@ -822,71 +497,10 @@ class _FullyFilteredGamesProviderElement
   String get searchQuery => (origin as FullyFilteredGamesProvider).searchQuery;
 }
 
-String _$gamesAsyncHash() => r'93ab80b74e1ebba35c609db957a3ae6aec46beb8';
-
-/// Raw async games provider - exposes loading/error states for UI
-///
-/// Copied from [gamesAsync].
-@ProviderFor(gamesAsync)
-final gamesAsyncProvider =
-    AutoDisposeProvider<AsyncValue<List<GameItem>>>.internal(
-      gamesAsync,
-      name: r'gamesAsyncProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$gamesAsyncHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GamesAsyncRef = AutoDisposeProviderRef<AsyncValue<List<GameItem>>>;
-String _$isGamesLoadingHash() => r'58ae295ed6c9cc45f58033aad117a2ad62d8e3f0';
-
-/// Loading state provider for UI feedback
-///
-/// Copied from [isGamesLoading].
-@ProviderFor(isGamesLoading)
-final isGamesLoadingProvider = AutoDisposeProvider<bool>.internal(
-  isGamesLoading,
-  name: r'isGamesLoadingProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$isGamesLoadingHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef IsGamesLoadingRef = AutoDisposeProviderRef<bool>;
-String _$gamesErrorHash() => r'eced1d37a4ff32b9e9b22f67d85ecae8fc189f69';
-
-/// Error state provider for error handling
-///
-/// Copied from [gamesError].
-@ProviderFor(gamesError)
-final gamesErrorProvider = AutoDisposeProvider<String?>.internal(
-  gamesError,
-  name: r'gamesErrorProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$gamesErrorHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GamesErrorRef = AutoDisposeProviderRef<String?>;
 String _$sortedBacklogGamesByPlatformHash() =>
     r'3e25300be07e6dd3b2fb91af0daf9e346cc31266';
 
-/// Provider for backlog games sorted and grouped by platform
-///
-/// Copied from [sortedBacklogGamesByPlatform].
+/// See also [sortedBacklogGamesByPlatform].
 @ProviderFor(sortedBacklogGamesByPlatform)
 final sortedBacklogGamesByPlatformProvider =
     AutoDisposeProvider<Map<String, List<GameItem>>>.internal(
@@ -906,9 +520,7 @@ typedef SortedBacklogGamesByPlatformRef =
     AutoDisposeProviderRef<Map<String, List<GameItem>>>;
 String _$backlogPlatformsHash() => r'559414a2dad7cc7e0344a16bd56d597be8310944';
 
-/// Provider for platforms available in backlog
-///
-/// Copied from [backlogPlatforms].
+/// See also [backlogPlatforms].
 @ProviderFor(backlogPlatforms)
 final backlogPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
   backlogPlatforms,
@@ -926,10 +538,7 @@ final backlogPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 typedef BacklogPlatformsRef = AutoDisposeProviderRef<List<String>>;
 String _$gameListHash() => r'6968151e9680eba4bf49558207dcfac29d8d5550';
 
-/// Current games list provider - provides latest snapshot for UI
-/// This is the main provider widgets should watch
-///
-/// Copied from [GameList].
+/// See also [GameList].
 @ProviderFor(GameList)
 final gameListProvider =
     AutoDisposeNotifierProvider<GameList, List<GameItem>>.internal(

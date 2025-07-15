@@ -9,7 +9,6 @@ import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_info_section.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_actions.dart';
-import 'package:chkpnt/screens/edit/widgets/animations/animated_edit_form.dart';
 import 'package:chkpnt/screens/edit/widgets/image_selection_bottom_sheet.dart';
 import 'package:chkpnt/screens/image_search/image_search_screen.dart';
 
@@ -83,6 +82,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
+      resizeToAvoidBottomInset: false, // Prevent resize issues on Android
       body: SafeArea(
         child: OrientationBuilder(
           builder:
@@ -123,63 +123,56 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildPortraitContent() {
-    return GestureDetector(
-      onTap: () {
-        // Clear focus when tapping on empty areas
-        FocusScope.of(context).unfocus();
-      },
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: GameDetailSheetStyles.contentPadding,
-          child: AnimatedEditForm(
-            children: [
-              _buildPortraitLayout(),
-              const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-              _buildStatusSelector(),
-              const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-              _buildActionButtons(),
-            ],
+    return Padding(
+      padding: GameDetailSheetStyles.contentPadding,
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildPortraitLayout(),
+                  const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
+                  _buildStatusSelector(),
+                ],
+              ),
+            ),
           ),
-        ),
+          const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
+          _buildActionButtons(),
+        ],
       ),
     );
   }
 
   Widget _buildLandscapeContent() {
-    return GestureDetector(
-      onTap: () {
-        // Clear focus when tapping on empty areas
-        FocusScope.of(context).unfocus();
-      },
-      child: Padding(
-        padding: GameDetailSheetStyles.contentPaddingLandscape,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: AnimatedEditForm(
-                  children: [
-                    _buildLandscapeLayout(),
-                    const SizedBox(
-                      height: GameDetailSheetStyles.sectionSpacingLandscape,
-                    ),
-                    _buildStatusSelector(),
-                  ],
-                ),
+    return Padding(
+      padding: GameDetailSheetStyles.contentPaddingLandscape,
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildLandscapeLayout(),
+                  const SizedBox(
+                    height: GameDetailSheetStyles.sectionSpacingLandscape,
+                  ),
+                  _buildStatusSelector(),
+                ],
               ),
             ),
-            const SizedBox(
-              height: GameDetailSheetStyles.sectionSpacingLandscape,
-            ),
-            _buildActionButtons(),
-          ],
-        ),
+          ),
+          const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
+          _buildActionButtons(),
+        ],
       ),
     );
   }
 
   Widget _buildPortraitLayout() {
-    final editState = ref.watch(gameEditStateProvider(_editContext));
+    // Use ref.read to avoid rebuilds that interfere with focus
+    final editState = ref.read(gameEditStateProvider(_editContext));
 
     return Column(
       children: [
@@ -214,7 +207,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildLandscapeLayout() {
-    final editState = ref.watch(gameEditStateProvider(_editContext));
+    // Use ref.read to avoid rebuilds that interfere with focus
+    final editState = ref.read(gameEditStateProvider(_editContext));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +238,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     required bool showPlatformAndStatus,
     bool showTitle = true,
   }) {
-    final editState = ref.watch(gameEditStateProvider(_editContext));
+    // Use ref.read to avoid rebuilds that interfere with focus
+    final editState = ref.read(gameEditStateProvider(_editContext));
 
     return GameEditInfoSection(
       titleController: _titleController,
@@ -259,7 +254,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildStatusSelector() {
-    final editState = ref.watch(gameEditStateProvider(_editContext));
+    // Use ref.read to avoid rebuilds that interfere with focus
+    final editState = ref.read(gameEditStateProvider(_editContext));
 
     return GameStatusSelector(
       selectedStatus: editState.status,
@@ -271,11 +267,9 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildActionButtons() {
-    final editState = ref.watch(gameEditStateProvider(_editContext));
-
     return GameEditActions(
       onSavePressed: _saveChanges,
-      hasChanges: editState.hasUnsavedChanges,
+      hasChanges: true,
       buttonText: widget.isAddMode ? 'Add Game' : 'Save Changes',
     );
   }
@@ -283,15 +277,16 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   // Business logic methods
 
   Future<void> _handleImageTap() async {
+    // Store context before async operations
+    final currentContext = context;
+
     // Add a small delay to ensure any focus changes are processed
     await Future.delayed(const Duration(milliseconds: 50));
 
     final editState = ref.read(gameEditStateProvider(_editContext));
 
-    if (!mounted) return;
-
     final result = await ImageSelectionBottomSheet.show(
-      context: context,
+      context: currentContext,
       hasExistingImage: editState.imagePath != null,
     );
 
@@ -301,7 +296,9 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       } else if (result is GameImageSource) {
         await _selectImage(result);
       } else if (result == 'search') {
-        final selectedImageUrl = await Navigator.of(context).push<String>(
+        final selectedImageUrl = await Navigator.of(
+          currentContext,
+        ).push<String>(
           MaterialPageRoute(
             builder:
                 (context) =>
@@ -355,67 +352,19 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   void _handleBackPressed() {
-    final editState = ref.read(gameEditStateProvider(_editContext));
-
-    if (editState.hasUnsavedChanges) {
-      _showUnsavedChangesDialog();
-    } else {
-      Navigator.of(context).pop();
-    }
-  }
-
-  void _showUnsavedChangesDialog() {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Unsaved Changes'),
-          content: const Text(
-            'You have unsaved changes. Do you want to save them before leaving?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pop(); // Close edit screen
-              },
-              child: const Text('Discard'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-                _saveChanges(); // Save and close
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
+    Navigator.of(context).pop();
   }
 
   Future<void> _saveChanges() async {
-    // Update provider with current title before saving
-    ref
-        .read(gameEditStateProvider(_editContext).notifier)
-        .updateTitle(_titleController.text);
-
-    final editState = ref.read(gameEditStateProvider(_editContext));
-
-    if (!editState.hasUnsavedChanges) {
-      Navigator.of(context).pop();
-      return;
-    }
-
     final gameActionsService = ref.read(gameActionsServiceProvider);
 
     if (widget.isAddMode) {
       // Adding a new game - use GameItem.create for automatic timestamp handling
       final newGame = GameItem.create(
-        title: editState.title.trim(),
-        platform: editState.platform,
-        status: editState.status,
-        imagePath: editState.imagePath,
+        title: _titleController.text.trim(),
+        platform: ref.read(gameEditStateProvider(_editContext)).platform,
+        status: ref.read(gameEditStateProvider(_editContext)).status,
+        imagePath: ref.read(gameEditStateProvider(_editContext)).imagePath,
       );
 
       // Check if we're adding a backlog game that should be handled by the backlog screen
@@ -437,10 +386,10 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     } else {
       // Editing existing game
       final updatedGame = widget.game!.copyWith(
-        title: editState.title.trim(),
-        platform: editState.platform,
-        status: editState.status,
-        imagePath: editState.imagePath,
+        title: _titleController.text.trim(),
+        platform: ref.read(gameEditStateProvider(_editContext)).platform,
+        status: ref.read(gameEditStateProvider(_editContext)).status,
+        imagePath: ref.read(gameEditStateProvider(_editContext)).imagePath,
       );
 
       await gameActionsService.updateGame(widget.game!, updatedGame, context);
