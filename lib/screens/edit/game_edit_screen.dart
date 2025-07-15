@@ -286,10 +286,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   // Business logic methods
 
   Future<void> _handleImageTap() async {
-    // Store context before async operations
     final currentContext = context;
 
-    // Add a small delay to ensure any focus changes are processed
     await Future.delayed(const Duration(milliseconds: 50));
 
     final editState = ref.read(gameEditStateProvider(_editContext));
@@ -370,7 +368,6 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     final gameActionsService = ref.read(gameActionsServiceProvider);
 
     if (widget.isAddMode) {
-      // Adding a new game - use GameItem.create for automatic timestamp handling
       final newGame = GameItem.create(
         title: _titleController.text.trim(),
         platform: ref.read(gameEditStateProvider(_editContext)).platform,
@@ -378,24 +375,19 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         imagePath: ref.read(gameEditStateProvider(_editContext)).imagePath,
       );
 
-      // Check if we're adding a backlog game that should be handled by the backlog screen
       final isBacklogGame = newGame.status == GameStatus.backlog;
 
       if (isBacklogGame) {
-        // For backlog games, add and let the calling screen handle feedback
         await gameActionsService.addGame(newGame, context);
 
-        // Return the game to the calling screen for custom handling
         if (mounted) {
           Navigator.of(context).pop(newGame);
         }
         return;
       } else {
-        // For non-backlog games, use the normal flow
         await gameActionsService.addGame(newGame, context);
       }
     } else {
-      // Editing existing game
       final updatedGame = widget.game!.copyWith(
         title: _titleController.text.trim(),
         platform: ref.read(gameEditStateProvider(_editContext)).platform,
