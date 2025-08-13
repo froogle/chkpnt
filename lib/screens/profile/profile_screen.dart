@@ -8,6 +8,7 @@ import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_subscription_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_visualisation_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_incoming_games_section.dart';
+import 'package:chkpnt/screens/profile/widgets/profile_backup_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_header.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -64,6 +65,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const ProfileVisualisationSection(),
         SizedBox(height: ProfileStyles.getSectionSpacing(false)),
         const ProfileIncomingGamesSection(),
+        SizedBox(height: ProfileStyles.getSectionSpacing(false)),
+        const ProfileBackupSection(),
         const SizedBox(height: 24),
       ],
     );
@@ -86,6 +89,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             const Expanded(flex: 1, child: ProfileIncomingGamesSection()),
           ],
         ),
+        SizedBox(height: ProfileStyles.getSectionSpacing(true)),
+        const ProfileBackupSection(),
         SizedBox(height: ProfileStyles.getSectionSpacing(true)),
       ],
     );

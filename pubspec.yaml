@@ -64,6 +64,12 @@ dependencies:
   # Device info for Android version detection
   device_info_plus: ^10.1.0
 
+  # Archive handling for backup/restore
+  archive: ^3.4.10
+  
+  # Permission handling
+  permission_handler: ^11.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -85,6 +91,7 @@ dev_dependencies:
   # Test Dependencies
   path_provider_platform_interface: ^2.1.1
   plugin_platform_interface: ^2.1.7
+  mocktail: ^1.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
