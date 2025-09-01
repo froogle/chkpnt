@@ -262,6 +262,7 @@ testWidgets('GameCard displays correctly', (tester) async {
 - **Family providers** for context-dependent state
 - **Build method extraction** using `_buildXXX()` pattern
 - **Comprehensive error handling** with user-friendly messages
+- **NO COMMENTS IN CODE** - All code must be self-explanatory; if you feel the need to write a comment, simplify the code instead
 
 ### Forbidden Patterns
 - `Theme.of(context)` usage for colours or text styles

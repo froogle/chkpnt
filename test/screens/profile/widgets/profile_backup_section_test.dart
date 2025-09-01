@@ -13,21 +13,25 @@ void main() {
       container = ProviderContainer();
     });
 
-    tearDown(() {
+    tearDown(() async {
       container.dispose();
+      // Allow any pending timers to complete after container disposal
+      await Future.delayed(Duration.zero);
     });
 
     Widget createTestWidget({BackupOperationState? initialState}) {
-      return ProviderScope(
-        parent: container,
-        overrides: initialState != null
-            ? [
-                backupStateProvider.overrideWith(() => MockBackupState(initialState)),
-              ]
-            : [],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: ProfileBackupSection(),
+      return UncontrolledProviderScope(
+        container: container,
+        child: ProviderScope(
+          overrides: initialState != null
+              ? [
+                  backupStateProvider.overrideWith(() => MockBackupState(initialState)),
+                ]
+              : [],
+          child: const MaterialApp(
+            home: Scaffold(
+              body: ProfileBackupSection(),
+            ),
           ),
         ),
       );
@@ -40,6 +44,11 @@ void main() {
       expect(find.text('Create Backup'), findsOneWidget);
       expect(find.text('Restore Backup'), findsOneWidget);
       expect(find.text('Create a complete backup of your games library and images, or restore from a previous backup.'), findsOneWidget);
+      
+      // Ensure widget tree is properly disposed and allow any pending microtasks to complete
+      await tester.pumpWidget(Container());
+      await tester.pump(Duration.zero);
+      await tester.idle();
     });
 
     testWidgets('should display progress state correctly', (WidgetTester tester) async {
