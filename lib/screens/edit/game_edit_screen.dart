@@ -234,9 +234,16 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     final imagePath = await gameImageService.selectAndSaveImage(source);
 
     if (imagePath != null) {
-      ref
-          .read(gameEditStateProvider(_editContext).notifier)
-          .updateImagePath(imagePath);
+      // Always update the state, even if widget is disposed
+      // The state provider is independent of widget lifecycle
+      try {
+        ref
+            .read(gameEditStateProvider(_editContext).notifier)
+            .updateImagePath(imagePath);
+      } catch (e) {
+        // If ref is disposed, at least the image is downloaded and saved
+        debugPrint('Widget disposed but image was saved: $imagePath');
+      }
     }
   }
 
@@ -246,9 +253,16 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       imageUrl,
     );
     if (imagePath != null) {
-      ref
-          .read(gameEditStateProvider(_editContext).notifier)
-          .updateImagePath(imagePath);
+      // Always update the state, even if widget is disposed
+      // The state provider is independent of widget lifecycle
+      try {
+        ref
+            .read(gameEditStateProvider(_editContext).notifier)
+            .updateImagePath(imagePath);
+      } catch (e) {
+        // If ref is disposed, at least the image is downloaded and saved
+        debugPrint('Widget disposed but image was saved: $imagePath');
+      }
     }
   }
 

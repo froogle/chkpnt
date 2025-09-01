@@ -5,6 +5,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'package:chkpnt/repositories/drift_game_repository.dart';
 import 'package:chkpnt/services/storage_service.dart';
+import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 
 part 'game_provider.g.dart';
@@ -13,7 +14,8 @@ part 'game_provider.g.dart';
 @riverpod
 GameRepository gameRepository(Ref ref) {
   final storageService = ref.read(storageServiceProvider);
-  final repository = DriftGameRepository(storageService);
+  final imageService = ref.read(gameImageServiceProvider);
+  final repository = DriftGameRepository(storageService, imageService);
   ref.onDispose(() => repository.dispose());
   return repository;
 }

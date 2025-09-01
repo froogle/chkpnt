@@ -5,6 +5,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:chkpnt/services/storage_service.dart';
 
 class BackupPermissionService {
@@ -162,22 +163,86 @@ class BackupPermissionService {
   }
 
   Future<String?> exportBackupFile(String backupFilePath) async {
+    if (Platform.isAndroid) {
+      return await _exportBackupFileAndroid(backupFilePath);
+    } else {
+      return await _exportBackupFileIOS(backupFilePath);
+    }
+  }
+
+  Future<String?> _exportBackupFileAndroid(String backupFilePath) async {
     try {
-      // Read the backup file bytes
-      final File sourceFile = File(backupFilePath);
-      final Uint8List fileBytes = await sourceFile.readAsBytes();
+      // First, try the traditional file picker approach for local storage
+      final String? selectedPath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Backup File',
+        fileName: path.basename(backupFilePath),
+        type: FileType.custom,
+        allowedExtensions: ['zip'],
+        lockParentWindow: true,
+      );
+
+      if (selectedPath != null) {
+        // Copy the existing backup file to the selected location
+        final File sourceFile = File(backupFilePath);
+        await sourceFile.copy(selectedPath);
+        return selectedPath;
+      }
+
+      // If file picker didn't work (user cancelled or cloud storage not available),
+      // fall back to Share Intent which works with all cloud storage providers
+      debugPrint('File picker cancelled or unavailable, using share intent');
+      return await _shareBackupFileAndroid(backupFilePath);
+    } catch (e) {
+      debugPrint('File picker failed: $e, falling back to share intent');
+      return await _shareBackupFileAndroid(backupFilePath);
+    }
+  }
+
+  Future<String?> _shareBackupFileAndroid(String backupFilePath) async {
+    try {
+      final File backupFile = File(backupFilePath);
+      final String fileName = path.basename(backupFilePath);
       
+      // Use Share Intent to let user save to any cloud storage app
+      final XFile xFile = XFile(
+        backupFile.path,
+        name: fileName,
+        mimeType: 'application/zip',
+      );
+
+      await Share.shareXFiles(
+        [xFile],
+        text: 'ChkPnt backup file: $fileName',
+        subject: 'ChkPnt Game Library Backup',
+      );
+
+      // Return the original path as share intent doesn't provide destination path
+      return backupFilePath;
+    } catch (e) {
+      debugPrint('Error sharing backup file: $e');
+      return null;
+    }
+  }
+
+  Future<String?> _exportBackupFileIOS(String backupFilePath) async {
+    try {
       // Use FilePicker to let user choose where to save the backup
       final String? selectedPath = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Backup File',
         fileName: path.basename(backupFilePath),
         type: FileType.custom,
         allowedExtensions: ['zip'],
-        bytes: fileBytes,
         lockParentWindow: true,
       );
 
-      return selectedPath;
+      if (selectedPath != null) {
+        // Copy the existing backup file to the selected location
+        final File sourceFile = File(backupFilePath);
+        await sourceFile.copy(selectedPath);
+        return selectedPath;
+      }
+
+      return null;
     } catch (e) {
       debugPrint('Error exporting backup file: $e');
       return null;

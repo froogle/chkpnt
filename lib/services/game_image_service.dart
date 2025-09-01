@@ -17,7 +17,7 @@ final gameImageServiceProvider = Provider<GameImageService>((ref) {
 });
 
 class GameImageService {
-  static const int maxImageSize = 1024;
+  static const int maxImageSize = 256;
   static const String imageDirectory = 'game_images';
   static const List<String> supportedExtensions = ['jpg', 'jpeg', 'png'];
 
@@ -114,12 +114,52 @@ class GameImageService {
   /// Processes and saves image to persistent storage
   Future<String?> _processAndSaveImage(File imageFile) async {
     try {
-      // Read and decode image
+      // Read and validate image bytes
       final Uint8List imageBytes = await imageFile.readAsBytes();
-      final img.Image? originalImage = img.decodeImage(imageBytes);
+      
+      if (imageBytes.isEmpty) {
+        debugPrint('Image file is empty');
+        return null;
+      }
+
+      // Decode image with detailed error handling
+      img.Image? originalImage;
+      try {
+        debugPrint('[ImageProcessing] Starting image decode, bytes length: ${imageBytes.length}');
+        originalImage = img.decodeImage(imageBytes);
+        if (originalImage != null) {
+          debugPrint('[ImageProcessing] Successfully decoded image: ${originalImage.width}x${originalImage.height}, format: ${originalImage.format}, channels: ${originalImage.numChannels}');
+        }
+      } catch (e, stackTrace) {
+        debugPrint('[ImageProcessing] DECODE ERROR: $e');
+        debugPrint('[ImageProcessing] Stack trace: $stackTrace');
+        debugPrint('[ImageProcessing] Image bytes length: ${imageBytes.length}');
+        debugPrint('[ImageProcessing] First 20 bytes: ${imageBytes.take(20).toList()}');
+        return null;
+      }
 
       if (originalImage == null) {
-        debugPrint('Failed to decode image');
+        debugPrint('[ImageProcessing] Image decoding returned null - unsupported format');
+        debugPrint('[ImageProcessing] Image bytes length: ${imageBytes.length}');
+        debugPrint('[ImageProcessing] First 20 bytes: ${imageBytes.take(20).toList()}');
+        return null;
+      }
+
+      debugPrint('[ImageProcessing] Original image details:');
+      debugPrint('[ImageProcessing] - Dimensions: ${originalImage.width}x${originalImage.height}');
+      debugPrint('[ImageProcessing] - Format: ${originalImage.format}');
+      debugPrint('[ImageProcessing] - Channels: ${originalImage.numChannels}');
+      debugPrint('[ImageProcessing] - Max image size limit: $maxImageSize');
+
+      // Validate image dimensions
+      if (originalImage.width <= 0 || originalImage.height <= 0) {
+        debugPrint('[ImageProcessing] INVALID DIMENSIONS: ${originalImage.width}x${originalImage.height}');
+        return null;
+      }
+
+      // Check for extremely large images that might cause memory issues
+      if (originalImage.width > 20000 || originalImage.height > 20000) {
+        debugPrint('[ImageProcessing] IMAGE TOO LARGE: ${originalImage.width}x${originalImage.height}');
         return null;
       }
 
@@ -127,19 +167,68 @@ class GameImageService {
       img.Image processedImage = originalImage;
       if (originalImage.width > maxImageSize ||
           originalImage.height > maxImageSize) {
-        processedImage = img.copyResize(
-          originalImage,
-          width:
-              originalImage.width > originalImage.height ? maxImageSize : null,
-          height:
-              originalImage.height > originalImage.width ? maxImageSize : null,
-        );
+        debugPrint('[ImageProcessing] Image needs resizing from ${originalImage.width}x${originalImage.height} to max ${maxImageSize}');
+        
+        // Calculate target dimensions
+        int? targetWidth;
+        int? targetHeight;
+        
+        if (originalImage.width > originalImage.height) {
+          targetWidth = maxImageSize;
+          targetHeight = null;
+          debugPrint('[ImageProcessing] Landscape image - targeting width: $targetWidth');
+        } else {
+          targetWidth = null;
+          targetHeight = maxImageSize;
+          debugPrint('[ImageProcessing] Portrait/Square image - targeting height: $targetHeight');
+        }
+        
+        try {
+          debugPrint('[ImageProcessing] Starting resize operation...');
+          processedImage = img.copyResize(
+            originalImage,
+            width: targetWidth,
+            height: targetHeight,
+          );
+          debugPrint('[ImageProcessing] Resize successful! New dimensions: ${processedImage.width}x${processedImage.height}');
+        } catch (e, stackTrace) {
+          debugPrint('[ImageProcessing] RESIZE ERROR: $e');
+          debugPrint('[ImageProcessing] Stack trace: $stackTrace');
+          debugPrint('[ImageProcessing] Original image: ${originalImage.width}x${originalImage.height}');
+          debugPrint('[ImageProcessing] Target width: $targetWidth, Target height: $targetHeight');
+          debugPrint('[ImageProcessing] Image format: ${originalImage.format}');
+          debugPrint('[ImageProcessing] Image channels: ${originalImage.numChannels}');
+          return null;
+        }
+      } else {
+        debugPrint('[ImageProcessing] Image does not need resizing');
       }
 
-      // Encode as JPEG
-      final Uint8List processedBytes = Uint8List.fromList(
-        img.encodeJpg(processedImage, quality: 85),
-      );
+      // Encode as JPEG with compression
+      Uint8List processedBytes;
+      try {
+        debugPrint('[ImageProcessing] Starting JPEG encoding...');
+        debugPrint('[ImageProcessing] Processed image: ${processedImage.width}x${processedImage.height}');
+        debugPrint('[ImageProcessing] Image format: ${processedImage.format}, channels: ${processedImage.numChannels}');
+        
+        processedBytes = Uint8List.fromList(
+          img.encodeJpg(processedImage, quality: 85),
+        );
+        debugPrint('[ImageProcessing] JPEG encoding successful! Output size: ${processedBytes.length} bytes');
+      } catch (e, stackTrace) {
+        debugPrint('[ImageProcessing] JPEG ENCODING ERROR: $e');
+        debugPrint('[ImageProcessing] Stack trace: $stackTrace');
+        debugPrint('[ImageProcessing] Image being encoded: ${processedImage.width}x${processedImage.height}');
+        debugPrint('[ImageProcessing] Image format: ${processedImage.format}');
+        debugPrint('[ImageProcessing] Image channels: ${processedImage.numChannels}');
+        return null;
+      }
+
+      if (processedBytes.isEmpty) {
+        debugPrint('[ImageProcessing] JPEG encoding produced empty result');
+        debugPrint('[ImageProcessing] Input image: ${processedImage.width}x${processedImage.height}');
+        return null;
+      }
 
       return await _saveImageBytes(processedBytes);
     } catch (e) {
@@ -153,8 +242,53 @@ class GameImageService {
     try {
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
-        final Uint8List imageBytes = response.bodyBytes;
-        return await _saveImageBytes(imageBytes);
+        // Validate the image data before processing
+        if (response.bodyBytes.isEmpty) {
+          debugPrint('Downloaded image is empty');
+          return null;
+        }
+
+        // Try to decode the image first to validate it's a valid image
+        try {
+          debugPrint('[ImageDownload] Validating downloaded image, bytes: ${response.bodyBytes.length}');
+          final img.Image? testImage = img.decodeImage(response.bodyBytes);
+          if (testImage == null) {
+            debugPrint('[ImageDownload] Downloaded data is not a valid image format');
+            debugPrint('[ImageDownload] First 20 bytes: ${response.bodyBytes.take(20).toList()}');
+            return null;
+          }
+          
+          debugPrint('[ImageDownload] Downloaded image validated: ${testImage.width}x${testImage.height}');
+          
+          // Check for reasonable image dimensions
+          if (testImage.width <= 0 || testImage.height <= 0 || 
+              testImage.width > 10000 || testImage.height > 10000) {
+            debugPrint('[ImageDownload] Image has invalid dimensions: ${testImage.width}x${testImage.height}');
+            return null;
+          }
+        } catch (e, stackTrace) {
+          debugPrint('[ImageDownload] Error validating downloaded image: $e');
+          debugPrint('[ImageDownload] Stack trace: $stackTrace');
+          debugPrint('[ImageDownload] Response bytes length: ${response.bodyBytes.length}');
+          debugPrint('[ImageDownload] First 20 bytes: ${response.bodyBytes.take(20).toList()}');
+          return null;
+        }
+
+        // Create a temporary file with the downloaded bytes
+        final Directory tempDir = Directory.systemTemp;
+        final String tempFileName = 'temp_download_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final File tempFile = File('${tempDir.path}/$tempFileName');
+        await tempFile.writeAsBytes(response.bodyBytes);
+        
+        // Use the existing processing logic
+        final String? result = await _processAndSaveImage(tempFile);
+        
+        // Clean up temporary file
+        if (await tempFile.exists()) {
+          await tempFile.delete();
+        }
+        
+        return result;
       } else {
         debugPrint('Failed to download image: HTTP ${response.statusCode}');
         return null;

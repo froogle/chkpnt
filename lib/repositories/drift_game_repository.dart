@@ -3,10 +3,12 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'package:chkpnt/services/storage_service.dart';
+import 'package:chkpnt/services/game_image_service.dart';
 
 part 'drift_game_repository.g.dart';
 
@@ -129,9 +131,10 @@ class GameDatabase extends _$GameDatabase {
 /// Drift repository implementation
 class DriftGameRepository implements GameRepository {
   final GameDatabase _database;
+  final GameImageService _imageService;
   late final StreamController<List<GameItem>> _gamesController;
 
-  DriftGameRepository(StorageService storageService)
+  DriftGameRepository(StorageService storageService, this._imageService)
     : _database = GameDatabase(storageService) {
     _gamesController = StreamController<List<GameItem>>.broadcast();
   }
@@ -188,6 +191,19 @@ class DriftGameRepository implements GameRepository {
       final existing = await getGameById(game.id);
       if (existing == null) {
         throw GameNotFoundException(game.id);
+      }
+
+      // Clean up old image if imagePath has changed
+      if (existing.imagePath != null && 
+          existing.imagePath != game.imagePath &&
+          existing.imagePath!.isNotEmpty) {
+        try {
+          await _imageService.deleteImage(existing.imagePath!);
+        } catch (e) {
+          // Log but don't fail the update if image deletion fails
+          // The old image might have already been deleted or moved
+          debugPrint('Warning: Failed to delete old image ${existing.imagePath}: $e');
+        }
       }
 
       // Update timestamps appropriately

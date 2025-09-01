@@ -44,7 +44,7 @@ void main() {
   group('GameImageService', () {
     group('Constants', () {
       test('has correct maximum image size', () {
-        expect(GameImageService.maxImageSize, equals(1024));
+        expect(GameImageService.maxImageSize, equals(256));
       });
 
       test('has correct image directory name', () {

@@ -69,6 +69,9 @@ dependencies:
   
   # Permission handling
   permission_handler: ^11.3.1
+  
+  # File sharing for Android cloud storage
+  share_plus: ^10.0.2
 
 dev_dependencies:
   flutter_test:

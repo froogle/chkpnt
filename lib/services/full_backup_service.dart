@@ -571,11 +571,6 @@ class FullBackupService {
   }
 
   Future<String?> exportBackupFile(String backupFilePath) async {
-    if (!Platform.isIOS) {
-      // Export functionality is only needed for iOS
-      return backupFilePath;
-    }
-    
     return await _permissionService.exportBackupFile(backupFilePath);
   }
 }
