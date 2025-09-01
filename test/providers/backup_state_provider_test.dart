@@ -52,7 +52,11 @@ void main() {
       when(() => mockBackupService.estimateBackupSize())
           .thenAnswer((_) async => 1024);
       when(() => mockBackupService.createFullBackupWithProgress('/test/directory'))
-          .thenAnswer((_) => Stream.fromIterable([0.0, 0.5, 1.0]));
+          .thenAnswer((_) => Stream.fromIterable([
+            BackupProgressResult(progress: 0.0),
+            BackupProgressResult(progress: 0.5),
+            BackupProgressResult(progress: 1.0, filePath: '/test/directory/backup.zip'),
+          ]));
 
       final backupStateNotifier = container.read(backupStateProvider.notifier);
       

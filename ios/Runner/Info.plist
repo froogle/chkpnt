@@ -49,5 +49,11 @@
 		<true/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<key>LSSupportsOpeningDocumentsInPlace</key>
+		<true/>
+		<key>UISupportsDocumentBrowser</key>
+		<true/>
+		<key>UIFileSharingEnabled</key>
+		<true/>
 	</dict>
 </plist>

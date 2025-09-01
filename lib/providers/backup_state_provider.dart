@@ -91,25 +91,22 @@ class BackupState extends _$BackupState {
 
       // Create backup with progress tracking
       String? backupFilePath;
-      await for (final progress in _backupService.createFullBackupWithProgress(selectedDirectory)) {
+      await for (final result in _backupService.createFullBackupWithProgress(selectedDirectory)) {
         if (state is! _CreatingBackup) {
           // Operation was cancelled
           return;
         }
 
-        final String stepMessage = _getBackupStepMessage(progress);
+        final String stepMessage = _getBackupStepMessage(result.progress);
         state = BackupOperationState.creatingBackup(
-          progress: progress,
+          progress: result.progress,
           currentStep: stepMessage,
-          statusMessage: progress < 1.0 ? 'Creating backup...' : 'Backup complete!',
+          statusMessage: result.progress < 1.0 ? 'Creating backup...' : 'Backup complete!',
         );
 
         // Store the result when complete
-        if (progress >= 1.0) {
-          // The service doesn't return the file directly from the stream,
-          // so we need to construct the expected path
-          final String timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-          backupFilePath = '$selectedDirectory/chkpnt_backup_$timestamp.zip';
+        if (result.progress >= 1.0 && result.filePath != null) {
+          backupFilePath = result.filePath;
         }
       }
 
@@ -117,10 +114,32 @@ class BackupState extends _$BackupState {
         final File backupFile = File(backupFilePath);
         final String fileSize = _backupService.getBackupSizeString(backupFile);
         
-        state = BackupOperationState.success(
-          message: 'Backup created successfully! File size: $fileSize',
-          filePath: backupFilePath,
-        );
+        // On iOS, offer to export the backup file to user's chosen location
+        if (Platform.isIOS) {
+          state = BackupOperationState.creatingBackup(
+            progress: 1.0,
+            currentStep: 'Backup complete',
+            statusMessage: 'Choose where to save your backup file...',
+          );
+          
+          final String? exportedPath = await _backupService.exportBackupFile(backupFilePath);
+          if (exportedPath != null) {
+            state = BackupOperationState.success(
+              message: 'Backup created and saved successfully! File size: $fileSize',
+              filePath: exportedPath,
+            );
+          } else {
+            state = BackupOperationState.success(
+              message: 'Backup created successfully! File size: $fileSize\nBackup saved to app documents.',
+              filePath: backupFilePath,
+            );
+          }
+        } else {
+          state = BackupOperationState.success(
+            message: 'Backup created successfully! File size: $fileSize',
+            filePath: backupFilePath,
+          );
+        }
       } else {
         state = const BackupOperationState.error(
           message: 'Backup creation failed: No backup file was created',

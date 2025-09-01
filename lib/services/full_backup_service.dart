@@ -51,6 +51,17 @@ class BackupException implements Exception {
   String toString() => 'BackupException: $message';
 }
 
+/// Result object for backup progress with optional file path when complete
+class BackupProgressResult {
+  final double progress;
+  final String? filePath;
+
+  const BackupProgressResult({
+    required this.progress,
+    this.filePath,
+  });
+}
+
 /// Service for managing complete database and image backups/restores
 class FullBackupService {
   static const String _currentBackupVersion = '1.0.0';
@@ -163,28 +174,28 @@ class FullBackupService {
     }
   }
 
-  Stream<double> createFullBackupWithProgress(String destinationDirectory) async* {
+  Stream<BackupProgressResult> createFullBackupWithProgress(String destinationDirectory) async* {
     try {
-      yield 0.0;
+      yield BackupProgressResult(progress: 0.0);
       
       final String databaseJson = await _repository.exportDatabaseToJson();
-      yield 0.3;
+      yield BackupProgressResult(progress: 0.3);
       
       final List<File> imageFiles = await collectAllImages();
-      yield 0.4;
+      yield BackupProgressResult(progress: 0.4);
       
       final BackupMetadata metadata = await createBackupMetadata(imageFiles);
-      yield 0.5;
+      yield BackupProgressResult(progress: 0.5);
       
       final BackupData backupData = BackupData(
         databaseJson: databaseJson,
         imageFiles: imageFiles,
         metadata: metadata,
       );
-      yield 0.6;
+      yield BackupProgressResult(progress: 0.6);
       
       final File backupFile = await _createBackupFile(backupData, destinationDirectory);
-      yield 1.0;
+      yield BackupProgressResult(progress: 1.0, filePath: backupFile.path);
       
       debugPrint('Created backup file: ${backupFile.path} (${getBackupSizeString(backupFile)})');
       
@@ -557,5 +568,14 @@ class FullBackupService {
 
   Future<bool> isDirectoryWritable(String directoryPath) async {
     return await _permissionService.isDirectoryWritable(directoryPath);
+  }
+
+  Future<String?> exportBackupFile(String backupFilePath) async {
+    if (!Platform.isIOS) {
+      // Export functionality is only needed for iOS
+      return backupFilePath;
+    }
+    
+    return await _permissionService.exportBackupFile(backupFilePath);
   }
 }

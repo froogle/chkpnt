@@ -9,9 +9,6 @@ class GameEditInfoSection extends ConsumerStatefulWidget {
   final TextEditingController titleController;
   final String selectedPlatform;
   final ValueChanged<String> onPlatformChanged;
-  final bool isPortrait;
-  final bool showPlatformAndStatus;
-  final bool showTitle;
   final bool isAddMode;
   final GameEditContext editContext;
 
@@ -21,9 +18,6 @@ class GameEditInfoSection extends ConsumerStatefulWidget {
     required this.selectedPlatform,
     required this.onPlatformChanged,
     required this.editContext,
-    this.isPortrait = true,
-    this.showPlatformAndStatus = true,
-    this.showTitle = true,
     this.isAddMode = false,
   });
 
@@ -52,10 +46,9 @@ class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.showTitle) _buildTitleField(),
-        if (widget.showTitle && widget.showPlatformAndStatus)
-          const SizedBox(height: EditScreenStyles.sectionSpacing),
-        if (widget.showPlatformAndStatus) _buildPlatformSection(),
+        _buildTitleField(),
+        const SizedBox(height: EditScreenStyles.sectionSpacing),
+        _buildPlatformSection(),
       ],
     );
   }
@@ -84,36 +77,12 @@ class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection> {
     final editablePlatforms =
         availablePlatforms.where((p) => p != 'All').toList();
 
-    if (widget.isPortrait) {
-      return _buildPortraitPlatformSection(editablePlatforms);
-    } else {
-      return _buildLandscapePlatformSection(editablePlatforms);
-    }
-  }
-
-  Widget _buildPortraitPlatformSection(List<String> platforms) {
-    return Row(
-      crossAxisAlignment: EditScreenStyles.portraitPlatformAlignment,
-      children: [
-        Expanded(
-          child: PlatformEditDropdown(
-            selectedPlatform: widget.selectedPlatform,
-            platforms: platforms,
-            onPlatformChanged: widget.onPlatformChanged,
-            isAddMode: widget.isAddMode,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLandscapePlatformSection(List<String> platforms) {
     return Column(
       crossAxisAlignment: EditScreenStyles.platformSectionAlignment,
       children: [
         PlatformEditDropdown(
           selectedPlatform: widget.selectedPlatform,
-          platforms: platforms,
+          platforms: editablePlatforms,
           onPlatformChanged: widget.onPlatformChanged,
           isAddMode: widget.isAddMode,
         ),

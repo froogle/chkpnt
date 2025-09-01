@@ -82,12 +82,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      resizeToAvoidBottomInset: false, // Prevent resize issues on Android
       body: SafeArea(
-        child: OrientationBuilder(
-          builder:
-              (context, orientation) => _buildResponsiveContent(orientation),
-        ),
+        child: _buildContent(),
       ),
     );
   }
@@ -111,35 +107,12 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     );
   }
 
-  Widget _buildResponsiveContent(Orientation orientation) {
-    final isLandscape = orientation == Orientation.landscape;
-
-    if (isLandscape) {
-      return _buildLandscapeContent();
-    } else {
-      return _buildPortraitContent();
-    }
-  }
-
-  Widget _buildPortraitContent() {
-    return Padding(
-      padding: GameDetailSheetStyles.contentPadding,
-      child: Column(
-        children: [
-          Expanded(child: _buildScrollableContent()),
-          const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-          _buildActionButtons(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLandscapeContent() {
+  Widget _buildContent() {
     return Padding(
       padding: GameDetailSheetStyles.contentPaddingLandscape,
       child: Column(
         children: [
-          Expanded(child: _buildScrollableContentLandscape()),
+          Expanded(child: _buildScrollableContent()),
           const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
           _buildActionButtons(),
         ],
@@ -151,19 +124,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          _buildPortraitLayout(),
-          const SizedBox(height: GameDetailSheetStyles.sectionSpacing),
-          _buildStatusSelector(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScrollableContentLandscape() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildLandscapeLayout(),
+          _buildMainLayout(),
           const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
           _buildStatusSelector(),
         ],
@@ -171,69 +132,23 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     );
   }
 
-  Widget _buildPortraitLayout() {
+  Widget _buildMainLayout() {
     final editState = ref.watch(gameEditStateProvider(_editContext));
 
-    return Column(
-      children: [
-        _buildPortraitHeader(editState),
-        const SizedBox(height: EditScreenStyles.verticalSpacing),
-        _buildInfoSection(
-          isPortrait: true,
-          showPlatformAndStatus: true,
-          showTitle: false,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPortraitHeader(GameEditFormState editState) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildGameImage(editState),
-        const SizedBox(width: EditScreenStyles.horizontalSpacing),
-        Expanded(
-          child: _buildInfoSection(
-            isPortrait: true,
-            showPlatformAndStatus: false,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLandscapeLayout() {
-    final editState = ref.watch(gameEditStateProvider(_editContext));
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildGameImageLandscape(editState),
         const SizedBox(width: EditScreenStyles.horizontalSpacingLandscape),
         Expanded(
           flex: 2,
-          child: _buildInfoSection(
-            isPortrait: false,
-            showPlatformAndStatus: true,
-          ),
+          child: _buildInfoSection(),
         ),
       ],
     );
   }
 
   Widget _buildGameImage(GameEditFormState editState) {
-    return SizedBox(
-      width: GameDetailSheetStyles.gameImageWidthPortrait,
-      child: GameImage(
-        heroTag: 'game_image_${widget.game?.id ?? ''}',
-        imagePath: editState.imagePath,
-        onTap: _handleImageTap,
-      ),
-    );
-  }
-
-  Widget _buildGameImageLandscape(GameEditFormState editState) {
     return SizedBox(
       width: EditScreenStyles.gameImageWidthLandscape,
       child: GameImage(
@@ -244,11 +159,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     );
   }
 
-  Widget _buildInfoSection({
-    required bool isPortrait,
-    required bool showPlatformAndStatus,
-    bool showTitle = true,
-  }) {
+  Widget _buildInfoSection() {
     final editState = ref.watch(gameEditStateProvider(_editContext));
 
     return GameEditInfoSection(
@@ -256,9 +167,6 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       selectedPlatform: editState.platform,
       onPlatformChanged: _handlePlatformChange,
       editContext: _editContext,
-      isPortrait: isPortrait,
-      showPlatformAndStatus: showPlatformAndStatus,
-      showTitle: showTitle,
       isAddMode: widget.isAddMode,
     );
   }

@@ -25,9 +25,7 @@ void main() {
       container.dispose();
     });
 
-    testWidgets('renders correctly with all sections in portrait mode', (
-      tester,
-    ) async {
+    testWidgets('renders correctly with all sections', (tester) async {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -38,36 +36,6 @@ void main() {
                 selectedPlatform: 'PlayStation 5',
                 onPlatformChanged: (platform) {},
                 editContext: editContext,
-                isPortrait: true,
-                showPlatformAndStatus: true,
-                showTitle: true,
-                isAddMode: false,
-              ),
-            ),
-          ),
-        ),
-      );
-
-      expect(find.byType(TextField), findsOneWidget);
-      expect(find.byType(GameEditInfoSection), findsOneWidget);
-    });
-
-    testWidgets('renders correctly with all sections in landscape mode', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            home: Scaffold(
-              body: GameEditInfoSection(
-                titleController: titleController,
-                selectedPlatform: 'PlayStation 5',
-                onPlatformChanged: (platform) {},
-                editContext: editContext,
-                isPortrait: false,
-                showPlatformAndStatus: true,
-                showTitle: true,
                 isAddMode: false,
               ),
             ),
@@ -90,9 +58,6 @@ void main() {
                 selectedPlatform: 'PlayStation 5',
                 onPlatformChanged: (platform) {},
                 editContext: editContext,
-                isPortrait: true,
-                showPlatformAndStatus: true,
-                showTitle: true,
                 isAddMode: false,
               ),
             ),
@@ -129,9 +94,6 @@ void main() {
                 selectedPlatform: 'PlayStation 5',
                 onPlatformChanged: (platform) {},
                 editContext: editContext,
-                isPortrait: true,
-                showPlatformAndStatus: true,
-                showTitle: true,
                 isAddMode: false,
               ),
             ),
@@ -146,106 +108,40 @@ void main() {
       expect(state, isA<ConsumerState>());
     });
 
-    testWidgets(
-      'focus is maintained when tapping title field in portrait mode',
-      (tester) async {
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp(
-              home: Scaffold(
-                body: GameEditInfoSection(
-                  titleController: titleController,
-                  selectedPlatform: 'PlayStation 5',
-                  onPlatformChanged: (platform) {},
-                  editContext: editContext,
-                  isPortrait: true,
-                  showPlatformAndStatus: true,
-                  showTitle: true,
-                  isAddMode: false,
-                ),
+    testWidgets('focus is maintained when tapping title field', (tester) async {
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: Scaffold(
+              body: GameEditInfoSection(
+                titleController: titleController,
+                selectedPlatform: 'PlayStation 5',
+                onPlatformChanged: (platform) {},
+                editContext: editContext,
+                isAddMode: false,
               ),
             ),
           ),
-        );
+        ),
+      );
 
-        // Tap the title field
-        final titleField = find.byType(TextField);
-        await tester.tap(titleField);
-        await tester.pump();
+      // Tap the title field
+      final titleField = find.byType(TextField);
+      await tester.tap(titleField);
+      await tester.pump();
 
-        // Verify focus is maintained
-        expect(tester.testTextInput.hasAnyClients, isTrue);
+      // Verify focus is maintained
+      expect(tester.testTextInput.hasAnyClients, isTrue);
 
-        // Simulate a short delay (less than our fix delay)
-        await tester.pump(const Duration(milliseconds: 100));
+      // Simulate a short delay (less than our fix delay)
+      await tester.pump(const Duration(milliseconds: 100));
 
-        // Focus should still be maintained
-        expect(tester.testTextInput.hasAnyClients, isTrue);
-      },
-    );
+      // Focus should still be maintained
+      expect(tester.testTextInput.hasAnyClients, isTrue);
+    });
 
-    testWidgets(
-      'shows only title when showTitle is true and showPlatformAndStatus is false',
-      (tester) async {
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp(
-              home: Scaffold(
-                body: GameEditInfoSection(
-                  titleController: titleController,
-                  selectedPlatform: 'PlayStation 5',
-                  onPlatformChanged: (platform) {},
-                  editContext: editContext,
-                  isPortrait: true,
-                  showPlatformAndStatus: false,
-                  showTitle: true,
-                  isAddMode: false,
-                ),
-              ),
-            ),
-          ),
-        );
-
-        expect(find.byType(TextField), findsOneWidget);
-        // Platform dropdown should not be visible
-        expect(find.text('PlayStation 5'), findsNothing);
-      },
-    );
-
-    testWidgets(
-      'shows only platform section when showTitle is false and showPlatformAndStatus is true',
-      (tester) async {
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp(
-              home: Scaffold(
-                body: GameEditInfoSection(
-                  titleController: titleController,
-                  selectedPlatform: 'PlayStation 5',
-                  onPlatformChanged: (platform) {},
-                  editContext: editContext,
-                  isPortrait: true,
-                  showPlatformAndStatus: true,
-                  showTitle: false,
-                  isAddMode: false,
-                ),
-              ),
-            ),
-          ),
-        );
-
-        expect(find.byType(TextField), findsNothing);
-        // Platform section should be visible
-        expect(find.byType(GameEditInfoSection), findsOneWidget);
-      },
-    );
-
-    testWidgets('calls onPlatformChanged when platform is changed', (
-      tester,
-    ) async {
+    testWidgets('calls onPlatformChanged when platform is changed', (tester) async {
       String? changedPlatform;
 
       await tester.pumpWidget(
@@ -260,9 +156,6 @@ void main() {
                   changedPlatform = platform;
                 },
                 editContext: editContext,
-                isPortrait: true,
-                showPlatformAndStatus: true,
-                showTitle: true,
                 isAddMode: false,
               ),
             ),
@@ -286,9 +179,6 @@ void main() {
                 selectedPlatform: 'PlayStation 5',
                 onPlatformChanged: (platform) {},
                 editContext: editContext,
-                isPortrait: true,
-                showPlatformAndStatus: true,
-                showTitle: true,
                 isAddMode: false,
               ),
             ),
@@ -307,7 +197,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('maintains focus stability in portrait mode', (tester) async {
+    testWidgets('maintains focus stability', (tester) async {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -318,9 +208,6 @@ void main() {
                 selectedPlatform: 'PlayStation 5',
                 onPlatformChanged: (platform) {},
                 editContext: editContext,
-                isPortrait: true,
-                showPlatformAndStatus: true,
-                showTitle: true,
                 isAddMode: false,
               ),
             ),

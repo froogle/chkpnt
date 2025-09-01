@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:chkpnt/services/storage_service.dart';
 
 class BackupPermissionService {
@@ -74,6 +75,16 @@ class BackupPermissionService {
   }
 
   Future<String?> _getFallbackBackupDirectory() async {
+    if (Platform.isIOS) {
+      // Use Documents directory on iOS for user-accessible files
+      final Directory documentsDir = await getApplicationDocumentsDirectory();
+      final Directory backupDir = Directory(path.join(documentsDir.path, 'ChkPnt Backups'));
+      if (!await backupDir.exists()) {
+        await backupDir.create(recursive: true);
+      }
+      return backupDir.path;
+    }
+    
     final Directory appDir = await _storageService.getPersistentStorageDirectory();
     final Directory backupDir = Directory(path.join(appDir.path, 'backups'));
     if (!await backupDir.exists()) {
@@ -89,6 +100,12 @@ class BackupPermissionService {
     }
 
     try {
+      // On iOS, cloud directories often aren't directly writable
+      // Use local directory first, then let user export the file
+      if (Platform.isIOS) {
+        return await getRecommendedBackupDirectory();
+      }
+
       final String? selectedPath = await FilePicker.platform.getDirectoryPath(
         dialogTitle: 'Select Backup Location',
         lockParentWindow: true,
@@ -141,6 +158,29 @@ class BackupPermissionService {
       return fileExists;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<String?> exportBackupFile(String backupFilePath) async {
+    try {
+      // Read the backup file bytes
+      final File sourceFile = File(backupFilePath);
+      final Uint8List fileBytes = await sourceFile.readAsBytes();
+      
+      // Use FilePicker to let user choose where to save the backup
+      final String? selectedPath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Backup File',
+        fileName: path.basename(backupFilePath),
+        type: FileType.custom,
+        allowedExtensions: ['zip'],
+        bytes: fileBytes,
+        lockParentWindow: true,
+      );
+
+      return selectedPath;
+    } catch (e) {
+      debugPrint('Error exporting backup file: $e');
+      return null;
     }
   }
 }
