@@ -29,10 +29,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: AppLayout.sheetDecoration,
-      child: _buildContent(),
-    );
+    return _buildContent();
   }
 
   Widget _buildContent() {
