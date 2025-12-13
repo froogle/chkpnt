@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/utils/platform_utils.dart';
 
 class GameDetailSheetInfo extends StatelessWidget {
   final GameItem game;
@@ -62,7 +63,7 @@ class GameDetailSheetInfo extends StatelessWidget {
   }
 
   Widget _buildCompactPlatformBadge() {
-    final displayPlatform = _getCompactPlatformName(game.platform);
+    final displayPlatform = PlatformUtils.abbreviatePlatformName(game.platform);
 
     return GestureDetector(
       onTap: onEditPressed,
@@ -91,39 +92,6 @@ class GameDetailSheetInfo extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _getCompactPlatformName(String platform) {
-    switch (platform.toLowerCase()) {
-      case 'gameboy advance':
-      case 'game boy advance':
-        return 'GBA';
-      case 'nintendo switch':
-        return 'Switch';
-      case 'nintendo 3ds':
-        return '3DS';
-      case 'nintendo ds':
-        return 'DS';
-      case 'playstation 5':
-        return 'PS5';
-      case 'playstation 4':
-        return 'PS4';
-      case 'playstation 3':
-        return 'PS3';
-      case 'playstation 2':
-        return 'PS2';
-      case 'xbox series x':
-      case 'xbox series s':
-        return 'Xbox';
-      case 'xbox one':
-        return 'Xbox One';
-      case 'steam deck':
-        return 'Steam';
-      default:
-        return platform.length > 8
-            ? '${platform.substring(0, 8)}...'
-            : platform;
-    }
   }
 
   Color _getStatusColor() {

@@ -48,8 +48,8 @@ void main() {
       // Check that game title is displayed
       expect(find.text('Test Game'), findsOneWidget);
 
-      // Platform is displayed in compact form (truncated for unknown platforms)
-      expect(find.text('Test Pla...'), findsOneWidget);
+      // Platform is displayed in compact form (truncated to 12 chars for unknown platforms)
+      expect(find.text('Test Platfor...'), findsOneWidget);
 
       // Check that the current status icon is displayed (appears in compact badge, status display, and status buttons)
       expect(find.byIcon(Icons.play_circle_fill), findsAtLeastNWidgets(2));
@@ -375,8 +375,8 @@ void main() {
           ),
         );
 
-        // Platform is displayed in compact form
-        expect(find.text('Test Pla...'), findsOneWidget);
+        // Platform is displayed in compact form (truncated to 12 chars)
+        expect(find.text('Test Platfor...'), findsOneWidget);
 
         // Reset size
         await tester.binding.setSurfaceSize(null);

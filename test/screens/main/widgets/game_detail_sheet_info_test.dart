@@ -34,8 +34,8 @@ void main() {
         MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
       );
 
-      // Platform is displayed in compact form (truncated to 8 chars + ellipsis for unknown platforms)
-      expect(find.text('Test Pla...'), findsOneWidget);
+      // Platform is displayed in compact form (truncated to 12 chars + ellipsis for unknown platforms)
+      expect(find.text('Test Platfor...'), findsOneWidget);
     });
 
     testWidgets('should display current status with correct icon and text', (
@@ -156,8 +156,8 @@ void main() {
       final platformMappings = {
         'PC': 'PC',
         'PlayStation 5': 'PS5',
-        'Xbox Series X': 'Xbox',
-        'Steam Deck': 'Steam',
+        'Xbox Series X': 'Xbox Series',
+        'Steam Deck': 'Steam Deck',
         'Nintendo Switch': 'Switch',
       };
 
@@ -279,8 +279,8 @@ void main() {
           ),
         );
 
-        // Tap on the compact platform badge (truncated to "Test Pla...")
-        await tester.tap(find.text('Test Pla...'));
+        // Tap on the compact platform badge (truncated to 12 chars)
+        await tester.tap(find.text('Test Platfor...'));
         await tester.pump();
 
         expect(editPressed, isTrue);
@@ -314,11 +314,11 @@ void main() {
           );
 
           // Tap on the compact platform badge - should not crash
-          await tester.tap(find.text('Test Pla...'));
+          await tester.tap(find.text('Test Platfor...'));
           await tester.pump();
 
           // Should still display the compact platform
-          expect(find.text('Test Pla...'), findsOneWidget);
+          expect(find.text('Test Platfor...'), findsOneWidget);
         },
       );
     });
