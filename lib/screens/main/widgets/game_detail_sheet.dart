@@ -34,144 +34,41 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
 
   Widget _buildContent() {
     return SafeArea(
-      child: OrientationBuilder(
-        builder: (context, orientation) => _buildResponsiveContent(orientation),
-      ),
-    );
-  }
-
-  Widget _buildResponsiveContent(Orientation orientation) {
-    final isLandscape = orientation == Orientation.landscape;
-    return isLandscape ? _buildLandscapeContent() : _buildPortraitContent();
-  }
-
-  Widget _buildPortraitContent() {
-    return Padding(
-      padding: AppLayout.sheetContentPadding,
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: _buildPortraitScrollableContent(),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 12, 20),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildGameHeader(),
+                    _buildSpacing(),
+                    _buildStatusSelector(),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
             ),
-          ),
-          _buildActions(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPortraitScrollableContent() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildPortraitLayout(),
-        _buildSectionSpacing(),
-        _buildStatusSelector(),
-        const SizedBox(height: 16), // Spacing before bottom action area
-      ],
-    );
-  }
-
-  Widget _buildPortraitLayout() {
-    return Column(
-      children: [
-        _buildPortraitGameRow(),
-        const SizedBox(height: 16),
-        _buildPortraitPlatformInfo(),
-      ],
-    );
-  }
-
-  Widget _buildPortraitGameRow() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildPortraitGameImage(),
-        const SizedBox(width: 20),
-        Expanded(child: _buildPortraitGameInfo()),
-      ],
-    );
-  }
-
-  Widget _buildPortraitGameImage() {
-    return SizedBox(
-      width: GameDetailSheetStyles.gameImageWidthPortrait,
-      child: GestureDetector(
-        onTap: widget.onEditPressed,
-        child: GameImage(
-          heroTag: 'game_image_${widget.game.id}',
-          imagePath: widget.game.imagePath,
+            _buildActions(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildPortraitGameInfo() {
-    return GameDetailSheetInfo(
-      game: widget.game,
-      isPortrait: true,
-      showPlatformAndStatus: false,
-      onEditPressed: widget.onEditPressed,
-    );
-  }
-
-  Widget _buildPortraitPlatformInfo() {
-    return GameDetailSheetInfo(
-      game: widget.game,
-      isPortrait: true,
-      showPlatformAndStatus: true,
-      showTitle: false,
-      onEditPressed: widget.onEditPressed,
-    );
-  }
-
-  Widget _buildLandscapeContent() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        24,
-        12,
-        12,
-        20,
-      ), // Reduced top and bottom padding
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: _buildLandscapeScrollableContent(),
-            ),
-          ),
-          _buildActions(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLandscapeScrollableContent() {
-    return Column(
-      children: [
-        _buildLandscapeLayout(),
-        _buildLandscapeSpacing(),
-        _buildStatusSelector(),
-        const SizedBox(
-          height: 8,
-        ), // Further reduced spacing before bottom action area
-      ],
-    );
-  }
-
-  Widget _buildLandscapeLayout() {
+  Widget _buildGameHeader() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLandscapeGameImage(),
+        _buildGameImage(),
         const SizedBox(width: 24),
-        Expanded(flex: 2, child: _buildLandscapeGameInfo()),
+        Expanded(flex: 2, child: _buildGameInfo()),
       ],
     );
   }
 
-  Widget _buildLandscapeGameImage() {
+  Widget _buildGameImage() {
     return SizedBox(
       width: 120,
       child: GestureDetector(
@@ -184,7 +81,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     );
   }
 
-  Widget _buildLandscapeGameInfo() {
+  Widget _buildGameInfo() {
     return GameDetailSheetInfo(
       game: widget.game,
       isPortrait: false,
@@ -209,15 +106,10 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     );
   }
 
-  Widget _buildSectionSpacing() {
-    return const SizedBox(height: AppLayout.sheetSectionSpacing);
+  Widget _buildSpacing() {
+    return const SizedBox(height: 12);
   }
 
-  Widget _buildLandscapeSpacing() {
-    return const SizedBox(height: 12); // Further reduced from 16px
-  }
-
-  // Business logic methods
   bool _hasStatusChanged() {
     return _selectedStatus != widget.game.status;
   }
@@ -232,8 +124,6 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     if (!_hasStatusChanged()) return;
 
     final updatedGame = widget.game.copyWith(status: _selectedStatus);
-
-    // Use the game actions service to update the game and show notification
     final gameActionsService = ref.read(gameActionsServiceProvider);
     await gameActionsService.updateGame(widget.game, updatedGame, context);
 
@@ -272,14 +162,11 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
 
   Future<void> _deleteGame() async {
     try {
-      // Close the detail sheet first
       Navigator.of(context).pop();
 
-      // Then delete the game with feedback
       final gameActionsService = ref.read(gameActionsServiceProvider);
       await gameActionsService.deleteGame(widget.game, context);
     } catch (e) {
-      // If there's an error, show a simple error message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
