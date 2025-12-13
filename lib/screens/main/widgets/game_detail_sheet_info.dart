@@ -5,7 +5,6 @@ import 'package:chkpnt/shared/widgets/buttons/platform_badge.dart';
 
 class GameDetailSheetInfo extends StatelessWidget {
   final GameItem game;
-  final bool isPortrait;
   final bool showPlatformAndStatus;
   final bool showTitle;
   final VoidCallback? onEditPressed;
@@ -13,7 +12,6 @@ class GameDetailSheetInfo extends StatelessWidget {
   const GameDetailSheetInfo({
     super.key,
     required this.game,
-    this.isPortrait = true,
     this.showPlatformAndStatus = true,
     this.showTitle = true,
     this.onEditPressed,
@@ -43,36 +41,6 @@ class GameDetailSheetInfo extends StatelessWidget {
   }
 
   Widget _buildPlatformAndStatus() {
-    if (isPortrait) {
-      return _buildPortraitPlatformAndStatus();
-    } else {
-      return _buildLandscapePlatformAndStatus();
-    }
-  }
-
-  Widget _buildPortraitPlatformAndStatus() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            PlatformBadge(platform: game.platform, onTap: onEditPressed),
-            const SizedBox(width: 12),
-            _buildCurrentStatusIcon(),
-            const SizedBox(width: 8),
-            Expanded(child: _buildCurrentStatusText()),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.only(left: 8),
-          child: _buildStatusChangedText(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLandscapePlatformAndStatus() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -275,7 +243,7 @@ class GameDetailSheetInfo extends StatelessWidget {
   String _getStatusChangedDisplayText(DateTime statusChanged) {
     final now = DateTime.now();
     final difference = now.difference(statusChanged);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {

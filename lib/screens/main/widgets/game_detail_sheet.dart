@@ -84,7 +84,6 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
   Widget _buildGameInfo() {
     return GameDetailSheetInfo(
       game: widget.game,
-      isPortrait: false,
       showPlatformAndStatus: true,
       onEditPressed: widget.onEditPressed,
     );
