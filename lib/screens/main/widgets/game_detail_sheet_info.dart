@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
-import 'package:chkpnt/shared/widgets/buttons/platform_badge.dart';
 
 class GameDetailSheetInfo extends StatelessWidget {
   final GameItem game;
@@ -65,34 +64,30 @@ class GameDetailSheetInfo extends StatelessWidget {
   Widget _buildCompactPlatformBadge() {
     final displayPlatform = _getCompactPlatformName(game.platform);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onEditPressed,
-        borderRadius: BorderRadius.circular(4),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: _getStatusColor().withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(_getStatusIcon(), size: 14, color: Colors.white),
-              const SizedBox(width: 6),
-              Text(
-                displayPlatform,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: onEditPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: _getStatusColor().withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(_getStatusIcon(), size: 14, color: Colors.white),
+            const SizedBox(width: 6),
+            Text(
+              displayPlatform,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
-            ],
-          ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );

@@ -29,13 +29,13 @@ void main() {
       expect(find.text('Test Game'), findsOneWidget);
     });
 
-    testWidgets('should render platform badge', (WidgetTester tester) async {
+    testWidgets('should render compact platform badge', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
       );
 
-      // Check that platform information is displayed via PlatformBadge
-      expect(find.text('Test Platform'), findsOneWidget);
+      // Platform is displayed in compact form (truncated to 8 chars + ellipsis for unknown platforms)
+      expect(find.text('Test Pla...'), findsOneWidget);
     });
 
     testWidgets('should display current status with correct icon and text', (
@@ -48,8 +48,8 @@ void main() {
       // Check that current status text is displayed
       expect(find.text('Current Status: Playing'), findsOneWidget);
 
-      // Check that the playing icon is displayed
-      expect(find.byIcon(Icons.play_circle_fill), findsOneWidget);
+      // Check that the playing icon is displayed (appears in both compact badge and status display)
+      expect(find.byIcon(Icons.play_circle_fill), findsNWidgets(2));
     });
 
     group('Status-specific icon and text tests', () {
@@ -65,7 +65,7 @@ void main() {
         );
 
         expect(find.text('Current Status: Completed'), findsOneWidget);
-        expect(find.byIcon(Icons.check_circle), findsOneWidget);
+        expect(find.byIcon(Icons.check_circle), findsNWidgets(2));
       });
 
       testWidgets('should display abandoned status correctly', (
@@ -80,7 +80,7 @@ void main() {
         );
 
         expect(find.text('Current Status: Abandoned'), findsOneWidget);
-        expect(find.byIcon(Icons.pause_circle_filled), findsOneWidget);
+        expect(find.byIcon(Icons.pause_circle_filled), findsNWidgets(2));
       });
 
       testWidgets('should display backlog status correctly', (
@@ -95,6 +95,8 @@ void main() {
         );
 
         expect(find.text('Current Status: Backlog'), findsOneWidget);
+        // Backlog uses schedule icon in compact badge but list icon in status display
+        expect(find.byIcon(Icons.schedule), findsOneWidget);
         expect(find.byIcon(Icons.list), findsOneWidget);
       });
 
@@ -110,7 +112,7 @@ void main() {
         );
 
         expect(find.text('Current Status: Wishlist'), findsOneWidget);
-        expect(find.byIcon(Icons.favorite), findsOneWidget);
+        expect(find.byIcon(Icons.favorite), findsNWidgets(2));
       });
 
       testWidgets('should display ordered status correctly', (
@@ -125,7 +127,7 @@ void main() {
         );
 
         expect(find.text('Current Status: Ordered'), findsOneWidget);
-        expect(find.byIcon(Icons.shopping_cart), findsOneWidget);
+        expect(find.byIcon(Icons.shopping_cart), findsNWidgets(2));
       });
     });
 
@@ -148,13 +150,19 @@ void main() {
       expect(find.text(longTitleGame.title), findsOneWidget);
     });
 
-    testWidgets('should handle different platforms', (
+    testWidgets('should handle different platforms with compact names', (
       WidgetTester tester,
     ) async {
-      final platforms = ['PC', 'PlayStation 5', 'Xbox Series X', 'Steam Deck'];
+      final platformMappings = {
+        'PC': 'PC',
+        'PlayStation 5': 'PS5',
+        'Xbox Series X': 'Xbox',
+        'Steam Deck': 'Steam',
+        'Nintendo Switch': 'Switch',
+      };
 
-      for (final platform in platforms) {
-        final gameWithPlatform = testGame.copyWith(platform: platform);
+      for (final entry in platformMappings.entries) {
+        final gameWithPlatform = testGame.copyWith(platform: entry.key);
 
         await tester.pumpWidget(
           MaterialApp(
@@ -162,7 +170,7 @@ void main() {
           ),
         );
 
-        expect(find.text(platform), findsOneWidget);
+        expect(find.text(entry.value), findsOneWidget);
       }
     });
 
@@ -176,15 +184,8 @@ void main() {
       // Verify the GameDetailSheetInfo widget exists
       expect(find.byType(GameDetailSheetInfo), findsOneWidget);
 
-      // Verify that the status row exists
-      final statusRow = find.byWidgetPredicate(
-        (widget) =>
-            widget is Row &&
-            widget.children.any(
-              (child) => child is Icon && child.icon == Icons.play_circle_fill,
-            ),
-      );
-      expect(statusRow, findsOneWidget);
+      // Verify that status icons are present (in both compact badge and status display)
+      expect(find.byIcon(Icons.play_circle_fill), findsNWidgets(2));
     });
 
     testWidgets('should render without errors', (WidgetTester tester) async {
@@ -278,8 +279,8 @@ void main() {
           ),
         );
 
-        // Tap on the platform badge
-        await tester.tap(find.text(testGame.platform));
+        // Tap on the compact platform badge (truncated to "Test Pla...")
+        await tester.tap(find.text('Test Pla...'));
         await tester.pump();
 
         expect(editPressed, isTrue);
@@ -312,12 +313,12 @@ void main() {
             ),
           );
 
-          // Tap on the platform - should not crash
-          await tester.tap(find.text(testGame.platform));
+          // Tap on the compact platform badge - should not crash
+          await tester.tap(find.text('Test Pla...'));
           await tester.pump();
 
-          // Should still display the platform
-          expect(find.text(testGame.platform), findsOneWidget);
+          // Should still display the compact platform
+          expect(find.text('Test Pla...'), findsOneWidget);
         },
       );
     });

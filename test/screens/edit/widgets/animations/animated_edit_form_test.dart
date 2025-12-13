@@ -43,9 +43,9 @@ void main() {
         ),
       );
 
-      // Verify that animation widgets are present
-      expect(find.byType(FadeTransition), findsOneWidget);
-      expect(find.byType(SlideTransition), findsOneWidget);
+      // Verify that animation widgets are present (MaterialApp adds its own transitions)
+      expect(find.byType(FadeTransition), findsAtLeastNWidgets(1));
+      expect(find.byType(SlideTransition), findsAtLeastNWidgets(1));
       expect(find.text('Test Animation'), findsOneWidget);
 
       await tester.pumpAndSettle();

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/main/widgets/game_detail_sheet.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
-import 'package:chkpnt/shared/widgets/buttons/platform_badge.dart';
 import '../../../test_helpers.dart';
 
 void main() {
@@ -49,11 +48,11 @@ void main() {
       // Check that game title is displayed
       expect(find.text('Test Game'), findsOneWidget);
 
-      // Platform text might be in a PlatformBadge widget - check for the widget instead
-      expect(find.byType(PlatformBadge), findsOneWidget);
+      // Platform is displayed in compact form (truncated for unknown platforms)
+      expect(find.text('Test Pla...'), findsOneWidget);
 
-      // Check that the current status icon is displayed (be more specific about context)
-      expect(find.byIcon(Icons.play_circle_fill), findsAtLeastNWidgets(1));
+      // Check that the current status icon is displayed (appears in compact badge, status display, and status buttons)
+      expect(find.byIcon(Icons.play_circle_fill), findsAtLeastNWidgets(2));
 
       // Reset size
       await tester.binding.setSurfaceSize(null);
@@ -362,8 +361,8 @@ void main() {
       expect(updatedGame.status, GameStatus.backlog);
     });
 
-    group('Platform Badge Tests', () {
-      testWidgets('should render platform badge', (WidgetTester tester) async {
+    group('Compact Platform Badge Tests', () {
+      testWidgets('should render compact platform badge', (WidgetTester tester) async {
         // Set to a larger screen size to prevent layout issues
         await tester.binding.setSurfaceSize(const Size(600, 800));
 
@@ -376,23 +375,28 @@ void main() {
           ),
         );
 
-        // Platform badge widget should be visible
-        expect(find.byType(PlatformBadge), findsOneWidget);
+        // Platform is displayed in compact form
+        expect(find.text('Test Pla...'), findsOneWidget);
 
         // Reset size
         await tester.binding.setSurfaceSize(null);
       });
 
-      testWidgets('should handle different platforms', (
+      testWidgets('should handle different platforms with compact names', (
         WidgetTester tester,
       ) async {
         // Set to a larger screen size to prevent layout issues
         await tester.binding.setSurfaceSize(const Size(600, 800));
 
-        final platforms = ['PC', 'PS5', 'Xbox', 'Nintendo Switch'];
+        final platformMappings = {
+          'PC': 'PC',
+          'PS5': 'PS5',
+          'Xbox': 'Xbox',
+          'Nintendo Switch': 'Switch',
+        };
 
-        for (final platform in platforms) {
-          final gameWithPlatform = testGame.copyWith(platform: platform);
+        for (final entry in platformMappings.entries) {
+          final gameWithPlatform = testGame.copyWith(platform: entry.key);
 
           await tester.pumpWidget(
             UncontrolledProviderScope(
@@ -403,8 +407,8 @@ void main() {
             ),
           );
 
-          // Check that PlatformBadge widget is present
-          expect(find.byType(PlatformBadge), findsOneWidget);
+          // Check that compact platform name is displayed
+          expect(find.text(entry.value), findsOneWidget);
         }
 
         // Reset size
