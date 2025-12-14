@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'package:chkpnt/screens/main/widgets/game_detail_sheet_info.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
@@ -45,6 +44,8 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
                     _buildGameHeader(),
                     _buildSpacing(),
                     _buildStatusSelector(),
+                    const SizedBox(height: 8),
+                    _buildGuides(),
                     const SizedBox(height: 8),
                   ],
                 ),
@@ -94,6 +95,10 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
       selectedStatus: _selectedStatus,
       onStatusChanged: _handleStatusChange,
     );
+  }
+
+  Widget _buildGuides() {
+    return Divider(height: 5.0);
   }
 
   Widget _buildActions() {
