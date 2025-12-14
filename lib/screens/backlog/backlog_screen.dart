@@ -214,7 +214,11 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
     final result = await Navigator.of(context).push<GameItem?>(
       EditScreenPageRoute(
         child: GameEditScreen.add(
-          availableStatuses: [GameStatus.backlog],
+          availableStatuses: [
+            GameStatus.playing,
+            GameStatus.backlog,
+            GameStatus.ongoing,
+          ],
           defaultStatus: GameStatus.backlog,
         ),
       ),
