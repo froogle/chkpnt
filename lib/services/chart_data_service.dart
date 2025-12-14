@@ -85,6 +85,7 @@ class ChartDataService {
       GameStatus.abandoned: 'Abandoned',
       GameStatus.wishlist: 'Wishlist',
       GameStatus.ordered: 'Ordered',
+      GameStatus.ongoing: 'Ongoing',
     };
   }
 

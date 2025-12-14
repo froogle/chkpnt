@@ -68,12 +68,41 @@ class BacklogSortDirectionState extends _$BacklogSortDirectionState {
   }
 }
 
+@riverpod
+class BacklogShowBacklogFilter extends _$BacklogShowBacklogFilter {
+  @override
+  bool build() => true;
+
+  void toggle() {
+    state = !state;
+  }
+
+  void setValue(bool value) {
+    state = value;
+  }
+}
+
+@riverpod
+class BacklogShowOngoingFilter extends _$BacklogShowOngoingFilter {
+  @override
+  bool build() => true;
+
+  void toggle() {
+    state = !state;
+  }
+
+  void setValue(bool value) {
+    state = value;
+  }
+}
+
 // Section expansion state - Using Notifier to preserve state across navigation
 @Riverpod(keepAlive: true)
 class SectionExpansion extends _$SectionExpansion {
   @override
   Map<String, bool> build() => {
     'Playing': true,
+    'Ongoing/Frequently Played': false,
     'Backlog': false,
     'Completed': false,
     'Abandoned': false,

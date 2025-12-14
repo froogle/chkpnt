@@ -167,7 +167,7 @@ class GameImageService {
       img.Image processedImage = originalImage;
       if (originalImage.width > maxImageSize ||
           originalImage.height > maxImageSize) {
-        debugPrint('[ImageProcessing] Image needs resizing from ${originalImage.width}x${originalImage.height} to max ${maxImageSize}');
+        debugPrint('[ImageProcessing] Image needs resizing from ${originalImage.width}x${originalImage.height} to max $maxImageSize');
         
         // Calculate target dimensions
         int? targetWidth;

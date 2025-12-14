@@ -21,6 +21,7 @@ void main() {
 
       expect(expansion, {
         'Playing': true,
+        'Ongoing/Frequently Played': false,
         'Backlog': false,
         'Completed': false,
         'Abandoned': false,

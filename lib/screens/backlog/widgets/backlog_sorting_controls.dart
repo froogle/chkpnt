@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/styles/backlog_styles.dart';
 import 'sort_chip.dart';
+import 'status_filter_chip.dart';
 
-/// Widget for displaying sorting controls on the backlog screen
 class BacklogSortingControls extends ConsumerWidget {
   const BacklogSortingControls({super.key});
 
@@ -29,6 +29,16 @@ class BacklogSortingControls extends ConsumerWidget {
             sortType: BacklogSortType.dateAdded,
             isActive: currentSortType == BacklogSortType.dateAdded,
             currentDirection: currentSortDirection,
+          ),
+          const Spacer(),
+          const StatusFilterChip(
+            label: 'Backlog',
+            filterType: StatusFilterType.backlog,
+          ),
+          SizedBox(width: BacklogStyles.sortingChipSpacing),
+          const StatusFilterChip(
+            label: 'Ongoing',
+            filterType: StatusFilterType.ongoing,
           ),
         ],
       ),

@@ -201,6 +201,7 @@ class ProfileStyles {
     'Abandoned': Color(0xFFEF4444),
     'Wishlist': Color(0xFF3B82F6),
     'Ordered': Color(0xFF06B6D4),
+    'Ongoing': Color(0xFF06B6D4),
   };
 
   // Responsive helpers

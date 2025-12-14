@@ -83,6 +83,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         children: [
           _buildGameSection('Playing', GameStatus.playing, isLandscape),
           const SizedBox(height: 20),
+          _buildGameSection(
+            'Ongoing/Frequently Played',
+            GameStatus.ongoing,
+            isLandscape,
+          ),
+          const SizedBox(height: 20),
           _buildGameSection('Backlog', GameStatus.backlog, isLandscape),
           const SizedBox(height: 20),
           _buildGameSection('Completed', GameStatus.completed, isLandscape),

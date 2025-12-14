@@ -177,26 +177,32 @@ Map<String, List<GameItem>> sortedBacklogGamesByPlatform(Ref ref) {
   final searchQuery = ref.watch(searchQueryProvider);
   final sortType = ref.watch(backlogSortProvider);
   final sortDirection = ref.watch(backlogSortDirectionStateProvider);
+  final showBacklog = ref.watch(backlogShowBacklogFilterProvider);
+  final showOngoing = ref.watch(backlogShowOngoingFilterProvider);
 
-  List<GameItem> backlogGames =
-      games.where((game) => game.status == GameStatus.backlog).toList();
+  List<GameItem> filteredGames =
+      games.where((game) {
+        if (showBacklog && game.status == GameStatus.backlog) return true;
+        if (showOngoing && game.status == GameStatus.ongoing) return true;
+        return false;
+      }).toList();
 
   if (selectedPlatform != 'All') {
-    backlogGames =
-        backlogGames
+    filteredGames =
+        filteredGames
             .where((game) => game.platform == selectedPlatform)
             .toList();
   }
 
   if (searchQuery.isNotEmpty) {
-    backlogGames =
-        backlogGames.where((game) {
+    filteredGames =
+        filteredGames.where((game) {
           return _matchesSearchQuery(game, searchQuery);
         }).toList();
   }
 
   final Map<String, List<GameItem>> groupedGames = {};
-  for (final game in backlogGames) {
+  for (final game in filteredGames) {
     if (!groupedGames.containsKey(game.platform)) {
       groupedGames[game.platform] = [];
     }
@@ -238,9 +244,17 @@ Map<String, List<GameItem>> sortedBacklogGamesByPlatform(Ref ref) {
 @riverpod
 List<String> backlogPlatforms(Ref ref) {
   final games = ref.watch(gameListProvider);
-  final backlogGames =
-      games.where((game) => game.status == GameStatus.backlog).toList();
-  final platforms = backlogGames.map((game) => game.platform).toSet().toList();
+  final showBacklog = ref.watch(backlogShowBacklogFilterProvider);
+  final showOngoing = ref.watch(backlogShowOngoingFilterProvider);
+
+  final filteredGames =
+      games.where((game) {
+        if (showBacklog && game.status == GameStatus.backlog) return true;
+        if (showOngoing && game.status == GameStatus.ongoing) return true;
+        return false;
+      }).toList();
+
+  final platforms = filteredGames.map((game) => game.platform).toSet().toList();
   platforms.sort();
   return ['All', ...platforms];
 }

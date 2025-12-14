@@ -6,8 +6,9 @@ import 'package:chkpnt/models/backup_models.dart';
 import 'package:chkpnt/services/backup_archive_service.dart';
 
 class BackupValidationService {
-  static const String currentBackupVersion = '1.0.0';
-  
+  static const String currentBackupVersion = '1.1.0';
+  static const List<String> compatibleVersions = ['1.0.0', '1.1.0'];
+
   final BackupArchiveService _archiveService;
 
   BackupValidationService(this._archiveService);
@@ -102,9 +103,9 @@ class BackupValidationService {
   }
 
   BackupValidationResult _validateVersion(BackupMetadata metadata) {
-    if (metadata.version != currentBackupVersion) {
+    if (!compatibleVersions.contains(metadata.version)) {
       return BackupValidationResult.invalid(
-        'Incompatible backup version: ${metadata.version} (expected: $currentBackupVersion)'
+        'Incompatible backup version: ${metadata.version} (supported: ${compatibleVersions.join(", ")})'
       );
     }
     return BackupValidationResult.valid(metadata);

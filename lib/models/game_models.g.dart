@@ -43,4 +43,5 @@ const _$GameStatusEnumMap = {
   GameStatus.abandoned: 'abandoned',
   GameStatus.wishlist: 'wishlist',
   GameStatus.ordered: 'ordered',
+  GameStatus.ongoing: 'ongoing',
 };

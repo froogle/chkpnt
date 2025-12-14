@@ -270,7 +270,7 @@ void main() {
 
         final result = await backupService.createBackupMetadata(imageFiles);
 
-        expect(result.version, equals('1.0.0'));
+        expect(result.version, equals('1.1.0'));
         expect(result.gameCount, equals(2));
         expect(result.imageCount, equals(2));
         expect(result.includedImages, equals(['game_001.jpg', 'game_002.png']));

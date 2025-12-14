@@ -71,6 +71,7 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
       return [
         GameStatus.playing,
         GameStatus.backlog,
+        GameStatus.ongoing,
         GameStatus.completed,
         GameStatus.abandoned,
         GameStatus.wishlist,
@@ -84,15 +85,17 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
       return [GameStatus.wishlist, GameStatus.ordered, GameStatus.backlog];
     }
 
-    // If the game is in playing, backlog, completed, or abandoned states,
+    // If the game is in playing, backlog, ongoing, completed, or abandoned states,
     // exclude wishlist and ordered options as they don't make sense in this context
     if (widget.selectedStatus == GameStatus.playing ||
         widget.selectedStatus == GameStatus.backlog ||
+        widget.selectedStatus == GameStatus.ongoing ||
         widget.selectedStatus == GameStatus.completed ||
         widget.selectedStatus == GameStatus.abandoned) {
       return [
         GameStatus.playing,
         GameStatus.backlog,
+        GameStatus.ongoing,
         GameStatus.completed,
         GameStatus.abandoned,
       ];
@@ -102,6 +105,7 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
     return [
       GameStatus.playing,
       GameStatus.backlog,
+      GameStatus.ongoing,
       GameStatus.completed,
       GameStatus.abandoned,
       GameStatus.wishlist,

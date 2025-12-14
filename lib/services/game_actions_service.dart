@@ -209,6 +209,8 @@ class GameActionsService {
         return 'Wishlist';
       case GameStatus.ordered:
         return 'Ordered';
+      case GameStatus.ongoing:
+        return 'Ongoing/Frequently Played';
     }
   }
 
@@ -227,6 +229,8 @@ class GameActionsService {
         return Icons.favorite;
       case GameStatus.ordered:
         return Icons.shopping_cart;
+      case GameStatus.ongoing:
+        return Icons.replay;
     }
   }
 
@@ -245,6 +249,8 @@ class GameActionsService {
         return Colors.green;
       case GameStatus.ordered:
         return Colors.purple;
+      case GameStatus.ongoing:
+        return const Color(0xFF06B6D4);
     }
   }
 }

@@ -216,7 +216,43 @@ final backlogSortDirectionStateProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$BacklogSortDirectionState = AutoDisposeNotifier<SortDirection>;
-String _$sectionExpansionHash() => r'79ca889a67f8cbe9c5a620b8418adebea60cd433';
+String _$backlogShowBacklogFilterHash() =>
+    r'35d7221f56b95cd82f694f812466750169d745af';
+
+/// See also [BacklogShowBacklogFilter].
+@ProviderFor(BacklogShowBacklogFilter)
+final backlogShowBacklogFilterProvider =
+    AutoDisposeNotifierProvider<BacklogShowBacklogFilter, bool>.internal(
+      BacklogShowBacklogFilter.new,
+      name: r'backlogShowBacklogFilterProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$backlogShowBacklogFilterHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$BacklogShowBacklogFilter = AutoDisposeNotifier<bool>;
+String _$backlogShowOngoingFilterHash() =>
+    r'015f95fdc19dbd85dca647dedc1f8c67d139d5d3';
+
+/// See also [BacklogShowOngoingFilter].
+@ProviderFor(BacklogShowOngoingFilter)
+final backlogShowOngoingFilterProvider =
+    AutoDisposeNotifierProvider<BacklogShowOngoingFilter, bool>.internal(
+      BacklogShowOngoingFilter.new,
+      name: r'backlogShowOngoingFilterProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$backlogShowOngoingFilterHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$BacklogShowOngoingFilter = AutoDisposeNotifier<bool>;
+String _$sectionExpansionHash() => r'507dce598b68adc2cd63f1a7685d4577c3ce7487';
 
 /// See also [SectionExpansion].
 @ProviderFor(SectionExpansion)

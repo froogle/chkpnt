@@ -64,7 +64,7 @@ class BackupProgressResult {
 
 /// Service for managing complete database and image backups/restores
 class FullBackupService {
-  static const String _currentBackupVersion = '1.0.0';
+  static const String _currentBackupVersion = '1.1.0';
 
   final GameRepository _repository;
   final StorageService _storageService;

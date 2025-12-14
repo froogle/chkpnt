@@ -194,15 +194,13 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   // Business logic methods
 
   Future<void> _handleImageTap() async {
-    final currentContext = context;
-
     await Future.delayed(const Duration(milliseconds: 50));
 
     final editState = ref.read(gameEditStateProvider(_editContext));
 
     if (!mounted) return;
     final result = await ImageSelectionBottomSheet.show(
-      context: currentContext,
+      context: context,
       hasExistingImage: editState.imagePath != null,
     );
 
@@ -214,11 +212,11 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       } else if (result == 'search') {
         if (!mounted) return;
         final selectedImageUrl = await Navigator.of(
-          currentContext,
+          context,
         ).push<String>(
           MaterialPageRoute(
             builder:
-                (context) =>
+                (buildContext) =>
                     ImageSearchScreen(initialQuery: _titleController.text),
           ),
         );

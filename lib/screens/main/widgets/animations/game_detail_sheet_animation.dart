@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/styles/styles.dart';
 import '../game_detail_sheet.dart';
 
 class GameDetailSheetAnimation {

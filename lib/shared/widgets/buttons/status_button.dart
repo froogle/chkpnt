@@ -76,6 +76,8 @@ class StatusButton extends StatelessWidget {
         return Icons.favorite;
       case GameStatus.ordered:
         return Icons.shopping_cart;
+      case GameStatus.ongoing:
+        return Icons.replay;
     }
   }
 
@@ -93,6 +95,8 @@ class StatusButton extends StatelessWidget {
         return 'Wishlist';
       case GameStatus.ordered:
         return 'Ordered';
+      case GameStatus.ongoing:
+        return 'Ongoing';
     }
   }
 

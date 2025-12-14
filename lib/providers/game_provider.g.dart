@@ -498,7 +498,7 @@ class _FullyFilteredGamesProviderElement
 }
 
 String _$sortedBacklogGamesByPlatformHash() =>
-    r'3e25300be07e6dd3b2fb91af0daf9e346cc31266';
+    r'792b09926df014c7e683e13d6821b95073d51189';
 
 /// See also [sortedBacklogGamesByPlatform].
 @ProviderFor(sortedBacklogGamesByPlatform)
@@ -518,7 +518,7 @@ final sortedBacklogGamesByPlatformProvider =
 // ignore: unused_element
 typedef SortedBacklogGamesByPlatformRef =
     AutoDisposeProviderRef<Map<String, List<GameItem>>>;
-String _$backlogPlatformsHash() => r'559414a2dad7cc7e0344a16bd56d597be8310944';
+String _$backlogPlatformsHash() => r'9e1034f9f8130c5ff157269ffba56ac2994a1e89';
 
 /// See also [backlogPlatforms].
 @ProviderFor(backlogPlatforms)
