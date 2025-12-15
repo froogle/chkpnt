@@ -45,8 +45,8 @@ void main() {
         MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
       );
 
-      // Check that current status text is displayed
-      expect(find.text('Current Status: Playing'), findsOneWidget);
+      // Check that current status text is displayed (without "Current Status: " prefix)
+      expect(find.text('Playing'), findsOneWidget);
 
       // Check that the playing icon is displayed (appears in both compact badge and status display)
       expect(find.byIcon(Icons.play_circle_fill), findsNWidgets(2));
@@ -64,7 +64,7 @@ void main() {
           ),
         );
 
-        expect(find.text('Current Status: Completed'), findsOneWidget);
+        expect(find.text('Completed'), findsOneWidget);
         expect(find.byIcon(Icons.check_circle), findsNWidgets(2));
       });
 
@@ -79,7 +79,7 @@ void main() {
           ),
         );
 
-        expect(find.text('Current Status: Abandoned'), findsOneWidget);
+        expect(find.text('Abandoned'), findsOneWidget);
         expect(find.byIcon(Icons.pause_circle_filled), findsNWidgets(2));
       });
 
@@ -94,7 +94,7 @@ void main() {
           ),
         );
 
-        expect(find.text('Current Status: Backlog'), findsOneWidget);
+        expect(find.text('Backlog'), findsOneWidget);
         // Backlog uses schedule icon in compact badge but list icon in status display
         expect(find.byIcon(Icons.schedule), findsOneWidget);
         expect(find.byIcon(Icons.list), findsOneWidget);
@@ -111,7 +111,7 @@ void main() {
           ),
         );
 
-        expect(find.text('Current Status: Wishlist'), findsOneWidget);
+        expect(find.text('Wishlist'), findsOneWidget);
         expect(find.byIcon(Icons.favorite), findsNWidgets(2));
       });
 
@@ -126,7 +126,7 @@ void main() {
           ),
         );
 
-        expect(find.text('Current Status: Ordered'), findsOneWidget);
+        expect(find.text('Ordered'), findsOneWidget);
         expect(find.byIcon(Icons.shopping_cart), findsNWidgets(2));
       });
     });
@@ -231,7 +231,7 @@ void main() {
           ),
         );
 
-        expect(find.text('Current Status: $expectedText'), findsOneWidget);
+        expect(find.text(expectedText), findsOneWidget);
       }
     });
 

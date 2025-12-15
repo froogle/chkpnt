@@ -176,6 +176,7 @@ mixin _$GameItem {
   DateTime get lastStatusChange => throw _privateConstructorUsedError;
   String? get imagePath => throw _privateConstructorUsedError;
   String? get remoteImageUrl => throw _privateConstructorUsedError;
+  bool get isPhysical => throw _privateConstructorUsedError;
 
   /// Serializes this GameItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -201,6 +202,7 @@ abstract class $GameItemCopyWith<$Res> {
     DateTime lastStatusChange,
     String? imagePath,
     String? remoteImageUrl,
+    bool isPhysical,
   });
 
   $GameIdCopyWith<$Res> get id;
@@ -229,6 +231,7 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
     Object? lastStatusChange = null,
     Object? imagePath = freezed,
     Object? remoteImageUrl = freezed,
+    Object? isPhysical = null,
   }) {
     return _then(
       _value.copyWith(
@@ -272,6 +275,11 @@ class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
                     ? _value.remoteImageUrl
                     : remoteImageUrl // ignore: cast_nullable_to_non_nullable
                         as String?,
+            isPhysical:
+                null == isPhysical
+                    ? _value.isPhysical
+                    : isPhysical // ignore: cast_nullable_to_non_nullable
+                        as bool,
           )
           as $Val,
     );
@@ -306,6 +314,7 @@ abstract class _$$GameItemImplCopyWith<$Res>
     DateTime lastStatusChange,
     String? imagePath,
     String? remoteImageUrl,
+    bool isPhysical,
   });
 
   @override
@@ -334,6 +343,7 @@ class __$$GameItemImplCopyWithImpl<$Res>
     Object? lastStatusChange = null,
     Object? imagePath = freezed,
     Object? remoteImageUrl = freezed,
+    Object? isPhysical = null,
   }) {
     return _then(
       _$GameItemImpl(
@@ -377,6 +387,11 @@ class __$$GameItemImplCopyWithImpl<$Res>
                 ? _value.remoteImageUrl
                 : remoteImageUrl // ignore: cast_nullable_to_non_nullable
                     as String?,
+        isPhysical:
+            null == isPhysical
+                ? _value.isPhysical
+                : isPhysical // ignore: cast_nullable_to_non_nullable
+                    as bool,
       ),
     );
   }
@@ -394,6 +409,7 @@ class _$GameItemImpl implements _GameItem {
     required this.lastStatusChange,
     this.imagePath,
     this.remoteImageUrl,
+    this.isPhysical = false,
   });
 
   factory _$GameItemImpl.fromJson(Map<String, dynamic> json) =>
@@ -415,10 +431,13 @@ class _$GameItemImpl implements _GameItem {
   final String? imagePath;
   @override
   final String? remoteImageUrl;
+  @override
+  @JsonKey()
+  final bool isPhysical;
 
   @override
   String toString() {
-    return 'GameItem(id: $id, title: $title, platform: $platform, status: $status, lastModified: $lastModified, lastStatusChange: $lastStatusChange, imagePath: $imagePath, remoteImageUrl: $remoteImageUrl)';
+    return 'GameItem(id: $id, title: $title, platform: $platform, status: $status, lastModified: $lastModified, lastStatusChange: $lastStatusChange, imagePath: $imagePath, remoteImageUrl: $remoteImageUrl, isPhysical: $isPhysical)';
   }
 
   @override
@@ -438,7 +457,9 @@ class _$GameItemImpl implements _GameItem {
             (identical(other.imagePath, imagePath) ||
                 other.imagePath == imagePath) &&
             (identical(other.remoteImageUrl, remoteImageUrl) ||
-                other.remoteImageUrl == remoteImageUrl));
+                other.remoteImageUrl == remoteImageUrl) &&
+            (identical(other.isPhysical, isPhysical) ||
+                other.isPhysical == isPhysical));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -453,6 +474,7 @@ class _$GameItemImpl implements _GameItem {
     lastStatusChange,
     imagePath,
     remoteImageUrl,
+    isPhysical,
   );
 
   /// Create a copy of GameItem
@@ -479,6 +501,7 @@ abstract class _GameItem implements GameItem {
     required final DateTime lastStatusChange,
     final String? imagePath,
     final String? remoteImageUrl,
+    final bool isPhysical,
   }) = _$GameItemImpl;
 
   factory _GameItem.fromJson(Map<String, dynamic> json) =
@@ -500,6 +523,8 @@ abstract class _GameItem implements GameItem {
   String? get imagePath;
   @override
   String? get remoteImageUrl;
+  @override
+  bool get isPhysical;
 
   /// Create a copy of GameItem
   /// with the given fields replaced by the non-null parameter values.

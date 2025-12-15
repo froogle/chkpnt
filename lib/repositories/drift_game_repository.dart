@@ -22,6 +22,7 @@ class Games extends Table {
   DateTimeColumn get lastStatusChange => dateTime()();
   TextColumn get imagePath => text().nullable()();
   TextColumn get remoteImageUrl => text().nullable()();
+  BoolColumn get isPhysical => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -37,7 +38,7 @@ class GameDatabase extends _$GameDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -45,10 +46,9 @@ class GameDatabase extends _$GameDatabase {
       await m.createAll();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // Handle future schema migrations
-      // if (from == 1 && to == 2) {
-      //   await m.addColumn(games, games.newColumn);
-      // }
+      if (from < 2) {
+        await m.addColumn(games, games.isPhysical);
+      }
     },
     beforeOpen: (details) async {
       // Ensure database integrity before opening
@@ -73,6 +73,7 @@ class GameDatabase extends _$GameDatabase {
       lastStatusChange: game.lastStatusChange,
       imagePath: game.imagePath,
       remoteImageUrl: game.remoteImageUrl,
+      isPhysical: game.isPhysical,
     );
   }
 
@@ -87,6 +88,7 @@ class GameDatabase extends _$GameDatabase {
       lastStatusChange: Value(gameItem.lastStatusChange),
       imagePath: Value(gameItem.imagePath),
       remoteImageUrl: Value(gameItem.remoteImageUrl),
+      isPhysical: Value(gameItem.isPhysical),
     );
   }
 
@@ -261,12 +263,13 @@ class DriftGameRepository implements GameRepository {
                   'lastStatusChange': game.lastStatusChange.toIso8601String(),
                   'imagePath': game.imagePath,
                   'remoteImageUrl': game.remoteImageUrl,
+                  'isPhysical': game.isPhysical,
                 },
               )
               .toList();
 
       return jsonEncode({
-        'version': 1,
+        'version': 2,
         'exportDate': DateTime.now().toIso8601String(),
         'games': jsonData,
       });
@@ -291,6 +294,7 @@ class DriftGameRepository implements GameRepository {
               lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
               imagePath: gameData['imagePath'],
               remoteImageUrl: gameData['remoteImageUrl'],
+              isPhysical: gameData['isPhysical'] ?? false,
             );
           }).toList();
 

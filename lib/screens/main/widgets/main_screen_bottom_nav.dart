@@ -19,10 +19,37 @@ class MainScreenBottomNav extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildNavButton(Icons.home_outlined, 0, currentScreen == 0),
-          _buildNavButton(Icons.list_alt_outlined, 1, currentScreen == 1),
-          _buildNavButton(Icons.favorite_outline, 2, currentScreen == 2),
-          _buildNavButton(Icons.person_outline, 3, currentScreen == 3),
+          Expanded(
+            child: _buildNavButton(Icons.home_outlined, 0, currentScreen == 0),
+          ),
+          Expanded(
+            child: _buildNavButton(
+              Icons.list_alt_outlined,
+              1,
+              currentScreen == 1,
+            ),
+          ),
+          Expanded(
+            child: _buildNavButton(
+              Icons.sd_card_outlined,
+              2,
+              currentScreen == 2,
+            ),
+          ),
+          Expanded(
+            child: _buildNavButton(
+              Icons.favorite_outline,
+              3,
+              currentScreen == 3,
+            ),
+          ),
+          Expanded(
+            child: _buildNavButton(
+              Icons.person_outline,
+              4,
+              currentScreen == 4,
+            ),
+          ),
         ],
       ),
     );
@@ -31,13 +58,15 @@ class MainScreenBottomNav extends ConsumerWidget {
   Widget _buildNavButton(IconData icon, int index, bool isActive) {
     return IconButton(
       onPressed: () => onNavItemPressed?.call(index),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 32, minHeight: 40),
       icon: Icon(
         icon,
         color:
             isActive
                 ? AppColors.primaryPurple
                 : AppColors.primaryPurple.withValues(alpha: 0.5),
-        size: isActive ? 26 : 24,
+        size: isActive ? 24 : 22,
       ),
     );
   }
@@ -48,10 +77,12 @@ class MainScreenBottomNav extends ConsumerWidget {
         return 0;
       case '/backlog':
         return 1;
-      case '/wishlist':
+      case '/physical':
         return 2;
-      case '/profile':
+      case '/wishlist':
         return 3;
+      case '/profile':
+        return 4;
       default:
         return 0;
     }

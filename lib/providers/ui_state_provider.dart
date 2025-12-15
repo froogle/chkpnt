@@ -96,6 +96,20 @@ class BacklogShowOngoingFilter extends _$BacklogShowOngoingFilter {
   }
 }
 
+@riverpod
+class PhysicalSelectedPlatform extends _$PhysicalSelectedPlatform {
+  @override
+  String build() => 'All';
+
+  void selectPlatform(String platform) {
+    state = platform;
+  }
+
+  void resetToAll() {
+    state = 'All';
+  }
+}
+
 // Section expansion state - Using Notifier to preserve state across navigation
 @Riverpod(keepAlive: true)
 class SectionExpansion extends _$SectionExpansion {
@@ -237,6 +251,7 @@ class GameEditFormState {
   final GameStatus status;
   final String? imagePath;
   final bool hasUnsavedChanges;
+  final bool isPhysical;
 
   const GameEditFormState({
     required this.title,
@@ -244,6 +259,7 @@ class GameEditFormState {
     required this.status,
     this.imagePath,
     this.hasUnsavedChanges = false,
+    this.isPhysical = false,
   });
 
   GameEditFormState copyWith({
@@ -253,6 +269,7 @@ class GameEditFormState {
     String? imagePath,
     bool? hasUnsavedChanges,
     bool clearImagePath = false,
+    bool? isPhysical,
   }) {
     return GameEditFormState(
       title: title ?? this.title,
@@ -260,6 +277,7 @@ class GameEditFormState {
       status: status ?? this.status,
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
       hasUnsavedChanges: hasUnsavedChanges ?? this.hasUnsavedChanges,
+      isPhysical: isPhysical ?? this.isPhysical,
     );
   }
 
@@ -271,12 +289,20 @@ class GameEditFormState {
         other.platform == platform &&
         other.status == status &&
         other.imagePath == imagePath &&
-        other.hasUnsavedChanges == hasUnsavedChanges;
+        other.hasUnsavedChanges == hasUnsavedChanges &&
+        other.isPhysical == isPhysical;
   }
 
   @override
   int get hashCode {
-    return Object.hash(title, platform, status, imagePath, hasUnsavedChanges);
+    return Object.hash(
+      title,
+      platform,
+      status,
+      imagePath,
+      hasUnsavedChanges,
+      isPhysical,
+    );
   }
 }
 
@@ -294,6 +320,7 @@ class GameEditState extends _$GameEditState {
         status: defaultStatus,
         imagePath: null,
         hasUnsavedChanges: false,
+        isPhysical: false,
       );
     } else {
       final game = context.game!;
@@ -303,6 +330,7 @@ class GameEditState extends _$GameEditState {
         status: game.status,
         imagePath: game.imagePath,
         hasUnsavedChanges: false,
+        isPhysical: game.isPhysical,
       );
     }
   }
@@ -325,6 +353,10 @@ class GameEditState extends _$GameEditState {
     } else {
       state = state.copyWith(imagePath: imagePath, hasUnsavedChanges: true);
     }
+  }
+
+  void updateIsPhysical(bool isPhysical) {
+    state = state.copyWith(isPhysical: isPhysical, hasUnsavedChanges: true);
   }
 
   bool get hasChanges => state.hasUnsavedChanges;

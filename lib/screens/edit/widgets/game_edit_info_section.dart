@@ -49,7 +49,48 @@ class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection> {
         _buildTitleField(),
         const SizedBox(height: EditScreenStyles.sectionSpacing),
         _buildPlatformSection(),
+        const SizedBox(height: EditScreenStyles.sectionSpacing),
+        _buildPhysicalToggle(),
       ],
+    );
+  }
+
+  Widget _buildPhysicalToggle() {
+    final formState = ref.watch(gameEditStateProvider(widget.editContext));
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.collapsibleSection,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.sd_card, size: 20, color: AppColors.primaryText),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Physical Copy',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.primaryText,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Switch(
+            value: formState.isPhysical,
+            onChanged: (value) {
+              ref
+                  .read(gameEditStateProvider(widget.editContext).notifier)
+                  .updateIsPhysical(value);
+            },
+            activeTrackColor: AppColors.primaryPurple,
+          ),
+        ],
+      ),
     );
   }
 

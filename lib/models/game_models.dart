@@ -29,16 +29,16 @@ class GameItem with _$GameItem {
     required DateTime lastStatusChange,
     String? imagePath,
     String? remoteImageUrl,
+    @Default(false) bool isPhysical,
   }) = _GameItem;
 
-  /// Factory constructor for creating new games with automatic timestamp handling.
-  /// This removes the need for UI code to manually set timestamps.
   factory GameItem.create({
     required String title,
     required String platform,
     required GameStatus status,
     String? imagePath,
     String? remoteImageUrl,
+    bool isPhysical = false,
   }) {
     final now = DateTime.now();
     return GameItem(
@@ -50,6 +50,7 @@ class GameItem with _$GameItem {
       lastStatusChange: now,
       imagePath: imagePath,
       remoteImageUrl: remoteImageUrl,
+      isPhysical: isPhysical,
     );
   }
 

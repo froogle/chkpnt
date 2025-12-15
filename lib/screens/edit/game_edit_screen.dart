@@ -286,13 +286,15 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   Future<void> _saveChanges() async {
     final gameActionsService = ref.read(gameActionsServiceProvider);
+    final editState = ref.read(gameEditStateProvider(_editContext));
 
     if (widget.isAddMode) {
       final newGame = GameItem.create(
         title: _titleController.text.trim(),
-        platform: ref.read(gameEditStateProvider(_editContext)).platform,
-        status: ref.read(gameEditStateProvider(_editContext)).status,
-        imagePath: ref.read(gameEditStateProvider(_editContext)).imagePath,
+        platform: editState.platform,
+        status: editState.status,
+        imagePath: editState.imagePath,
+        isPhysical: editState.isPhysical,
       );
 
       final isBacklogGame = newGame.status == GameStatus.backlog;
@@ -310,9 +312,10 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     } else {
       final updatedGame = widget.game!.copyWith(
         title: _titleController.text.trim(),
-        platform: ref.read(gameEditStateProvider(_editContext)).platform,
-        status: ref.read(gameEditStateProvider(_editContext)).status,
-        imagePath: ref.read(gameEditStateProvider(_editContext)).imagePath,
+        platform: editState.platform,
+        status: editState.status,
+        imagePath: editState.imagePath,
+        isPhysical: editState.isPhysical,
       );
 
       await gameActionsService.updateGame(widget.game!, updatedGame, context);

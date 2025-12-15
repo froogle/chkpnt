@@ -44,21 +44,91 @@ class GameDetailSheetInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _buildCompactPlatformBadge(),
-            const SizedBox(width: 12),
-            _buildCurrentStatusIcon(),
-            const SizedBox(width: 8),
-            Expanded(child: _buildCurrentStatusText()),
-          ],
-        ),
+        _buildStatusRow(),
+        const SizedBox(height: 4),
+        _buildFormatRow(),
         const SizedBox(height: 4),
         Padding(
           padding: const EdgeInsets.only(left: 8),
           child: _buildStatusChangedText(),
         ),
       ],
+    );
+  }
+
+  Widget _buildStatusRow() {
+    return Row(
+      children: [
+        _buildCompactPlatformBadge(),
+        const SizedBox(width: 12),
+        _buildCurrentStatusIcon(),
+        const SizedBox(width: 8),
+        Expanded(child: _buildCurrentStatusText()),
+      ],
+    );
+  }
+
+  Widget _buildFormatRow() {
+    return Row(
+      children: [
+        _buildFormatBadge(),
+        const SizedBox(width: 12),
+        _buildFormatIcon(),
+        const SizedBox(width: 8),
+        Expanded(child: _buildFormatText()),
+      ],
+    );
+  }
+
+  Widget _buildFormatBadge() {
+    final isPhysical = game.isPhysical;
+
+    return GestureDetector(
+      onTap: onEditPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color:
+              isPhysical
+                  ? AppColors.primaryPurple.withValues(alpha: 0.9)
+                  : AppColors.expandIcon.withValues(alpha: 0.7),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isPhysical ? Icons.sd_card : Icons.cloud_outlined,
+              size: 14,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              isPhysical ? 'Physical' : 'Digital',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFormatIcon() {
+    return Icon(
+      game.isPhysical ? Icons.inventory_2_outlined : Icons.download_outlined,
+      color: AppColors.primaryPurple,
+      size: InputStyles.statusButtonIconSize,
+    );
+  }
+
+  Widget _buildFormatText() {
+    return Text(
+      game.isPhysical ? 'Boxed Copy' : 'Download',
+      style: AppLayout.detailSubtitleStyle,
     );
   }
 
@@ -181,7 +251,7 @@ class GameDetailSheetInfo extends StatelessWidget {
 
   Widget _buildCurrentStatusText() {
     return Text(
-      'Current Status: ${_getStatusDisplayText(game.status)}',
+      _getStatusDisplayText(game.status),
       style: AppLayout.detailSubtitleStyle,
     );
   }

@@ -536,6 +536,63 @@ final backlogPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef BacklogPlatformsRef = AutoDisposeProviderRef<List<String>>;
+String _$physicalGamesHash() => r'e06e5308b78b7f8fd39c0731b8e4caea926e4159';
+
+/// See also [physicalGames].
+@ProviderFor(physicalGames)
+final physicalGamesProvider = AutoDisposeProvider<List<GameItem>>.internal(
+  physicalGames,
+  name: r'physicalGamesProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$physicalGamesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PhysicalGamesRef = AutoDisposeProviderRef<List<GameItem>>;
+String _$physicalGamesByPlatformHash() =>
+    r'b1d2f4863a9757d093b784bb35a3cd1bbd3aee3c';
+
+/// See also [physicalGamesByPlatform].
+@ProviderFor(physicalGamesByPlatform)
+final physicalGamesByPlatformProvider =
+    AutoDisposeProvider<Map<String, List<GameItem>>>.internal(
+      physicalGamesByPlatform,
+      name: r'physicalGamesByPlatformProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$physicalGamesByPlatformHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PhysicalGamesByPlatformRef =
+    AutoDisposeProviderRef<Map<String, List<GameItem>>>;
+String _$physicalPlatformsHash() => r'618ef3cbcd8295911ba8e752ba9af7f9b3429406';
+
+/// See also [physicalPlatforms].
+@ProviderFor(physicalPlatforms)
+final physicalPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
+  physicalPlatforms,
+  name: r'physicalPlatformsProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$physicalPlatformsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PhysicalPlatformsRef = AutoDisposeProviderRef<List<String>>;
 String _$gameListHash() => r'6968151e9680eba4bf49558207dcfac29d8d5550';
 
 /// See also [GameList].

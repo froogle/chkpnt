@@ -91,6 +91,21 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isPhysicalMeta = const VerificationMeta(
+    'isPhysical',
+  );
+  @override
+  late final GeneratedColumn<bool> isPhysical = GeneratedColumn<bool>(
+    'is_physical',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_physical" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -101,6 +116,7 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
     lastStatusChange,
     imagePath,
     remoteImageUrl,
+    isPhysical,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -180,6 +196,12 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
         ),
       );
     }
+    if (data.containsKey('is_physical')) {
+      context.handle(
+        _isPhysicalMeta,
+        isPhysical.isAcceptableOrUnknown(data['is_physical']!, _isPhysicalMeta),
+      );
+    }
     return context;
   }
 
@@ -227,6 +249,11 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
         DriftSqlType.string,
         data['${effectivePrefix}remote_image_url'],
       ),
+      isPhysical:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_physical'],
+          )!,
     );
   }
 
@@ -245,6 +272,7 @@ class Game extends DataClass implements Insertable<Game> {
   final DateTime lastStatusChange;
   final String? imagePath;
   final String? remoteImageUrl;
+  final bool isPhysical;
   const Game({
     required this.id,
     required this.title,
@@ -254,6 +282,7 @@ class Game extends DataClass implements Insertable<Game> {
     required this.lastStatusChange,
     this.imagePath,
     this.remoteImageUrl,
+    required this.isPhysical,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -270,6 +299,7 @@ class Game extends DataClass implements Insertable<Game> {
     if (!nullToAbsent || remoteImageUrl != null) {
       map['remote_image_url'] = Variable<String>(remoteImageUrl);
     }
+    map['is_physical'] = Variable<bool>(isPhysical);
     return map;
   }
 
@@ -289,6 +319,7 @@ class Game extends DataClass implements Insertable<Game> {
           remoteImageUrl == null && nullToAbsent
               ? const Value.absent()
               : Value(remoteImageUrl),
+      isPhysical: Value(isPhysical),
     );
   }
 
@@ -306,6 +337,7 @@ class Game extends DataClass implements Insertable<Game> {
       lastStatusChange: serializer.fromJson<DateTime>(json['lastStatusChange']),
       imagePath: serializer.fromJson<String?>(json['imagePath']),
       remoteImageUrl: serializer.fromJson<String?>(json['remoteImageUrl']),
+      isPhysical: serializer.fromJson<bool>(json['isPhysical']),
     );
   }
   @override
@@ -320,6 +352,7 @@ class Game extends DataClass implements Insertable<Game> {
       'lastStatusChange': serializer.toJson<DateTime>(lastStatusChange),
       'imagePath': serializer.toJson<String?>(imagePath),
       'remoteImageUrl': serializer.toJson<String?>(remoteImageUrl),
+      'isPhysical': serializer.toJson<bool>(isPhysical),
     };
   }
 
@@ -332,6 +365,7 @@ class Game extends DataClass implements Insertable<Game> {
     DateTime? lastStatusChange,
     Value<String?> imagePath = const Value.absent(),
     Value<String?> remoteImageUrl = const Value.absent(),
+    bool? isPhysical,
   }) => Game(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -342,6 +376,7 @@ class Game extends DataClass implements Insertable<Game> {
     imagePath: imagePath.present ? imagePath.value : this.imagePath,
     remoteImageUrl:
         remoteImageUrl.present ? remoteImageUrl.value : this.remoteImageUrl,
+    isPhysical: isPhysical ?? this.isPhysical,
   );
   Game copyWithCompanion(GamesCompanion data) {
     return Game(
@@ -362,6 +397,8 @@ class Game extends DataClass implements Insertable<Game> {
           data.remoteImageUrl.present
               ? data.remoteImageUrl.value
               : this.remoteImageUrl,
+      isPhysical:
+          data.isPhysical.present ? data.isPhysical.value : this.isPhysical,
     );
   }
 
@@ -375,7 +412,8 @@ class Game extends DataClass implements Insertable<Game> {
           ..write('lastModified: $lastModified, ')
           ..write('lastStatusChange: $lastStatusChange, ')
           ..write('imagePath: $imagePath, ')
-          ..write('remoteImageUrl: $remoteImageUrl')
+          ..write('remoteImageUrl: $remoteImageUrl, ')
+          ..write('isPhysical: $isPhysical')
           ..write(')'))
         .toString();
   }
@@ -390,6 +428,7 @@ class Game extends DataClass implements Insertable<Game> {
     lastStatusChange,
     imagePath,
     remoteImageUrl,
+    isPhysical,
   );
   @override
   bool operator ==(Object other) =>
@@ -402,7 +441,8 @@ class Game extends DataClass implements Insertable<Game> {
           other.lastModified == this.lastModified &&
           other.lastStatusChange == this.lastStatusChange &&
           other.imagePath == this.imagePath &&
-          other.remoteImageUrl == this.remoteImageUrl);
+          other.remoteImageUrl == this.remoteImageUrl &&
+          other.isPhysical == this.isPhysical);
 }
 
 class GamesCompanion extends UpdateCompanion<Game> {
@@ -414,6 +454,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
   final Value<DateTime> lastStatusChange;
   final Value<String?> imagePath;
   final Value<String?> remoteImageUrl;
+  final Value<bool> isPhysical;
   final Value<int> rowid;
   const GamesCompanion({
     this.id = const Value.absent(),
@@ -424,6 +465,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     this.lastStatusChange = const Value.absent(),
     this.imagePath = const Value.absent(),
     this.remoteImageUrl = const Value.absent(),
+    this.isPhysical = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GamesCompanion.insert({
@@ -435,6 +477,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     required DateTime lastStatusChange,
     this.imagePath = const Value.absent(),
     this.remoteImageUrl = const Value.absent(),
+    this.isPhysical = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
@@ -451,6 +494,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Expression<DateTime>? lastStatusChange,
     Expression<String>? imagePath,
     Expression<String>? remoteImageUrl,
+    Expression<bool>? isPhysical,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -462,6 +506,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
       if (lastStatusChange != null) 'last_status_change': lastStatusChange,
       if (imagePath != null) 'image_path': imagePath,
       if (remoteImageUrl != null) 'remote_image_url': remoteImageUrl,
+      if (isPhysical != null) 'is_physical': isPhysical,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -475,6 +520,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Value<DateTime>? lastStatusChange,
     Value<String?>? imagePath,
     Value<String?>? remoteImageUrl,
+    Value<bool>? isPhysical,
     Value<int>? rowid,
   }) {
     return GamesCompanion(
@@ -486,6 +532,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
       lastStatusChange: lastStatusChange ?? this.lastStatusChange,
       imagePath: imagePath ?? this.imagePath,
       remoteImageUrl: remoteImageUrl ?? this.remoteImageUrl,
+      isPhysical: isPhysical ?? this.isPhysical,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -517,6 +564,9 @@ class GamesCompanion extends UpdateCompanion<Game> {
     if (remoteImageUrl.present) {
       map['remote_image_url'] = Variable<String>(remoteImageUrl.value);
     }
+    if (isPhysical.present) {
+      map['is_physical'] = Variable<bool>(isPhysical.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -534,6 +584,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
           ..write('lastStatusChange: $lastStatusChange, ')
           ..write('imagePath: $imagePath, ')
           ..write('remoteImageUrl: $remoteImageUrl, ')
+          ..write('isPhysical: $isPhysical, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -561,6 +612,7 @@ typedef $$GamesTableCreateCompanionBuilder =
       required DateTime lastStatusChange,
       Value<String?> imagePath,
       Value<String?> remoteImageUrl,
+      Value<bool> isPhysical,
       Value<int> rowid,
     });
 typedef $$GamesTableUpdateCompanionBuilder =
@@ -573,6 +625,7 @@ typedef $$GamesTableUpdateCompanionBuilder =
       Value<DateTime> lastStatusChange,
       Value<String?> imagePath,
       Value<String?> remoteImageUrl,
+      Value<bool> isPhysical,
       Value<int> rowid,
     });
 
@@ -621,6 +674,11 @@ class $$GamesTableFilterComposer extends Composer<_$GameDatabase, $GamesTable> {
 
   ColumnFilters<String> get remoteImageUrl => $composableBuilder(
     column: $table.remoteImageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPhysical => $composableBuilder(
+    column: $table.isPhysical,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -673,6 +731,11 @@ class $$GamesTableOrderingComposer
     column: $table.remoteImageUrl,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isPhysical => $composableBuilder(
+    column: $table.isPhysical,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$GamesTableAnnotationComposer
@@ -713,6 +776,11 @@ class $$GamesTableAnnotationComposer
     column: $table.remoteImageUrl,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get isPhysical => $composableBuilder(
+    column: $table.isPhysical,
+    builder: (column) => column,
+  );
 }
 
 class $$GamesTableTableManager
@@ -751,6 +819,7 @@ class $$GamesTableTableManager
                 Value<DateTime> lastStatusChange = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> remoteImageUrl = const Value.absent(),
+                Value<bool> isPhysical = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamesCompanion(
                 id: id,
@@ -761,6 +830,7 @@ class $$GamesTableTableManager
                 lastStatusChange: lastStatusChange,
                 imagePath: imagePath,
                 remoteImageUrl: remoteImageUrl,
+                isPhysical: isPhysical,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -773,6 +843,7 @@ class $$GamesTableTableManager
                 required DateTime lastStatusChange,
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> remoteImageUrl = const Value.absent(),
+                Value<bool> isPhysical = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamesCompanion.insert(
                 id: id,
@@ -783,6 +854,7 @@ class $$GamesTableTableManager
                 lastStatusChange: lastStatusChange,
                 imagePath: imagePath,
                 remoteImageUrl: remoteImageUrl,
+                isPhysical: isPhysical,
                 rowid: rowid,
               ),
           withReferenceMapper:

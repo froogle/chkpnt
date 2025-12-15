@@ -252,6 +252,24 @@ final backlogShowOngoingFilterProvider =
     );
 
 typedef _$BacklogShowOngoingFilter = AutoDisposeNotifier<bool>;
+String _$physicalSelectedPlatformHash() =>
+    r'567773e93e701ab666a274dfafd4455a161a641c';
+
+/// See also [PhysicalSelectedPlatform].
+@ProviderFor(PhysicalSelectedPlatform)
+final physicalSelectedPlatformProvider =
+    AutoDisposeNotifierProvider<PhysicalSelectedPlatform, String>.internal(
+      PhysicalSelectedPlatform.new,
+      name: r'physicalSelectedPlatformProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$physicalSelectedPlatformHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$PhysicalSelectedPlatform = AutoDisposeNotifier<String>;
 String _$sectionExpansionHash() => r'507dce598b68adc2cd63f1a7685d4577c3ce7487';
 
 /// See also [SectionExpansion].
@@ -269,7 +287,7 @@ final sectionExpansionProvider =
     );
 
 typedef _$SectionExpansion = Notifier<Map<String, bool>>;
-String _$gameEditStateHash() => r'e5f3554569dba357c2b2181af6a375a2a9d31ec7';
+String _$gameEditStateHash() => r'81cb51a871f602c144e28bf1ac786084d98ca001';
 
 abstract class _$GameEditState
     extends BuildlessAutoDisposeNotifier<GameEditFormState> {

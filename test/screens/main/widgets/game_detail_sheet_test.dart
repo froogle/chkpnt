@@ -86,8 +86,9 @@ void main() {
         ),
       );
 
-      // Check that only non-wishlist status options are displayed for playing game
-      expect(find.text('Playing'), findsOneWidget);
+      // Check that status options are displayed for playing game
+      // 'Playing' appears twice: once in status display, once in status buttons
+      expect(find.text('Playing'), findsNWidgets(2));
       expect(find.text('Abandoned'), findsOneWidget);
       expect(find.text('Completed'), findsOneWidget);
       expect(find.text('Backlog'), findsOneWidget);
@@ -111,8 +112,9 @@ void main() {
         ),
       );
 
-      // Check that only wishlist flow options are displayed for wishlist game
-      expect(find.text('Wishlist'), findsOneWidget);
+      // Check that wishlist flow options are displayed for wishlist game
+      // 'Wishlist' appears twice: once in status display, once in status buttons
+      expect(find.text('Wishlist'), findsNWidgets(2));
       expect(find.text('Ordered'), findsOneWidget);
       expect(find.text('Backlog'), findsOneWidget);
 
@@ -132,8 +134,8 @@ void main() {
         ),
       );
 
-      // Since the game status is 'playing', that button should be selected
-      expect(find.text('Playing'), findsOneWidget);
+      // Since the game status is 'playing', it appears twice: in status display and in status buttons
+      expect(find.text('Playing'), findsNWidgets(2));
     });
 
     testWidgets('should handle status selection and save changes workflow', (

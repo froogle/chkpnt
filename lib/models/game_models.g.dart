@@ -22,6 +22,7 @@ _$GameItemImpl _$$GameItemImplFromJson(Map<String, dynamic> json) =>
       lastStatusChange: DateTime.parse(json['lastStatusChange'] as String),
       imagePath: json['imagePath'] as String?,
       remoteImageUrl: json['remoteImageUrl'] as String?,
+      isPhysical: json['isPhysical'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
@@ -34,6 +35,7 @@ Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
       'lastStatusChange': instance.lastStatusChange.toIso8601String(),
       'imagePath': instance.imagePath,
       'remoteImageUrl': instance.remoteImageUrl,
+      'isPhysical': instance.isPhysical,
     };
 
 const _$GameStatusEnumMap = {

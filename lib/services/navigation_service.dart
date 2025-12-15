@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 class NavigationService {
   static const int homeIndex = 0;
   static const int backlogIndex = 1;
-  static const int wishlistIndex = 2;
-  static const int profileIndex = 3;
+  static const int physicalIndex = 2;
+  static const int wishlistIndex = 3;
+  static const int profileIndex = 4;
 
   /// Handles navigation from any main screen to another
   ///
@@ -16,7 +17,7 @@ class NavigationService {
   /// avoiding unnecessary navigation when already on the target screen
   ///
   /// [context] - BuildContext for navigation
-  /// [targetIndex] - Index of the target screen (0-3)
+  /// [targetIndex] - Index of the target screen (0-4)
   static void handleNavigation(BuildContext context, int targetIndex) {
     final String currentRoute =
         ModalRoute.of(context)?.settings.name ?? '/main';
@@ -39,6 +40,8 @@ class NavigationService {
         return '/main';
       case backlogIndex:
         return '/backlog';
+      case physicalIndex:
+        return '/physical';
       case wishlistIndex:
         return '/wishlist';
       case profileIndex:

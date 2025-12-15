@@ -258,3 +258,61 @@ List<String> backlogPlatforms(Ref ref) {
   platforms.sort();
   return ['All', ...platforms];
 }
+
+// === PHYSICAL COLLECTION PROVIDERS ===
+@riverpod
+List<GameItem> physicalGames(Ref ref) {
+  final games = ref.watch(gameListProvider);
+  return games.where((game) => game.isPhysical).toList();
+}
+
+@riverpod
+Map<String, List<GameItem>> physicalGamesByPlatform(Ref ref) {
+  final games = ref.watch(physicalGamesProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+  final selectedPlatform = ref.watch(physicalSelectedPlatformProvider);
+
+  List<GameItem> filteredGames = games;
+
+  if (selectedPlatform != 'All') {
+    filteredGames =
+        filteredGames
+            .where((game) => game.platform == selectedPlatform)
+            .toList();
+  }
+
+  if (searchQuery.isNotEmpty) {
+    filteredGames =
+        filteredGames.where((game) {
+          return _matchesSearchQuery(game, searchQuery);
+        }).toList();
+  }
+
+  final Map<String, List<GameItem>> groupedGames = {};
+  for (final game in filteredGames) {
+    if (!groupedGames.containsKey(game.platform)) {
+      groupedGames[game.platform] = [];
+    }
+    groupedGames[game.platform]!.add(game);
+  }
+
+  for (final platform in groupedGames.keys) {
+    groupedGames[platform]!.sort(
+      (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+    );
+  }
+
+  final sortedMap = Map<String, List<GameItem>>.fromEntries(
+    groupedGames.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
+  );
+
+  return sortedMap;
+}
+
+@riverpod
+List<String> physicalPlatforms(Ref ref) {
+  final games = ref.watch(physicalGamesProvider);
+  final platforms = games.map((game) => game.platform).toSet().toList();
+  platforms.sort();
+  return ['All', ...platforms];
+}

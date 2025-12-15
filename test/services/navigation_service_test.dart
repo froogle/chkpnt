@@ -87,8 +87,9 @@ void main() {
     test('route name mapping works correctly', () {
       expect(NavigationService.homeIndex, 0);
       expect(NavigationService.backlogIndex, 1);
-      expect(NavigationService.wishlistIndex, 2);
-      expect(NavigationService.profileIndex, 3);
+      expect(NavigationService.physicalIndex, 2);
+      expect(NavigationService.wishlistIndex, 3);
+      expect(NavigationService.profileIndex, 4);
     });
   });
 }

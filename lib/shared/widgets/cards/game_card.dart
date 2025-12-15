@@ -49,9 +49,25 @@ class GameCard extends ConsumerWidget {
         _buildBackground(),
         _buildGradientOverlay(),
         _buildCompactText(),
+        if (game.isPhysical) _buildPhysicalIndicator(),
         if (game.status == GameStatus.backlog && onPlayPressed != null)
           _buildCompactPlayButton(),
       ],
+    );
+  }
+
+  Widget _buildPhysicalIndicator() {
+    return Positioned(
+      top: 8,
+      right: 8,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.7),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: const Icon(Icons.sd_card, color: Colors.white, size: 16),
+      ),
     );
   }
 
