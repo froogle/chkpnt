@@ -88,6 +88,8 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   Widget _buildHeader() {
     final wishlistPlatforms = ref.watch(wishlistPlatformsProvider);
     return MainScreenHeader(
+      title: 'Wishlist',
+      icon: Icons.favorite_outline,
       onAddGamePressed: _handleAddGame,
       customPlatforms: wishlistPlatforms,
     );

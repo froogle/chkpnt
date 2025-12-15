@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/shared/widgets/inputs/platform_filter_dropdown.dart';
@@ -6,31 +7,78 @@ import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/styles/styles.dart';
 
-class PhysicalScreenHeader extends ConsumerWidget {
+class PhysicalScreenHeader extends ConsumerStatefulWidget {
   const PhysicalScreenHeader({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PhysicalScreenHeader> createState() =>
+      _PhysicalScreenHeaderState();
+}
+
+class _PhysicalScreenHeaderState extends ConsumerState<PhysicalScreenHeader> {
+  bool _showTitle = true;
+  Timer? _hideTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startHideTimer();
+  }
+
+  @override
+  void dispose() {
+    _hideTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startHideTimer() {
+    _hideTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _showTitle = false;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: MainScreenStyles.headerPadding,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildTitle(),
-          const SizedBox(width: 12),
-          _buildPlatformFilter(ref),
-          const SizedBox(width: 12),
-          _buildSearchBar(),
+          _buildAnimatedTitleRow(),
+          _buildControlsRow(),
         ],
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildAnimatedTitleRow() {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: _showTitle ? 1.0 : 0.0,
+        child:
+            _showTitle
+                ? Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildTitleRow(),
+                )
+                : const SizedBox.shrink(),
+      ),
+    );
+  }
+
+  Widget _buildTitleRow() {
     return Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.sd_card, size: 20, color: AppColors.primaryPurple),
-        const SizedBox(width: 6),
+        Icon(Icons.sd_card_outlined, size: 20, color: AppColors.primaryPurple),
+        const SizedBox(width: 8),
         Text(
           'Physical',
           style: TextStyle(
@@ -43,7 +91,17 @@ class PhysicalScreenHeader extends ConsumerWidget {
     );
   }
 
-  Widget _buildPlatformFilter(WidgetRef ref) {
+  Widget _buildControlsRow() {
+    return Row(
+      children: [
+        _buildPlatformFilter(),
+        const SizedBox(width: 12),
+        _buildSearchBar(),
+      ],
+    );
+  }
+
+  Widget _buildPlatformFilter() {
     final selectedPlatform = ref.watch(physicalSelectedPlatformProvider);
     final availablePlatforms = ref.watch(physicalPlatformsProvider);
 

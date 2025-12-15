@@ -77,6 +77,8 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
   Widget _buildHeader() {
     final backlogPlatforms = ref.watch(backlogPlatformsProvider);
     return MainScreenHeader(
+      title: 'Backlog',
+      icon: Icons.list_alt_outlined,
       onAddGamePressed: _handleAddGame,
       customPlatforms: backlogPlatforms,
     );
