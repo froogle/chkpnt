@@ -103,6 +103,7 @@ class GameActionsService {
             status: newGame.status,
             imagePath: newGame.imagePath,
             remoteImageUrl: newGame.remoteImageUrl,
+            isPhysical: newGame.isPhysical,
           ),
         );
 
