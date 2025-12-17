@@ -49,7 +49,7 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
   }
 
   Widget _buildHeader() {
-    return const PhysicalScreenHeader();
+    return PhysicalScreenHeader(onAddGamePressed: _handleAddGame);
   }
 
   Widget _buildContent(bool isLandscape) {
@@ -144,5 +144,13 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
 
   void _handleNavigation(int index) {
     NavigationService.handleNavigation(context, index);
+  }
+
+  void _handleAddGame() {
+    Navigator.of(context).push(
+      EditScreenPageRoute(
+        child: GameEditScreen.add(defaultIsPhysical: true),
+      ),
+    );
   }
 }

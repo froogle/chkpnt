@@ -8,7 +8,9 @@ import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/styles/styles.dart';
 
 class PhysicalScreenHeader extends ConsumerStatefulWidget {
-  const PhysicalScreenHeader({super.key});
+  final VoidCallback? onAddGamePressed;
+
+  const PhysicalScreenHeader({super.key, this.onAddGamePressed});
 
   @override
   ConsumerState<PhysicalScreenHeader> createState() =>
@@ -97,7 +99,18 @@ class _PhysicalScreenHeaderState extends ConsumerState<PhysicalScreenHeader> {
         _buildPlatformFilter(),
         const SizedBox(width: 12),
         _buildSearchBar(),
+        const SizedBox(width: 12),
+        _buildAddGameButton(),
       ],
+    );
+  }
+
+  Widget _buildAddGameButton() {
+    return InputStyles.gradientButton(
+      onPressed: widget.onAddGamePressed ?? () {},
+      padding: EdgeInsets.all(12),
+      borderRadius: BorderRadius.circular(16),
+      child: Icon(Icons.add_rounded, color: Colors.white, size: 24),
     );
   }
 

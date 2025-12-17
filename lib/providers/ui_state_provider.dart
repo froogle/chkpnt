@@ -221,12 +221,14 @@ class GameEditContext {
   final GameItem? game;
   final List<GameStatus>? availableStatuses;
   final GameStatus? defaultStatus;
+  final bool defaultIsPhysical;
 
   const GameEditContext({
     required this.isAddMode,
     this.game,
     this.availableStatuses,
     this.defaultStatus,
+    this.defaultIsPhysical = false,
   });
 
   @override
@@ -236,12 +238,13 @@ class GameEditContext {
         other.isAddMode == isAddMode &&
         other.game == game &&
         other.availableStatuses == availableStatuses &&
-        other.defaultStatus == defaultStatus;
+        other.defaultStatus == defaultStatus &&
+        other.defaultIsPhysical == defaultIsPhysical;
   }
 
   @override
   int get hashCode =>
-      Object.hash(isAddMode, game, availableStatuses, defaultStatus);
+      Object.hash(isAddMode, game, availableStatuses, defaultStatus, defaultIsPhysical);
 }
 
 // Game edit form state data class
@@ -320,7 +323,7 @@ class GameEditState extends _$GameEditState {
         status: defaultStatus,
         imagePath: null,
         hasUnsavedChanges: false,
-        isPhysical: false,
+        isPhysical: context.defaultIsPhysical,
       );
     } else {
       final game = context.game!;
