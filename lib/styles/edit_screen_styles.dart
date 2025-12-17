@@ -70,7 +70,7 @@ class EditScreenStyles {
   // Platform section layout constants
   static const CrossAxisAlignment platformSectionAlignment =
       CrossAxisAlignment.start;
-  static const CrossAxisAlignment portraitPlatformAlignment =
+  static const CrossAxisAlignment centeredPlatformAlignment =
       CrossAxisAlignment.center;
 
   // Platform dropdown styles
@@ -194,8 +194,7 @@ class EditScreenStyles {
   static const Color appBarIconColour = Colors.black87;
 
   // Layout spacing constants
-  static const double horizontalSpacing = 20.0;
-  static const double horizontalSpacingLandscape = 24.0;
+  static const double horizontalSpacing = 24.0;
   static const double verticalSpacing = 16.0;
-  static const double gameImageWidthLandscape = 120.0;
+  static const double gameImageWidth = 120.0;
 }

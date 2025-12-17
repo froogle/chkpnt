@@ -5,19 +5,14 @@ import 'global_styles.dart';
 class GameDetailSheetStyles {
   // Container and layout
   static const EdgeInsets contentPadding = EdgeInsets.fromLTRB(24, 20, 20, 28);
-  static const EdgeInsets contentPaddingLandscape = EdgeInsets.fromLTRB(
-    24,
-    16,
-    12,
-    24,
-  );
+  static const EdgeInsets editContentPadding = EdgeInsets.fromLTRB(24, 16, 12, 24);
   static const EdgeInsets headerPadding = EdgeInsets.only(top: 12, bottom: 12);
 
   // Spacing
   static const double headerSpacing = 12.0;
-  static const double headerSpacingLandscape = 8.0;
+  static const double editHeaderSpacing = 8.0;
   static const double sectionSpacing = 24.0;
-  static const double sectionSpacingLandscape = 20.0;
+  static const double editSectionSpacing = 20.0;
 
   // Modern sheet decoration with gradient
   static BoxDecoration get sheetDecoration => BoxDecoration(
@@ -58,7 +53,7 @@ class GameDetailSheetStyles {
 
   // Game image
   static const double gameImageHeight = 120.0;
-  static const double gameImageWidthPortrait = 140.0;
+  static const double gameImageWidth = 140.0;
   static const double gameImageIconSize = 48.0;
   static const BorderRadius gameImageBorderRadius = BorderRadius.all(
     Radius.circular(16),
