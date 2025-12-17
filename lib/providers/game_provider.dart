@@ -270,7 +270,7 @@ List<GameItem> physicalGames(Ref ref) {
 Map<String, List<GameItem>> physicalGamesByPlatform(Ref ref) {
   final games = ref.watch(physicalGamesProvider);
   final searchQuery = ref.watch(searchQueryProvider);
-  final selectedPlatform = ref.watch(physicalSelectedPlatformProvider);
+  final selectedPlatform = ref.watch(selectedPlatformProvider);
 
   List<GameItem> filteredGames = games;
 

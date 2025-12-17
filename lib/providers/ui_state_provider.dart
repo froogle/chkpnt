@@ -11,7 +11,7 @@ enum BacklogSortType { title, dateAdded }
 enum SortDirection { ascending, descending }
 
 // Search query state
-@riverpod
+@Riverpod(keepAlive: true)
 class SearchQuery extends _$SearchQuery {
   @override
   String build() => '';
@@ -26,7 +26,7 @@ class SearchQuery extends _$SearchQuery {
 }
 
 // Platform filter state
-@riverpod
+@Riverpod(keepAlive: true)
 class SelectedPlatform extends _$SelectedPlatform {
   @override
   String build() => 'All';
@@ -41,7 +41,7 @@ class SelectedPlatform extends _$SelectedPlatform {
 }
 
 // Backlog sorting state
-@riverpod
+@Riverpod(keepAlive: true)
 class BacklogSort extends _$BacklogSort {
   @override
   BacklogSortType build() => BacklogSortType.title;
@@ -51,7 +51,7 @@ class BacklogSort extends _$BacklogSort {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BacklogSortDirectionState extends _$BacklogSortDirectionState {
   @override
   SortDirection build() => SortDirection.ascending;
@@ -68,7 +68,7 @@ class BacklogSortDirectionState extends _$BacklogSortDirectionState {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BacklogShowBacklogFilter extends _$BacklogShowBacklogFilter {
   @override
   bool build() => true;
@@ -82,7 +82,7 @@ class BacklogShowBacklogFilter extends _$BacklogShowBacklogFilter {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BacklogShowOngoingFilter extends _$BacklogShowOngoingFilter {
   @override
   bool build() => true;
@@ -93,20 +93,6 @@ class BacklogShowOngoingFilter extends _$BacklogShowOngoingFilter {
 
   void setValue(bool value) {
     state = value;
-  }
-}
-
-@riverpod
-class PhysicalSelectedPlatform extends _$PhysicalSelectedPlatform {
-  @override
-  String build() => 'All';
-
-  void selectPlatform(String platform) {
-    state = platform;
-  }
-
-  void resetToAll() {
-    state = 'All';
   }
 }
 

@@ -115,7 +115,7 @@ class _PhysicalScreenHeaderState extends ConsumerState<PhysicalScreenHeader> {
   }
 
   Widget _buildPlatformFilter() {
-    final selectedPlatform = ref.watch(physicalSelectedPlatformProvider);
+    final selectedPlatform = ref.watch(selectedPlatformProvider);
     final availablePlatforms = ref.watch(physicalPlatformsProvider);
 
     return PlatformFilterDropdown(
@@ -123,7 +123,7 @@ class _PhysicalScreenHeaderState extends ConsumerState<PhysicalScreenHeader> {
       platforms: availablePlatforms,
       onPlatformChanged: (platform) {
         ref
-            .read(physicalSelectedPlatformProvider.notifier)
+            .read(selectedPlatformProvider.notifier)
             .selectPlatform(platform);
       },
     );
