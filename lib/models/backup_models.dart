@@ -12,6 +12,8 @@ class BackupMetadata with _$BackupMetadata {
     required int gameCount,
     required int imageCount,
     required List<String> includedImages,
+    @Default(0) int guideCount,
+    @Default([]) List<String> includedGuides,
   }) = _BackupMetadata;
 
   factory BackupMetadata.fromJson(Map<String, dynamic> json) =>

@@ -6,7 +6,9 @@ import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/models/guide_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
+import 'package:chkpnt/repositories/guide_repository.dart';
 import 'package:chkpnt/services/storage_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
 
@@ -17,7 +19,7 @@ class Games extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
   TextColumn get platform => text()();
-  IntColumn get status => integer()(); // Store GameStatus as int (0,1,2,3...)
+  IntColumn get status => integer()();
   DateTimeColumn get lastModified => dateTime()();
   DateTimeColumn get lastStatusChange => dateTime()();
   TextColumn get imagePath => text().nullable()();
@@ -28,8 +30,21 @@ class Games extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Drift database definition
-@DriftDatabase(tables: [Games])
+class Guides extends Table {
+  TextColumn get id => text()();
+  TextColumn get gameId => text().references(Games, #id)();
+  TextColumn get title => text()();
+  TextColumn get author => text()();
+  TextColumn get fileName => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  IntColumn get lastReadSection => integer().withDefault(const Constant(0))();
+  IntColumn get lastReadBlock => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Games, Guides])
 class GameDatabase extends _$GameDatabase {
   GameDatabase(StorageService storageService)
     : super(_openConnection(storageService)) {
@@ -38,7 +53,7 @@ class GameDatabase extends _$GameDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -49,12 +64,13 @@ class GameDatabase extends _$GameDatabase {
       if (from < 2) {
         await m.addColumn(games, games.isPhysical);
       }
+      if (from < 3) {
+        await m.createTable(guides);
+      }
     },
     beforeOpen: (details) async {
-      // Ensure database integrity before opening
       await customStatement('PRAGMA foreign_keys = ON');
 
-      // Verify database is not corrupted
       final result = await customSelect('PRAGMA integrity_check').get();
       if (result.isNotEmpty && result.first.data['integrity_check'] != 'ok') {
         throw Exception('Database corruption detected');
@@ -77,7 +93,6 @@ class GameDatabase extends _$GameDatabase {
     );
   }
 
-  /// Convert GameItem model to Drift companion
   GamesCompanion _gameItemToCompanion(GameItem gameItem) {
     return GamesCompanion(
       id: Value(gameItem.id.value),
@@ -92,7 +107,33 @@ class GameDatabase extends _$GameDatabase {
     );
   }
 
-  // Database operations
+  GuideItem _guideToGuideItem(Guide guide) {
+    return GuideItem(
+      id: GuideId(guide.id),
+      gameId: GameId(guide.gameId),
+      title: guide.title,
+      author: guide.author,
+      fileName: guide.fileName,
+      createdAt: guide.createdAt,
+      lastReadSection: guide.lastReadSection,
+      lastReadBlock: guide.lastReadBlock,
+    );
+  }
+
+  GuidesCompanion _guideItemToCompanion(GuideItem guideItem) {
+    return GuidesCompanion(
+      id: Value(guideItem.id.value),
+      gameId: Value(guideItem.gameId.value),
+      title: Value(guideItem.title),
+      author: Value(guideItem.author),
+      fileName: Value(guideItem.fileName),
+      createdAt: Value(guideItem.createdAt),
+      lastReadSection: Value(guideItem.lastReadSection),
+      lastReadBlock: Value(guideItem.lastReadBlock),
+    );
+  }
+
+  // Game database operations
   Future<List<GameItem>> getAllGamesInternal() async {
     final query = select(games)..orderBy([
       (t) => OrderingTerm(expression: t.lastModified, mode: OrderingMode.desc),
@@ -126,7 +167,53 @@ class GameDatabase extends _$GameDatabase {
   }
 
   Future<void> deleteGameInternal(String gameId) async {
+    await (delete(guides)..where((t) => t.gameId.equals(gameId))).go();
     await (delete(games)..where((t) => t.id.equals(gameId))).go();
+  }
+
+  // Guide database operations
+  Future<List<GuideItem>> getGuidesForGameInternal(String gameId) async {
+    final query = select(guides)
+      ..where((t) => t.gameId.equals(gameId))
+      ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
+    final results = await query.get();
+    return results.map(_guideToGuideItem).toList();
+  }
+
+  Stream<List<GuideItem>> watchGuidesForGame(String gameId) {
+    final query = select(guides)
+      ..where((t) => t.gameId.equals(gameId))
+      ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
+    return query.watch().map((guides) => guides.map(_guideToGuideItem).toList());
+  }
+
+  Future<List<GuideItem>> getAllGuidesInternal() async {
+    final query = select(guides)..orderBy([
+      (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+    ]);
+    final results = await query.get();
+    return results.map(_guideToGuideItem).toList();
+  }
+
+  Future<GuideItem?> getGuideByIdInternal(String guideId) async {
+    final query = select(guides)..where((t) => t.id.equals(guideId));
+    final result = await query.getSingleOrNull();
+    return result != null ? _guideToGuideItem(result) : null;
+  }
+
+  Future<GuideItem> insertGuide(GuideItem guideItem) async {
+    await into(guides).insert(_guideItemToCompanion(guideItem));
+    return guideItem;
+  }
+
+  Future<GuideItem> updateGuideInternal(GuideItem guideItem) async {
+    final companion = _guideItemToCompanion(guideItem);
+    await update(guides).replace(companion);
+    return guideItem;
+  }
+
+  Future<void> deleteGuideInternal(String guideId) async {
+    await (delete(guides)..where((t) => t.id.equals(guideId))).go();
   }
 }
 
@@ -140,6 +227,8 @@ class DriftGameRepository implements GameRepository {
     : _database = GameDatabase(storageService) {
     _gamesController = StreamController<List<GameItem>>.broadcast();
   }
+
+  GameDatabase get database => _database;
 
   @override
   Stream<List<GameItem>> watchGames() {
@@ -246,63 +335,87 @@ class DriftGameRepository implements GameRepository {
     await _database.close();
   }
 
-  /// Backup functionality for data protection
   @override
   Future<String> exportDatabaseToJson() async {
     try {
       final games = await getAllGames();
-      final jsonData =
-          games
-              .map(
-                (game) => {
-                  'id': game.id.value,
-                  'title': game.title,
-                  'platform': game.platform,
-                  'status': game.status.index,
-                  'lastModified': game.lastModified.toIso8601String(),
-                  'lastStatusChange': game.lastStatusChange.toIso8601String(),
-                  'imagePath': game.imagePath,
-                  'remoteImageUrl': game.remoteImageUrl,
-                  'isPhysical': game.isPhysical,
-                },
-              )
-              .toList();
+      final guides = await _database.getAllGuidesInternal();
+
+      final gamesJsonData = games.map((game) => {
+        'id': game.id.value,
+        'title': game.title,
+        'platform': game.platform,
+        'status': game.status.index,
+        'lastModified': game.lastModified.toIso8601String(),
+        'lastStatusChange': game.lastStatusChange.toIso8601String(),
+        'imagePath': game.imagePath,
+        'remoteImageUrl': game.remoteImageUrl,
+        'isPhysical': game.isPhysical,
+      }).toList();
+
+      final guidesJsonData = guides.map((guide) => {
+        'id': guide.id.value,
+        'gameId': guide.gameId.value,
+        'title': guide.title,
+        'author': guide.author,
+        'fileName': guide.fileName,
+        'createdAt': guide.createdAt.toIso8601String(),
+        'lastReadSection': guide.lastReadSection,
+        'lastReadBlock': guide.lastReadBlock,
+      }).toList();
 
       return jsonEncode({
-        'version': 2,
+        'version': 3,
         'exportDate': DateTime.now().toIso8601String(),
-        'games': jsonData,
+        'games': gamesJsonData,
+        'guides': guidesJsonData,
       });
     } catch (e) {
       throw StorageException('Failed to export database', originalError: e);
     }
   }
 
-  /// Import functionality for data restoration
   @override
   Future<void> importFromJson(String jsonString) async {
     try {
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
-      final games =
-          (data['games'] as List).map((gameData) {
-            return GameItem(
-              id: GameId(gameData['id']),
-              title: gameData['title'],
-              platform: gameData['platform'],
-              status: GameStatus.values[gameData['status']],
-              lastModified: DateTime.parse(gameData['lastModified']),
-              lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
-              imagePath: gameData['imagePath'],
-              remoteImageUrl: gameData['remoteImageUrl'],
-              isPhysical: gameData['isPhysical'] ?? false,
-            );
-          }).toList();
 
-      // Clear existing data and import
+      final games = (data['games'] as List).map((gameData) {
+        return GameItem(
+          id: GameId(gameData['id']),
+          title: gameData['title'],
+          platform: gameData['platform'],
+          status: GameStatus.values[gameData['status']],
+          lastModified: DateTime.parse(gameData['lastModified']),
+          lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
+          imagePath: gameData['imagePath'],
+          remoteImageUrl: gameData['remoteImageUrl'],
+          isPhysical: gameData['isPhysical'] ?? false,
+        );
+      }).toList();
+
+      final guidesData = data['guides'] as List? ?? [];
+      final guides = guidesData.map((guideData) {
+        return GuideItem(
+          id: GuideId(guideData['id']),
+          gameId: GameId(guideData['gameId']),
+          title: guideData['title'],
+          author: guideData['author'],
+          fileName: guideData['fileName'],
+          createdAt: DateTime.parse(guideData['createdAt']),
+          lastReadSection: guideData['lastReadSection'] ?? 0,
+          lastReadBlock: guideData['lastReadBlock'] ?? 0,
+        );
+      }).toList();
+
       await _database.transaction(() async {
+        await _database.delete(_database.guides).go();
         await _database.delete(_database.games).go();
         for (final game in games) {
           await _database.insertGame(game);
+        }
+        for (final guide in guides) {
+          await _database.insertGuide(guide);
         }
       });
     } catch (e) {
@@ -319,11 +432,70 @@ class DriftGameRepository implements GameRepository {
   }
 }
 
-/// Database connection setup with persistent storage locations
 LazyDatabase _openConnection(StorageService storageService) {
   return LazyDatabase(() async {
     final dbFolder = await storageService.getPersistentStorageDirectory();
     final file = File(p.join(dbFolder.path, 'chkpnt.db'));
     return NativeDatabase.createInBackground(file);
   });
+}
+
+class DriftGuideRepository implements GuideRepository {
+  final GameDatabase _database;
+
+  DriftGuideRepository(this._database);
+
+  @override
+  Stream<List<GuideItem>> watchGuidesForGame(GameId gameId) {
+    return _database.watchGuidesForGame(gameId.value);
+  }
+
+  @override
+  Future<List<GuideItem>> getGuidesForGame(GameId gameId) async {
+    return await _database.getGuidesForGameInternal(gameId.value);
+  }
+
+  @override
+  Future<List<GuideItem>> getAllGuides() async {
+    return await _database.getAllGuidesInternal();
+  }
+
+  @override
+  Future<GuideItem?> getGuideById(GuideId guideId) async {
+    return await _database.getGuideByIdInternal(guideId.value);
+  }
+
+  @override
+  Future<GuideItem> createGuide(GuideItem guide) async {
+    return await _database.insertGuide(guide);
+  }
+
+  @override
+  Future<GuideItem> updateGuideReadPosition(
+    GuideId guideId,
+    int section,
+    int block,
+  ) async {
+    final existing = await getGuideById(guideId);
+    if (existing == null) {
+      throw GuideNotFoundException(guideId);
+    }
+
+    final updated = existing.copyWith(
+      lastReadSection: section,
+      lastReadBlock: block,
+    );
+
+    return await _database.updateGuideInternal(updated);
+  }
+
+  @override
+  Future<void> deleteGuide(GuideId guideId) async {
+    final existing = await getGuideById(guideId);
+    if (existing == null) {
+      throw GuideNotFoundException(guideId);
+    }
+
+    await _database.deleteGuideInternal(guideId.value);
+  }
 }

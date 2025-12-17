@@ -16,6 +16,12 @@ _$BackupMetadataImpl _$$BackupMetadataImplFromJson(Map<String, dynamic> json) =>
           (json['includedImages'] as List<dynamic>)
               .map((e) => e as String)
               .toList(),
+      guideCount: (json['guideCount'] as num?)?.toInt() ?? 0,
+      includedGuides:
+          (json['includedGuides'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$BackupMetadataImplToJson(
@@ -26,6 +32,8 @@ Map<String, dynamic> _$$BackupMetadataImplToJson(
   'gameCount': instance.gameCount,
   'imageCount': instance.imageCount,
   'includedImages': instance.includedImages,
+  'guideCount': instance.guideCount,
+  'includedGuides': instance.includedGuides,
 };
 
 _$BackupProgressImpl _$$BackupProgressImplFromJson(Map<String, dynamic> json) =>

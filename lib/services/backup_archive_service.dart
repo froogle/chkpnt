@@ -8,11 +8,13 @@ import 'package:chkpnt/models/backup_models.dart';
 class BackupData {
   final String databaseJson;
   final List<File> imageFiles;
+  final List<File> guideFiles;
   final BackupMetadata metadata;
 
   const BackupData({
     required this.databaseJson,
     required this.imageFiles,
+    required this.guideFiles,
     required this.metadata,
   });
 }
@@ -21,6 +23,7 @@ class BackupArchiveService {
   static const String metadataFileName = 'metadata.json';
   static const String databaseFileName = 'database.json';
   static const String imagesDirectoryName = 'images';
+  static const String guidesDirectoryName = 'guides';
 
   Archive createArchive(BackupData backupData) {
     final Archive archive = Archive();
@@ -28,6 +31,7 @@ class BackupArchiveService {
     _addMetadataToArchive(archive, backupData.metadata);
     _addDatabaseToArchive(archive, backupData.databaseJson);
     _addImagesToArchive(archive, backupData.imageFiles);
+    _addGuidesToArchive(archive, backupData.guideFiles);
 
     return archive;
   }
@@ -57,6 +61,18 @@ class BackupArchiveService {
         '$imagesDirectoryName/$imageName',
         imageBytes.length,
         imageBytes,
+      ));
+    }
+  }
+
+  void _addGuidesToArchive(Archive archive, List<File> guideFiles) {
+    for (final guideFile in guideFiles) {
+      final String guideName = path.basename(guideFile.path);
+      final Uint8List guideBytes = guideFile.readAsBytesSync();
+      archive.addFile(ArchiveFile(
+        '$guidesDirectoryName/$guideName',
+        guideBytes.length,
+        guideBytes,
       ));
     }
   }
@@ -118,6 +134,13 @@ class BackupArchiveService {
   List<String> getArchiveImageFileNames(Archive archive) {
     return archive.files
         .where((file) => file.name.startsWith('$imagesDirectoryName/') && file.isFile)
+        .map((file) => path.basename(file.name))
+        .toList();
+  }
+
+  List<String> getArchiveGuideFileNames(Archive archive) {
+    return archive.files
+        .where((file) => file.name.startsWith('$guidesDirectoryName/') && file.isFile)
         .map((file) => path.basename(file.name))
         .toList();
   }

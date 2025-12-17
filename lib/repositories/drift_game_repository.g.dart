@@ -591,15 +591,540 @@ class GamesCompanion extends UpdateCompanion<Game> {
   }
 }
 
+class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GuidesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES games (id)',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _authorMeta = const VerificationMeta('author');
+  @override
+  late final GeneratedColumn<String> author = GeneratedColumn<String>(
+    'author',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fileNameMeta = const VerificationMeta(
+    'fileName',
+  );
+  @override
+  late final GeneratedColumn<String> fileName = GeneratedColumn<String>(
+    'file_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastReadSectionMeta = const VerificationMeta(
+    'lastReadSection',
+  );
+  @override
+  late final GeneratedColumn<int> lastReadSection = GeneratedColumn<int>(
+    'last_read_section',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastReadBlockMeta = const VerificationMeta(
+    'lastReadBlock',
+  );
+  @override
+  late final GeneratedColumn<int> lastReadBlock = GeneratedColumn<int>(
+    'last_read_block',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    gameId,
+    title,
+    author,
+    fileName,
+    createdAt,
+    lastReadSection,
+    lastReadBlock,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'guides';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Guide> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('author')) {
+      context.handle(
+        _authorMeta,
+        author.isAcceptableOrUnknown(data['author']!, _authorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_authorMeta);
+    }
+    if (data.containsKey('file_name')) {
+      context.handle(
+        _fileNameMeta,
+        fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fileNameMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('last_read_section')) {
+      context.handle(
+        _lastReadSectionMeta,
+        lastReadSection.isAcceptableOrUnknown(
+          data['last_read_section']!,
+          _lastReadSectionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_read_block')) {
+      context.handle(
+        _lastReadBlockMeta,
+        lastReadBlock.isAcceptableOrUnknown(
+          data['last_read_block']!,
+          _lastReadBlockMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Guide map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Guide(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}id'],
+          )!,
+      gameId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}game_id'],
+          )!,
+      title:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}title'],
+          )!,
+      author:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}author'],
+          )!,
+      fileName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}file_name'],
+          )!,
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+      lastReadSection:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}last_read_section'],
+          )!,
+      lastReadBlock:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}last_read_block'],
+          )!,
+    );
+  }
+
+  @override
+  $GuidesTable createAlias(String alias) {
+    return $GuidesTable(attachedDatabase, alias);
+  }
+}
+
+class Guide extends DataClass implements Insertable<Guide> {
+  final String id;
+  final String gameId;
+  final String title;
+  final String author;
+  final String fileName;
+  final DateTime createdAt;
+  final int lastReadSection;
+  final int lastReadBlock;
+  const Guide({
+    required this.id,
+    required this.gameId,
+    required this.title,
+    required this.author,
+    required this.fileName,
+    required this.createdAt,
+    required this.lastReadSection,
+    required this.lastReadBlock,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['game_id'] = Variable<String>(gameId);
+    map['title'] = Variable<String>(title);
+    map['author'] = Variable<String>(author);
+    map['file_name'] = Variable<String>(fileName);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_read_section'] = Variable<int>(lastReadSection);
+    map['last_read_block'] = Variable<int>(lastReadBlock);
+    return map;
+  }
+
+  GuidesCompanion toCompanion(bool nullToAbsent) {
+    return GuidesCompanion(
+      id: Value(id),
+      gameId: Value(gameId),
+      title: Value(title),
+      author: Value(author),
+      fileName: Value(fileName),
+      createdAt: Value(createdAt),
+      lastReadSection: Value(lastReadSection),
+      lastReadBlock: Value(lastReadBlock),
+    );
+  }
+
+  factory Guide.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Guide(
+      id: serializer.fromJson<String>(json['id']),
+      gameId: serializer.fromJson<String>(json['gameId']),
+      title: serializer.fromJson<String>(json['title']),
+      author: serializer.fromJson<String>(json['author']),
+      fileName: serializer.fromJson<String>(json['fileName']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastReadSection: serializer.fromJson<int>(json['lastReadSection']),
+      lastReadBlock: serializer.fromJson<int>(json['lastReadBlock']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'gameId': serializer.toJson<String>(gameId),
+      'title': serializer.toJson<String>(title),
+      'author': serializer.toJson<String>(author),
+      'fileName': serializer.toJson<String>(fileName),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastReadSection': serializer.toJson<int>(lastReadSection),
+      'lastReadBlock': serializer.toJson<int>(lastReadBlock),
+    };
+  }
+
+  Guide copyWith({
+    String? id,
+    String? gameId,
+    String? title,
+    String? author,
+    String? fileName,
+    DateTime? createdAt,
+    int? lastReadSection,
+    int? lastReadBlock,
+  }) => Guide(
+    id: id ?? this.id,
+    gameId: gameId ?? this.gameId,
+    title: title ?? this.title,
+    author: author ?? this.author,
+    fileName: fileName ?? this.fileName,
+    createdAt: createdAt ?? this.createdAt,
+    lastReadSection: lastReadSection ?? this.lastReadSection,
+    lastReadBlock: lastReadBlock ?? this.lastReadBlock,
+  );
+  Guide copyWithCompanion(GuidesCompanion data) {
+    return Guide(
+      id: data.id.present ? data.id.value : this.id,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      title: data.title.present ? data.title.value : this.title,
+      author: data.author.present ? data.author.value : this.author,
+      fileName: data.fileName.present ? data.fileName.value : this.fileName,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastReadSection:
+          data.lastReadSection.present
+              ? data.lastReadSection.value
+              : this.lastReadSection,
+      lastReadBlock:
+          data.lastReadBlock.present
+              ? data.lastReadBlock.value
+              : this.lastReadBlock,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Guide(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('title: $title, ')
+          ..write('author: $author, ')
+          ..write('fileName: $fileName, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastReadSection: $lastReadSection, ')
+          ..write('lastReadBlock: $lastReadBlock')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    gameId,
+    title,
+    author,
+    fileName,
+    createdAt,
+    lastReadSection,
+    lastReadBlock,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Guide &&
+          other.id == this.id &&
+          other.gameId == this.gameId &&
+          other.title == this.title &&
+          other.author == this.author &&
+          other.fileName == this.fileName &&
+          other.createdAt == this.createdAt &&
+          other.lastReadSection == this.lastReadSection &&
+          other.lastReadBlock == this.lastReadBlock);
+}
+
+class GuidesCompanion extends UpdateCompanion<Guide> {
+  final Value<String> id;
+  final Value<String> gameId;
+  final Value<String> title;
+  final Value<String> author;
+  final Value<String> fileName;
+  final Value<DateTime> createdAt;
+  final Value<int> lastReadSection;
+  final Value<int> lastReadBlock;
+  final Value<int> rowid;
+  const GuidesCompanion({
+    this.id = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.author = const Value.absent(),
+    this.fileName = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.lastReadSection = const Value.absent(),
+    this.lastReadBlock = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GuidesCompanion.insert({
+    required String id,
+    required String gameId,
+    required String title,
+    required String author,
+    required String fileName,
+    required DateTime createdAt,
+    this.lastReadSection = const Value.absent(),
+    this.lastReadBlock = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       gameId = Value(gameId),
+       title = Value(title),
+       author = Value(author),
+       fileName = Value(fileName),
+       createdAt = Value(createdAt);
+  static Insertable<Guide> custom({
+    Expression<String>? id,
+    Expression<String>? gameId,
+    Expression<String>? title,
+    Expression<String>? author,
+    Expression<String>? fileName,
+    Expression<DateTime>? createdAt,
+    Expression<int>? lastReadSection,
+    Expression<int>? lastReadBlock,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gameId != null) 'game_id': gameId,
+      if (title != null) 'title': title,
+      if (author != null) 'author': author,
+      if (fileName != null) 'file_name': fileName,
+      if (createdAt != null) 'created_at': createdAt,
+      if (lastReadSection != null) 'last_read_section': lastReadSection,
+      if (lastReadBlock != null) 'last_read_block': lastReadBlock,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GuidesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? gameId,
+    Value<String>? title,
+    Value<String>? author,
+    Value<String>? fileName,
+    Value<DateTime>? createdAt,
+    Value<int>? lastReadSection,
+    Value<int>? lastReadBlock,
+    Value<int>? rowid,
+  }) {
+    return GuidesCompanion(
+      id: id ?? this.id,
+      gameId: gameId ?? this.gameId,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      fileName: fileName ?? this.fileName,
+      createdAt: createdAt ?? this.createdAt,
+      lastReadSection: lastReadSection ?? this.lastReadSection,
+      lastReadBlock: lastReadBlock ?? this.lastReadBlock,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<String>(gameId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (author.present) {
+      map['author'] = Variable<String>(author.value);
+    }
+    if (fileName.present) {
+      map['file_name'] = Variable<String>(fileName.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (lastReadSection.present) {
+      map['last_read_section'] = Variable<int>(lastReadSection.value);
+    }
+    if (lastReadBlock.present) {
+      map['last_read_block'] = Variable<int>(lastReadBlock.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuidesCompanion(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('title: $title, ')
+          ..write('author: $author, ')
+          ..write('fileName: $fileName, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastReadSection: $lastReadSection, ')
+          ..write('lastReadBlock: $lastReadBlock, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$GameDatabase extends GeneratedDatabase {
   _$GameDatabase(QueryExecutor e) : super(e);
   $GameDatabaseManager get managers => $GameDatabaseManager(this);
   late final $GamesTable games = $GamesTable(this);
+  late final $GuidesTable guides = $GuidesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [games];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [games, guides];
 }
 
 typedef $$GamesTableCreateCompanionBuilder =
@@ -628,6 +1153,30 @@ typedef $$GamesTableUpdateCompanionBuilder =
       Value<bool> isPhysical,
       Value<int> rowid,
     });
+
+final class $$GamesTableReferences
+    extends BaseReferences<_$GameDatabase, $GamesTable, Game> {
+  $$GamesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$GuidesTable, List<Guide>> _guidesRefsTable(
+    _$GameDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.guides,
+    aliasName: $_aliasNameGenerator(db.games.id, db.guides.gameId),
+  );
+
+  $$GuidesTableProcessedTableManager get guidesRefs {
+    final manager = $$GuidesTableTableManager(
+      $_db,
+      $_db.guides,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_guidesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$GamesTableFilterComposer extends Composer<_$GameDatabase, $GamesTable> {
   $$GamesTableFilterComposer({
@@ -681,6 +1230,31 @@ class $$GamesTableFilterComposer extends Composer<_$GameDatabase, $GamesTable> {
     column: $table.isPhysical,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> guidesRefs(
+    Expression<bool> Function($$GuidesTableFilterComposer f) f,
+  ) {
+    final $$GuidesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guides,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuidesTableFilterComposer(
+            $db: $db,
+            $table: $db.guides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GamesTableOrderingComposer
@@ -781,6 +1355,31 @@ class $$GamesTableAnnotationComposer
     column: $table.isPhysical,
     builder: (column) => column,
   );
+
+  Expression<T> guidesRefs<T extends Object>(
+    Expression<T> Function($$GuidesTableAnnotationComposer a) f,
+  ) {
+    final $$GuidesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guides,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuidesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.guides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GamesTableTableManager
@@ -794,9 +1393,9 @@ class $$GamesTableTableManager
           $$GamesTableAnnotationComposer,
           $$GamesTableCreateCompanionBuilder,
           $$GamesTableUpdateCompanionBuilder,
-          (Game, BaseReferences<_$GameDatabase, $GamesTable, Game>),
+          (Game, $$GamesTableReferences),
           Game,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool guidesRefs})
         > {
   $$GamesTableTableManager(_$GameDatabase db, $GamesTable table)
     : super(
@@ -863,11 +1462,35 @@ class $$GamesTableTableManager
                       .map(
                         (e) => (
                           e.readTable(table),
-                          BaseReferences(db, table, e),
+                          $$GamesTableReferences(db, table, e),
                         ),
                       )
                       .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({guidesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (guidesRefs) db.guides],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (guidesRefs)
+                    await $_getPrefetchedData<Game, $GamesTable, Guide>(
+                      currentTable: table,
+                      referencedTable: $$GamesTableReferences._guidesRefsTable(
+                        db,
+                      ),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$GamesTableReferences(db, table, p0).guidesRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) =>
+                              referencedItems.where((e) => e.gameId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -882,9 +1505,387 @@ typedef $$GamesTableProcessedTableManager =
       $$GamesTableAnnotationComposer,
       $$GamesTableCreateCompanionBuilder,
       $$GamesTableUpdateCompanionBuilder,
-      (Game, BaseReferences<_$GameDatabase, $GamesTable, Game>),
+      (Game, $$GamesTableReferences),
       Game,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool guidesRefs})
+    >;
+typedef $$GuidesTableCreateCompanionBuilder =
+    GuidesCompanion Function({
+      required String id,
+      required String gameId,
+      required String title,
+      required String author,
+      required String fileName,
+      required DateTime createdAt,
+      Value<int> lastReadSection,
+      Value<int> lastReadBlock,
+      Value<int> rowid,
+    });
+typedef $$GuidesTableUpdateCompanionBuilder =
+    GuidesCompanion Function({
+      Value<String> id,
+      Value<String> gameId,
+      Value<String> title,
+      Value<String> author,
+      Value<String> fileName,
+      Value<DateTime> createdAt,
+      Value<int> lastReadSection,
+      Value<int> lastReadBlock,
+      Value<int> rowid,
+    });
+
+final class $$GuidesTableReferences
+    extends BaseReferences<_$GameDatabase, $GuidesTable, Guide> {
+  $$GuidesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $GamesTable _gameIdTable(_$GameDatabase db) =>
+      db.games.createAlias($_aliasNameGenerator(db.guides.gameId, db.games.id));
+
+  $$GamesTableProcessedTableManager get gameId {
+    final $_column = $_itemColumn<String>('game_id')!;
+
+    final manager = $$GamesTableTableManager(
+      $_db,
+      $_db.games,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GuidesTableFilterComposer
+    extends Composer<_$GameDatabase, $GuidesTable> {
+  $$GuidesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get author => $composableBuilder(
+    column: $table.author,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastReadSection => $composableBuilder(
+    column: $table.lastReadSection,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastReadBlock => $composableBuilder(
+    column: $table.lastReadBlock,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GamesTableFilterComposer get gameId {
+    final $$GamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableFilterComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuidesTableOrderingComposer
+    extends Composer<_$GameDatabase, $GuidesTable> {
+  $$GuidesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get author => $composableBuilder(
+    column: $table.author,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastReadSection => $composableBuilder(
+    column: $table.lastReadSection,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastReadBlock => $composableBuilder(
+    column: $table.lastReadBlock,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GamesTableOrderingComposer get gameId {
+    final $$GamesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableOrderingComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuidesTableAnnotationComposer
+    extends Composer<_$GameDatabase, $GuidesTable> {
+  $$GuidesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get author =>
+      $composableBuilder(column: $table.author, builder: (column) => column);
+
+  GeneratedColumn<String> get fileName =>
+      $composableBuilder(column: $table.fileName, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get lastReadSection => $composableBuilder(
+    column: $table.lastReadSection,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get lastReadBlock => $composableBuilder(
+    column: $table.lastReadBlock,
+    builder: (column) => column,
+  );
+
+  $$GamesTableAnnotationComposer get gameId {
+    final $$GamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuidesTableTableManager
+    extends
+        RootTableManager<
+          _$GameDatabase,
+          $GuidesTable,
+          Guide,
+          $$GuidesTableFilterComposer,
+          $$GuidesTableOrderingComposer,
+          $$GuidesTableAnnotationComposer,
+          $$GuidesTableCreateCompanionBuilder,
+          $$GuidesTableUpdateCompanionBuilder,
+          (Guide, $$GuidesTableReferences),
+          Guide,
+          PrefetchHooks Function({bool gameId})
+        > {
+  $$GuidesTableTableManager(_$GameDatabase db, $GuidesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$GuidesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$GuidesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$GuidesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> gameId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> author = const Value.absent(),
+                Value<String> fileName = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> lastReadSection = const Value.absent(),
+                Value<int> lastReadBlock = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuidesCompanion(
+                id: id,
+                gameId: gameId,
+                title: title,
+                author: author,
+                fileName: fileName,
+                createdAt: createdAt,
+                lastReadSection: lastReadSection,
+                lastReadBlock: lastReadBlock,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String gameId,
+                required String title,
+                required String author,
+                required String fileName,
+                required DateTime createdAt,
+                Value<int> lastReadSection = const Value.absent(),
+                Value<int> lastReadBlock = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuidesCompanion.insert(
+                id: id,
+                gameId: gameId,
+                title: title,
+                author: author,
+                fileName: fileName,
+                createdAt: createdAt,
+                lastReadSection: lastReadSection,
+                lastReadBlock: lastReadBlock,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$GuidesTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: ({gameId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                T extends TableManagerState<
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic
+                >
+              >(state) {
+                if (gameId) {
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.gameId,
+                            referencedTable: $$GuidesTableReferences
+                                ._gameIdTable(db),
+                            referencedColumn:
+                                $$GuidesTableReferences._gameIdTable(db).id,
+                          )
+                          as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GuidesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$GameDatabase,
+      $GuidesTable,
+      Guide,
+      $$GuidesTableFilterComposer,
+      $$GuidesTableOrderingComposer,
+      $$GuidesTableAnnotationComposer,
+      $$GuidesTableCreateCompanionBuilder,
+      $$GuidesTableUpdateCompanionBuilder,
+      (Guide, $$GuidesTableReferences),
+      Guide,
+      PrefetchHooks Function({bool gameId})
     >;
 
 class $GameDatabaseManager {
@@ -892,4 +1893,6 @@ class $GameDatabaseManager {
   $GameDatabaseManager(this._db);
   $$GamesTableTableManager get games =>
       $$GamesTableTableManager(_db, _db.games);
+  $$GuidesTableTableManager get guides =>
+      $$GuidesTableTableManager(_db, _db.guides);
 }

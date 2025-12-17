@@ -26,6 +26,8 @@ mixin _$BackupMetadata {
   int get gameCount => throw _privateConstructorUsedError;
   int get imageCount => throw _privateConstructorUsedError;
   List<String> get includedImages => throw _privateConstructorUsedError;
+  int get guideCount => throw _privateConstructorUsedError;
+  List<String> get includedGuides => throw _privateConstructorUsedError;
 
   /// Serializes this BackupMetadata to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,6 +52,8 @@ abstract class $BackupMetadataCopyWith<$Res> {
     int gameCount,
     int imageCount,
     List<String> includedImages,
+    int guideCount,
+    List<String> includedGuides,
   });
 }
 
@@ -73,6 +77,8 @@ class _$BackupMetadataCopyWithImpl<$Res, $Val extends BackupMetadata>
     Object? gameCount = null,
     Object? imageCount = null,
     Object? includedImages = null,
+    Object? guideCount = null,
+    Object? includedGuides = null,
   }) {
     return _then(
       _value.copyWith(
@@ -101,6 +107,16 @@ class _$BackupMetadataCopyWithImpl<$Res, $Val extends BackupMetadata>
                     ? _value.includedImages
                     : includedImages // ignore: cast_nullable_to_non_nullable
                         as List<String>,
+            guideCount:
+                null == guideCount
+                    ? _value.guideCount
+                    : guideCount // ignore: cast_nullable_to_non_nullable
+                        as int,
+            includedGuides:
+                null == includedGuides
+                    ? _value.includedGuides
+                    : includedGuides // ignore: cast_nullable_to_non_nullable
+                        as List<String>,
           )
           as $Val,
     );
@@ -122,6 +138,8 @@ abstract class _$$BackupMetadataImplCopyWith<$Res>
     int gameCount,
     int imageCount,
     List<String> includedImages,
+    int guideCount,
+    List<String> includedGuides,
   });
 }
 
@@ -144,6 +162,8 @@ class __$$BackupMetadataImplCopyWithImpl<$Res>
     Object? gameCount = null,
     Object? imageCount = null,
     Object? includedImages = null,
+    Object? guideCount = null,
+    Object? includedGuides = null,
   }) {
     return _then(
       _$BackupMetadataImpl(
@@ -172,6 +192,16 @@ class __$$BackupMetadataImplCopyWithImpl<$Res>
                 ? _value._includedImages
                 : includedImages // ignore: cast_nullable_to_non_nullable
                     as List<String>,
+        guideCount:
+            null == guideCount
+                ? _value.guideCount
+                : guideCount // ignore: cast_nullable_to_non_nullable
+                    as int,
+        includedGuides:
+            null == includedGuides
+                ? _value._includedGuides
+                : includedGuides // ignore: cast_nullable_to_non_nullable
+                    as List<String>,
       ),
     );
   }
@@ -186,7 +216,10 @@ class _$BackupMetadataImpl implements _BackupMetadata {
     required this.gameCount,
     required this.imageCount,
     required final List<String> includedImages,
-  }) : _includedImages = includedImages;
+    this.guideCount = 0,
+    final List<String> includedGuides = const [],
+  }) : _includedImages = includedImages,
+       _includedGuides = includedGuides;
 
   factory _$BackupMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$BackupMetadataImplFromJson(json);
@@ -208,8 +241,20 @@ class _$BackupMetadataImpl implements _BackupMetadata {
   }
 
   @override
+  @JsonKey()
+  final int guideCount;
+  final List<String> _includedGuides;
+  @override
+  @JsonKey()
+  List<String> get includedGuides {
+    if (_includedGuides is EqualUnmodifiableListView) return _includedGuides;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_includedGuides);
+  }
+
+  @override
   String toString() {
-    return 'BackupMetadata(version: $version, createdAt: $createdAt, gameCount: $gameCount, imageCount: $imageCount, includedImages: $includedImages)';
+    return 'BackupMetadata(version: $version, createdAt: $createdAt, gameCount: $gameCount, imageCount: $imageCount, includedImages: $includedImages, guideCount: $guideCount, includedGuides: $includedGuides)';
   }
 
   @override
@@ -227,6 +272,12 @@ class _$BackupMetadataImpl implements _BackupMetadata {
             const DeepCollectionEquality().equals(
               other._includedImages,
               _includedImages,
+            ) &&
+            (identical(other.guideCount, guideCount) ||
+                other.guideCount == guideCount) &&
+            const DeepCollectionEquality().equals(
+              other._includedGuides,
+              _includedGuides,
             ));
   }
 
@@ -239,6 +290,8 @@ class _$BackupMetadataImpl implements _BackupMetadata {
     gameCount,
     imageCount,
     const DeepCollectionEquality().hash(_includedImages),
+    guideCount,
+    const DeepCollectionEquality().hash(_includedGuides),
   );
 
   /// Create a copy of BackupMetadata
@@ -265,6 +318,8 @@ abstract class _BackupMetadata implements BackupMetadata {
     required final int gameCount,
     required final int imageCount,
     required final List<String> includedImages,
+    final int guideCount,
+    final List<String> includedGuides,
   }) = _$BackupMetadataImpl;
 
   factory _BackupMetadata.fromJson(Map<String, dynamic> json) =
@@ -280,6 +335,10 @@ abstract class _BackupMetadata implements BackupMetadata {
   int get imageCount;
   @override
   List<String> get includedImages;
+  @override
+  int get guideCount;
+  @override
+  List<String> get includedGuides;
 
   /// Create a copy of BackupMetadata
   /// with the given fields replaced by the non-null parameter values.

@@ -8,6 +8,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'package:chkpnt/services/storage_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
+import 'package:chkpnt/services/guide_storage_service.dart';
 import 'package:chkpnt/services/backup_archive_service.dart';
 import 'package:chkpnt/services/backup_validation_service.dart';
 import 'package:chkpnt/services/backup_permission_service.dart';
@@ -17,6 +18,7 @@ import 'package:chkpnt/services/full_backup_service.dart';
 class MockGameRepository extends Mock implements GameRepository {}
 class MockStorageService extends Mock implements StorageService {}
 class MockGameImageService extends Mock implements GameImageService {}
+class MockGuideStorageService extends Mock implements GuideStorageService {}
 class MockBackupArchiveService extends Mock implements BackupArchiveService {}
 class MockBackupValidationService extends Mock implements BackupValidationService {}
 class MockBackupPermissionService extends Mock implements BackupPermissionService {}
@@ -29,6 +31,7 @@ void main() {
     late MockGameRepository mockRepository;
     late MockStorageService mockStorageService;
     late MockGameImageService mockGameImageService;
+    late MockGuideStorageService mockGuideStorageService;
     late MockBackupArchiveService mockArchiveService;
     late MockBackupValidationService mockValidationService;
     late MockBackupPermissionService mockPermissionService;
@@ -43,12 +46,15 @@ void main() {
       registerFallbackValue(BackupData(
         databaseJson: '',
         imageFiles: [],
+        guideFiles: [],
         metadata: BackupMetadata(
           version: '1.0.0',
           createdAt: DateTime.now(),
           gameCount: 0,
           imageCount: 0,
           includedImages: const [],
+          guideCount: 0,
+          includedGuides: const [],
         ),
       ));
     });
@@ -57,14 +63,16 @@ void main() {
       mockRepository = MockGameRepository();
       mockStorageService = MockStorageService();
       mockGameImageService = MockGameImageService();
+      mockGuideStorageService = MockGuideStorageService();
       mockArchiveService = MockBackupArchiveService();
       mockValidationService = MockBackupValidationService();
       mockPermissionService = MockBackupPermissionService();
-      
+
       backupService = FullBackupService(
         mockRepository,
         mockStorageService,
         mockGameImageService,
+        mockGuideStorageService,
         mockArchiveService,
         mockValidationService,
         mockPermissionService,
@@ -167,13 +175,15 @@ void main() {
         final mockBackupFile = MockFile();
         const destinationDir = '/backup/destination';
         const backupFilePath = '/backup/destination/backup.zip';
-        
+
         when(() => mockRepository.exportDatabaseToJson())
             .thenAnswer((_) async => '{"games": []}');
         when(() => mockRepository.getAllGames())
             .thenAnswer((_) async => []);
         when(() => mockStorageService.getPersistentStorageDirectory())
             .thenAnswer((_) async => tempDir);
+        when(() => mockGuideStorageService.getAllGuideFiles())
+            .thenAnswer((_) async => []);
         when(() => mockArchiveService.createArchive(any()))
             .thenReturn(Archive());
         when(() => mockArchiveService.writeArchiveToFile(any(), destinationDir))
@@ -254,7 +264,7 @@ void main() {
             status: GameStatus.playing,
           ),
           GameItem.create(
-            title: 'Test Game 2', 
+            title: 'Test Game 2',
             platform: 'Switch',
             status: GameStatus.completed,
           ),
@@ -265,15 +275,21 @@ void main() {
           File(path.join(tempDir.path, 'game_002.png')),
         ];
 
+        final guideFiles = [
+          File(path.join(tempDir.path, 'guide_001.json')),
+        ];
+
         when(() => mockRepository.getAllGames())
             .thenAnswer((_) async => testGames);
 
-        final result = await backupService.createBackupMetadata(imageFiles);
+        final result = await backupService.createBackupMetadata(imageFiles, guideFiles);
 
-        expect(result.version, equals('1.1.0'));
+        expect(result.version, equals('1.2.0'));
         expect(result.gameCount, equals(2));
         expect(result.imageCount, equals(2));
         expect(result.includedImages, equals(['game_001.jpg', 'game_002.png']));
+        expect(result.guideCount, equals(1));
+        expect(result.includedGuides, equals(['guide_001.json']));
         expect(result.createdAt, isA<DateTime>());
       });
     });

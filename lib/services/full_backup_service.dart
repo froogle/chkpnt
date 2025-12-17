@@ -7,6 +7,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'package:chkpnt/services/storage_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
+import 'package:chkpnt/services/guide_storage_service.dart';
 import 'package:chkpnt/services/backup_archive_service.dart';
 import 'package:chkpnt/services/backup_validation_service.dart';
 import 'package:chkpnt/services/backup_permission_service.dart';
@@ -33,6 +34,7 @@ final fullBackupServiceProvider = Provider<FullBackupService>((ref) {
     ref.read(gameRepositoryProvider),
     ref.read(storageServiceProvider),
     ref.read(gameImageServiceProvider),
+    ref.read(guideStorageServiceProvider),
     ref.read(backupArchiveServiceProvider),
     ref.read(backupValidationServiceProvider),
     ref.read(backupPermissionServiceProvider),
@@ -64,10 +66,11 @@ class BackupProgressResult {
 
 /// Service for managing complete database and image backups/restores
 class FullBackupService {
-  static const String _currentBackupVersion = '1.1.0';
+  static const String _currentBackupVersion = '1.2.0';
 
   final GameRepository _repository;
   final StorageService _storageService;
+  final GuideStorageService _guideStorageService;
   final BackupArchiveService _archiveService;
   final BackupValidationService _validationService;
   final BackupPermissionService _permissionService;
@@ -76,6 +79,7 @@ class FullBackupService {
     this._repository,
     this._storageService,
     GameImageService gameImageService,
+    this._guideStorageService,
     this._archiveService,
     this._validationService,
     this._permissionService,
@@ -122,10 +126,28 @@ class FullBackupService {
     }
   }
 
-  Future<BackupMetadata> createBackupMetadata(List<File> imageFiles) async {
+  Future<List<File>> collectAllGuides() async {
+    try {
+      final List<File> guideFiles = await _guideStorageService.getAllGuideFiles();
+      guideFiles.sort((a, b) => path.basename(a.path).compareTo(path.basename(b.path)));
+      debugPrint('Collected ${guideFiles.length} guide files for backup');
+      return guideFiles;
+    } catch (e) {
+      throw BackupException(
+        'Failed to collect guide files: ${e.toString()}',
+        code: 'GUIDE_COLLECTION_FAILED',
+        originalError: e,
+      );
+    }
+  }
+
+  Future<BackupMetadata> createBackupMetadata(List<File> imageFiles, List<File> guideFiles) async {
     try {
       final List<GameItem> games = await _repository.getAllGames();
       final List<String> imageNames = imageFiles
+          .map((file) => path.basename(file.path))
+          .toList();
+      final List<String> guideNames = guideFiles
           .map((file) => path.basename(file.path))
           .toList();
 
@@ -135,6 +157,8 @@ class FullBackupService {
         gameCount: games.length,
         imageCount: imageFiles.length,
         includedImages: imageNames,
+        guideCount: guideFiles.length,
+        includedGuides: guideNames,
       );
     } catch (e) {
       throw BackupException(
@@ -177,28 +201,32 @@ class FullBackupService {
   Stream<BackupProgressResult> createFullBackupWithProgress(String destinationDirectory) async* {
     try {
       yield BackupProgressResult(progress: 0.0);
-      
+
       final String databaseJson = await _repository.exportDatabaseToJson();
-      yield BackupProgressResult(progress: 0.3);
-      
+      yield BackupProgressResult(progress: 0.25);
+
       final List<File> imageFiles = await collectAllImages();
-      yield BackupProgressResult(progress: 0.4);
-      
-      final BackupMetadata metadata = await createBackupMetadata(imageFiles);
-      yield BackupProgressResult(progress: 0.5);
-      
+      yield BackupProgressResult(progress: 0.35);
+
+      final List<File> guideFiles = await collectAllGuides();
+      yield BackupProgressResult(progress: 0.45);
+
+      final BackupMetadata metadata = await createBackupMetadata(imageFiles, guideFiles);
+      yield BackupProgressResult(progress: 0.55);
+
       final BackupData backupData = BackupData(
         databaseJson: databaseJson,
         imageFiles: imageFiles,
+        guideFiles: guideFiles,
         metadata: metadata,
       );
-      yield BackupProgressResult(progress: 0.6);
-      
+      yield BackupProgressResult(progress: 0.65);
+
       final File backupFile = await _createBackupFile(backupData, destinationDirectory);
       yield BackupProgressResult(progress: 1.0, filePath: backupFile.path);
-      
+
       debugPrint('Created backup file: ${backupFile.path} (${getBackupSizeString(backupFile)})');
-      
+
     } catch (e) {
       throw BackupException(
         'Failed to create backup: ${e.toString()}',
@@ -211,11 +239,13 @@ class FullBackupService {
   Future<BackupData> _prepareBackupData() async {
     final String databaseJson = await _repository.exportDatabaseToJson();
     final List<File> imageFiles = await collectAllImages();
-    final BackupMetadata metadata = await createBackupMetadata(imageFiles);
-    
+    final List<File> guideFiles = await collectAllGuides();
+    final BackupMetadata metadata = await createBackupMetadata(imageFiles, guideFiles);
+
     return BackupData(
       databaseJson: databaseJson,
       imageFiles: imageFiles,
+      guideFiles: guideFiles,
       metadata: metadata,
     );
   }
@@ -251,6 +281,7 @@ class FullBackupService {
     await _clearCurrentData();
     await _restoreDatabase(tempDir);
     await _restoreImagesFromDirectory(tempDir);
+    await _restoreGuidesFromDirectory(tempDir);
   }
 
   Future<void> _restoreDatabase(Directory tempDir) async {
@@ -263,6 +294,13 @@ class FullBackupService {
     final Directory imagesExtractDir = Directory(path.join(tempDir.path, 'images'));
     if (await imagesExtractDir.exists()) {
       await _restoreImages(imagesExtractDir);
+    }
+  }
+
+  Future<void> _restoreGuidesFromDirectory(Directory tempDir) async {
+    final Directory guidesExtractDir = Directory(path.join(tempDir.path, 'guides'));
+    if (await guidesExtractDir.exists()) {
+      await _restoreGuides(guidesExtractDir);
     }
   }
 
@@ -368,7 +406,18 @@ class FullBackupService {
         await imageFile.copy(backupImageFile.path);
       }
 
-      debugPrint('Backed up current state: ${currentImages.length} images');
+      // 3. Backup current guides
+      final Directory currentGuidesDir = Directory(path.join(backupStateDir.path, 'current_guides'));
+      await currentGuidesDir.create(recursive: true);
+
+      final List<File> currentGuides = await collectAllGuides();
+      for (final guideFile in currentGuides) {
+        final String guideName = path.basename(guideFile.path);
+        final File backupGuideFile = File(path.join(currentGuidesDir.path, guideName));
+        await guideFile.copy(backupGuideFile.path);
+      }
+
+      debugPrint('Backed up current state: ${currentImages.length} images, ${currentGuides.length} guides');
     } catch (e) {
       throw BackupException(
         'Failed to backup current state: ${e.toString()}',
@@ -378,20 +427,28 @@ class FullBackupService {
     }
   }
 
-  /// Clear current data (database and images) before restore
+  /// Clear current data (database, images, and guides) before restore
   Future<void> _clearCurrentData() async {
     try {
       // Clear database by importing empty JSON
-      await _repository.importFromJson('{"games": []}');
+      await _repository.importFromJson('{"games": [], "guides": []}');
+
+      final Directory appDir = await _storageService.getPersistentStorageDirectory();
 
       // Clear images directory
-      final Directory appDir = await _storageService.getPersistentStorageDirectory();
       final Directory imageDir = Directory(path.join(appDir.path, 'game_images'));
-      
       if (await imageDir.exists()) {
         await imageDir.delete(recursive: true);
         await imageDir.create(recursive: true);
         debugPrint('Cleared existing images directory');
+      }
+
+      // Clear guides directory
+      final Directory guidesDir = Directory(path.join(appDir.path, GuideStorageService.guidesDirectory));
+      if (await guidesDir.exists()) {
+        await guidesDir.delete(recursive: true);
+        await guidesDir.create(recursive: true);
+        debugPrint('Cleared existing guides directory');
       }
     } catch (e) {
       throw BackupException(
@@ -441,9 +498,45 @@ class FullBackupService {
     }
   }
 
+  /// Restore guides from extracted backup directory
+  Future<void> _restoreGuides(Directory guidesExtractDir) async {
+    try {
+      final Directory appDir = await _storageService.getPersistentStorageDirectory();
+      final Directory targetGuidesDir = Directory(
+        path.join(appDir.path, GuideStorageService.guidesDirectory),
+      );
+
+      if (!await targetGuidesDir.exists()) {
+        await targetGuidesDir.create(recursive: true);
+      }
+
+      final List<FileSystemEntity> extractedGuides = guidesExtractDir.listSync();
+      int restoredCount = 0;
+
+      for (final entity in extractedGuides) {
+        if (entity is File && entity.path.endsWith('.json')) {
+          final String guideName = path.basename(entity.path);
+          final File targetGuideFile = File(path.join(targetGuidesDir.path, guideName));
+          await entity.copy(targetGuideFile.path);
+          restoredCount++;
+        }
+      }
+
+      debugPrint('Restored $restoredCount guide files');
+    } catch (e) {
+      throw BackupException(
+        'Failed to restore guides: ${e.toString()}',
+        code: 'GUIDE_RESTORE_FAILED',
+        originalError: e,
+      );
+    }
+  }
+
   /// Rollback restore operation using backed up current state
   Future<void> _rollbackRestore(Directory backupStateDir) async {
     try {
+      final Directory appDir = await _storageService.getPersistentStorageDirectory();
+
       // 1. Restore database from backup
       final File currentDbFile = File(path.join(backupStateDir.path, 'current_database.json'));
       if (await currentDbFile.exists()) {
@@ -454,22 +547,41 @@ class FullBackupService {
       // 2. Restore images from backup
       final Directory currentImagesDir = Directory(path.join(backupStateDir.path, 'current_images'));
       if (await currentImagesDir.exists()) {
-        // Clear target images directory
-        final Directory appDir = await _storageService.getPersistentStorageDirectory();
         final Directory targetImageDir = Directory(path.join(appDir.path, 'game_images'));
-        
+
         if (await targetImageDir.exists()) {
           await targetImageDir.delete(recursive: true);
         }
         await targetImageDir.create(recursive: true);
 
-        // Copy back original images
         final List<FileSystemEntity> backedUpImages = currentImagesDir.listSync();
         for (final entity in backedUpImages) {
           if (entity is File) {
             final String imageName = path.basename(entity.path);
             final File targetImageFile = File(path.join(targetImageDir.path, imageName));
             await entity.copy(targetImageFile.path);
+          }
+        }
+      }
+
+      // 3. Restore guides from backup
+      final Directory currentGuidesDir = Directory(path.join(backupStateDir.path, 'current_guides'));
+      if (await currentGuidesDir.exists()) {
+        final Directory targetGuidesDir = Directory(
+          path.join(appDir.path, GuideStorageService.guidesDirectory),
+        );
+
+        if (await targetGuidesDir.exists()) {
+          await targetGuidesDir.delete(recursive: true);
+        }
+        await targetGuidesDir.create(recursive: true);
+
+        final List<FileSystemEntity> backedUpGuides = currentGuidesDir.listSync();
+        for (final entity in backedUpGuides) {
+          if (entity is File) {
+            final String guideName = path.basename(entity.path);
+            final File targetGuideFile = File(path.join(targetGuidesDir.path, guideName));
+            await entity.copy(targetGuideFile.path);
           }
         }
       }
