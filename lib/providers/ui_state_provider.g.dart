@@ -145,29 +145,26 @@ class _GameImageProviderElement
   String get imagePath => (origin as GameImageProvider).imagePath;
 }
 
-String _$searchQueryHash() => r'5cfb8bc058f64b12d9a61421526a8ea7b414d4fa';
+String _$searchQueryHash() => r'90108134dff9ce4ac3cd7f9ecc034bf7f9630f95';
 
 /// See also [SearchQuery].
 @ProviderFor(SearchQuery)
-final searchQueryProvider =
-    AutoDisposeNotifierProvider<SearchQuery, String>.internal(
-      SearchQuery.new,
-      name: r'searchQueryProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$searchQueryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final searchQueryProvider = NotifierProvider<SearchQuery, String>.internal(
+  SearchQuery.new,
+  name: r'searchQueryProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$searchQueryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-typedef _$SearchQuery = AutoDisposeNotifier<String>;
-String _$selectedPlatformHash() => r'7f111f05af0609bc66521fd79225b2116a3788c3';
+typedef _$SearchQuery = Notifier<String>;
+String _$selectedPlatformHash() => r'582ffa04f95b8cbb013e77422e36b012106472c3';
 
 /// See also [SelectedPlatform].
 @ProviderFor(SelectedPlatform)
 final selectedPlatformProvider =
-    AutoDisposeNotifierProvider<SelectedPlatform, String>.internal(
+    NotifierProvider<SelectedPlatform, String>.internal(
       SelectedPlatform.new,
       name: r'selectedPlatformProvider',
       debugGetCreateSourceHash:
@@ -178,13 +175,13 @@ final selectedPlatformProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$SelectedPlatform = AutoDisposeNotifier<String>;
-String _$backlogSortHash() => r'54af127d0200d61743356b7ea674516dfe069da4';
+typedef _$SelectedPlatform = Notifier<String>;
+String _$backlogSortHash() => r'13a4645f9230ba2e2dab019b64630ddc60caea4d';
 
 /// See also [BacklogSort].
 @ProviderFor(BacklogSort)
 final backlogSortProvider =
-    AutoDisposeNotifierProvider<BacklogSort, BacklogSortType>.internal(
+    NotifierProvider<BacklogSort, BacklogSortType>.internal(
       BacklogSort.new,
       name: r'backlogSortProvider',
       debugGetCreateSourceHash:
@@ -195,34 +192,32 @@ final backlogSortProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$BacklogSort = AutoDisposeNotifier<BacklogSortType>;
+typedef _$BacklogSort = Notifier<BacklogSortType>;
 String _$backlogSortDirectionStateHash() =>
-    r'3d6b312cde1edd6aaec3430729c7a7e4a7d22fb6';
+    r'49fc31166ce8f3d08b6c47ee9adad12f6511b17e';
 
 /// See also [BacklogSortDirectionState].
 @ProviderFor(BacklogSortDirectionState)
-final backlogSortDirectionStateProvider = AutoDisposeNotifierProvider<
-  BacklogSortDirectionState,
-  SortDirection
->.internal(
-  BacklogSortDirectionState.new,
-  name: r'backlogSortDirectionStateProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$backlogSortDirectionStateHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final backlogSortDirectionStateProvider =
+    NotifierProvider<BacklogSortDirectionState, SortDirection>.internal(
+      BacklogSortDirectionState.new,
+      name: r'backlogSortDirectionStateProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$backlogSortDirectionStateHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-typedef _$BacklogSortDirectionState = AutoDisposeNotifier<SortDirection>;
+typedef _$BacklogSortDirectionState = Notifier<SortDirection>;
 String _$backlogShowBacklogFilterHash() =>
-    r'35d7221f56b95cd82f694f812466750169d745af';
+    r'94aab24c0e69689fe62e0e19c89e5274489e11ad';
 
 /// See also [BacklogShowBacklogFilter].
 @ProviderFor(BacklogShowBacklogFilter)
 final backlogShowBacklogFilterProvider =
-    AutoDisposeNotifierProvider<BacklogShowBacklogFilter, bool>.internal(
+    NotifierProvider<BacklogShowBacklogFilter, bool>.internal(
       BacklogShowBacklogFilter.new,
       name: r'backlogShowBacklogFilterProvider',
       debugGetCreateSourceHash:
@@ -233,14 +228,14 @@ final backlogShowBacklogFilterProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$BacklogShowBacklogFilter = AutoDisposeNotifier<bool>;
+typedef _$BacklogShowBacklogFilter = Notifier<bool>;
 String _$backlogShowOngoingFilterHash() =>
-    r'015f95fdc19dbd85dca647dedc1f8c67d139d5d3';
+    r'e2e97a49834c372c176c1b43353ba693268431b8';
 
 /// See also [BacklogShowOngoingFilter].
 @ProviderFor(BacklogShowOngoingFilter)
 final backlogShowOngoingFilterProvider =
-    AutoDisposeNotifierProvider<BacklogShowOngoingFilter, bool>.internal(
+    NotifierProvider<BacklogShowOngoingFilter, bool>.internal(
       BacklogShowOngoingFilter.new,
       name: r'backlogShowOngoingFilterProvider',
       debugGetCreateSourceHash:
@@ -251,25 +246,7 @@ final backlogShowOngoingFilterProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$BacklogShowOngoingFilter = AutoDisposeNotifier<bool>;
-String _$physicalSelectedPlatformHash() =>
-    r'567773e93e701ab666a274dfafd4455a161a641c';
-
-/// See also [PhysicalSelectedPlatform].
-@ProviderFor(PhysicalSelectedPlatform)
-final physicalSelectedPlatformProvider =
-    AutoDisposeNotifierProvider<PhysicalSelectedPlatform, String>.internal(
-      PhysicalSelectedPlatform.new,
-      name: r'physicalSelectedPlatformProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$physicalSelectedPlatformHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$PhysicalSelectedPlatform = AutoDisposeNotifier<String>;
+typedef _$BacklogShowOngoingFilter = Notifier<bool>;
 String _$sectionExpansionHash() => r'507dce598b68adc2cd63f1a7685d4577c3ce7487';
 
 /// See also [SectionExpansion].
