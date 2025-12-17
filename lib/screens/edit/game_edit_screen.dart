@@ -112,11 +112,11 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   Widget _buildContent() {
     return Padding(
-      padding: GameDetailSheetStyles.contentPaddingLandscape,
+      padding: GameDetailSheetStyles.editContentPadding,
       child: Column(
         children: [
           Expanded(child: _buildScrollableContent()),
-          const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
+          const SizedBox(height: GameDetailSheetStyles.editSectionSpacing),
           _buildActionButtons(),
         ],
       ),
@@ -128,7 +128,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       child: Column(
         children: [
           _buildMainLayout(),
-          const SizedBox(height: GameDetailSheetStyles.sectionSpacingLandscape),
+          const SizedBox(height: GameDetailSheetStyles.editSectionSpacing),
           _buildStatusSelector(),
         ],
       ),
@@ -142,7 +142,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildGameImage(editState),
-        const SizedBox(width: EditScreenStyles.horizontalSpacingLandscape),
+        const SizedBox(width: EditScreenStyles.horizontalSpacing),
         Expanded(flex: 2, child: _buildInfoSection()),
       ],
     );
@@ -150,7 +150,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   Widget _buildGameImage(GameEditFormState editState) {
     return SizedBox(
-      width: EditScreenStyles.gameImageWidthLandscape,
+      width: EditScreenStyles.gameImageWidth,
       child: GameImage(
         heroTag: 'game_image_${widget.game?.id ?? ''}',
         imagePath: editState.imagePath,

@@ -29,10 +29,6 @@ class MainScreenStyles {
 
   // Game card dimensions (from GameCardStyles)
   static const double gameImageSize = GameCardStyles.gameImageSize;
-  static const double landscapeGameImageSize =
-      GameCardStyles.landscapeGameImageSize;
-  static const double landscapeGameCardAspectRatio =
-      GameCardStyles.landscapeGameCardAspectRatio;
 
   // Input dimensions (from InputStyles)
   static const double compactSearchHeight = InputStyles.compactSearchHeight;
@@ -42,32 +38,16 @@ class MainScreenStyles {
       InputStyles.collapsibleFilterHeight;
 
   // Layout spacing (from LayoutStyles)
-  static const double landscapeCategoryTabHeight =
-      LayoutStyles.landscapeCategoryTabHeight;
-  static const double landscapeGridSpacing = LayoutStyles.landscapeGridSpacing;
   static const EdgeInsets headerPadding = LayoutStyles.headerPadding;
   static const EdgeInsets contentPadding = LayoutStyles.contentPadding;
-  static const EdgeInsets landscapeHeaderPadding =
-      LayoutStyles.landscapeHeaderPadding;
-  static const EdgeInsets landscapeGridPadding =
-      LayoutStyles.landscapeGridPadding;
   static const double filterSpacing = LayoutStyles.filterSpacing;
   static const double sectionSpacing = LayoutStyles.sectionSpacing;
   static const double sectionTitleSpacing = LayoutStyles.sectionTitleSpacing;
-  static const double landscapeSectionSpacing =
-      LayoutStyles.landscapeSectionSpacing;
-  static const double landscapeGameSpacing = LayoutStyles.landscapeGameSpacing;
-  static const double landscapeGameContentSpacing =
-      LayoutStyles.landscapeGameContentSpacing;
   static const double dividerSpacing = LayoutStyles.dividerSpacing;
 
   // Game card spacing (from GameCardStyles)
   static const EdgeInsets gameCardPadding = GameCardStyles.gameCardPadding;
   static const EdgeInsets gameCardMargin = GameCardStyles.gameCardMargin;
-  static const EdgeInsets landscapeGameCardPadding =
-      GameCardStyles.landscapeGameCardPadding;
-  static const EdgeInsets landscapeGameCardContentPadding =
-      GameCardStyles.landscapeGameCardContentPadding;
   static const EdgeInsets addGameIconButtonPadding =
       GameCardStyles.addGameIconButtonPadding;
   static const EdgeInsets smallIconPadding = GameCardStyles.smallIconPadding;
@@ -97,8 +77,6 @@ class MainScreenStyles {
   // Text styles (from LayoutStyles)
   static const TextStyle headerTextStyle = LayoutStyles.headerTextStyle;
   static const TextStyle sectionHeaderStyle = LayoutStyles.sectionHeaderStyle;
-  static const TextStyle landscapeSectionHeaderStyle =
-      LayoutStyles.landscapeSectionHeaderStyle;
   static const TextStyle sidebarNavTextStyle = LayoutStyles.sidebarNavTextStyle;
   static const TextStyle selectedCategoryTabTextStyle =
       LayoutStyles.selectedCategoryTabTextStyle;
@@ -107,19 +85,6 @@ class MainScreenStyles {
   static const TextStyle collapsibleSectionHeaderStyle =
       CollapsibleSectionStyles.collapsibleSectionHeaderStyle;
 
-  // Game card text styles (from GameCardStyles)
-  static const TextStyle landscapeGameCardTitleStyle =
-      GameCardStyles.landscapeGameCardTitleStyle;
-  static const TextStyle landscapeGameCardPlatformStyle =
-      GameCardStyles.landscapeGameCardPlatformStyle;
-  static const TextStyle landscapeGameCardStatusStyle =
-      GameCardStyles.landscapeGameCardStatusStyle;
-  static const TextStyle portraitGameCardTitleStyle =
-      GameCardStyles.portraitGameCardTitleStyle;
-  static const TextStyle portraitGameCardPlatformStyle =
-      GameCardStyles.portraitGameCardPlatformStyle;
-  static const TextStyle portraitGameCardStatusStyle =
-      GameCardStyles.portraitGameCardStatusStyle;
 
   // Dropdown text styles (from DropdownStyles) - Updated to getters where needed
   static TextStyle get filterDropdownSelectedTextStyle =>
@@ -140,17 +105,11 @@ class MainScreenStyles {
       InputStyles.compactSearchBarDecoration;
   static BoxDecoration get gameCardDecoration =>
       GameCardStyles.gameCardDecoration;
-  static BoxDecoration get landscapeGameCardDecoration =>
-      GameCardStyles.landscapeGameCardDecoration;
   static const BoxDecoration gameImageDecoration =
       GameCardStyles.gameImageDecoration;
 
   static BoxDecoration get bottomNavDecoration =>
       LayoutStyles.bottomNavDecoration;
-  static BoxDecoration get landscapeHeaderDecoration =>
-      LayoutStyles.landscapeHeaderDecoration;
-  static BoxDecoration get landscapeCategoryTabDecoration =>
-      LayoutStyles.landscapeCategoryTabDecoration;
   static BoxDecoration get selectedCategoryTabDecoration =>
       LayoutStyles.selectedCategoryTabDecoration;
   static const BoxDecoration unselectedCategoryTabDecoration =
@@ -162,21 +121,11 @@ class MainScreenStyles {
   static BoxDecoration get collapsibleFilterDropdownDecoration =>
       DropdownStyles.collapsibleFilterDropdownDecoration;
 
-  // Game card gradient decorations (from GameCardStyles)
-  static const BoxDecoration landscapeGameCardGradientDecoration =
-      GameCardStyles.landscapeGameCardGradientDecoration;
-  static const BoxDecoration portraitGameCardGradientDecoration =
-      GameCardStyles.portraitGameCardGradientDecoration;
-
   // Action button decorations (from GameCardStyles) - Updated to getters
   static BoxDecoration get playActionButtonDecoration =>
       GameCardStyles.playActionButtonDecoration;
-  static BoxDecoration get portraitPlayActionButtonDecoration =>
-      GameCardStyles.portraitPlayActionButtonDecoration;
   static const BoxDecoration completedBadgeDecoration =
       GameCardStyles.completedBadgeDecoration;
-  static const BoxDecoration portraitCompletedBadgeDecoration =
-      GameCardStyles.portraitCompletedBadgeDecoration;
 
   // Dropdown decorations (from DropdownStyles) - Updated to getters
   static BoxDecoration get filterDropdownSelectedItemDecoration =>
@@ -216,30 +165,13 @@ class MainScreenStyles {
     color: AppColors.primaryText,
   );
 
-  static const TextStyle landscapeGameTitleStyle = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.bold,
-    color: AppColors.primaryText,
-  );
-
   static const TextStyle gamePlatformStyle = TextStyle(
     fontSize: 14,
     color: AppColors.divider,
   );
 
-  static const TextStyle landscapeGamePlatformStyle = TextStyle(
-    fontSize: 11,
-    color: AppColors.divider,
-  );
-
   static const TextStyle gameStatusStyle = TextStyle(
     fontSize: 14,
-    color: AppColors.expandIcon,
-    fontStyle: FontStyle.italic,
-  );
-
-  static const TextStyle landscapeGameStatusStyle = TextStyle(
-    fontSize: 11,
     color: AppColors.expandIcon,
     fontStyle: FontStyle.italic,
   );
@@ -280,6 +212,4 @@ class MainScreenStyles {
   // Legacy text shadow constants
   static const List<Shadow> gameCardTextShadows = AppShadows.gameCardText;
   static const List<Shadow> gameCardSubtextShadows = AppShadows.gameCardText;
-  static const List<Shadow> gameCardPortraitTextShadows =
-      AppShadows.gameCardPortraitText;
 }

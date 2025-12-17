@@ -137,10 +137,6 @@ class AppShadows {
     Shadow(blurRadius: 6, color: Colors.black87, offset: Offset(1, 1)),
   ];
 
-  static const List<Shadow> gameCardPortraitText = [
-    Shadow(blurRadius: 4, color: Colors.black87, offset: Offset(1, 1)),
-  ];
-
   // Modern elevated shadows
   static const List<BoxShadow> cardElevation = [
     BoxShadow(
@@ -191,24 +187,11 @@ class AppLayout {
   // ========================================
 
   /// Standard content padding for sheets and modals
-  static const EdgeInsets sheetContentPadding = EdgeInsets.fromLTRB(
-    24,
-    20,
-    20,
-    28,
-  );
-  static const EdgeInsets sheetContentPaddingLandscape = EdgeInsets.fromLTRB(
-    24,
-    16,
-    12,
-    24,
-  );
+  static const EdgeInsets sheetContentPadding = EdgeInsets.fromLTRB(24, 20, 20, 28);
 
   /// Standard spacing values for sheets
   static const double sheetSectionSpacing = 24.0;
-  static const double sheetSectionSpacingLandscape = 20.0;
   static const double sheetHeaderSpacing = 12.0;
-  static const double sheetHeaderSpacingLandscape = 8.0;
 
   /// Modern sheet decoration with gradient and border
   static BoxDecoration get sheetDecoration => BoxDecoration(
@@ -255,7 +238,7 @@ class AppLayout {
 
   /// Standard game image dimensions
   static const double gameImageHeight = 120.0;
-  static const double gameImageWidthPortrait = 140.0;
+  static const double gameImageWidth = 140.0;
   static const double gameImageIconSize = 48.0;
   static const BorderRadius gameImageBorderRadius = BorderRadius.all(
     Radius.circular(16),

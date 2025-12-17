@@ -36,15 +36,12 @@ class _GameDetailSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-
     return GestureDetector(
       onTap: () => Navigator.of(context).pop(),
       behavior: HitTestBehavior.opaque,
       child: DraggableScrollableSheet(
-        initialChildSize: isLandscape ? 0.85 : 0.75,
-        minChildSize: isLandscape ? 0.6 : 0.5,
+        initialChildSize: 0.75,
+        minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => GestureDetector(
           onTap: () {},

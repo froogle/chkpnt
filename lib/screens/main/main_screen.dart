@@ -11,7 +11,6 @@ import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
-import 'package:chkpnt/utils/ui_utils.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -50,24 +49,15 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       body: Container(
         decoration: BoxDecoration(gradient: AppGradients.backgroundGradient),
         child: SafeArea(
-          child: OrientationBuilder(
-            builder:
-                (context, orientation) => _buildResponsiveLayout(orientation),
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(child: _buildContent()),
+              _buildBottomNavigation(),
+            ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildResponsiveLayout(Orientation orientation) {
-    final isLandscape = orientation == Orientation.landscape;
-
-    return Column(
-      children: [
-        _buildHeader(),
-        Expanded(child: _buildContent(isLandscape)),
-        _buildBottomNavigation(),
-      ],
     );
   }
 
@@ -75,38 +65,31 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     return MainScreenHeader(onAddGamePressed: _handleAddGame);
   }
 
-  Widget _buildContent(bool isLandscape) {
+  Widget _buildContent() {
     return SingleChildScrollView(
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildGameSection('Playing', GameStatus.playing, isLandscape),
+          _buildGameSection('Playing', GameStatus.playing),
           const SizedBox(height: 20),
-          _buildGameSection(
-            'Ongoing/Frequently Played',
-            GameStatus.ongoing,
-            isLandscape,
-          ),
+          _buildGameSection('Ongoing/Frequently Played', GameStatus.ongoing),
           const SizedBox(height: 20),
-          _buildGameSection('Backlog', GameStatus.backlog, isLandscape),
+          _buildGameSection('Backlog', GameStatus.backlog),
           const SizedBox(height: 20),
-          _buildGameSection('Completed', GameStatus.completed, isLandscape),
+          _buildGameSection('Completed', GameStatus.completed),
           const SizedBox(height: 20),
-          _buildGameSection('Abandoned', GameStatus.abandoned, isLandscape),
-          const SizedBox(height: 24), // Bottom padding
+          _buildGameSection('Abandoned', GameStatus.abandoned),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildGameSection(String title, GameStatus status, bool isLandscape) {
+  Widget _buildGameSection(String title, GameStatus status) {
     return GameSection(
       title: title,
       status: status,
-      isLandscape: isLandscape,
-      crossAxisCount:
-          isLandscape ? UIUtils.calculateGridColumns(context) : null,
       animatingGame: _animatingGame,
       isAnimating: _isAnimating,
       onGameTap: _handleGameTap,

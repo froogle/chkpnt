@@ -13,7 +13,6 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
-import 'package:chkpnt/utils/ui_utils.dart';
 
 class BacklogScreen extends ConsumerStatefulWidget {
   const BacklogScreen({super.key});
@@ -52,25 +51,16 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
       body: Container(
         decoration: BoxDecoration(gradient: AppGradients.backgroundGradient),
         child: SafeArea(
-          child: OrientationBuilder(
-            builder:
-                (context, orientation) => _buildResponsiveLayout(orientation),
+          child: Column(
+            children: [
+              _buildHeader(),
+              _buildSortingControls(),
+              Expanded(child: _buildContent()),
+              _buildBottomNavigation(),
+            ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildResponsiveLayout(Orientation orientation) {
-    final isLandscape = orientation == Orientation.landscape;
-
-    return Column(
-      children: [
-        _buildHeader(),
-        _buildSortingControls(),
-        Expanded(child: _buildContent(isLandscape)),
-        _buildBottomNavigation(),
-      ],
     );
   }
 
@@ -88,7 +78,7 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
     return const BacklogSortingControls();
   }
 
-  Widget _buildContent(bool isLandscape) {
+  Widget _buildContent() {
     final groupedGames = ref.watch(sortedBacklogGamesByPlatformProvider);
 
     if (groupedGames.isEmpty) {
@@ -101,28 +91,20 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ...groupedGames.entries.map(
-            (entry) =>
-                _buildPlatformSection(entry.key, entry.value, isLandscape),
+            (entry) => _buildPlatformSection(entry.key, entry.value),
           ),
-          const SizedBox(height: 24), // Bottom padding
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildPlatformSection(
-    String platform,
-    List<GameItem> games,
-    bool isLandscape,
-  ) {
+  Widget _buildPlatformSection(String platform, List<GameItem> games) {
     return Column(
       children: [
         BacklogPlatformSection(
           platform: platform,
           games: games,
-          isLandscape: isLandscape,
-          crossAxisCount:
-              isLandscape ? UIUtils.calculateGridColumns(context) : null,
           animatingGame: _animatingGame,
           isAnimating: _isAnimating,
           onGameTap: _handleGameTap,
