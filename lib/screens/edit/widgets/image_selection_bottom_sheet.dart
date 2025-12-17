@@ -64,6 +64,8 @@ class ImageSelectionBottomSheet extends StatelessWidget {
       padding: ImageSelectionStyles.optionsPadding,
       child: Column(
         children: [
+          _buildCameraOption(context),
+          const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
           _buildGalleryOption(context),
           const SizedBox(height: ImageSelectionStyles.optionTileSpacing),
           _buildFilesOption(context),
@@ -75,6 +77,16 @@ class ImageSelectionBottomSheet extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildCameraOption(BuildContext context) {
+    return _buildOptionTile(
+      context: context,
+      icon: Icons.camera_alt,
+      title: 'Take Photo',
+      subtitle: 'Capture with your camera',
+      onTap: () => _handleSourceSelection(context, GameImageSource.camera),
     );
   }
 

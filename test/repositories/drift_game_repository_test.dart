@@ -52,6 +52,16 @@ class MockGameImageService implements GameImageService {
   Future<String?> downloadAndSaveImageFromUrl(String imageUrl) async {
     return null;
   }
+
+  @override
+  Future<CameraPermissionResult> checkAndRequestCameraPermission() async {
+    return CameraPermissionResult.granted;
+  }
+
+  @override
+  Future<bool> openCameraSettings() async {
+    return true;
+  }
 }
 
 void main() {

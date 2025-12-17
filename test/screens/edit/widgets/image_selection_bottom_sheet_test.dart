@@ -18,6 +18,11 @@ void main() {
       expect(find.text('Select Image'), findsOneWidget);
       expect(find.byType(Container), findsAtLeastNWidgets(1));
 
+      // Check camera option (first option)
+      expect(find.text('Take Photo'), findsOneWidget);
+      expect(find.text('Capture with your camera'), findsOneWidget);
+      expect(find.byIcon(Icons.camera_alt), findsOneWidget);
+
       // Check main options
       expect(find.text('Photo Gallery'), findsOneWidget);
       expect(find.text('Choose from your photos'), findsOneWidget);
@@ -182,7 +187,8 @@ void main() {
       );
 
       // Check that there are InkWell widgets for interaction
-      expect(find.byType(InkWell), findsAtLeastNWidgets(3)); // 3 options
+      // 5 options: Camera, Gallery, Files, Search, Remove
+      expect(find.byType(InkWell), findsAtLeastNWidgets(5));
 
       // Check that there are proper spacing elements
       expect(find.byType(SizedBox), findsAtLeastNWidgets(3));
@@ -192,7 +198,7 @@ void main() {
         of: find.byType(InkWell),
         matching: find.byType(Container),
       );
-      expect(iconContainers, findsAtLeastNWidgets(3));
+      expect(iconContainers, findsAtLeastNWidgets(5));
     });
 
     group('Static show method', () {
@@ -256,6 +262,40 @@ void main() {
 
         // Check result
         expect(result, equals(GameImageSource.gallery));
+      });
+
+      testWidgets('returns proper result when camera is selected', (
+        tester,
+      ) async {
+        dynamic result;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder:
+                    (context) => ElevatedButton(
+                      onPressed: () async {
+                        result = await ImageSelectionBottomSheet.show(
+                          context: context,
+                          hasExistingImage: false,
+                        );
+                      },
+                      child: const Text('Show Sheet'),
+                    ),
+              ),
+            ),
+          ),
+        );
+
+        // Show sheet and select camera
+        await tester.tap(find.text('Show Sheet'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Take Photo'));
+        await tester.pumpAndSettle();
+
+        // Check result
+        expect(result, equals(GameImageSource.camera));
       });
     });
   });
