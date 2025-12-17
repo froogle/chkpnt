@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
 import 'storage_service.dart';
 
-enum GameImageSource { gallery, files }
+enum GameImageSource { camera, gallery, files }
+
+enum CameraPermissionResult { granted, denied, openedSettings }
 
 final gameImageServiceProvider = Provider<GameImageService>((ref) {
   return GameImageService(ref.read(storageServiceProvider));
@@ -38,6 +41,29 @@ class GameImageService {
       debugPrint('Error selecting image: $e');
       return null;
     }
+  }
+
+  Future<CameraPermissionResult> checkAndRequestCameraPermission() async {
+    final PermissionStatus status = await Permission.camera.status;
+
+    if (status.isGranted) {
+      return CameraPermissionResult.granted;
+    }
+
+    if (status.isPermanentlyDenied) {
+      return CameraPermissionResult.denied;
+    }
+
+    final PermissionStatus result = await Permission.camera.request();
+    if (result.isGranted) {
+      return CameraPermissionResult.granted;
+    }
+
+    return CameraPermissionResult.denied;
+  }
+
+  Future<bool> openCameraSettings() async {
+    return await openAppSettings();
   }
 
   /// Deletes a game image from storage
@@ -89,6 +115,15 @@ class GameImageService {
   /// Selects image file from the specified source
   Future<File?> _selectImageFile(GameImageSource source) async {
     switch (source) {
+      case GameImageSource.camera:
+        final XFile? pickedFile = await _imagePicker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: maxImageSize.toDouble(),
+          maxHeight: maxImageSize.toDouble(),
+          imageQuality: 85,
+        );
+        return pickedFile != null ? File(pickedFile.path) : null;
+
       case GameImageSource.gallery:
         final XFile? pickedFile = await _imagePicker.pickImage(
           source: ImageSource.gallery,

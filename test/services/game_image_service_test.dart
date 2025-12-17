@@ -184,9 +184,14 @@ void main() {
 
   group('GameImageSource enum', () {
     test('has correct values', () {
-      expect(GameImageSource.values, hasLength(2));
+      expect(GameImageSource.values, hasLength(3));
+      expect(GameImageSource.values, contains(GameImageSource.camera));
       expect(GameImageSource.values, contains(GameImageSource.gallery));
       expect(GameImageSource.values, contains(GameImageSource.files));
+    });
+
+    test('camera has correct string representation', () {
+      expect(GameImageSource.camera.toString(), contains('camera'));
     });
 
     test('gallery has correct string representation', () {

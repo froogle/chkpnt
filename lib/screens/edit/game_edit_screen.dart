@@ -208,7 +208,11 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       if (result == 'remove') {
         _removeImage();
       } else if (result is GameImageSource) {
-        await _selectImage(result);
+        if (result == GameImageSource.camera) {
+          await _handleCameraSelection();
+        } else {
+          await _selectImage(result);
+        }
       } else if (result == 'search') {
         if (!mounted) return;
         final selectedImageUrl = await Navigator.of(context).push<String>(
@@ -222,6 +226,58 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           await _selectImageFromUrl(selectedImageUrl);
         }
       }
+    }
+  }
+
+  Future<void> _handleCameraSelection() async {
+    final gameImageService = ref.read(gameImageServiceProvider);
+    final permissionResult =
+        await gameImageService.checkAndRequestCameraPermission();
+
+    if (!mounted) return;
+
+    switch (permissionResult) {
+      case CameraPermissionResult.granted:
+        await _selectImage(GameImageSource.camera);
+      case CameraPermissionResult.denied:
+      case CameraPermissionResult.openedSettings:
+        await _showCameraPermissionDialog();
+    }
+  }
+
+  Future<void> _showCameraPermissionDialog() async {
+    final shouldOpenSettings = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Camera Permission Required',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        content: const Text(
+          'To take photos of your game collection, ChkPnt needs access to your camera.\n\n'
+          'Tap "Open Settings" to go to the app settings page, then enable the Camera permission.',
+          style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldOpenSettings == true && mounted) {
+      final gameImageService = ref.read(gameImageServiceProvider);
+      await gameImageService.openCameraSettings();
     }
   }
 
