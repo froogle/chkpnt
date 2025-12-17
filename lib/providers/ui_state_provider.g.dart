@@ -287,7 +287,7 @@ final sectionExpansionProvider =
     );
 
 typedef _$SectionExpansion = Notifier<Map<String, bool>>;
-String _$gameEditStateHash() => r'81cb51a871f602c144e28bf1ac786084d98ca001';
+String _$gameEditStateHash() => r'ebe4f4d0d0dc7079d7b73d4a092d78900b0a9b39';
 
 abstract class _$GameEditState
     extends BuildlessAutoDisposeNotifier<GameEditFormState> {

@@ -17,6 +17,7 @@ class GameEditScreen extends ConsumerStatefulWidget {
   final bool isAddMode;
   final List<GameStatus>? availableStatuses;
   final GameStatus? defaultStatus;
+  final bool defaultIsPhysical;
 
   const GameEditScreen._({
     super.key,
@@ -24,6 +25,7 @@ class GameEditScreen extends ConsumerStatefulWidget {
     required this.isAddMode,
     this.availableStatuses,
     this.defaultStatus,
+    this.defaultIsPhysical = false,
   });
 
   // Factory constructor for editing existing games
@@ -36,6 +38,7 @@ class GameEditScreen extends ConsumerStatefulWidget {
     Key? key,
     List<GameStatus>? availableStatuses,
     GameStatus? defaultStatus,
+    bool defaultIsPhysical = false,
   }) {
     return GameEditScreen._(
       key: key,
@@ -43,6 +46,7 @@ class GameEditScreen extends ConsumerStatefulWidget {
       isAddMode: true,
       availableStatuses: availableStatuses,
       defaultStatus: defaultStatus,
+      defaultIsPhysical: defaultIsPhysical,
     );
   }
 
@@ -64,6 +68,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       game: widget.game,
       availableStatuses: widget.availableStatuses,
       defaultStatus: widget.defaultStatus,
+      defaultIsPhysical: widget.defaultIsPhysical,
     );
 
     // Set up title controller with initial value from provider
