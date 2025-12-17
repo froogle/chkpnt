@@ -94,17 +94,7 @@ class GameActionsService {
 
   /// Handles adding a new game with user feedback
   Future<void> addGame(GameItem newGame, BuildContext context) async {
-    await _ref
-        .read(gameListProvider.notifier)
-        .addGame(
-          GameItem.create(
-            title: newGame.title,
-            platform: newGame.platform,
-            status: newGame.status,
-            imagePath: newGame.imagePath,
-            remoteImageUrl: newGame.remoteImageUrl,
-          ),
-        );
+    await _ref.read(gameListProvider.notifier).addGame(newGame);
 
     // Expand the relevant section for the new game's status
     final statusName = _getStatusDisplayName(newGame.status);

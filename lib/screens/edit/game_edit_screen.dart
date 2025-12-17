@@ -82,9 +82,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: SafeArea(
-        child: _buildContent(),
-      ),
+      body: SafeArea(child: _buildContent()),
     );
   }
 
@@ -140,10 +138,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       children: [
         _buildGameImage(editState),
         const SizedBox(width: EditScreenStyles.horizontalSpacingLandscape),
-        Expanded(
-          flex: 2,
-          child: _buildInfoSection(),
-        ),
+        Expanded(flex: 2, child: _buildInfoSection()),
       ],
     );
   }
@@ -211,9 +206,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         await _selectImage(result);
       } else if (result == 'search') {
         if (!mounted) return;
-        final selectedImageUrl = await Navigator.of(
-          context,
-        ).push<String>(
+        final selectedImageUrl = await Navigator.of(context).push<String>(
           MaterialPageRoute(
             builder:
                 (buildContext) =>
