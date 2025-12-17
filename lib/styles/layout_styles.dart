@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'global_styles.dart';
 
-/// Styles for main screen layout and sections
+class ResponsiveGridConfig {
+  static const double targetCardWidth = 120.0;
+  static const double gridSpacing = 10.0;
+  static const double childAspectRatio = 1.0;
+}
+
 class LayoutStyles {
   // Layout dimensions
   static const double sidebarWidth = 160.0;
@@ -20,22 +25,10 @@ class LayoutStyles {
   static const EdgeInsets sidebarNavPadding = EdgeInsets.all(16.0);
   static const EdgeInsets sidebarNavItemPadding = EdgeInsets.only(bottom: 8.0);
 
-  // Landscape layout dimensions
-  static const double landscapeCategoryTabHeight = 56.0;
-  static const double landscapeGridSpacing = 12.0;
-  static const EdgeInsets landscapeHeaderPadding = EdgeInsets.symmetric(
-    horizontal: 20.0,
-    vertical: 12.0,
-  );
-  static const EdgeInsets landscapeGridPadding = EdgeInsets.all(16.0);
-
   // Spacing constants
   static const double filterSpacing = 12.0;
   static const double sectionSpacing = 24.0;
   static const double sectionTitleSpacing = 12.0;
-  static const double landscapeSectionSpacing = 24.0;
-  static const double landscapeGameSpacing = 12.0;
-  static const double landscapeGameContentSpacing = 12.0;
   static const double dividerSpacing = 8.0;
 
   // Enhanced text styles for layout elements
@@ -51,13 +44,6 @@ class LayoutStyles {
     fontWeight: FontWeight.w600,
     color: AppColors.primaryText,
     letterSpacing: 0.5,
-  );
-
-  static const TextStyle landscapeSectionHeaderStyle = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: AppColors.primaryText,
-    letterSpacing: 0.8,
   );
 
   static const TextStyle sidebarNavTextStyle = TextStyle(
@@ -98,17 +84,6 @@ class LayoutStyles {
         spreadRadius: 0,
       ),
     ],
-  );
-
-  // Enhanced landscape header and tab decorations
-  static BoxDecoration get landscapeHeaderDecoration => BoxDecoration(
-    gradient: AppGradients.buttonGradient,
-    boxShadow: AppShadows.subtleElevation,
-  );
-
-  static BoxDecoration get landscapeCategoryTabDecoration => BoxDecoration(
-    color: AppColors.sidebar,
-    border: Border(bottom: BorderSide(color: AppColors.divider, width: 1)),
   );
 
   static BoxDecoration get selectedCategoryTabDecoration => BoxDecoration(

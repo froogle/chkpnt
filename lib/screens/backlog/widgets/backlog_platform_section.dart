@@ -5,24 +5,11 @@ import 'package:chkpnt/shared/widgets/layout/slim_section_header.dart';
 import 'package:chkpnt/shared/widgets/cards/game_card.dart';
 import 'package:chkpnt/styles/backlog_styles.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
-
-class GridLayoutConfiguration {
-  final int columns;
-  final double aspectRatio;
-  final double spacing;
-
-  const GridLayoutConfiguration({
-    required this.columns,
-    required this.aspectRatio,
-    required this.spacing,
-  });
-}
+import 'package:chkpnt/utils/ui_utils.dart';
 
 class BacklogPlatformSection extends ConsumerWidget {
   final String platform;
   final List<GameItem> games;
-  final bool isLandscape;
-  final int? crossAxisCount;
   final GameItem? animatingGame;
   final bool isAnimating;
   final Function(GameItem) onGameTap;
@@ -32,9 +19,7 @@ class BacklogPlatformSection extends ConsumerWidget {
     super.key,
     required this.platform,
     required this.games,
-    required this.isLandscape,
     required this.onGameTap,
-    this.crossAxisCount,
     this.animatingGame,
     this.isAnimating = false,
     this.onPlayPressed,
@@ -47,8 +32,7 @@ class BacklogPlatformSection extends ConsumerWidget {
     }
 
     final sectionExpansion = ref.watch(sectionExpansionProvider);
-    final isExpanded =
-        sectionExpansion[platform] ?? true; // Default to expanded for platforms
+    final isExpanded = sectionExpansion[platform] ?? true;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,41 +56,16 @@ class BacklogPlatformSection extends ConsumerWidget {
   }
 
   Widget _buildGrid(List<GameItem> games) {
-    final layoutConfig = _getLayoutConfiguration();
-
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: layoutConfig.columns,
-        crossAxisSpacing: layoutConfig.spacing,
-        mainAxisSpacing: layoutConfig.spacing,
-        childAspectRatio: layoutConfig.aspectRatio,
-      ),
+      gridDelegate: UIUtils.getResponsiveGridDelegate(),
       itemCount: games.length,
       itemBuilder: (context, index) => _buildAnimatedGameTile(games[index]),
     );
   }
 
-  GridLayoutConfiguration _getLayoutConfiguration() {
-    if (isLandscape) {
-      final columns = crossAxisCount ?? 5;
-      return GridLayoutConfiguration(
-        columns: columns,
-        aspectRatio: 1.0, // Square aspect ratio
-        spacing: 8, // Tighter spacing in landscape to fit more games
-      );
-    } else {
-      return GridLayoutConfiguration(
-        columns: 3,
-        aspectRatio: 1.0, // Square aspect ratio
-        spacing: 12,
-      );
-    }
-  }
-
   Widget _buildAnimatedGameTile(GameItem game) {
-    // Handle fade-out for games leaving backlog
     if (isAnimating && animatingGame?.id == game.id) {
       return AnimatedOpacity(
         opacity: 0.0,
@@ -119,7 +78,6 @@ class BacklogPlatformSection extends ConsumerWidget {
       );
     }
 
-    // Default state - fully visible
     return GameCard(
       game: game,
       onTap: () => onGameTap(game),

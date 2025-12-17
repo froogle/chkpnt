@@ -10,7 +10,6 @@ import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/navigation_service.dart';
-import 'package:chkpnt/utils/ui_utils.dart';
 
 class PhysicalScreen extends ConsumerStatefulWidget {
   const PhysicalScreen({super.key});
@@ -27,24 +26,15 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
       body: Container(
         decoration: BoxDecoration(gradient: AppGradients.backgroundGradient),
         child: SafeArea(
-          child: OrientationBuilder(
-            builder:
-                (context, orientation) => _buildResponsiveLayout(orientation),
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(child: _buildContent()),
+              _buildBottomNavigation(),
+            ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildResponsiveLayout(Orientation orientation) {
-    final isLandscape = orientation == Orientation.landscape;
-
-    return Column(
-      children: [
-        _buildHeader(),
-        Expanded(child: _buildContent(isLandscape)),
-        _buildBottomNavigation(),
-      ],
     );
   }
 
@@ -52,7 +42,7 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
     return PhysicalScreenHeader(onAddGamePressed: _handleAddGame);
   }
 
-  Widget _buildContent(bool isLandscape) {
+  Widget _buildContent() {
     final groupedGames = ref.watch(physicalGamesByPlatformProvider);
 
     if (groupedGames.isEmpty) {
@@ -65,8 +55,7 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ...groupedGames.entries.map(
-            (entry) =>
-                _buildPlatformSection(entry.key, entry.value, isLandscape),
+            (entry) => _buildPlatformSection(entry.key, entry.value),
           ),
           const SizedBox(height: 24),
         ],
@@ -74,19 +63,12 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
     );
   }
 
-  Widget _buildPlatformSection(
-    String platform,
-    List<GameItem> games,
-    bool isLandscape,
-  ) {
+  Widget _buildPlatformSection(String platform, List<GameItem> games) {
     return Column(
       children: [
         BacklogPlatformSection(
           platform: platform,
           games: games,
-          isLandscape: isLandscape,
-          crossAxisCount:
-              isLandscape ? UIUtils.calculateGridColumns(context) : null,
           onGameTap: _handleGameTap,
         ),
         SizedBox(height: BacklogStyles.platformSectionSpacing),

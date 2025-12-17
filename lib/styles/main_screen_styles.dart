@@ -42,23 +42,11 @@ class MainScreenStyles {
       InputStyles.collapsibleFilterHeight;
 
   // Layout spacing (from LayoutStyles)
-  static const double landscapeCategoryTabHeight =
-      LayoutStyles.landscapeCategoryTabHeight;
-  static const double landscapeGridSpacing = LayoutStyles.landscapeGridSpacing;
   static const EdgeInsets headerPadding = LayoutStyles.headerPadding;
   static const EdgeInsets contentPadding = LayoutStyles.contentPadding;
-  static const EdgeInsets landscapeHeaderPadding =
-      LayoutStyles.landscapeHeaderPadding;
-  static const EdgeInsets landscapeGridPadding =
-      LayoutStyles.landscapeGridPadding;
   static const double filterSpacing = LayoutStyles.filterSpacing;
   static const double sectionSpacing = LayoutStyles.sectionSpacing;
   static const double sectionTitleSpacing = LayoutStyles.sectionTitleSpacing;
-  static const double landscapeSectionSpacing =
-      LayoutStyles.landscapeSectionSpacing;
-  static const double landscapeGameSpacing = LayoutStyles.landscapeGameSpacing;
-  static const double landscapeGameContentSpacing =
-      LayoutStyles.landscapeGameContentSpacing;
   static const double dividerSpacing = LayoutStyles.dividerSpacing;
 
   // Game card spacing (from GameCardStyles)
@@ -97,8 +85,6 @@ class MainScreenStyles {
   // Text styles (from LayoutStyles)
   static const TextStyle headerTextStyle = LayoutStyles.headerTextStyle;
   static const TextStyle sectionHeaderStyle = LayoutStyles.sectionHeaderStyle;
-  static const TextStyle landscapeSectionHeaderStyle =
-      LayoutStyles.landscapeSectionHeaderStyle;
   static const TextStyle sidebarNavTextStyle = LayoutStyles.sidebarNavTextStyle;
   static const TextStyle selectedCategoryTabTextStyle =
       LayoutStyles.selectedCategoryTabTextStyle;
@@ -147,10 +133,6 @@ class MainScreenStyles {
 
   static BoxDecoration get bottomNavDecoration =>
       LayoutStyles.bottomNavDecoration;
-  static BoxDecoration get landscapeHeaderDecoration =>
-      LayoutStyles.landscapeHeaderDecoration;
-  static BoxDecoration get landscapeCategoryTabDecoration =>
-      LayoutStyles.landscapeCategoryTabDecoration;
   static BoxDecoration get selectedCategoryTabDecoration =>
       LayoutStyles.selectedCategoryTabDecoration;
   static const BoxDecoration unselectedCategoryTabDecoration =

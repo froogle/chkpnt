@@ -13,7 +13,6 @@ import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
-import 'package:chkpnt/utils/ui_utils.dart';
 
 class WishlistScreen extends ConsumerStatefulWidget {
   const WishlistScreen({super.key});
@@ -64,24 +63,15 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       body: Container(
         decoration: BoxDecoration(gradient: AppGradients.backgroundGradient),
         child: SafeArea(
-          child: OrientationBuilder(
-            builder:
-                (context, orientation) => _buildResponsiveLayout(orientation),
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(child: _buildContent()),
+              _buildBottomNavigation(),
+            ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildResponsiveLayout(Orientation orientation) {
-    final isLandscape = orientation == Orientation.landscape;
-
-    return Column(
-      children: [
-        _buildHeader(),
-        Expanded(child: _buildContent(isLandscape)),
-        _buildBottomNavigation(),
-      ],
     );
   }
 
@@ -95,28 +85,25 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     );
   }
 
-  Widget _buildContent(bool isLandscape) {
+  Widget _buildContent() {
     return SingleChildScrollView(
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildGameSection('Ordered', GameStatus.ordered, isLandscape),
+          _buildGameSection('Ordered', GameStatus.ordered),
           const SizedBox(height: 20),
-          _buildGameSection('Wish List', GameStatus.wishlist, isLandscape),
-          const SizedBox(height: 24), // Bottom padding
+          _buildGameSection('Wish List', GameStatus.wishlist),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildGameSection(String title, GameStatus status, bool isLandscape) {
+  Widget _buildGameSection(String title, GameStatus status) {
     return GameSection(
       title: title,
       status: status,
-      isLandscape: isLandscape,
-      crossAxisCount:
-          isLandscape ? UIUtils.calculateGridColumns(context) : null,
       animatingGame: _animatingGame,
       isAnimating: _isAnimating,
       onGameTap: _handleGameTap,
