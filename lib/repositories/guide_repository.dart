@@ -18,6 +18,8 @@ abstract class GuideRepository {
     int block,
   );
 
+  Future<GuideItem> markAttributionSeen(GuideId guideId);
+
   Future<void> deleteGuide(GuideId guideId);
 }
 

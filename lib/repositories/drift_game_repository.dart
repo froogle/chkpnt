@@ -39,6 +39,8 @@ class Guides extends Table {
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get lastReadSection => integer().withDefault(const Constant(0))();
   IntColumn get lastReadBlock => integer().withDefault(const Constant(0))();
+  TextColumn get sourceUrl => text().nullable()();
+  BoolColumn get hasSeenAttribution => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -53,7 +55,7 @@ class GameDatabase extends _$GameDatabase {
   }
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -66,6 +68,12 @@ class GameDatabase extends _$GameDatabase {
       }
       if (from < 3) {
         await m.createTable(guides);
+      }
+      if (from < 4) {
+        await m.addColumn(guides, guides.sourceUrl);
+      }
+      if (from < 5) {
+        await m.addColumn(guides, guides.hasSeenAttribution);
       }
     },
     beforeOpen: (details) async {
@@ -117,6 +125,8 @@ class GameDatabase extends _$GameDatabase {
       createdAt: guide.createdAt,
       lastReadSection: guide.lastReadSection,
       lastReadBlock: guide.lastReadBlock,
+      sourceUrl: guide.sourceUrl,
+      hasSeenAttribution: guide.hasSeenAttribution,
     );
   }
 
@@ -130,6 +140,8 @@ class GameDatabase extends _$GameDatabase {
       createdAt: Value(guideItem.createdAt),
       lastReadSection: Value(guideItem.lastReadSection),
       lastReadBlock: Value(guideItem.lastReadBlock),
+      sourceUrl: Value(guideItem.sourceUrl),
+      hasSeenAttribution: Value(guideItem.hasSeenAttribution),
     );
   }
 
@@ -362,10 +374,12 @@ class DriftGameRepository implements GameRepository {
         'createdAt': guide.createdAt.toIso8601String(),
         'lastReadSection': guide.lastReadSection,
         'lastReadBlock': guide.lastReadBlock,
+        'sourceUrl': guide.sourceUrl,
+        'hasSeenAttribution': guide.hasSeenAttribution,
       }).toList();
 
       return jsonEncode({
-        'version': 3,
+        'version': 5,
         'exportDate': DateTime.now().toIso8601String(),
         'games': gamesJsonData,
         'guides': guidesJsonData,
@@ -405,6 +419,8 @@ class DriftGameRepository implements GameRepository {
           createdAt: DateTime.parse(guideData['createdAt']),
           lastReadSection: guideData['lastReadSection'] ?? 0,
           lastReadBlock: guideData['lastReadBlock'] ?? 0,
+          sourceUrl: guideData['sourceUrl'] as String?,
+          hasSeenAttribution: guideData['hasSeenAttribution'] as bool? ?? false,
         );
       }).toList();
 
@@ -486,6 +502,17 @@ class DriftGuideRepository implements GuideRepository {
       lastReadBlock: block,
     );
 
+    return await _database.updateGuideInternal(updated);
+  }
+
+  @override
+  Future<GuideItem> markAttributionSeen(GuideId guideId) async {
+    final existing = await getGuideById(guideId);
+    if (existing == null) {
+      throw GuideNotFoundException(guideId);
+    }
+
+    final updated = existing.copyWith(hasSeenAttribution: true);
     return await _database.updateGuideInternal(updated);
   }
 

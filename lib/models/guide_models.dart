@@ -28,6 +28,8 @@ class GuideItem with _$GuideItem {
     required DateTime createdAt,
     @Default(0) int lastReadSection,
     @Default(0) int lastReadBlock,
+    String? sourceUrl,
+    @Default(false) bool hasSeenAttribution,
   }) = _GuideItem;
 
   factory GuideItem.create({
@@ -35,6 +37,7 @@ class GuideItem with _$GuideItem {
     required String title,
     required String author,
     required String fileName,
+    String? sourceUrl,
   }) {
     return GuideItem(
       id: GuideId.generate(),
@@ -45,6 +48,7 @@ class GuideItem with _$GuideItem {
       createdAt: DateTime.now(),
       lastReadSection: 0,
       lastReadBlock: 0,
+      sourceUrl: sourceUrl,
     );
   }
 

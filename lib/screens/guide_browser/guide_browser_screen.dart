@@ -115,6 +115,7 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
         title: guideContent.title,
         author: guideContent.author,
         fileName: fileName,
+        sourceUrl: guideContent.url,
       );
 
       await ref.read(guidesForGameProvider(widget.gameId).notifier).addGuide(guideItem);

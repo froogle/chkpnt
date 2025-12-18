@@ -176,6 +176,8 @@ mixin _$GuideItem {
   DateTime get createdAt => throw _privateConstructorUsedError;
   int get lastReadSection => throw _privateConstructorUsedError;
   int get lastReadBlock => throw _privateConstructorUsedError;
+  String? get sourceUrl => throw _privateConstructorUsedError;
+  bool get hasSeenAttribution => throw _privateConstructorUsedError;
 
   /// Serializes this GuideItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -201,6 +203,8 @@ abstract class $GuideItemCopyWith<$Res> {
     DateTime createdAt,
     int lastReadSection,
     int lastReadBlock,
+    String? sourceUrl,
+    bool hasSeenAttribution,
   });
 
   $GuideIdCopyWith<$Res> get id;
@@ -230,6 +234,8 @@ class _$GuideItemCopyWithImpl<$Res, $Val extends GuideItem>
     Object? createdAt = null,
     Object? lastReadSection = null,
     Object? lastReadBlock = null,
+    Object? sourceUrl = freezed,
+    Object? hasSeenAttribution = null,
   }) {
     return _then(
       _value.copyWith(
@@ -273,6 +279,16 @@ class _$GuideItemCopyWithImpl<$Res, $Val extends GuideItem>
                     ? _value.lastReadBlock
                     : lastReadBlock // ignore: cast_nullable_to_non_nullable
                         as int,
+            sourceUrl:
+                freezed == sourceUrl
+                    ? _value.sourceUrl
+                    : sourceUrl // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            hasSeenAttribution:
+                null == hasSeenAttribution
+                    ? _value.hasSeenAttribution
+                    : hasSeenAttribution // ignore: cast_nullable_to_non_nullable
+                        as bool,
           )
           as $Val,
     );
@@ -317,6 +333,8 @@ abstract class _$$GuideItemImplCopyWith<$Res>
     DateTime createdAt,
     int lastReadSection,
     int lastReadBlock,
+    String? sourceUrl,
+    bool hasSeenAttribution,
   });
 
   @override
@@ -347,6 +365,8 @@ class __$$GuideItemImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? lastReadSection = null,
     Object? lastReadBlock = null,
+    Object? sourceUrl = freezed,
+    Object? hasSeenAttribution = null,
   }) {
     return _then(
       _$GuideItemImpl(
@@ -390,6 +410,16 @@ class __$$GuideItemImplCopyWithImpl<$Res>
                 ? _value.lastReadBlock
                 : lastReadBlock // ignore: cast_nullable_to_non_nullable
                     as int,
+        sourceUrl:
+            freezed == sourceUrl
+                ? _value.sourceUrl
+                : sourceUrl // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        hasSeenAttribution:
+            null == hasSeenAttribution
+                ? _value.hasSeenAttribution
+                : hasSeenAttribution // ignore: cast_nullable_to_non_nullable
+                    as bool,
       ),
     );
   }
@@ -407,6 +437,8 @@ class _$GuideItemImpl implements _GuideItem {
     required this.createdAt,
     this.lastReadSection = 0,
     this.lastReadBlock = 0,
+    this.sourceUrl,
+    this.hasSeenAttribution = false,
   });
 
   factory _$GuideItemImpl.fromJson(Map<String, dynamic> json) =>
@@ -430,10 +462,15 @@ class _$GuideItemImpl implements _GuideItem {
   @override
   @JsonKey()
   final int lastReadBlock;
+  @override
+  final String? sourceUrl;
+  @override
+  @JsonKey()
+  final bool hasSeenAttribution;
 
   @override
   String toString() {
-    return 'GuideItem(id: $id, gameId: $gameId, title: $title, author: $author, fileName: $fileName, createdAt: $createdAt, lastReadSection: $lastReadSection, lastReadBlock: $lastReadBlock)';
+    return 'GuideItem(id: $id, gameId: $gameId, title: $title, author: $author, fileName: $fileName, createdAt: $createdAt, lastReadSection: $lastReadSection, lastReadBlock: $lastReadBlock, sourceUrl: $sourceUrl, hasSeenAttribution: $hasSeenAttribution)';
   }
 
   @override
@@ -452,7 +489,11 @@ class _$GuideItemImpl implements _GuideItem {
             (identical(other.lastReadSection, lastReadSection) ||
                 other.lastReadSection == lastReadSection) &&
             (identical(other.lastReadBlock, lastReadBlock) ||
-                other.lastReadBlock == lastReadBlock));
+                other.lastReadBlock == lastReadBlock) &&
+            (identical(other.sourceUrl, sourceUrl) ||
+                other.sourceUrl == sourceUrl) &&
+            (identical(other.hasSeenAttribution, hasSeenAttribution) ||
+                other.hasSeenAttribution == hasSeenAttribution));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -467,6 +508,8 @@ class _$GuideItemImpl implements _GuideItem {
     createdAt,
     lastReadSection,
     lastReadBlock,
+    sourceUrl,
+    hasSeenAttribution,
   );
 
   /// Create a copy of GuideItem
@@ -493,6 +536,8 @@ abstract class _GuideItem implements GuideItem {
     required final DateTime createdAt,
     final int lastReadSection,
     final int lastReadBlock,
+    final String? sourceUrl,
+    final bool hasSeenAttribution,
   }) = _$GuideItemImpl;
 
   factory _GuideItem.fromJson(Map<String, dynamic> json) =
@@ -514,6 +559,10 @@ abstract class _GuideItem implements GuideItem {
   int get lastReadSection;
   @override
   int get lastReadBlock;
+  @override
+  String? get sourceUrl;
+  @override
+  bool get hasSeenAttribution;
 
   /// Create a copy of GuideItem
   /// with the given fields replaced by the non-null parameter values.

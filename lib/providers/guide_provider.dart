@@ -42,6 +42,11 @@ class GuidesForGame extends _$GuidesForGame {
     await repository.updateGuideReadPosition(guideId, section, block);
   }
 
+  Future<void> markAttributionSeen(GuideId guideId) async {
+    final repository = ref.read(guideRepositoryProvider);
+    await repository.markAttributionSeen(guideId);
+  }
+
   Future<void> deleteGuide(GuideId guideId) async {
     final repository = ref.read(guideRepositoryProvider);
     await repository.deleteGuide(guideId);

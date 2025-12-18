@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:chkpnt/models/guide_models.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/services/guide_parser/guide_content.dart';
+import 'package:chkpnt/services/guide_parser/guide_serialization.dart';
 import 'package:chkpnt/services/guide_storage_service.dart';
 import 'package:chkpnt/services/guide_reader_preferences_service.dart';
 import 'package:chkpnt/providers/guide_provider.dart';
+import 'package:chkpnt/screens/guide_reader/widgets/attribution_modal.dart';
 
 class GuideReaderScreen extends ConsumerStatefulWidget {
   final GuideItem guide;
 
-  const GuideReaderScreen({
-    super.key,
-    required this.guide,
-  });
+  const GuideReaderScreen({super.key, required this.guide});
 
   @override
   ConsumerState<GuideReaderScreen> createState() => _GuideReaderScreenState();
@@ -66,7 +66,8 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     if (maxScroll <= 0) return;
 
     final scrollPercentage = scrollOffset / maxScroll;
-    final estimatedIndex = (scrollPercentage * (_flattenedContent.length - 1)).round();
+    final estimatedIndex =
+        (scrollPercentage * (_flattenedContent.length - 1)).round();
     final clampedIndex = estimatedIndex.clamp(0, _flattenedContent.length - 1);
 
     final item = _flattenedContent[clampedIndex];
@@ -80,7 +81,11 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     try {
       await ref
           .read(guidesForGameProvider(widget.guide.gameId).notifier)
-          .updateReadPosition(widget.guide.id, _currentSectionIndex, _currentBlockIndex);
+          .updateReadPosition(
+            widget.guide.id,
+            _currentSectionIndex,
+            _currentBlockIndex,
+          );
     } catch (e) {
       // Silently fail - position saving is not critical
     }
@@ -101,7 +106,8 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     int targetIndex = 0;
     for (int i = 0; i < _flattenedContent.length; i++) {
       final item = _flattenedContent[i];
-      if (item.sectionIndex == targetSection && item.blockIndex >= targetBlock) {
+      if (item.sectionIndex == targetSection &&
+          item.blockIndex >= targetBlock) {
         targetIndex = i;
         break;
       }
@@ -125,8 +131,10 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   Future<void> _loadGuideContent() async {
     try {
       final storageService = ref.read(guideStorageServiceProvider);
-      final jsonContent = await storageService.loadGuideJson(widget.guide.fileName);
-      final content = GuideContent.fromJsonString(jsonContent);
+      final jsonContent = await storageService.loadGuideJson(
+        widget.guide.fileName,
+      );
+      final content = GuideContentSerialization.fromJsonString(jsonContent);
 
       _flattenedContent = _flattenContent(content);
 
@@ -153,20 +161,24 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   List<_ContentItem> _flattenContent(GuideContent content) {
     final items = <_ContentItem>[];
 
-    for (int sectionIdx = 0; sectionIdx < content.sections.length; sectionIdx++) {
+    for (
+      int sectionIdx = 0;
+      sectionIdx < content.sections.length;
+      sectionIdx++
+    ) {
       final section = content.sections[sectionIdx];
-      items.add(_ContentItem(
-        sectionIndex: sectionIdx,
-        blockIndex: -1,
-        isHeader: true,
-      ));
+      items.add(
+        _ContentItem(sectionIndex: sectionIdx, blockIndex: -1, isHeader: true),
+      );
 
       for (int blockIdx = 0; blockIdx < section.blocks.length; blockIdx++) {
-        items.add(_ContentItem(
-          sectionIndex: sectionIdx,
-          blockIndex: blockIdx,
-          isHeader: false,
-        ));
+        items.add(
+          _ContentItem(
+            sectionIndex: sectionIdx,
+            blockIndex: blockIdx,
+            isHeader: false,
+          ),
+        );
       }
     }
 
@@ -180,7 +192,23 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       setState(() {
         _preferences = prefs;
       });
+
+      if (!widget.guide.hasSeenAttribution) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showAttributionModal();
+        });
+      }
     }
+  }
+
+  Future<void> _showAttributionModal() async {
+    await AttributionModal.show(context, _markAttributionModalSeen);
+  }
+
+  Future<void> _markAttributionModalSeen() async {
+    await ref
+        .read(guidesForGameProvider(widget.guide.gameId).notifier)
+        .markAttributionSeen(widget.guide.id);
   }
 
   Future<void> _savePreferences() async {
@@ -224,26 +252,38 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     _savePreferences();
   }
 
+  void _visitOriginalGuide() {
+    final sourceUrl = widget.guide.sourceUrl;
+    if (sourceUrl == null || sourceUrl.isEmpty) return;
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => _GuideSourceBrowserScreen(url: sourceUrl),
+      ),
+    );
+  }
+
   Future<void> _showDeleteConfirmation() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Guide'),
-        content: Text(
-          'Are you sure you want to delete "${widget.guide.title}"?\n\nThis action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Guide'),
+            content: Text(
+              'Are you sure you want to delete "${widget.guide.title}"?\n\nThis action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && mounted) {
@@ -289,13 +329,15 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   Color get _textColour =>
       _preferences.invertedColours ? Colors.black : Colors.white;
 
-  Color get _secondaryTextColour => _preferences.invertedColours
-      ? Colors.black.withValues(alpha: 0.6)
-      : Colors.white.withValues(alpha: 0.6);
+  Color get _secondaryTextColour =>
+      _preferences.invertedColours
+          ? Colors.black.withValues(alpha: 0.6)
+          : Colors.white.withValues(alpha: 0.6);
 
-  Color get _preformattedBackgroundColour => _preferences.invertedColours
-      ? Colors.black.withValues(alpha: 0.05)
-      : Colors.white.withValues(alpha: 0.05);
+  Color get _preformattedBackgroundColour =>
+      _preferences.invertedColours
+          ? Colors.black.withValues(alpha: 0.05)
+          : Colors.white.withValues(alpha: 0.05);
 
   @override
   Widget build(BuildContext context) {
@@ -305,10 +347,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         child: Stack(
           children: [
             Column(
-              children: [
-                _buildHeader(),
-                Expanded(child: _buildContent()),
-              ],
+              children: [_buildHeader(), Expanded(child: _buildContent())],
             ),
             if (_showToolbar) _buildToolbarOverlay(),
           ],
@@ -347,11 +386,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.all(8),
-          child: Icon(
-            Icons.close,
-            color: _textColour,
-            size: 24,
-          ),
+          child: Icon(Icons.close, color: _textColour, size: 24),
         ),
       ),
     );
@@ -374,10 +409,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         ),
         Text(
           'by ${widget.guide.author}',
-          style: TextStyle(
-            fontSize: 12,
-            color: _secondaryTextColour,
-          ),
+          style: TextStyle(fontSize: 12, color: _secondaryTextColour),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -388,9 +420,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   Widget _buildContent() {
     if (_isLoading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primaryPurple,
-        ),
+        child: CircularProgressIndicator(color: AppColors.primaryPurple),
       );
     }
 
@@ -402,10 +432,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       return _buildErrorState();
     }
 
-    return GestureDetector(
-      onTap: _toggleToolbar,
-      child: _buildGuideContent(),
-    );
+    return GestureDetector(onTap: _toggleToolbar, child: _buildGuideContent());
   }
 
   Widget _buildErrorState() {
@@ -423,10 +450,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
             const SizedBox(height: 16),
             Text(
               _errorMessage ?? 'Unable to load guide',
-              style: TextStyle(
-                fontSize: 16,
-                color: _textColour,
-              ),
+              style: TextStyle(fontSize: 16, color: _textColour),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -528,6 +552,9 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildToolbarOverlay() {
+    final toolbarTextColour =
+        _preferences.invertedColours ? Colors.white : Colors.black;
+
     return Positioned(
       bottom: 0,
       left: 0,
@@ -537,24 +564,52 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: _preferences.invertedColours
-                ? Colors.black.withValues(alpha: 0.9)
-                : Colors.white.withValues(alpha: 0.9),
+            color:
+                _preferences.invertedColours
+                    ? Colors.black.withValues(alpha: 0.9)
+                    : Colors.white.withValues(alpha: 0.9),
             border: Border(
               top: BorderSide(
-                color: _preferences.invertedColours
-                    ? Colors.white.withValues(alpha: 0.2)
-                    : Colors.black.withValues(alpha: 0.2),
+                color:
+                    _preferences.invertedColours
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : Colors.black.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _buildFontSizeControls(),
-              _buildColourToggle(),
-              _buildDeleteButton(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildFontSizeControls(),
+                  _buildColourToggle(),
+                  _buildDeleteButton(),
+                ],
+              ),
+              if (widget.guide.sourceUrl != null &&
+                  widget.guide.sourceUrl!.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _visitOriginalGuide,
+                    icon: Icon(Icons.open_in_browser, color: toolbarTextColour),
+                    label: Text(
+                      'Visit Original Guide',
+                      style: TextStyle(color: toolbarTextColour),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: toolbarTextColour.withValues(alpha: 0.5),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -563,19 +618,20 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildFontSizeControls() {
-    final toolbarTextColour = _preferences.invertedColours
-        ? Colors.white
-        : Colors.black;
+    final toolbarTextColour =
+        _preferences.invertedColours ? Colors.white : Colors.black;
 
     return Row(
       children: [
         IconButton(
-          onPressed: _preferences.canDecreaseFontSize ? _decreaseFontSize : null,
+          onPressed:
+              _preferences.canDecreaseFontSize ? _decreaseFontSize : null,
           icon: Icon(
             Icons.text_decrease,
-            color: _preferences.canDecreaseFontSize
-                ? toolbarTextColour
-                : toolbarTextColour.withValues(alpha: 0.3),
+            color:
+                _preferences.canDecreaseFontSize
+                    ? toolbarTextColour
+                    : toolbarTextColour.withValues(alpha: 0.3),
           ),
         ),
         Text(
@@ -587,12 +643,14 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
           ),
         ),
         IconButton(
-          onPressed: _preferences.canIncreaseFontSize ? _increaseFontSize : null,
+          onPressed:
+              _preferences.canIncreaseFontSize ? _increaseFontSize : null,
           icon: Icon(
             Icons.text_increase,
-            color: _preferences.canIncreaseFontSize
-                ? toolbarTextColour
-                : toolbarTextColour.withValues(alpha: 0.3),
+            color:
+                _preferences.canIncreaseFontSize
+                    ? toolbarTextColour
+                    : toolbarTextColour.withValues(alpha: 0.3),
           ),
         ),
       ],
@@ -600,9 +658,8 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildColourToggle() {
-    final toolbarTextColour = _preferences.invertedColours
-        ? Colors.white
-        : Colors.black;
+    final toolbarTextColour =
+        _preferences.invertedColours ? Colors.white : Colors.black;
 
     return IconButton(
       onPressed: _toggleColours,
@@ -617,10 +674,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   Widget _buildDeleteButton() {
     return IconButton(
       onPressed: _showDeleteConfirmation,
-      icon: Icon(
-        Icons.delete_outline,
-        color: Colors.red,
-      ),
+      icon: Icon(Icons.delete_outline, color: Colors.red),
       tooltip: 'Delete guide',
     );
   }
@@ -636,4 +690,149 @@ class _ContentItem {
     required this.blockIndex,
     required this.isHeader,
   });
+}
+
+class _GuideSourceBrowserScreen extends StatefulWidget {
+  final String url;
+
+  const _GuideSourceBrowserScreen({required this.url});
+
+  @override
+  State<_GuideSourceBrowserScreen> createState() =>
+      _GuideSourceBrowserScreenState();
+}
+
+class _GuideSourceBrowserScreenState extends State<_GuideSourceBrowserScreen> {
+  late final WebViewController _controller;
+  bool _canGoBack = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initWebView();
+  }
+
+  void _initWebView() {
+    _controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: (_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              },
+              onPageFinished: (_) async {
+                final canGoBack = await _controller.canGoBack();
+                setState(() {
+                  _isLoading = false;
+                  _canGoBack = canGoBack;
+                });
+              },
+            ),
+          )
+          ..loadRequest(Uri.parse(widget.url));
+  }
+
+  Future<void> _handleBack() async {
+    if (await _controller.canGoBack()) {
+      await _controller.goBack();
+    }
+  }
+
+  void _handleClose() {
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [_buildToolbar(), Expanded(child: _buildWebView())],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildToolbar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildBackButton(),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Original Guide',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          _buildCloseButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackButton() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _canGoBack ? _handleBack : null,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Icon(
+            Icons.arrow_back,
+            color: _canGoBack ? Colors.black87 : Colors.black26,
+            size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCloseButton() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _handleClose,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: const Icon(Icons.close, color: Colors.black87, size: 24),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebView() {
+    return Stack(
+      children: [
+        WebViewWidget(controller: _controller),
+        if (_isLoading)
+          Center(
+            child: CircularProgressIndicator(color: AppColors.primaryPurple),
+          ),
+      ],
+    );
+  }
 }

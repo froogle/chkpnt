@@ -681,6 +681,31 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _sourceUrlMeta = const VerificationMeta(
+    'sourceUrl',
+  );
+  @override
+  late final GeneratedColumn<String> sourceUrl = GeneratedColumn<String>(
+    'source_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _hasSeenAttributionMeta =
+      const VerificationMeta('hasSeenAttribution');
+  @override
+  late final GeneratedColumn<bool> hasSeenAttribution = GeneratedColumn<bool>(
+    'has_seen_attribution',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_seen_attribution" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -691,6 +716,8 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
     createdAt,
     lastReadSection,
     lastReadBlock,
+    sourceUrl,
+    hasSeenAttribution,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -767,6 +794,21 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
         ),
       );
     }
+    if (data.containsKey('source_url')) {
+      context.handle(
+        _sourceUrlMeta,
+        sourceUrl.isAcceptableOrUnknown(data['source_url']!, _sourceUrlMeta),
+      );
+    }
+    if (data.containsKey('has_seen_attribution')) {
+      context.handle(
+        _hasSeenAttributionMeta,
+        hasSeenAttribution.isAcceptableOrUnknown(
+          data['has_seen_attribution']!,
+          _hasSeenAttributionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -816,6 +858,15 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
             DriftSqlType.int,
             data['${effectivePrefix}last_read_block'],
           )!,
+      sourceUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_url'],
+      ),
+      hasSeenAttribution:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}has_seen_attribution'],
+          )!,
     );
   }
 
@@ -834,6 +885,8 @@ class Guide extends DataClass implements Insertable<Guide> {
   final DateTime createdAt;
   final int lastReadSection;
   final int lastReadBlock;
+  final String? sourceUrl;
+  final bool hasSeenAttribution;
   const Guide({
     required this.id,
     required this.gameId,
@@ -843,6 +896,8 @@ class Guide extends DataClass implements Insertable<Guide> {
     required this.createdAt,
     required this.lastReadSection,
     required this.lastReadBlock,
+    this.sourceUrl,
+    required this.hasSeenAttribution,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -855,6 +910,10 @@ class Guide extends DataClass implements Insertable<Guide> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['last_read_section'] = Variable<int>(lastReadSection);
     map['last_read_block'] = Variable<int>(lastReadBlock);
+    if (!nullToAbsent || sourceUrl != null) {
+      map['source_url'] = Variable<String>(sourceUrl);
+    }
+    map['has_seen_attribution'] = Variable<bool>(hasSeenAttribution);
     return map;
   }
 
@@ -868,6 +927,11 @@ class Guide extends DataClass implements Insertable<Guide> {
       createdAt: Value(createdAt),
       lastReadSection: Value(lastReadSection),
       lastReadBlock: Value(lastReadBlock),
+      sourceUrl:
+          sourceUrl == null && nullToAbsent
+              ? const Value.absent()
+              : Value(sourceUrl),
+      hasSeenAttribution: Value(hasSeenAttribution),
     );
   }
 
@@ -885,6 +949,8 @@ class Guide extends DataClass implements Insertable<Guide> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       lastReadSection: serializer.fromJson<int>(json['lastReadSection']),
       lastReadBlock: serializer.fromJson<int>(json['lastReadBlock']),
+      sourceUrl: serializer.fromJson<String?>(json['sourceUrl']),
+      hasSeenAttribution: serializer.fromJson<bool>(json['hasSeenAttribution']),
     );
   }
   @override
@@ -899,6 +965,8 @@ class Guide extends DataClass implements Insertable<Guide> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'lastReadSection': serializer.toJson<int>(lastReadSection),
       'lastReadBlock': serializer.toJson<int>(lastReadBlock),
+      'sourceUrl': serializer.toJson<String?>(sourceUrl),
+      'hasSeenAttribution': serializer.toJson<bool>(hasSeenAttribution),
     };
   }
 
@@ -911,6 +979,8 @@ class Guide extends DataClass implements Insertable<Guide> {
     DateTime? createdAt,
     int? lastReadSection,
     int? lastReadBlock,
+    Value<String?> sourceUrl = const Value.absent(),
+    bool? hasSeenAttribution,
   }) => Guide(
     id: id ?? this.id,
     gameId: gameId ?? this.gameId,
@@ -920,6 +990,8 @@ class Guide extends DataClass implements Insertable<Guide> {
     createdAt: createdAt ?? this.createdAt,
     lastReadSection: lastReadSection ?? this.lastReadSection,
     lastReadBlock: lastReadBlock ?? this.lastReadBlock,
+    sourceUrl: sourceUrl.present ? sourceUrl.value : this.sourceUrl,
+    hasSeenAttribution: hasSeenAttribution ?? this.hasSeenAttribution,
   );
   Guide copyWithCompanion(GuidesCompanion data) {
     return Guide(
@@ -937,6 +1009,11 @@ class Guide extends DataClass implements Insertable<Guide> {
           data.lastReadBlock.present
               ? data.lastReadBlock.value
               : this.lastReadBlock,
+      sourceUrl: data.sourceUrl.present ? data.sourceUrl.value : this.sourceUrl,
+      hasSeenAttribution:
+          data.hasSeenAttribution.present
+              ? data.hasSeenAttribution.value
+              : this.hasSeenAttribution,
     );
   }
 
@@ -950,7 +1027,9 @@ class Guide extends DataClass implements Insertable<Guide> {
           ..write('fileName: $fileName, ')
           ..write('createdAt: $createdAt, ')
           ..write('lastReadSection: $lastReadSection, ')
-          ..write('lastReadBlock: $lastReadBlock')
+          ..write('lastReadBlock: $lastReadBlock, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('hasSeenAttribution: $hasSeenAttribution')
           ..write(')'))
         .toString();
   }
@@ -965,6 +1044,8 @@ class Guide extends DataClass implements Insertable<Guide> {
     createdAt,
     lastReadSection,
     lastReadBlock,
+    sourceUrl,
+    hasSeenAttribution,
   );
   @override
   bool operator ==(Object other) =>
@@ -977,7 +1058,9 @@ class Guide extends DataClass implements Insertable<Guide> {
           other.fileName == this.fileName &&
           other.createdAt == this.createdAt &&
           other.lastReadSection == this.lastReadSection &&
-          other.lastReadBlock == this.lastReadBlock);
+          other.lastReadBlock == this.lastReadBlock &&
+          other.sourceUrl == this.sourceUrl &&
+          other.hasSeenAttribution == this.hasSeenAttribution);
 }
 
 class GuidesCompanion extends UpdateCompanion<Guide> {
@@ -989,6 +1072,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
   final Value<DateTime> createdAt;
   final Value<int> lastReadSection;
   final Value<int> lastReadBlock;
+  final Value<String?> sourceUrl;
+  final Value<bool> hasSeenAttribution;
   final Value<int> rowid;
   const GuidesCompanion({
     this.id = const Value.absent(),
@@ -999,6 +1084,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     this.createdAt = const Value.absent(),
     this.lastReadSection = const Value.absent(),
     this.lastReadBlock = const Value.absent(),
+    this.sourceUrl = const Value.absent(),
+    this.hasSeenAttribution = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GuidesCompanion.insert({
@@ -1010,6 +1097,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     required DateTime createdAt,
     this.lastReadSection = const Value.absent(),
     this.lastReadBlock = const Value.absent(),
+    this.sourceUrl = const Value.absent(),
+    this.hasSeenAttribution = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        gameId = Value(gameId),
@@ -1026,6 +1115,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     Expression<DateTime>? createdAt,
     Expression<int>? lastReadSection,
     Expression<int>? lastReadBlock,
+    Expression<String>? sourceUrl,
+    Expression<bool>? hasSeenAttribution,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1037,6 +1128,9 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
       if (createdAt != null) 'created_at': createdAt,
       if (lastReadSection != null) 'last_read_section': lastReadSection,
       if (lastReadBlock != null) 'last_read_block': lastReadBlock,
+      if (sourceUrl != null) 'source_url': sourceUrl,
+      if (hasSeenAttribution != null)
+        'has_seen_attribution': hasSeenAttribution,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1050,6 +1144,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     Value<DateTime>? createdAt,
     Value<int>? lastReadSection,
     Value<int>? lastReadBlock,
+    Value<String?>? sourceUrl,
+    Value<bool>? hasSeenAttribution,
     Value<int>? rowid,
   }) {
     return GuidesCompanion(
@@ -1061,6 +1157,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
       createdAt: createdAt ?? this.createdAt,
       lastReadSection: lastReadSection ?? this.lastReadSection,
       lastReadBlock: lastReadBlock ?? this.lastReadBlock,
+      sourceUrl: sourceUrl ?? this.sourceUrl,
+      hasSeenAttribution: hasSeenAttribution ?? this.hasSeenAttribution,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1092,6 +1190,12 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     if (lastReadBlock.present) {
       map['last_read_block'] = Variable<int>(lastReadBlock.value);
     }
+    if (sourceUrl.present) {
+      map['source_url'] = Variable<String>(sourceUrl.value);
+    }
+    if (hasSeenAttribution.present) {
+      map['has_seen_attribution'] = Variable<bool>(hasSeenAttribution.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1109,6 +1213,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
           ..write('createdAt: $createdAt, ')
           ..write('lastReadSection: $lastReadSection, ')
           ..write('lastReadBlock: $lastReadBlock, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('hasSeenAttribution: $hasSeenAttribution, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1519,6 +1625,8 @@ typedef $$GuidesTableCreateCompanionBuilder =
       required DateTime createdAt,
       Value<int> lastReadSection,
       Value<int> lastReadBlock,
+      Value<String?> sourceUrl,
+      Value<bool> hasSeenAttribution,
       Value<int> rowid,
     });
 typedef $$GuidesTableUpdateCompanionBuilder =
@@ -1531,6 +1639,8 @@ typedef $$GuidesTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<int> lastReadSection,
       Value<int> lastReadBlock,
+      Value<String?> sourceUrl,
+      Value<bool> hasSeenAttribution,
       Value<int> rowid,
     });
 
@@ -1597,6 +1707,16 @@ class $$GuidesTableFilterComposer
 
   ColumnFilters<int> get lastReadBlock => $composableBuilder(
     column: $table.lastReadBlock,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasSeenAttribution => $composableBuilder(
+    column: $table.hasSeenAttribution,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1668,6 +1788,16 @@ class $$GuidesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasSeenAttribution => $composableBuilder(
+    column: $table.hasSeenAttribution,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GamesTableOrderingComposer get gameId {
     final $$GamesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -1723,6 +1853,14 @@ class $$GuidesTableAnnotationComposer
 
   GeneratedColumn<int> get lastReadBlock => $composableBuilder(
     column: $table.lastReadBlock,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceUrl =>
+      $composableBuilder(column: $table.sourceUrl, builder: (column) => column);
+
+  GeneratedColumn<bool> get hasSeenAttribution => $composableBuilder(
+    column: $table.hasSeenAttribution,
     builder: (column) => column,
   );
 
@@ -1786,6 +1924,8 @@ class $$GuidesTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> lastReadSection = const Value.absent(),
                 Value<int> lastReadBlock = const Value.absent(),
+                Value<String?> sourceUrl = const Value.absent(),
+                Value<bool> hasSeenAttribution = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GuidesCompanion(
                 id: id,
@@ -1796,6 +1936,8 @@ class $$GuidesTableTableManager
                 createdAt: createdAt,
                 lastReadSection: lastReadSection,
                 lastReadBlock: lastReadBlock,
+                sourceUrl: sourceUrl,
+                hasSeenAttribution: hasSeenAttribution,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1808,6 +1950,8 @@ class $$GuidesTableTableManager
                 required DateTime createdAt,
                 Value<int> lastReadSection = const Value.absent(),
                 Value<int> lastReadBlock = const Value.absent(),
+                Value<String?> sourceUrl = const Value.absent(),
+                Value<bool> hasSeenAttribution = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GuidesCompanion.insert(
                 id: id,
@@ -1818,6 +1962,8 @@ class $$GuidesTableTableManager
                 createdAt: createdAt,
                 lastReadSection: lastReadSection,
                 lastReadBlock: lastReadBlock,
+                sourceUrl: sourceUrl,
+                hasSeenAttribution: hasSeenAttribution,
                 rowid: rowid,
               ),
           withReferenceMapper:
