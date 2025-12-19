@@ -432,13 +432,11 @@ class GuideContentFetcher {
     List<ContentBlock> currentBlocks = [];
     final paragraphBuffer = StringBuffer();
     bool lastWasPreformatted = false;
-    bool lastLineWasIndented = false;
 
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i];
       final trimmedLine = line.trimRight();
       final strippedLine = trimmedLine.trim();
-      final currentLineIsIndented = line.startsWith(' ') || line.startsWith('\t');
 
       // Check if this is a section header (long divider lines followed by centered text)
       // Pattern: -------Title------- or ====Title==== style headers
@@ -465,18 +463,13 @@ class GuideContentFetcher {
       // Detect preformatted content
       // Note: Simple decorative dividers (~~~~, ----) are NOT preformatted
       // Only tables and complex ASCII art need preformatted=true
-      // Also: consecutive indented lines form a structured block (like TOC)
-      // An indented line following another indented line is part of a block
-      // An indented line following a non-indented line STARTS a new block (also preformatted)
-      final isConsecutiveIndentedBlock = currentLineIsIndented && lastLineWasIndented;
-      final isStartingIndentedBlock = currentLineIsIndented && !lastLineWasIndented && strippedLine.isNotEmpty;
+      // Note: We do NOT treat simple indented lines as preformatted - many old
+      // GameFAQs guides use consistent indentation for all prose content
       final isPreformatted =
           _isTableLine(trimmedLine) ||
           _isComplexAsciiArt(trimmedLine) ||
           _isCenteredText(trimmedLine) ||
-          (_isPreformattedLine(trimmedLine) && !_isSimpleDivider(trimmedLine.trim())) ||
-          isConsecutiveIndentedBlock ||
-          isStartingIndentedBlock;
+          (_isPreformattedLine(trimmedLine) && !_isSimpleDivider(trimmedLine.trim()));
 
       if (isPreformatted) {
         _flushParagraphToBlocks(paragraphBuffer, currentBlocks, false);
@@ -491,11 +484,9 @@ class GuideContentFetcher {
           currentBlocks.add(ContentBlock(content: trimmedLine, preformatted: true));
         }
         lastWasPreformatted = true;
-        lastLineWasIndented = currentLineIsIndented;
       } else if (strippedLine.isEmpty) {
         _flushParagraphToBlocks(paragraphBuffer, currentBlocks, lastWasPreformatted);
         lastWasPreformatted = false;
-        lastLineWasIndented = false;  // Empty line breaks indented blocks
       } else {
         // Normal text - accumulate for paragraph
         if (paragraphBuffer.isNotEmpty) {
@@ -511,7 +502,6 @@ class GuideContentFetcher {
         }
         paragraphBuffer.write(strippedLine);
         lastWasPreformatted = false;
-        lastLineWasIndented = currentLineIsIndented;
       }
     }
 

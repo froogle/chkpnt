@@ -29,9 +29,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
   final ScrollController _scrollController = ScrollController();
   Timer? _scrollDebounceTimer;
-  int _currentSectionIndex = 0;
-  int _currentBlockIndex = 0;
-  List<_ContentItem> _flattenedContent = [];
+  double _scrollPercentage = 0.0;
   bool _hasRestoredPosition = false;
 
   @override
@@ -45,6 +43,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   @override
   void dispose() {
     _scrollDebounceTimer?.cancel();
+    _updateScrollPercentage();
     _saveReadPosition();
     _scrollController.dispose();
     super.dispose();
@@ -53,38 +52,33 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   void _onScroll() {
     _scrollDebounceTimer?.cancel();
     _scrollDebounceTimer = Timer(const Duration(milliseconds: 500), () {
-      _updateCurrentPosition();
+      _updateScrollPercentage();
+      _saveReadPosition();
     });
   }
 
-  void _updateCurrentPosition() {
-    if (_flattenedContent.isEmpty) return;
+  void _updateScrollPercentage() {
+    if (!_scrollController.hasClients) return;
 
-    final scrollOffset = _scrollController.offset;
     final maxScroll = _scrollController.position.maxScrollExtent;
-
     if (maxScroll <= 0) return;
 
-    final scrollPercentage = scrollOffset / maxScroll;
-    final estimatedIndex =
-        (scrollPercentage * (_flattenedContent.length - 1)).round();
-    final clampedIndex = estimatedIndex.clamp(0, _flattenedContent.length - 1);
-
-    final item = _flattenedContent[clampedIndex];
-    _currentSectionIndex = item.sectionIndex;
-    _currentBlockIndex = item.blockIndex;
+    final offset = _scrollController.offset;
+    _scrollPercentage = (offset / maxScroll).clamp(0.0, 1.0);
   }
 
   Future<void> _saveReadPosition() async {
     if (_guideContent == null) return;
+
+    final percentageAsInt = (_scrollPercentage * 10000).round();
 
     try {
       await ref
           .read(guidesForGameProvider(widget.guide.gameId).notifier)
           .updateReadPosition(
             widget.guide.id,
-            _currentSectionIndex,
-            _currentBlockIndex,
+            percentageAsInt,
+            0,
           );
     } catch (e) {
       // Silently fail - position saving is not critical
@@ -93,39 +87,39 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
   void _restoreReadPosition() {
     if (_hasRestoredPosition) return;
-    if (_flattenedContent.isEmpty) return;
-    if (_scrollController.positions.isEmpty) return;
+    if (!_scrollController.hasClients) return;
 
-    _hasRestoredPosition = true;
-
-    final targetSection = widget.guide.lastReadSection;
-    final targetBlock = widget.guide.lastReadBlock;
-
-    if (targetSection == 0 && targetBlock == 0) return;
-
-    int targetIndex = 0;
-    for (int i = 0; i < _flattenedContent.length; i++) {
-      final item = _flattenedContent[i];
-      if (item.sectionIndex == targetSection &&
-          item.blockIndex >= targetBlock) {
-        targetIndex = i;
-        break;
-      }
-      if (item.sectionIndex > targetSection) {
-        targetIndex = i > 0 ? i - 1 : 0;
-        break;
-      }
+    final savedPercentageInt = widget.guide.lastReadSection;
+    if (savedPercentageInt == 0) {
+      _hasRestoredPosition = true;
+      return;
     }
 
     final maxScroll = _scrollController.position.maxScrollExtent;
-    if (maxScroll <= 0) return;
+    if (maxScroll <= 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _restoreReadPosition();
+      });
+      return;
+    }
 
-    final scrollPercentage = targetIndex / (_flattenedContent.length - 1);
-    final targetOffset = scrollPercentage * maxScroll;
+    _hasRestoredPosition = true;
+
+    final percentage = (savedPercentageInt / 10000.0).clamp(0.0, 1.0);
+    final targetOffset = percentage * maxScroll;
 
     _scrollController.jumpTo(targetOffset.clamp(0.0, maxScroll));
-    _currentSectionIndex = targetSection;
-    _currentBlockIndex = targetBlock;
+    _scrollPercentage = percentage;
+
+    // Refine position after layout stabilizes
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted || !_scrollController.hasClients) return;
+      final refinedMaxScroll = _scrollController.position.maxScrollExtent;
+      if (refinedMaxScroll > 0 && refinedMaxScroll != maxScroll) {
+        final refinedOffset = percentage * refinedMaxScroll;
+        _scrollController.jumpTo(refinedOffset.clamp(0.0, refinedMaxScroll));
+      }
+    });
   }
 
   Future<void> _loadGuideContent() async {
@@ -135,8 +129,6 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         widget.guide.fileName,
       );
       final content = GuideContentSerialization.fromJsonString(jsonContent);
-
-      _flattenedContent = _flattenContent(content);
 
       if (mounted) {
         setState(() {
@@ -156,33 +148,6 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         });
       }
     }
-  }
-
-  List<_ContentItem> _flattenContent(GuideContent content) {
-    final items = <_ContentItem>[];
-
-    for (
-      int sectionIdx = 0;
-      sectionIdx < content.sections.length;
-      sectionIdx++
-    ) {
-      final section = content.sections[sectionIdx];
-      items.add(
-        _ContentItem(sectionIndex: sectionIdx, blockIndex: -1, isHeader: true),
-      );
-
-      for (int blockIdx = 0; blockIdx < section.blocks.length; blockIdx++) {
-        items.add(
-          _ContentItem(
-            sectionIndex: sectionIdx,
-            blockIndex: blockIdx,
-            isHeader: false,
-          ),
-        );
-      }
-    }
-
-    return items;
   }
 
   Future<void> _loadPreferences() async {
@@ -217,6 +182,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   void _handleClose() {
+    _updateScrollPercentage();
     _saveReadPosition();
     Navigator.of(context).pop();
   }
@@ -341,17 +307,35 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _backgroundColor,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [_buildHeader(), Expanded(child: _buildContent())],
-            ),
-            if (_showToolbar) _buildToolbarOverlay(),
-          ],
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          _updateScrollPercentage();
+          _saveReadPosition();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: _backgroundColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              _buildAnimatedToolbar(),
+              Expanded(child: _buildContent()),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedToolbar() {
+    return ClipRect(
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        child: _showToolbar ? _buildToolbar() : const SizedBox.shrink(),
       ),
     );
   }
@@ -373,7 +357,22 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
           _buildCloseButton(),
           const SizedBox(width: 12),
           Expanded(child: _buildTitleSection()),
+          _buildMenuButton(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMenuButton() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _toggleToolbar,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Icon(Icons.menu, color: _textColour, size: 24),
+        ),
       ),
     );
   }
@@ -432,7 +431,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       return _buildErrorState();
     }
 
-    return GestureDetector(onTap: _toggleToolbar, child: _buildGuideContent());
+    return _buildGuideContent();
   }
 
   Widget _buildErrorState() {
@@ -481,7 +480,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
   Widget _buildSection(ContentSection section) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildSectionHeader(section.title),
         ...section.blocks.map((block) => _buildBlock(block)),
@@ -529,7 +528,6 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
-        width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: _preformattedBackgroundColour,
@@ -551,75 +549,63 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     );
   }
 
-  Widget _buildToolbarOverlay() {
-    final toolbarTextColour =
+  Widget _buildToolbar() {
+    final toolbarBackgroundColour =
         _preferences.invertedColours ? Colors.white : Colors.black;
+    final toolbarTextColour =
+        _preferences.invertedColours ? Colors.black : Colors.white;
 
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: GestureDetector(
-        onTap: () {},
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color:
-                _preferences.invertedColours
-                    ? Colors.black.withValues(alpha: 0.9)
-                    : Colors.white.withValues(alpha: 0.9),
-            border: Border(
-              top: BorderSide(
-                color:
-                    _preferences.invertedColours
-                        ? Colors.white.withValues(alpha: 0.2)
-                        : Colors.black.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildFontSizeControls(),
-                  _buildColourToggle(),
-                  _buildDeleteButton(),
-                ],
-              ),
-              if (widget.guide.sourceUrl != null &&
-                  widget.guide.sourceUrl!.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: _visitOriginalGuide,
-                    icon: Icon(Icons.open_in_browser, color: toolbarTextColour),
-                    label: Text(
-                      'Visit Original Guide',
-                      style: TextStyle(color: toolbarTextColour),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: toolbarTextColour.withValues(alpha: 0.5),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ],
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: toolbarBackgroundColour,
+        border: Border(
+          bottom: BorderSide(
+            color: toolbarTextColour.withValues(alpha: 0.2),
+            width: 1,
           ),
         ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildFontSizeControls(),
+              _buildColourToggle(),
+              _buildDeleteButton(),
+            ],
+          ),
+          if (widget.guide.sourceUrl != null &&
+              widget.guide.sourceUrl!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _visitOriginalGuide,
+                icon: Icon(Icons.open_in_browser, color: toolbarTextColour),
+                label: Text(
+                  'Visit Original Guide',
+                  style: TextStyle(color: toolbarTextColour),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: toolbarTextColour.withValues(alpha: 0.5),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
 
   Widget _buildFontSizeControls() {
     final toolbarTextColour =
-        _preferences.invertedColours ? Colors.white : Colors.black;
+        _preferences.invertedColours ? Colors.black : Colors.white;
 
     return Row(
       children: [
@@ -659,7 +645,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
   Widget _buildColourToggle() {
     final toolbarTextColour =
-        _preferences.invertedColours ? Colors.white : Colors.black;
+        _preferences.invertedColours ? Colors.black : Colors.white;
 
     return IconButton(
       onPressed: _toggleColours,
@@ -678,18 +664,6 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       tooltip: 'Delete guide',
     );
   }
-}
-
-class _ContentItem {
-  final int sectionIndex;
-  final int blockIndex;
-  final bool isHeader;
-
-  _ContentItem({
-    required this.sectionIndex,
-    required this.blockIndex,
-    required this.isHeader,
-  });
 }
 
 class _GuideSourceBrowserScreen extends StatefulWidget {
