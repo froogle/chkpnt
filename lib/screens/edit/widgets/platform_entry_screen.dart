@@ -11,17 +11,12 @@ class PlatformEntryScreen extends StatefulWidget {
 }
 
 class _PlatformEntryScreenState extends State<PlatformEntryScreen> {
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeControllers();
-  }
+  late final TextEditingController _controller =
+      TextEditingController(text: widget.initialPlatform);
 
   @override
   void dispose() {
-    _disposeControllers();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -32,14 +27,6 @@ class _PlatformEntryScreenState extends State<PlatformEntryScreen> {
       appBar: _buildAppBar(),
       body: _buildBody(),
     );
-  }
-
-  void _initializeControllers() {
-    _controller = TextEditingController(text: widget.initialPlatform);
-  }
-
-  void _disposeControllers() {
-    _controller.dispose();
   }
 
   PreferredSizeWidget _buildAppBar() {

@@ -46,6 +46,7 @@ class PlatformEntryStyles {
   static const TextStyle textInputStyle = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w500,
+    color: Colors.black87,
   );
 
   static const String inputHintText = 'e.g., Nintendo Switch, PS5, PC';
