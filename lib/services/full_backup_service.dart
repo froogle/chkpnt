@@ -66,8 +66,6 @@ class BackupProgressResult {
 
 /// Service for managing complete database and image backups/restores
 class FullBackupService {
-  static const String _currentBackupVersion = '1.2.0';
-
   final GameRepository _repository;
   final StorageService _storageService;
   final GuideStorageService _guideStorageService;
@@ -152,7 +150,7 @@ class FullBackupService {
           .toList();
 
       return BackupMetadata(
-        version: _currentBackupVersion,
+        version: BackupValidationService.currentBackupVersion,
         createdAt: DateTime.now(),
         gameCount: games.length,
         imageCount: imageFiles.length,
