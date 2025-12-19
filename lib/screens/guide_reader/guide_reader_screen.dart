@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:chkpnt/models/guide_models.dart';
 import 'package:chkpnt/styles/global_styles.dart';
@@ -10,6 +11,20 @@ import 'package:chkpnt/services/guide_storage_service.dart';
 import 'package:chkpnt/services/guide_reader_preferences_service.dart';
 import 'package:chkpnt/providers/guide_provider.dart';
 import 'package:chkpnt/screens/guide_reader/widgets/attribution_modal.dart';
+
+sealed class GuideListItem {}
+
+class SectionHeaderItem extends GuideListItem {
+  final String title;
+  SectionHeaderItem(this.title);
+}
+
+class ContentBlockItem extends GuideListItem {
+  final ContentBlock block;
+  ContentBlockItem(this.block);
+}
+
+class SectionSpacerItem extends GuideListItem {}
 
 class GuideReaderScreen extends ConsumerStatefulWidget {
   final GuideItem guide;
@@ -22,20 +37,22 @@ class GuideReaderScreen extends ConsumerStatefulWidget {
 
 class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   GuideContent? _guideContent;
+  List<GuideListItem> _flattenedItems = [];
   bool _isLoading = true;
   String? _errorMessage;
   bool _showToolbar = false;
   GuideReaderPreferences _preferences = const GuideReaderPreferences();
 
-  final ScrollController _scrollController = ScrollController();
+  final ItemScrollController _itemScrollController = ItemScrollController();
+  final ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   Timer? _scrollDebounceTimer;
-  double _scrollPercentage = 0.0;
+  int _currentItemIndex = 0;
   bool _hasRestoredPosition = false;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    _itemPositionsListener.itemPositions.addListener(_onPositionsChanged);
     _loadGuideContent();
     _loadPreferences();
   }
@@ -43,41 +60,43 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   @override
   void dispose() {
     _scrollDebounceTimer?.cancel();
-    _updateScrollPercentage();
+    _updateCurrentItemIndex();
     _saveReadPosition();
-    _scrollController.dispose();
+    _itemPositionsListener.itemPositions.removeListener(_onPositionsChanged);
     super.dispose();
   }
 
-  void _onScroll() {
+  void _onPositionsChanged() {
     _scrollDebounceTimer?.cancel();
     _scrollDebounceTimer = Timer(const Duration(milliseconds: 500), () {
-      _updateScrollPercentage();
+      _updateCurrentItemIndex();
       _saveReadPosition();
     });
   }
 
-  void _updateScrollPercentage() {
-    if (!_scrollController.hasClients) return;
+  void _updateCurrentItemIndex() {
+    final positions = _itemPositionsListener.itemPositions.value;
+    if (positions.isEmpty) return;
 
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    if (maxScroll <= 0) return;
+    final visibleItems = positions
+        .where((position) => position.itemLeadingEdge < 1 && position.itemTrailingEdge > 0)
+        .toList();
 
-    final offset = _scrollController.offset;
-    _scrollPercentage = (offset / maxScroll).clamp(0.0, 1.0);
+    if (visibleItems.isEmpty) return;
+
+    visibleItems.sort((a, b) => a.itemLeadingEdge.compareTo(b.itemLeadingEdge));
+    _currentItemIndex = visibleItems.first.index;
   }
 
   Future<void> _saveReadPosition() async {
     if (_guideContent == null) return;
-
-    final percentageAsInt = (_scrollPercentage * 10000).round();
 
     try {
       await ref
           .read(guidesForGameProvider(widget.guide.gameId).notifier)
           .updateReadPosition(
             widget.guide.id,
-            percentageAsInt,
+            _currentItemIndex,
             0,
           );
     } catch (e) {
@@ -87,38 +106,16 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
   void _restoreReadPosition() {
     if (_hasRestoredPosition) return;
-    if (!_scrollController.hasClients) return;
-
-    final savedPercentageInt = widget.guide.lastReadSection;
-    if (savedPercentageInt == 0) {
-      _hasRestoredPosition = true;
-      return;
-    }
-
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    if (maxScroll <= 0) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _restoreReadPosition();
-      });
-      return;
-    }
-
     _hasRestoredPosition = true;
 
-    final percentage = (savedPercentageInt / 10000.0).clamp(0.0, 1.0);
-    final targetOffset = percentage * maxScroll;
+    final savedIndex = widget.guide.lastReadSection;
+    if (savedIndex <= 0) return;
+    if (savedIndex >= _flattenedItems.length) return;
 
-    _scrollController.jumpTo(targetOffset.clamp(0.0, maxScroll));
-    _scrollPercentage = percentage;
-
-    // Refine position after layout stabilizes
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (!mounted || !_scrollController.hasClients) return;
-      final refinedMaxScroll = _scrollController.position.maxScrollExtent;
-      if (refinedMaxScroll > 0 && refinedMaxScroll != maxScroll) {
-        final refinedOffset = percentage * refinedMaxScroll;
-        _scrollController.jumpTo(refinedOffset.clamp(0.0, refinedMaxScroll));
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_itemScrollController.isAttached) return;
+      _itemScrollController.jumpTo(index: savedIndex);
+      _currentItemIndex = savedIndex;
     });
   }
 
@@ -129,16 +126,16 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         widget.guide.fileName,
       );
       final content = GuideContentSerialization.fromJsonString(jsonContent);
+      final flattenedItems = _buildFlattenedItems(content);
 
       if (mounted) {
         setState(() {
           _guideContent = content;
+          _flattenedItems = flattenedItems;
           _isLoading = false;
         });
 
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _restoreReadPosition();
-        });
+        _restoreReadPosition();
       }
     } catch (e) {
       if (mounted) {
@@ -148,6 +145,18 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         });
       }
     }
+  }
+
+  List<GuideListItem> _buildFlattenedItems(GuideContent content) {
+    final items = <GuideListItem>[];
+    for (final section in content.sections) {
+      items.add(SectionHeaderItem(section.title));
+      for (final block in section.blocks) {
+        items.add(ContentBlockItem(block));
+      }
+      items.add(SectionSpacerItem());
+    }
+    return items;
   }
 
   Future<void> _loadPreferences() async {
@@ -182,7 +191,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   void _handleClose() {
-    _updateScrollPercentage();
+    _updateCurrentItemIndex();
     _saveReadPosition();
     Navigator.of(context).pop();
   }
@@ -311,7 +320,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          _updateScrollPercentage();
+          _updateCurrentItemIndex();
           _saveReadPosition();
         }
       },
@@ -468,25 +477,21 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildGuideContent() {
-    final content = _guideContent!;
-
-    return ListView.builder(
-      controller: _scrollController,
+    return ScrollablePositionedList.builder(
+      itemScrollController: _itemScrollController,
+      itemPositionsListener: _itemPositionsListener,
       padding: const EdgeInsets.all(16),
-      itemCount: content.sections.length,
-      itemBuilder: (context, index) => _buildSection(content.sections[index]),
+      itemCount: _flattenedItems.length,
+      itemBuilder: (context, index) => _buildListItem(_flattenedItems[index]),
     );
   }
 
-  Widget _buildSection(ContentSection section) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildSectionHeader(section.title),
-        ...section.blocks.map((block) => _buildBlock(block)),
-        const SizedBox(height: 24),
-      ],
-    );
+  Widget _buildListItem(GuideListItem item) {
+    return switch (item) {
+      SectionHeaderItem(:final title) => _buildSectionHeader(title),
+      ContentBlockItem(:final block) => _buildBlock(block),
+      SectionSpacerItem() => const SizedBox(height: 24),
+    };
   }
 
   Widget _buildSectionHeader(String title) {
