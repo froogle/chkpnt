@@ -166,8 +166,7 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
 
   Widget _buildToolbar() {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -179,110 +178,79 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
         ],
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         children: [
-          _buildBackButton(),
-          const SizedBox(width: 8),
-          _buildTitleSection(),
+          IconButton(
+            onPressed: _canGoBack ? _handleBack : null,
+            icon: Icon(
+              Icons.arrow_back,
+              color: _canGoBack ? AppColors.primaryText : AppColors.expandIcon,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Find Guide',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryText,
+                ),
+              ),
+              Text(
+                widget.gameTitle,
+                style: TextStyle(fontSize: 12, color: AppColors.expandIcon),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
           const Spacer(),
-          if (_isOnGuidePage) ...[_buildSaveButton(), const SizedBox(width: 8)],
-          const Spacer(),
-          _buildCloseButton(),
+          if (_isOnGuidePage) _buildSaveButton(),
+          IconButton(
+            onPressed: _handleClose,
+            icon: Icon(Icons.cancel, color: AppColors.expandIcon, size: 32),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildBackButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _canGoBack ? _handleBack : null,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Icon(
-            Icons.arrow_back,
-            color: _canGoBack ? AppColors.primaryText : AppColors.expandIcon,
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCloseButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _handleClose,
-        borderRadius: BorderRadius.circular(16),
-        child: Icon(Icons.cancel, color: AppColors.expandIcon, size: 32),
-      ),
-    );
-  }
-
-  Widget _buildTitleSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Find Guide',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.primaryText,
-          ),
-        ),
-        Text(
-          widget.gameTitle,
-          style: TextStyle(fontSize: 12, color: AppColors.expandIcon),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-  }
-
   Widget _buildSaveButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _isSaving ? null : _handleSaveGuide,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            gradient: _isSaving ? null : AppGradients.buttonGradient,
-            color: _isSaving ? AppColors.expandIcon : null,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_isSaving)
-                SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              else
-                Icon(Icons.save_alt, color: Colors.white, size: 18),
-              const SizedBox(width: 6),
-              Text(
-                _isSaving ? 'Saving...' : 'Save Guide',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: _isSaving ? null : _handleSaveGuide,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: _isSaving ? null : AppGradients.buttonGradient,
+          color: _isSaving ? AppColors.expandIcon : null,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isSaving)
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
                   color: Colors.white,
                 ),
+              )
+            else
+              Icon(Icons.save_alt, color: Colors.white, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              _isSaving ? 'Saving...' : 'Save Guide',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
