@@ -5,7 +5,8 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/models/guide_models.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/services/guide_parser/guide_content.dart';
-import 'package:chkpnt/services/guide_storage_service.dart' show guideStorageServiceProvider;
+import 'package:chkpnt/services/guide_storage_service.dart'
+    show guideStorageServiceProvider;
 import 'package:chkpnt/providers/guide_provider.dart';
 
 class GuideBrowserScreen extends ConsumerStatefulWidget {
@@ -41,16 +42,17 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
   }
 
   void _initWebView() {
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: _onPageStarted,
-          onPageFinished: _onPageFinished,
-          onNavigationRequest: _onNavigationRequest,
-        ),
-      )
-      ..loadRequest(Uri.parse(_gameFaqsHomeUrl));
+    _controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: _onPageStarted,
+              onPageFinished: _onPageFinished,
+              onNavigationRequest: _onNavigationRequest,
+            ),
+          )
+          ..loadRequest(Uri.parse(_gameFaqsHomeUrl));
   }
 
   void _onPageStarted(String url) {
@@ -118,7 +120,9 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
         sourceUrl: guideContent.url,
       );
 
-      await ref.read(guidesForGameProvider(widget.gameId).notifier).addGuide(guideItem);
+      await ref
+          .read(guidesForGameProvider(widget.gameId).notifier)
+          .addGuide(guideItem);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -137,7 +141,9 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Unable to save this guide. Try finding another.'),
+            content: const Text(
+              'Unable to save this guide. Try finding another.',
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -152,10 +158,7 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
-          children: [
-            _buildToolbar(),
-            Expanded(child: _buildWebView()),
-          ],
+          children: [_buildToolbar(), Expanded(child: _buildWebView())],
         ),
       ),
     );
@@ -163,7 +166,8 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
 
   Widget _buildToolbar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -175,16 +179,14 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
         ],
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.max,
         children: [
           _buildBackButton(),
-          const SizedBox(width: 12),
-          Flexible(child: _buildTitleSection()),
-          if (_isOnGuidePage) ...[
-            const SizedBox(width: 12),
-            _buildSaveButton(),
-            const SizedBox(width: 12),
-          ] else
-            const Spacer(),
+          const SizedBox(width: 8),
+          _buildTitleSection(),
+          const Spacer(),
+          if (_isOnGuidePage) ...[_buildSaveButton(), const SizedBox(width: 8)],
+          const Spacer(),
           _buildCloseButton(),
         ],
       ),
@@ -214,15 +216,8 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
       color: Colors.transparent,
       child: InkWell(
         onTap: _handleClose,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Icon(
-            Icons.close,
-            color: AppColors.primaryText,
-            size: 24,
-          ),
-        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Icon(Icons.cancel, color: AppColors.expandIcon, size: 32),
       ),
     );
   }
@@ -242,10 +237,7 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
         ),
         Text(
           widget.gameTitle,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.expandIcon,
-          ),
+          style: TextStyle(fontSize: 12, color: AppColors.expandIcon),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -279,11 +271,7 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
                   ),
                 )
               else
-                Icon(
-                  Icons.save_alt,
-                  color: Colors.white,
-                  size: 18,
-                ),
+                Icon(Icons.save_alt, color: Colors.white, size: 18),
               const SizedBox(width: 6),
               Text(
                 _isSaving ? 'Saving...' : 'Save Guide',
@@ -306,9 +294,7 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
         WebViewWidget(controller: _controller),
         if (_isLoading)
           Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primaryPurple,
-            ),
+            child: CircularProgressIndicator(color: AppColors.primaryPurple),
           ),
       ],
     );
