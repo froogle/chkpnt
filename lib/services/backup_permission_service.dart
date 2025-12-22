@@ -132,7 +132,7 @@ class BackupPermissionService {
         allowedExtensions: ['zip'],
         lockParentWindow: true,
       );
-      
+
       return result?.files.single.path;
     } catch (e) {
       debugPrint('Error selecting backup file: $e');

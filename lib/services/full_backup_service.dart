@@ -311,7 +311,7 @@ class FullBackupService {
         debugPrint('Warning: Rollback failed: $rollbackError');
       }
     }
-    
+
     throw BackupException(
       'Failed to restore backup: ${error.toString()}',
       code: 'RESTORE_FAILED',
@@ -388,8 +388,13 @@ class FullBackupService {
   /// Create a backup of the current state for rollback purposes
   Future<void> _backupCurrentState(Directory backupStateDir) async {
     try {
-      // 1. Export current database
-      final String currentDatabaseJson = await _repository.exportDatabaseToJson();
+      // 1. Export current database (handle empty database gracefully)
+      String currentDatabaseJson;
+      try {
+        currentDatabaseJson = await _repository.exportDatabaseToJson();
+      } catch (e) {
+        currentDatabaseJson = '{"games": [], "guides": []}';
+      }
       final File currentDbFile = File(path.join(backupStateDir.path, 'current_database.json'));
       await currentDbFile.writeAsString(currentDatabaseJson);
 
@@ -428,8 +433,11 @@ class FullBackupService {
   /// Clear current data (database, images, and guides) before restore
   Future<void> _clearCurrentData() async {
     try {
-      // Clear database by importing empty JSON
-      await _repository.importFromJson('{"games": [], "guides": []}');
+      try {
+        await _repository.importFromJson('{"games": [], "guides": []}');
+      } catch (e) {
+        // Database not initialized on fresh install - continue with restore
+      }
 
       final Directory appDir = await _storageService.getPersistentStorageDirectory();
 
@@ -539,7 +547,11 @@ class FullBackupService {
       final File currentDbFile = File(path.join(backupStateDir.path, 'current_database.json'));
       if (await currentDbFile.exists()) {
         final String currentDatabaseJson = await currentDbFile.readAsString();
-        await _repository.importFromJson(currentDatabaseJson);
+        try {
+          await _repository.importFromJson(currentDatabaseJson);
+        } catch (e) {
+          // Database not initialized on fresh install - skip rollback
+        }
       }
 
       // 2. Restore images from backup

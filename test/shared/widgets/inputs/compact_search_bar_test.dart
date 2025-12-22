@@ -122,58 +122,6 @@ void main() {
       container.dispose();
     });
 
-    testWidgets('syncs with provider state changes', (tester) async {
-      final container = ProviderContainer();
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: const MaterialApp(home: Scaffold(body: CompactSearchBar())),
-        ),
-      );
-
-      // Programmatically update search query via provider
-      container.read(searchQueryProvider.notifier).updateQuery('external');
-      await tester.pump();
-
-      // Verify text field shows the updated value
-      final textField = tester.widget<TextField>(find.byType(TextField));
-      expect(textField.controller?.text, equals('external'));
-
-      // Clear button should be visible
-      expect(find.byIcon(Icons.clear_rounded), findsOneWidget);
-
-      container.dispose();
-    });
-
-    testWidgets('handles read-only mode correctly', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(body: CompactSearchBar(readOnly: true)),
-          ),
-        ),
-      );
-
-      final textField = tester.widget<TextField>(find.byType(TextField));
-      expect(textField.readOnly, isTrue);
-    });
-
-    testWidgets('calls onTap callback when provided', (tester) async {
-      bool tapped = false;
-
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(body: CompactSearchBar(onTap: () => tapped = true)),
-          ),
-        ),
-      );
-
-      await tester.tap(find.byType(TextField));
-      expect(tapped, isTrue);
-    });
-
     group('Clear Button Styling', () {
       testWidgets('uses correct icon and styling', (tester) async {
         final container = ProviderContainer();

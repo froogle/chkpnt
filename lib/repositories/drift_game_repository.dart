@@ -57,6 +57,25 @@ class GameDatabase extends _$GameDatabase {
   @override
   int get schemaVersion => 5;
 
+  Future<void> ensureInitialized() async {
+    await customSelect('SELECT 1').get();
+  }
+
+  Future<bool> _columnExists(String tableName, String columnName) async {
+    final result = await customSelect(
+      "PRAGMA table_info($tableName)",
+    ).get();
+    return result.any((row) => row.data['name'] == columnName);
+  }
+
+  Future<bool> _tableExists(String tableName) async {
+    final result = await customSelect(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+      variables: [Variable.withString(tableName)],
+    ).get();
+    return result.isNotEmpty;
+  }
+
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
@@ -64,16 +83,24 @@ class GameDatabase extends _$GameDatabase {
     },
     onUpgrade: (Migrator m, int from, int to) async {
       if (from < 2) {
-        await m.addColumn(games, games.isPhysical);
+        if (!await _columnExists('games', 'is_physical')) {
+          await m.addColumn(games, games.isPhysical);
+        }
       }
       if (from < 3) {
-        await m.createTable(guides);
+        if (!await _tableExists('guides')) {
+          await m.createTable(guides);
+        }
       }
       if (from < 4) {
-        await m.addColumn(guides, guides.sourceUrl);
+        if (!await _columnExists('guides', 'source_url')) {
+          await m.addColumn(guides, guides.sourceUrl);
+        }
       }
       if (from < 5) {
-        await m.addColumn(guides, guides.hasSeenAttribution);
+        if (!await _columnExists('guides', 'has_seen_attribution')) {
+          await m.addColumn(guides, guides.hasSeenAttribution);
+        }
       }
     },
     beforeOpen: (details) async {
@@ -392,6 +419,7 @@ class DriftGameRepository implements GameRepository {
   @override
   Future<void> importFromJson(String jsonString) async {
     try {
+      await _database.ensureInitialized();
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
 
       final games = (data['games'] as List).map((gameData) {
