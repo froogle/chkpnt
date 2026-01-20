@@ -42,6 +42,30 @@ class GameList extends _$GameList {
   Future<void> addGame(GameItem game) async {
     final repository = ref.read(gameRepositoryProvider);
     await repository.createGame(game);
+    await _waitForGameInStream(repository, game.id);
+  }
+
+  Future<void> _waitForGameInStream(GameRepository repository, GameId gameId) async {
+    final completer = Completer<void>();
+    StreamSubscription<List<GameItem>>? subscription;
+
+    subscription = repository.watchGames().listen((games) {
+      if (games.any((g) => g.id == gameId)) {
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
+        subscription?.cancel();
+      }
+    });
+
+    final timeout = Future.delayed(const Duration(milliseconds: 500), () {
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+      subscription?.cancel();
+    });
+
+    await Future.any([completer.future, timeout]);
   }
 
   Future<void> updateGame(GameItem updatedGame) async {
