@@ -287,7 +287,12 @@ List<String> backlogPlatforms(Ref ref) {
 @riverpod
 List<GameItem> physicalGames(Ref ref) {
   final games = ref.watch(gameListProvider);
-  return games.where((game) => game.isPhysical).toList();
+  return games
+      .where((game) =>
+          game.isPhysical &&
+          game.status != GameStatus.wishlist &&
+          game.status != GameStatus.ordered)
+      .toList();
 }
 
 @riverpod

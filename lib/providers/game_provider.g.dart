@@ -536,7 +536,7 @@ final backlogPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef BacklogPlatformsRef = AutoDisposeProviderRef<List<String>>;
-String _$physicalGamesHash() => r'e06e5308b78b7f8fd39c0731b8e4caea926e4159';
+String _$physicalGamesHash() => r'a53cf6ba86176e06be130d3db3e2fc09251da4c9';
 
 /// See also [physicalGames].
 @ProviderFor(physicalGames)
@@ -593,7 +593,7 @@ final physicalPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PhysicalPlatformsRef = AutoDisposeProviderRef<List<String>>;
-String _$gameListHash() => r'6968151e9680eba4bf49558207dcfac29d8d5550';
+String _$gameListHash() => r'cfd7a059515931479f934b0db4591c063c117e1e';
 
 /// See also [GameList].
 @ProviderFor(GameList)
