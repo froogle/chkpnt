@@ -188,6 +188,19 @@ class SectionExpansion extends _$SectionExpansion {
     }
   }
 
+  void resetToDefaults() {
+    _manuallyControlledSections.clear();
+    state = {
+      'Playing': true,
+      'Ongoing/Frequently Played': false,
+      'Backlog': false,
+      'Completed': false,
+      'Abandoned': false,
+      'Ordered': true,
+      'Wish List': false,
+    };
+  }
+
   // Method to reset manual control (useful for testing or app reset)
   void resetManualControl() {
     _manuallyControlledSections.clear();

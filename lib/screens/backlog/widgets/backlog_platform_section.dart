@@ -32,7 +32,13 @@ class BacklogPlatformSection extends ConsumerWidget {
     }
 
     final sectionExpansion = ref.watch(sectionExpansionProvider);
-    final isExpanded = sectionExpansion[platform] ?? true;
+    final selectedPlatform = ref.watch(selectedPlatformProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+
+    final filtersActive = selectedPlatform != 'All' || searchQuery.isNotEmpty;
+    final isExpanded = filtersActive
+        ? games.isNotEmpty
+        : (sectionExpansion[platform] ?? true);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

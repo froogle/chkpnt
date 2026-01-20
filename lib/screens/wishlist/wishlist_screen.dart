@@ -9,7 +9,6 @@ import 'package:chkpnt/screens/main/widgets/animations/game_detail_sheet_animati
 import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
@@ -28,23 +27,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   @override
   void initState() {
     super.initState();
-    _setupProviderListeners();
-    // Update section expansion based on content when screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateWishlistSectionExpansion();
-    });
-  }
-
-  void _setupProviderListeners() {
-    // Listen for platform filter changes and update section expansion
-    ref.listenManual(selectedPlatformProvider, (previous, current) {
-      _updateWishlistSectionExpansion();
-    });
-
-    // Listen for search query changes and update section expansion
-    ref.listenManual(searchQueryProvider, (previous, current) {
-      _updateWishlistSectionExpansion();
-    });
   }
 
   @override
@@ -120,38 +102,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       game: _animatingGame!,
       onComplete: _handleAnimationComplete,
     );
-  }
-
-  // Business logic methods
-
-  void _updateWishlistSectionExpansion() {
-    final selectedPlatform = ref.read(selectedPlatformProvider);
-    final searchQuery = ref.read(searchQueryProvider);
-
-    // Get filtered games for wishlist sections
-    final orderedGames = ref.read(
-      fullyFilteredGamesProvider(
-        GameStatus.ordered,
-        selectedPlatform,
-        searchQuery,
-      ),
-    );
-    final wishlistGames = ref.read(
-      fullyFilteredGamesProvider(
-        GameStatus.wishlist,
-        selectedPlatform,
-        searchQuery,
-      ),
-    );
-
-    // Update section expansion based on content
-    // Only update wishlist sections - don't pass main screen sections to avoid overriding them
-    ref
-        .read(sectionExpansionProvider.notifier)
-        .updateExpansionBasedOnResults(
-          orderedGames: orderedGames,
-          wishlistGames: wishlistGames,
-        );
   }
 
   Future<void> _handleStartPlaying(GameItem game) async {

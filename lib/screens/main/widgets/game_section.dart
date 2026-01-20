@@ -34,7 +34,11 @@ class GameSection extends ConsumerWidget {
     final games = ref.watch(
       fullyFilteredGamesProvider(status, selectedPlatform, searchQuery),
     );
-    final isExpanded = sectionExpansion[title] ?? false;
+
+    final filtersActive = selectedPlatform != 'All' || searchQuery.isNotEmpty;
+    final isExpanded = filtersActive
+        ? games.isNotEmpty
+        : (sectionExpansion[title] ?? false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
