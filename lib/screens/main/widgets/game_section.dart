@@ -15,6 +15,7 @@ class GameSection extends ConsumerWidget {
   final bool isAnimating;
   final Function(GameItem) onGameTap;
   final Function(GameItem)? onPlayPressed;
+  final bool forceExpanded;
 
   const GameSection({
     super.key,
@@ -24,6 +25,7 @@ class GameSection extends ConsumerWidget {
     this.animatingGame,
     this.isAnimating = false,
     this.onPlayPressed,
+    this.forceExpanded = false,
   });
 
   @override
@@ -36,9 +38,8 @@ class GameSection extends ConsumerWidget {
     );
 
     final filtersActive = selectedPlatform != 'All' || searchQuery.isNotEmpty;
-    final isExpanded = filtersActive
-        ? games.isNotEmpty
-        : (sectionExpansion[title] ?? false);
+    final isExpanded = forceExpanded ||
+        (filtersActive ? games.isNotEmpty : (sectionExpansion[title] ?? false));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

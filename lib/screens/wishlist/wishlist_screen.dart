@@ -90,6 +90,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       isAnimating: _isAnimating,
       onGameTap: _handleGameTap,
       onPlayPressed: _handleStartPlaying,
+      forceExpanded: true,
     );
   }
 
