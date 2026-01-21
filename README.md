@@ -204,6 +204,41 @@ flutter test test/screens/          # UI components
 flutter test test/services/         # Business logic
 ```
 
+## 🚧 Feature Flags
+
+Feature flags are located in `lib/config/feature_flags.dart`:
+
+### `kPaywallEnabled` (default: `true`)
+
+Controls whether the paywall/subscription system is active:
+
+- **`true`** (default): Paywall is enabled. Users can add up to 10 games for free. Adding game #11 or beyond requires a subscription.
+- **`false`**: Paywall is disabled. All features are unlocked with no game limits. Useful for development and testing.
+
+```dart
+// lib/config/feature_flags.dart
+const bool kPaywallEnabled = true;  // Set to false to disable paywall
+const int kMaxFreeGames = 10;       // Number of free games before paywall
+```
+
+### How the Paywall Works
+
+1. **App Start**: If `kPaywallEnabled` is true, the app checks subscription status and caches the result
+2. **Adding Games**: Users can add up to `kMaxFreeGames` (10) games without a subscription
+3. **Paywall Trigger**: When trying to add game #11+, if no active subscription exists, the paywall modal appears
+4. **Expired Subscriptions**: Users with expired subscriptions retain access to existing games but cannot add more beyond the free limit
+5. **Fallback**: If subscription check fails (e.g., network error), the last cached status is used
+
+### For Testers
+
+To test without the paywall, change the flag in `lib/config/feature_flags.dart`:
+
+```dart
+const bool kPaywallEnabled = false;
+```
+
+Then rebuild the app. The Profile screen will show "Premium (Dev Mode)" to indicate the paywall is disabled.
+
 ## 🚀 Getting Started
 
 ### Prerequisites

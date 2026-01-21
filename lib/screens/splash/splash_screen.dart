@@ -1,32 +1,42 @@
 import 'package:flutter/material.dart';
-import '../onboarding/onboarding_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/config/feature_flags.dart';
+import 'package:chkpnt/services/subscription_service.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _startSplashTimer();
-  }
-
-  void _startSplashTimer() {
-    Future.delayed(SplashScreenStyles.splashDuration, () {
-      if (!mounted) return;
-      _navigateToOnboarding();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initialiseApp();
     });
   }
 
-  void _navigateToOnboarding() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-    );
+  Future<void> _initialiseApp() async {
+    final futures = <Future>[];
+
+    if (kPaywallEnabled) {
+      futures.add(ref.read(subscriptionStateProvider.notifier).initialise());
+    }
+
+    futures.add(Future.delayed(SplashScreenStyles.splashDuration));
+
+    await Future.wait(futures);
+
+    if (!mounted) return;
+    _navigateToMain();
+  }
+
+  void _navigateToMain() {
+    Navigator.of(context).pushReplacementNamed('/main');
   }
 
   @override

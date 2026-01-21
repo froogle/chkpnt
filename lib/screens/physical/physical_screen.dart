@@ -10,6 +10,7 @@ import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/navigation_service.dart';
+import 'package:chkpnt/services/paywall_service.dart';
 
 class PhysicalScreen extends ConsumerStatefulWidget {
   const PhysicalScreen({super.key});
@@ -128,7 +129,11 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
     NavigationService.handleNavigation(context, index);
   }
 
-  void _handleAddGame() {
+  Future<void> _handleAddGame() async {
+    final paywallService = ref.read(paywallServiceProvider);
+    final canProceed = await paywallService.checkAndShowPaywall(context);
+    if (!canProceed || !mounted) return;
+
     Navigator.of(context).push(
       EditScreenPageRoute(
         child: GameEditScreen.add(defaultIsPhysical: true),

@@ -12,6 +12,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
+import 'package:chkpnt/services/paywall_service.dart';
 
 class WishlistScreen extends ConsumerStatefulWidget {
   const WishlistScreen({super.key});
@@ -139,7 +140,11 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     ).push(EditScreenPageRoute(child: GameEditScreen.edit(game: game)));
   }
 
-  void _handleAddGame() {
+  Future<void> _handleAddGame() async {
+    final paywallService = ref.read(paywallServiceProvider);
+    final canProceed = await paywallService.checkAndShowPaywall(context);
+    if (!canProceed || !mounted) return;
+
     Navigator.of(context).push(
       EditScreenPageRoute(
         child: GameEditScreen.add(

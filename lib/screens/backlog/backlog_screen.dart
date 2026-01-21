@@ -13,6 +13,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
+import 'package:chkpnt/services/paywall_service.dart';
 
 class BacklogScreen extends ConsumerStatefulWidget {
   const BacklogScreen({super.key});
@@ -195,7 +196,11 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
     ).push(EditScreenPageRoute(child: GameEditScreen.edit(game: game)));
   }
 
-  void _handleAddGame() async {
+  Future<void> _handleAddGame() async {
+    final paywallService = ref.read(paywallServiceProvider);
+    final canProceed = await paywallService.checkAndShowPaywall(context);
+    if (!canProceed || !mounted) return;
+
     final result = await Navigator.of(context).push<GameItem?>(
       EditScreenPageRoute(
         child: GameEditScreen.add(

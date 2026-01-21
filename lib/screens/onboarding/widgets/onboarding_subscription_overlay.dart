@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/services/subscription_service.dart';
 
-class OnboardingSubscriptionOverlay extends StatefulWidget {
+class OnboardingSubscriptionOverlay extends ConsumerStatefulWidget {
   const OnboardingSubscriptionOverlay({super.key});
 
   @override
-  State<OnboardingSubscriptionOverlay> createState() =>
+  ConsumerState<OnboardingSubscriptionOverlay> createState() =>
       _OnboardingSubscriptionOverlayState();
 }
 
 class _OnboardingSubscriptionOverlayState
-    extends State<OnboardingSubscriptionOverlay> {
+    extends ConsumerState<OnboardingSubscriptionOverlay> {
   int? _selectedOption;
   bool _isVisible = false;
 
@@ -183,8 +185,17 @@ class _OnboardingSubscriptionOverlayState
     });
   }
 
-  void _handleSubscribe() {
-    Navigator.of(context).pushReplacementNamed('/main');
+  Future<void> _handleSubscribe() async {
+    await ref.read(subscriptionStateProvider.notifier).purchaseSubscription();
+
+    if (!mounted) return;
+
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop(true);
+    } else {
+      navigator.pushReplacementNamed('/main');
+    }
   }
 }
 
