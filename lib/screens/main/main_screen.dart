@@ -4,11 +4,13 @@ import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_header.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
 import 'package:chkpnt/screens/main/widgets/game_section.dart';
+import 'package:chkpnt/screens/main/widgets/welcome_empty_state.dart';
 import 'package:chkpnt/screens/main/widgets/animations/game_transition_animation.dart';
 import 'package:chkpnt/screens/main/widgets/animations/game_detail_sheet_animation.dart';
 import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/services/paywall_service.dart';
@@ -67,6 +69,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   Widget _buildContent() {
+    final games = ref.watch(gameListProvider);
+
+    if (games.isEmpty) {
+      return WelcomeEmptyState(onAddGamePressed: _handleAddGame);
+    }
+
     return SingleChildScrollView(
       padding: MainScreenStyles.contentPadding,
       child: Column(
