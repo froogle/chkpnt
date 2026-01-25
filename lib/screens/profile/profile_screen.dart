@@ -5,7 +5,6 @@ import 'package:chkpnt/styles/profile_styles.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
 import 'package:chkpnt/services/navigation_service.dart';
-import 'package:chkpnt/screens/profile/widgets/profile_subscription_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_visualisation_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_incoming_games_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_backup_section.dart';
@@ -60,8 +59,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       children: [
         const ProfileHeader(),
         const SizedBox(height: 24),
-        const ProfileSubscriptionSection(),
-        SizedBox(height: ProfileStyles.getSectionSpacing(false)),
         const ProfileVisualisationSection(),
         SizedBox(height: ProfileStyles.getSectionSpacing(false)),
         const ProfileIncomingGamesSection(),
@@ -78,8 +75,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       children: [
         const ProfileHeader(),
         const SizedBox(height: 12),
-        const ProfileSubscriptionSection(),
-        SizedBox(height: ProfileStyles.getSectionSpacing(true)),
         // In landscape, show visualisation and incoming games side by side
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
