@@ -8,7 +8,7 @@
 PRODUCT_NAME = chkpnt
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.chkpnt
+PRODUCT_BUNDLE_IDENTIFIER = com.frooglesim.chkpnt
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = (c) 2025,2026 Peter Wright

@@ -1,4 +1,4 @@
-package com.example.chkpnt
+package com.frooglesim.chkpnt
 
 import android.content.Context
 import android.os.Bundle

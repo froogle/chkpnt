@@ -47,7 +47,7 @@ class PlatformUtils {
   static Future<bool> isAndroid14OrHigher() async {
     if (!kIsWeb && Platform.isAndroid) {
       try {
-        const platform = MethodChannel('com.example.chkpnt/platform');
+        const platform = MethodChannel('com.frooglesim.chkpnt/platform');
         final apiLevel = await platform.invokeMethod<int>('getApiLevel');
 
         // Android 14 is API level 34+
