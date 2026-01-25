@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/profile/profile_screen.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_header.dart';
-import 'package:chkpnt/screens/profile/widgets/profile_subscription_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_visualisation_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_incoming_games_section.dart';
+import 'package:chkpnt/screens/profile/widgets/profile_backup_section.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
 
 void main() {
@@ -20,9 +20,9 @@ void main() {
 
       // Check that all main sections are rendered
       expect(find.byType(ProfileHeader), findsOneWidget);
-      expect(find.byType(ProfileSubscriptionSection), findsOneWidget);
       expect(find.byType(ProfileVisualisationSection), findsOneWidget);
       expect(find.byType(ProfileIncomingGamesSection), findsOneWidget);
+      expect(find.byType(ProfileBackupSection), findsOneWidget);
     });
 
     testWidgets('displays proper app bar background gradient', (

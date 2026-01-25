@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/main/main_screen.dart';
+import 'package:chkpnt/screens/main/widgets/welcome_empty_state.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import '../../test_helpers.dart';
 
 void main() {
   group('MainScreen', () {
     late ProviderContainer container;
 
-    setUp(() {
-      container = ProviderContainer();
-    });
-
     tearDown(() {
       container.dispose();
     });
 
-    testWidgets('renders correctly with scroll functionality', (tester) async {
+    testWidgets('renders correctly with scroll functionality when games exist', (tester) async {
+      container = TestHelpers.createTestContainer();
+
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -27,9 +28,15 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
 
-    testWidgets('renders with scroll view when content is present', (
+    testWidgets('renders welcome empty state when no games exist', (
       tester,
     ) async {
+      container = ProviderContainer(
+        overrides: [
+          gameListProvider.overrideWith(() => EmptyGameListNotifier()),
+        ],
+      );
+
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -37,12 +44,14 @@ void main() {
         ),
       );
 
-      // Verify the main screen renders with scroll functionality
       expect(find.byType(MainScreen), findsOneWidget);
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      expect(find.byType(WelcomeEmptyState), findsOneWidget);
+      expect(find.byType(SingleChildScrollView), findsNothing);
     });
 
     testWidgets('disposes scroll controller properly', (tester) async {
+      container = TestHelpers.createTestContainer();
+
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -64,6 +73,8 @@ void main() {
     });
 
     testWidgets('displays game sections for all statuses', (tester) async {
+      container = TestHelpers.createTestContainer();
+
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
