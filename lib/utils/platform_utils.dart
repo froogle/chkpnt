@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
 /// Utility class for platform-specific detection and behaviour
 class PlatformUtils {
@@ -41,22 +40,6 @@ class PlatformUtils {
   /// Returns true if the platform is Android (any version)
   static bool isAndroid() {
     return !kIsWeb && Platform.isAndroid;
-  }
-
-  /// Returns true if the platform is Android 14 or higher
-  static Future<bool> isAndroid14OrHigher() async {
-    if (!kIsWeb && Platform.isAndroid) {
-      try {
-        const platform = MethodChannel('com.frooglesim.chkpnt/platform');
-        final apiLevel = await platform.invokeMethod<int>('getApiLevel');
-
-        // Android 14 is API level 34+
-        return apiLevel != null && apiLevel >= 34;
-      } catch (e) {
-        return false;
-      }
-    }
-    return false;
   }
 
   /// Platform name abbreviation mapping

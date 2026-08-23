@@ -249,6 +249,10 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     final shouldOpenSettings = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: AppDialogStyles.backgroundColor,
+        surfaceTintColor: AppDialogStyles.surfaceTintColor,
+        elevation: AppDialogStyles.elevation,
+        shape: AppDialogStyles.shape,
         title: const Text(
           'Camera Permission Required',
           style: TextStyle(
@@ -265,11 +269,24 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            style: AppDialogStyles.buttonStyle(
+              AppDialogStyles.cancelButtonColor,
+            ),
+            child: const Text(
+              'Cancel',
+              style: AppDialogStyles.buttonTextStyle,
+            ),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Open Settings'),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppDialogStyles.confirmButtonColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              'Open Settings',
+              style: AppDialogStyles.buttonTextStyle,
+            ),
           ),
         ],
       ),

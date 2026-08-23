@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/styles/global_styles.dart';
+import 'package:chkpnt/styles/dialog_styles.dart';
 
 class AttributionModal extends StatelessWidget {
   final VoidCallback onDismiss;
@@ -17,7 +18,10 @@ class AttributionModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: AppDialogStyles.backgroundColor,
+      surfaceTintColor: AppDialogStyles.surfaceTintColor,
+      elevation: AppDialogStyles.elevation,
+      shape: AppDialogStyles.shape,
       title: Row(
         children: [
           Container(
@@ -39,6 +43,7 @@ class AttributionModal extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: AppColors.primaryText,
               ),
             ),
           ),
@@ -48,6 +53,7 @@ class AttributionModal extends StatelessWidget {
         'Guides are written by dedicated volunteers who spend countless hours helping fellow gamers.\n\n'
         'If you find a guide helpful, please consider visiting the original page and supporting the author with a donation.\n\n'
         'You can visit any guide\'s original page from the reader toolbar.',
+        style: AppDialogStyles.contentTextStyle,
       ),
       actions: [
         FilledButton(

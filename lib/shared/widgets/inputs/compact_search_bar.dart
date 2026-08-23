@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
@@ -17,8 +16,6 @@ class _CompactSearchBarState extends ConsumerState<CompactSearchBar> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _hasText = false;
-
-  static const _keyboardChannel = MethodChannel('com.chkpnt/keyboard');
 
   @override
   void initState() {
@@ -45,8 +42,6 @@ class _CompactSearchBarState extends ConsumerState<CompactSearchBar> {
 
   void _dismissKeyboard() {
     _focusNode.unfocus();
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
-    _keyboardChannel.invokeMethod('hideKeyboard');
   }
 
   @override

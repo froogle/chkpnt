@@ -5,6 +5,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:chkpnt/models/guide_models.dart';
 import 'package:chkpnt/styles/global_styles.dart';
+import 'package:chkpnt/styles/dialog_styles.dart';
 import 'package:chkpnt/services/guide_parser/guide_content.dart';
 import 'package:chkpnt/services/guide_parser/guide_serialization.dart';
 import 'package:chkpnt/services/guide_storage_service.dart';
@@ -243,19 +244,38 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Delete Guide'),
+            backgroundColor: AppDialogStyles.backgroundColor,
+            surfaceTintColor: AppDialogStyles.surfaceTintColor,
+            elevation: AppDialogStyles.elevation,
+            shape: AppDialogStyles.shape,
+            title: const Text(
+              'Delete Guide',
+              style: AppDialogStyles.titleTextStyle,
+            ),
             content: Text(
               'Are you sure you want to delete "${widget.guide.title}"?\n\nThis action cannot be undone.',
+              style: AppDialogStyles.contentTextStyle,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                style: AppDialogStyles.buttonStyle(
+                  AppDialogStyles.cancelButtonColor,
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: AppDialogStyles.buttonTextStyle,
+                ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Delete'),
+                style: AppDialogStyles.buttonStyle(
+                  AppDialogStyles.destructiveButtonColor,
+                ),
+                child: const Text(
+                  'Delete',
+                  style: AppDialogStyles.buttonTextStyle,
+                ),
               ),
             ],
           ),

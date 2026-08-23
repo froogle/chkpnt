@@ -13,6 +13,7 @@ import 'package:chkpnt/screens/guide_browser/widgets/guide_browser_page_route.da
 import 'package:chkpnt/screens/guide_reader/guide_reader_screen.dart';
 import 'package:chkpnt/screens/guide_reader/widgets/guide_reader_page_route.dart';
 import 'package:chkpnt/styles/global_styles.dart';
+import 'package:chkpnt/styles/dialog_styles.dart';
 
 class GameDetailSheet extends ConsumerStatefulWidget {
   final GameItem game;
@@ -277,19 +278,38 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Delete Game'),
+            backgroundColor: AppDialogStyles.backgroundColor,
+            surfaceTintColor: AppDialogStyles.surfaceTintColor,
+            elevation: AppDialogStyles.elevation,
+            shape: AppDialogStyles.shape,
+            title: const Text(
+              'Delete Game',
+              style: AppDialogStyles.titleTextStyle,
+            ),
             content: Text(
               'Are you sure you want to delete "${widget.game.title}"?\n\nThis action cannot be undone.',
+              style: AppDialogStyles.contentTextStyle,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                style: AppDialogStyles.buttonStyle(
+                  AppDialogStyles.cancelButtonColor,
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: AppDialogStyles.buttonTextStyle,
+                ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Delete'),
+                style: AppDialogStyles.buttonStyle(
+                  AppDialogStyles.destructiveButtonColor,
+                ),
+                child: const Text(
+                  'Delete',
+                  style: AppDialogStyles.buttonTextStyle,
+                ),
               ),
             ],
           ),
