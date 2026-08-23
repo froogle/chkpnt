@@ -264,6 +264,31 @@ testWidgets('GameCard displays correctly', (tester) async {
 - **Comprehensive error handling** with user-friendly messages
 - **NO COMMENTS IN CODE** - All code must be self-explanatory; if you feel the need to write a comment, simplify the code instead
 
+### Avoiding Over-Engineering
+
+This codebase has a history of custom machinery that fights normal Android and
+Flutter behaviour instead of using it. Before adding any workaround, confirm the
+framework does not already solve the problem.
+
+- **Prefer stock Flutter behaviour.** Reach for a platform channel, native code
+  or manual state tracking only after the built-in approach has been shown to
+  fail. `keyboardDismissBehavior` replacing a hand-rolled keyboard hack is the
+  reference example.
+- **One mechanism per job.** Layering several fallbacks for the same effect
+  hides which one actually works and lets them fight each other.
+- **Never bypass framework state.** Driving the platform directly - for example
+  hiding the keyboard through `InputMethodManager` - leaves Flutter's own focus
+  state untouched, so the framework can simply undo the change. This class of
+  workaround tends to cause the bug it was meant to fix.
+- **Treat existing workarounds as suspects.** When fixing a bug near one, first
+  check whether the workaround is the cause, and remove it if the framework now
+  handles the case.
+- **When a fix grows, stop and reconsider.** A bug fix that needs new
+  abstractions is usually solving the wrong problem.
+
+The explicit-colour rules above are a deliberate exception: they address a real
+Android 13 rendering issue, not imagined complexity.
+
 ### Forbidden Patterns
 - `Theme.of(context)` usage for colours or text styles
 - Runtime provider initialization in widget lifecycle
