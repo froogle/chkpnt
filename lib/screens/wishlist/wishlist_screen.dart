@@ -70,6 +70,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
 
   Widget _buildContent() {
     return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

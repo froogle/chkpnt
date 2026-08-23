@@ -87,6 +87,7 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
     }
 
     return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

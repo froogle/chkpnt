@@ -51,6 +51,7 @@ class _PhysicalScreenState extends ConsumerState<PhysicalScreen> {
     }
 
     return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

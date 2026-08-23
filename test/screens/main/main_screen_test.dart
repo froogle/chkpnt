@@ -91,5 +91,64 @@ void main() {
       // We expect multiple containers in the widget tree (sections, styling, etc.)
       expect(containers.evaluate().length, greaterThanOrEqualTo(4));
     });
+
+    group('search focus dismissal', () {
+      testWidgets('content list dismisses the keyboard on drag', (
+        tester,
+      ) async {
+        container = TestHelpers.createTestContainer();
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: MainScreen()),
+          ),
+        );
+
+        final scrollView = tester.widget<SingleChildScrollView>(
+          find.byType(SingleChildScrollView),
+        );
+        expect(
+          scrollView.keyboardDismissBehavior,
+          equals(ScrollViewKeyboardDismissBehavior.onDrag),
+        );
+      });
+
+      testWidgets('dragging the games list unfocuses the search field', (
+        tester,
+      ) async {
+        container = TestHelpers.createTestContainer();
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: MainScreen()),
+          ),
+        );
+
+        await tester.tap(find.byType(TextField).first);
+        await tester.pumpAndSettle();
+
+        final field = tester.widget<TextField>(find.byType(TextField).first);
+        expect(
+          field.focusNode?.hasFocus,
+          isTrue,
+          reason: 'search field should hold focus after being tapped',
+        );
+
+        await tester.drag(
+          find.byType(SingleChildScrollView),
+          const Offset(0, -200),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          field.focusNode?.hasFocus,
+          isFalse,
+          reason: 'scrolling the list should release search focus',
+        );
+      });
+    });
+
   });
 }

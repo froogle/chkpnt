@@ -76,6 +76,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     }
 
     return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: MainScreenStyles.contentPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
