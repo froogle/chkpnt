@@ -13,7 +13,7 @@ import 'package:chkpnt/screens/guide_browser/widgets/guide_browser_page_route.da
 import 'package:chkpnt/screens/guide_reader/guide_reader_screen.dart';
 import 'package:chkpnt/screens/guide_reader/widgets/guide_reader_page_route.dart';
 import 'package:chkpnt/styles/global_styles.dart';
-import 'package:chkpnt/styles/dialog_styles.dart';
+import 'package:chkpnt/shared/widgets/dialogs/confirm_delete_dialog.dart';
 
 class GameDetailSheet extends ConsumerStatefulWidget {
   final GameItem game;
@@ -274,48 +274,13 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
   }
 
   Future<void> _showDeleteConfirmation() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: AppDialogStyles.backgroundColor,
-            surfaceTintColor: AppDialogStyles.surfaceTintColor,
-            elevation: AppDialogStyles.elevation,
-            shape: AppDialogStyles.shape,
-            title: const Text(
-              'Delete Game',
-              style: AppDialogStyles.titleTextStyle,
-            ),
-            content: Text(
-              'Are you sure you want to delete "${widget.game.title}"?\n\nThis action cannot be undone.',
-              style: AppDialogStyles.contentTextStyle,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                style: AppDialogStyles.buttonStyle(
-                  AppDialogStyles.cancelButtonColor,
-                ),
-                child: const Text(
-                  'Cancel',
-                  style: AppDialogStyles.buttonTextStyle,
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: AppDialogStyles.buttonStyle(
-                  AppDialogStyles.destructiveButtonColor,
-                ),
-                child: const Text(
-                  'Delete',
-                  style: AppDialogStyles.buttonTextStyle,
-                ),
-              ),
-            ],
-          ),
+    final confirmed = await ConfirmDeleteDialog.show(
+      context,
+      title: 'Delete Game',
+      itemName: widget.game.title,
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed && mounted) {
       await _deleteGame();
     }
   }
