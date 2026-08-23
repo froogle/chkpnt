@@ -429,3 +429,92 @@ class DropdownStyles {
 class Android13TextFieldStyles {
   // Android 13 done button styles removed - using native input handling
 }
+
+/// Styles for the custom platform entry dialog
+class CustomPlatformDialogStyles {
+  static const Color backgroundColor = Colors.white;
+  static const Color surfaceTintColor = Colors.transparent;
+  static const double elevation = 8;
+  static const double borderRadius = 16;
+
+  static const String titleText = 'Enter Platform';
+  static const String hintText = 'Enter platform name';
+  static const String cancelButtonText = 'Cancel';
+  static const String addButtonText = 'Add';
+
+  static const TextStyle titleTextStyle = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primaryText,
+  );
+
+  static const TextStyle inputTextStyle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: AppColors.primaryText,
+  );
+
+  static const TextStyle hintTextStyle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: AppColors.emptyStateText,
+  );
+
+  static const Color inputFillColor = AppColors.background;
+  static const Color inputBorderColor = AppColors.divider;
+  static const Color inputFocusedBorderColor = AppColors.primaryPurple;
+  static const Color cursorColor = AppColors.primaryPurple;
+  static const double inputBorderRadius = 12;
+  static const double inputBorderWidth = 1;
+  static const double inputFocusedBorderWidth = 2;
+
+  static const EdgeInsets inputContentPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 14,
+  );
+
+  static const Color cancelButtonColor = AppColors.emptyStateText;
+  static const Color addButtonColor = AppColors.primaryPurple;
+
+  static const TextStyle buttonTextStyle = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+  );
+
+  static RoundedRectangleBorder get dialogShape => RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(borderRadius),
+  );
+
+  static InputDecoration get inputDecoration => InputDecoration(
+    hintText: hintText,
+    hintStyle: hintTextStyle,
+    filled: true,
+    fillColor: inputFillColor,
+    border: _inputBorder,
+    enabledBorder: _inputBorder,
+    focusedBorder: _inputFocusedBorder,
+    contentPadding: inputContentPadding,
+  );
+
+  static OutlineInputBorder get _inputBorder => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(inputBorderRadius),
+    borderSide: const BorderSide(
+      color: inputBorderColor,
+      width: inputBorderWidth,
+    ),
+  );
+
+  static OutlineInputBorder get _inputFocusedBorder => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(inputBorderRadius),
+    borderSide: const BorderSide(
+      color: inputFocusedBorderColor,
+      width: inputFocusedBorderWidth,
+    ),
+  );
+
+  static ButtonStyle buttonStyle(Color foregroundColor) =>
+      TextButton.styleFrom(
+        foregroundColor: foregroundColor,
+        textStyle: buttonTextStyle,
+      );
+}

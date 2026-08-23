@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:chkpnt/shared/widgets/inputs/custom_platform_dialog.dart';
+import 'package:chkpnt/styles/global_styles.dart';
+import 'package:chkpnt/styles/input_styles.dart';
 
 void main() {
   group('CustomPlatformDialog', () {
@@ -360,5 +362,86 @@ void main() {
         expect(textField.decoration?.hintText, equals('Enter platform name'));
       });
     });
+
+    group('explicit styling for Android 13 visibility', () {
+      testWidgets('dialog declares an explicit background and surface tint', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: CustomPlatformDialog())),
+        );
+
+        final dialog = tester.widget<AlertDialog>(find.byType(AlertDialog));
+        expect(dialog.backgroundColor, isNotNull);
+        expect(
+          dialog.backgroundColor,
+          equals(CustomPlatformDialogStyles.backgroundColor),
+        );
+        expect(dialog.surfaceTintColor, equals(Colors.transparent));
+      });
+
+      testWidgets('input text declares an explicit colour', (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: CustomPlatformDialog())),
+        );
+
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.style?.color, isNotNull);
+        expect(textField.style?.color, equals(AppColors.primaryText));
+      });
+
+      testWidgets('hint text declares an explicit colour', (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: CustomPlatformDialog())),
+        );
+
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.decoration?.hintStyle?.color, isNotNull);
+        expect(
+          textField.decoration?.hintStyle?.color,
+          equals(AppColors.emptyStateText),
+        );
+      });
+
+      testWidgets('input is filled with an explicit colour', (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: CustomPlatformDialog())),
+        );
+
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.decoration?.filled, isTrue);
+        expect(textField.decoration?.fillColor, isNotNull);
+      });
+
+      testWidgets('title declares an explicit colour', (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: CustomPlatformDialog())),
+        );
+
+        final title = tester.widget<Text>(find.text('Enter Platform'));
+        expect(title.style?.color, isNotNull);
+        expect(title.style?.color, equals(AppColors.primaryText));
+      });
+
+      testWidgets('action buttons declare explicit foreground colours', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: CustomPlatformDialog())),
+        );
+
+        for (final label in ['Cancel', 'Add']) {
+          final button = tester.widget<TextButton>(
+            find.widgetWithText(TextButton, label),
+          );
+          final foreground = button.style?.foregroundColor?.resolve(
+            <WidgetState>{},
+          );
+          expect(foreground, isNotNull, reason: '\$label needs a colour');
+          expect(foreground, isNot(equals(Colors.white)));
+        }
+      });
+    });
+
   });
 }
