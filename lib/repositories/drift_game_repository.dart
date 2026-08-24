@@ -41,6 +41,7 @@ class Guides extends Table {
   IntColumn get lastReadBlock => integer().withDefault(const Constant(0))();
   TextColumn get sourceUrl => text().nullable()();
   BoolColumn get hasSeenAttribution => boolean().withDefault(const Constant(false))();
+  IntColumn get format => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -55,7 +56,7 @@ class GameDatabase extends _$GameDatabase {
   }
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   Future<void> ensureInitialized() async {
     await customSelect('SELECT 1').get();
@@ -100,6 +101,11 @@ class GameDatabase extends _$GameDatabase {
       if (from < 5) {
         if (!await _columnExists('guides', 'has_seen_attribution')) {
           await m.addColumn(guides, guides.hasSeenAttribution);
+        }
+      }
+      if (from < 6) {
+        if (!await _columnExists('guides', 'format')) {
+          await m.addColumn(guides, guides.format);
         }
       }
     },
@@ -154,6 +160,7 @@ class GameDatabase extends _$GameDatabase {
       lastReadBlock: guide.lastReadBlock,
       sourceUrl: guide.sourceUrl,
       hasSeenAttribution: guide.hasSeenAttribution,
+      format: GuideFormat.values[guide.format],
     );
   }
 
@@ -169,6 +176,7 @@ class GameDatabase extends _$GameDatabase {
       lastReadBlock: Value(guideItem.lastReadBlock),
       sourceUrl: Value(guideItem.sourceUrl),
       hasSeenAttribution: Value(guideItem.hasSeenAttribution),
+      format: Value(guideItem.format.index),
     );
   }
 
@@ -403,10 +411,11 @@ class DriftGameRepository implements GameRepository {
         'lastReadBlock': guide.lastReadBlock,
         'sourceUrl': guide.sourceUrl,
         'hasSeenAttribution': guide.hasSeenAttribution,
+        'format': guide.format.index,
       }).toList();
 
       return jsonEncode({
-        'version': 5,
+        'version': 6,
         'exportDate': DateTime.now().toIso8601String(),
         'games': gamesJsonData,
         'guides': guidesJsonData,
@@ -449,6 +458,7 @@ class DriftGameRepository implements GameRepository {
           lastReadBlock: guideData['lastReadBlock'] ?? 0,
           sourceUrl: guideData['sourceUrl'] as String?,
           hasSeenAttribution: guideData['hasSeenAttribution'] as bool? ?? false,
+          format: GuideFormat.values[guideData['format'] as int? ?? 0],
         );
       }).toList();
 

@@ -178,6 +178,7 @@ mixin _$GuideItem {
   int get lastReadBlock => throw _privateConstructorUsedError;
   String? get sourceUrl => throw _privateConstructorUsedError;
   bool get hasSeenAttribution => throw _privateConstructorUsedError;
+  GuideFormat get format => throw _privateConstructorUsedError;
 
   /// Serializes this GuideItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -205,6 +206,7 @@ abstract class $GuideItemCopyWith<$Res> {
     int lastReadBlock,
     String? sourceUrl,
     bool hasSeenAttribution,
+    GuideFormat format,
   });
 
   $GuideIdCopyWith<$Res> get id;
@@ -236,6 +238,7 @@ class _$GuideItemCopyWithImpl<$Res, $Val extends GuideItem>
     Object? lastReadBlock = null,
     Object? sourceUrl = freezed,
     Object? hasSeenAttribution = null,
+    Object? format = null,
   }) {
     return _then(
       _value.copyWith(
@@ -289,6 +292,11 @@ class _$GuideItemCopyWithImpl<$Res, $Val extends GuideItem>
                     ? _value.hasSeenAttribution
                     : hasSeenAttribution // ignore: cast_nullable_to_non_nullable
                         as bool,
+            format:
+                null == format
+                    ? _value.format
+                    : format // ignore: cast_nullable_to_non_nullable
+                        as GuideFormat,
           )
           as $Val,
     );
@@ -335,6 +343,7 @@ abstract class _$$GuideItemImplCopyWith<$Res>
     int lastReadBlock,
     String? sourceUrl,
     bool hasSeenAttribution,
+    GuideFormat format,
   });
 
   @override
@@ -367,6 +376,7 @@ class __$$GuideItemImplCopyWithImpl<$Res>
     Object? lastReadBlock = null,
     Object? sourceUrl = freezed,
     Object? hasSeenAttribution = null,
+    Object? format = null,
   }) {
     return _then(
       _$GuideItemImpl(
@@ -420,6 +430,11 @@ class __$$GuideItemImplCopyWithImpl<$Res>
                 ? _value.hasSeenAttribution
                 : hasSeenAttribution // ignore: cast_nullable_to_non_nullable
                     as bool,
+        format:
+            null == format
+                ? _value.format
+                : format // ignore: cast_nullable_to_non_nullable
+                    as GuideFormat,
       ),
     );
   }
@@ -439,6 +454,7 @@ class _$GuideItemImpl implements _GuideItem {
     this.lastReadBlock = 0,
     this.sourceUrl,
     this.hasSeenAttribution = false,
+    this.format = GuideFormat.text,
   });
 
   factory _$GuideItemImpl.fromJson(Map<String, dynamic> json) =>
@@ -467,10 +483,13 @@ class _$GuideItemImpl implements _GuideItem {
   @override
   @JsonKey()
   final bool hasSeenAttribution;
+  @override
+  @JsonKey()
+  final GuideFormat format;
 
   @override
   String toString() {
-    return 'GuideItem(id: $id, gameId: $gameId, title: $title, author: $author, fileName: $fileName, createdAt: $createdAt, lastReadSection: $lastReadSection, lastReadBlock: $lastReadBlock, sourceUrl: $sourceUrl, hasSeenAttribution: $hasSeenAttribution)';
+    return 'GuideItem(id: $id, gameId: $gameId, title: $title, author: $author, fileName: $fileName, createdAt: $createdAt, lastReadSection: $lastReadSection, lastReadBlock: $lastReadBlock, sourceUrl: $sourceUrl, hasSeenAttribution: $hasSeenAttribution, format: $format)';
   }
 
   @override
@@ -493,7 +512,8 @@ class _$GuideItemImpl implements _GuideItem {
             (identical(other.sourceUrl, sourceUrl) ||
                 other.sourceUrl == sourceUrl) &&
             (identical(other.hasSeenAttribution, hasSeenAttribution) ||
-                other.hasSeenAttribution == hasSeenAttribution));
+                other.hasSeenAttribution == hasSeenAttribution) &&
+            (identical(other.format, format) || other.format == format));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -510,6 +530,7 @@ class _$GuideItemImpl implements _GuideItem {
     lastReadBlock,
     sourceUrl,
     hasSeenAttribution,
+    format,
   );
 
   /// Create a copy of GuideItem
@@ -538,6 +559,7 @@ abstract class _GuideItem implements GuideItem {
     final int lastReadBlock,
     final String? sourceUrl,
     final bool hasSeenAttribution,
+    final GuideFormat format,
   }) = _$GuideItemImpl;
 
   factory _GuideItem.fromJson(Map<String, dynamic> json) =
@@ -563,6 +585,8 @@ abstract class _GuideItem implements GuideItem {
   String? get sourceUrl;
   @override
   bool get hasSeenAttribution;
+  @override
+  GuideFormat get format;
 
   /// Create a copy of GuideItem
   /// with the given fields replaced by the non-null parameter values.

@@ -706,6 +706,16 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _formatMeta = const VerificationMeta('format');
+  @override
+  late final GeneratedColumn<int> format = GeneratedColumn<int>(
+    'format',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -718,6 +728,7 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
     lastReadBlock,
     sourceUrl,
     hasSeenAttribution,
+    format,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -809,6 +820,12 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
         ),
       );
     }
+    if (data.containsKey('format')) {
+      context.handle(
+        _formatMeta,
+        format.isAcceptableOrUnknown(data['format']!, _formatMeta),
+      );
+    }
     return context;
   }
 
@@ -867,6 +884,11 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
             DriftSqlType.bool,
             data['${effectivePrefix}has_seen_attribution'],
           )!,
+      format:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}format'],
+          )!,
     );
   }
 
@@ -887,6 +909,7 @@ class Guide extends DataClass implements Insertable<Guide> {
   final int lastReadBlock;
   final String? sourceUrl;
   final bool hasSeenAttribution;
+  final int format;
   const Guide({
     required this.id,
     required this.gameId,
@@ -898,6 +921,7 @@ class Guide extends DataClass implements Insertable<Guide> {
     required this.lastReadBlock,
     this.sourceUrl,
     required this.hasSeenAttribution,
+    required this.format,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -914,6 +938,7 @@ class Guide extends DataClass implements Insertable<Guide> {
       map['source_url'] = Variable<String>(sourceUrl);
     }
     map['has_seen_attribution'] = Variable<bool>(hasSeenAttribution);
+    map['format'] = Variable<int>(format);
     return map;
   }
 
@@ -932,6 +957,7 @@ class Guide extends DataClass implements Insertable<Guide> {
               ? const Value.absent()
               : Value(sourceUrl),
       hasSeenAttribution: Value(hasSeenAttribution),
+      format: Value(format),
     );
   }
 
@@ -951,6 +977,7 @@ class Guide extends DataClass implements Insertable<Guide> {
       lastReadBlock: serializer.fromJson<int>(json['lastReadBlock']),
       sourceUrl: serializer.fromJson<String?>(json['sourceUrl']),
       hasSeenAttribution: serializer.fromJson<bool>(json['hasSeenAttribution']),
+      format: serializer.fromJson<int>(json['format']),
     );
   }
   @override
@@ -967,6 +994,7 @@ class Guide extends DataClass implements Insertable<Guide> {
       'lastReadBlock': serializer.toJson<int>(lastReadBlock),
       'sourceUrl': serializer.toJson<String?>(sourceUrl),
       'hasSeenAttribution': serializer.toJson<bool>(hasSeenAttribution),
+      'format': serializer.toJson<int>(format),
     };
   }
 
@@ -981,6 +1009,7 @@ class Guide extends DataClass implements Insertable<Guide> {
     int? lastReadBlock,
     Value<String?> sourceUrl = const Value.absent(),
     bool? hasSeenAttribution,
+    int? format,
   }) => Guide(
     id: id ?? this.id,
     gameId: gameId ?? this.gameId,
@@ -992,6 +1021,7 @@ class Guide extends DataClass implements Insertable<Guide> {
     lastReadBlock: lastReadBlock ?? this.lastReadBlock,
     sourceUrl: sourceUrl.present ? sourceUrl.value : this.sourceUrl,
     hasSeenAttribution: hasSeenAttribution ?? this.hasSeenAttribution,
+    format: format ?? this.format,
   );
   Guide copyWithCompanion(GuidesCompanion data) {
     return Guide(
@@ -1014,6 +1044,7 @@ class Guide extends DataClass implements Insertable<Guide> {
           data.hasSeenAttribution.present
               ? data.hasSeenAttribution.value
               : this.hasSeenAttribution,
+      format: data.format.present ? data.format.value : this.format,
     );
   }
 
@@ -1029,7 +1060,8 @@ class Guide extends DataClass implements Insertable<Guide> {
           ..write('lastReadSection: $lastReadSection, ')
           ..write('lastReadBlock: $lastReadBlock, ')
           ..write('sourceUrl: $sourceUrl, ')
-          ..write('hasSeenAttribution: $hasSeenAttribution')
+          ..write('hasSeenAttribution: $hasSeenAttribution, ')
+          ..write('format: $format')
           ..write(')'))
         .toString();
   }
@@ -1046,6 +1078,7 @@ class Guide extends DataClass implements Insertable<Guide> {
     lastReadBlock,
     sourceUrl,
     hasSeenAttribution,
+    format,
   );
   @override
   bool operator ==(Object other) =>
@@ -1060,7 +1093,8 @@ class Guide extends DataClass implements Insertable<Guide> {
           other.lastReadSection == this.lastReadSection &&
           other.lastReadBlock == this.lastReadBlock &&
           other.sourceUrl == this.sourceUrl &&
-          other.hasSeenAttribution == this.hasSeenAttribution);
+          other.hasSeenAttribution == this.hasSeenAttribution &&
+          other.format == this.format);
 }
 
 class GuidesCompanion extends UpdateCompanion<Guide> {
@@ -1074,6 +1108,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
   final Value<int> lastReadBlock;
   final Value<String?> sourceUrl;
   final Value<bool> hasSeenAttribution;
+  final Value<int> format;
   final Value<int> rowid;
   const GuidesCompanion({
     this.id = const Value.absent(),
@@ -1086,6 +1121,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     this.lastReadBlock = const Value.absent(),
     this.sourceUrl = const Value.absent(),
     this.hasSeenAttribution = const Value.absent(),
+    this.format = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GuidesCompanion.insert({
@@ -1099,6 +1135,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     this.lastReadBlock = const Value.absent(),
     this.sourceUrl = const Value.absent(),
     this.hasSeenAttribution = const Value.absent(),
+    this.format = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        gameId = Value(gameId),
@@ -1117,6 +1154,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     Expression<int>? lastReadBlock,
     Expression<String>? sourceUrl,
     Expression<bool>? hasSeenAttribution,
+    Expression<int>? format,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1131,6 +1169,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
       if (sourceUrl != null) 'source_url': sourceUrl,
       if (hasSeenAttribution != null)
         'has_seen_attribution': hasSeenAttribution,
+      if (format != null) 'format': format,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1146,6 +1185,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     Value<int>? lastReadBlock,
     Value<String?>? sourceUrl,
     Value<bool>? hasSeenAttribution,
+    Value<int>? format,
     Value<int>? rowid,
   }) {
     return GuidesCompanion(
@@ -1159,6 +1199,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
       lastReadBlock: lastReadBlock ?? this.lastReadBlock,
       sourceUrl: sourceUrl ?? this.sourceUrl,
       hasSeenAttribution: hasSeenAttribution ?? this.hasSeenAttribution,
+      format: format ?? this.format,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1196,6 +1237,9 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     if (hasSeenAttribution.present) {
       map['has_seen_attribution'] = Variable<bool>(hasSeenAttribution.value);
     }
+    if (format.present) {
+      map['format'] = Variable<int>(format.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1215,6 +1259,7 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
           ..write('lastReadBlock: $lastReadBlock, ')
           ..write('sourceUrl: $sourceUrl, ')
           ..write('hasSeenAttribution: $hasSeenAttribution, ')
+          ..write('format: $format, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1627,6 +1672,7 @@ typedef $$GuidesTableCreateCompanionBuilder =
       Value<int> lastReadBlock,
       Value<String?> sourceUrl,
       Value<bool> hasSeenAttribution,
+      Value<int> format,
       Value<int> rowid,
     });
 typedef $$GuidesTableUpdateCompanionBuilder =
@@ -1641,6 +1687,7 @@ typedef $$GuidesTableUpdateCompanionBuilder =
       Value<int> lastReadBlock,
       Value<String?> sourceUrl,
       Value<bool> hasSeenAttribution,
+      Value<int> format,
       Value<int> rowid,
     });
 
@@ -1717,6 +1764,11 @@ class $$GuidesTableFilterComposer
 
   ColumnFilters<bool> get hasSeenAttribution => $composableBuilder(
     column: $table.hasSeenAttribution,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get format => $composableBuilder(
+    column: $table.format,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1798,6 +1850,11 @@ class $$GuidesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get format => $composableBuilder(
+    column: $table.format,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GamesTableOrderingComposer get gameId {
     final $$GamesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -1864,6 +1921,9 @@ class $$GuidesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get format =>
+      $composableBuilder(column: $table.format, builder: (column) => column);
+
   $$GamesTableAnnotationComposer get gameId {
     final $$GamesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -1926,6 +1986,7 @@ class $$GuidesTableTableManager
                 Value<int> lastReadBlock = const Value.absent(),
                 Value<String?> sourceUrl = const Value.absent(),
                 Value<bool> hasSeenAttribution = const Value.absent(),
+                Value<int> format = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GuidesCompanion(
                 id: id,
@@ -1938,6 +1999,7 @@ class $$GuidesTableTableManager
                 lastReadBlock: lastReadBlock,
                 sourceUrl: sourceUrl,
                 hasSeenAttribution: hasSeenAttribution,
+                format: format,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1952,6 +2014,7 @@ class $$GuidesTableTableManager
                 Value<int> lastReadBlock = const Value.absent(),
                 Value<String?> sourceUrl = const Value.absent(),
                 Value<bool> hasSeenAttribution = const Value.absent(),
+                Value<int> format = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GuidesCompanion.insert(
                 id: id,
@@ -1964,6 +2027,7 @@ class $$GuidesTableTableManager
                 lastReadBlock: lastReadBlock,
                 sourceUrl: sourceUrl,
                 hasSeenAttribution: hasSeenAttribution,
+                format: format,
                 rowid: rowid,
               ),
           withReferenceMapper:

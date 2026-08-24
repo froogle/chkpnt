@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
 
@@ -50,24 +49,19 @@ class GuideContent {
   final String author;
   final String? url;
   final List<ContentSection> sections;
-  final List<String> sectionUrls;
 
   GuideContent({
     required this.title,
     required this.author,
     this.url,
     required this.sections,
-    this.sectionUrls = const [],
   });
-
-  bool get isMultiPage => sectionUrls.isNotEmpty;
 
   Map<String, dynamic> toJson() => {
     'title': title,
     'author': author,
     if (url != null) 'url': url,
     'sections': sections.map((s) => s.toJson()).toList(),
-    'sectionUrls': sectionUrls,
   };
 
   factory GuideContent.fromJson(Map<String, dynamic> json) => GuideContent(
@@ -77,9 +71,6 @@ class GuideContent {
     sections: (json['sections'] as List<dynamic>)
         .map((s) => ContentSection.fromJson(s as Map<String, dynamic>))
         .toList(),
-    sectionUrls: (json['sectionUrls'] as List<dynamic>?)
-        ?.map((u) => u as String)
-        .toList() ?? [],
   );
 
   String toJsonString({bool pretty = false}) {
@@ -87,11 +78,6 @@ class GuideContent {
         ? const JsonEncoder.withIndent('  ')
         : const JsonEncoder();
     return encoder.convert(toJson());
-  }
-
-  Future<void> saveToFile(String filePath, {bool pretty = true}) async {
-    final file = File(filePath);
-    await file.writeAsString(toJsonString(pretty: pretty));
   }
 
   String get cleanedText {
@@ -108,95 +94,79 @@ class GuideContent {
   }
 }
 
+sealed class GuidePage {
+  String get title;
+  String get author;
+  String? get url;
+}
+
+final class TextGuidePage implements GuidePage {
+  final GuideContent content;
+
+  const TextGuidePage(this.content);
+
+  @override
+  String get title => content.title;
+
+  @override
+  String get author => content.author;
+
+  @override
+  String? get url => content.url;
+}
+
+final class HtmlGuidePage implements GuidePage {
+  @override
+  final String title;
+
+  @override
+  final String author;
+
+  @override
+  final String? url;
+
+  const HtmlGuidePage({
+    required this.title,
+    required this.author,
+    this.url,
+  });
+}
+
 class GuideContentFetcher {
   static final _borderChars = RegExp(r'[|+\-_=\[\]<>\\\/\*#~`^]');
   static const _preformattedThreshold = 0.3;
   static const _typicalLineWidth = 70;
 
-  GuideContentFetcher();
-
-  Future<GuideContent> parseFromFile(String filePath, {String? title, String? author}) async {
-    final file = File(filePath);
-    if (!await file.exists()) {
-      throw Exception('File not found: $filePath');
-    }
-    final html = await file.readAsString();
-    return parseFromHtml(html, title: title, author: author);
-  }
-
-  GuideContent parseFromHtml(
-    String html, {
-    String? title,
-    String? author,
-    bool isFirstPage = true,
-    Map<String, dynamic>? previousJson,
-  }) {
-    if (!isFirstPage && previousJson == null) {
-      throw ArgumentError(
-        'previousJson is required when isFirstPage is false. '
-        'Pass the JSON from the previous parseFromHtml call.',
-      );
-    }
-
+  GuidePage parseFromHtml(String html) {
     final document = html_parser.parse(html);
-    final faqText = document.querySelector('#faqtext');
-    final faqWrap = document.querySelector('#faqwrap');
-
-    List<ContentSection> currentSections = [];
-    bool isHtmlGuide = false;
-
-    if (faqText != null && faqText.querySelectorAll('pre').isNotEmpty) {
-      currentSections = _parseAsciiSections(faqText);
-    } else if (faqWrap != null) {
-      currentSections = _parseHtmlSections(faqWrap);
-      isHtmlGuide = true;
-    } else {
-      throw Exception('Could not find guide content');
-    }
-
-    currentSections = _mergeConsecutivePreformattedBlocks(currentSections);
-
-    if (!isFirstPage) {
-      final previous = GuideContent.fromJson(previousJson!);
-      final mergedSections = [...previous.sections, ...currentSections];
-
-      return GuideContent(
-        title: previous.title,
-        author: previous.author,
-        url: previous.url,
-        sections: mergedSections,
-        sectionUrls: previous.sectionUrls,
-      );
-    }
-
-    final canonicalUrl = document
+    final url = document
         .querySelector('link[rel="canonical"]')
         ?.attributes['href'];
-
     final (extractedTitle, extractedAuthor) = _extractTitleAndAuthor(document);
-
-    final pageTitle = title ??
-        extractedTitle ??
+    final title = extractedTitle ??
         document.querySelector('h1.page-title')?.text.trim() ??
         'Unknown Guide';
-
-    final pageAuthor = author ??
-        extractedAuthor ??
+    final author = extractedAuthor ??
         document.querySelector('.faq_author a')?.text.trim() ??
         'Unknown Author';
 
-    List<String> sectionUrls = [];
-    if (isHtmlGuide) {
-      sectionUrls = _extractSectionUrls(document, canonicalUrl);
+    final faqText = document.querySelector('#faqtext');
+    if (faqText != null && faqText.querySelectorAll('pre').isNotEmpty) {
+      return TextGuidePage(GuideContent(
+        title: title,
+        author: author,
+        url: url,
+        sections: _mergeConsecutivePreformattedBlocks(
+          _parseAsciiSections(faqText),
+        ),
+      ));
     }
 
-    return GuideContent(
-      title: pageTitle,
-      author: pageAuthor,
-      url: canonicalUrl,
-      sections: currentSections,
-      sectionUrls: sectionUrls,
-    );
+    if (document.querySelector('#faqwrap') != null) {
+      return HtmlGuidePage(title: title, author: author, url: url);
+    }
+
+    throw Exception('Could not find guide content');
   }
 
   (String?, String?) _extractTitleAndAuthor(Document document) {
@@ -242,109 +212,6 @@ class GuideContentFetcher {
 
       return ContentSection(title: section.title, blocks: mergedBlocks);
     }).toList();
-  }
-
-  List<String> _extractSectionUrls(Document document, String? currentUrl) {
-    final urls = <String>[];
-    final baseUrl = 'https://gamefaqs.gamespot.com';
-
-    final toc = document.querySelector('.ftoc');
-    if (toc == null) return urls;
-
-    final guideUrlMatch = currentUrl != null
-        ? RegExp(r'(/[^/]+/\d+-[^/]+/faqs/\d+)').firstMatch(currentUrl)
-        : null;
-    final guideBase = guideUrlMatch?.group(1) ?? '';
-
-    final links = toc.querySelectorAll('a[href]');
-    for (final link in links) {
-      final href = link.attributes['href'];
-      if (href == null || href.isEmpty) continue;
-
-      if (href.contains('#')) continue;
-
-      String fullUrl;
-      if (href.startsWith('http')) {
-        fullUrl = href;
-      } else if (href.startsWith('/')) {
-        fullUrl = '$baseUrl$href';
-      } else {
-        fullUrl = '$baseUrl$guideBase/$href';
-      }
-
-      if (!urls.contains(fullUrl)) {
-        urls.add(fullUrl);
-      }
-    }
-
-    return urls;
-  }
-
-  List<ContentSection> _parseHtmlSections(Element faqWrapElement) {
-    final sections = <ContentSection>[];
-    String currentSectionTitle = 'Content';
-    List<ContentBlock> currentBlocks = [];
-
-    for (final child in faqWrapElement.children) {
-      if (child.classes.contains('ftoc')) continue;
-      if (child.localName == 'img') continue;
-      if (child.querySelector('img') != null && child.text.trim().isEmpty) continue;
-
-      final tagName = child.localName;
-
-      if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4') {
-        if (currentBlocks.isNotEmpty) {
-          sections.add(ContentSection(title: currentSectionTitle, blocks: currentBlocks));
-          currentBlocks = [];
-        }
-        currentSectionTitle = child.text.trim();
-      } else if (tagName == 'p') {
-        final text = child.text.trim();
-        if (text.isNotEmpty) {
-          currentBlocks.add(ContentBlock(content: text, preformatted: false));
-        }
-      } else if (tagName == 'ul' || tagName == 'ol') {
-        final items = child.querySelectorAll('li');
-        final listText = items.map((item) => '• ${item.text.trim()}').join('\n');
-        if (listText.isNotEmpty) {
-          currentBlocks.add(ContentBlock(content: listText, preformatted: false));
-        }
-      } else if (tagName == 'table') {
-        final tableText = _tableToText(child);
-        if (tableText.isNotEmpty) {
-          currentBlocks.add(ContentBlock(content: tableText, preformatted: true));
-        }
-      } else if (tagName == 'pre') {
-        final text = child.text.trim();
-        if (text.isNotEmpty) {
-          currentBlocks.add(ContentBlock(content: text, preformatted: true));
-        }
-      } else {
-        final text = child.text.trim();
-        if (text.isNotEmpty) {
-          currentBlocks.add(ContentBlock(content: text, preformatted: false));
-        }
-      }
-    }
-
-    if (currentBlocks.isNotEmpty) {
-      sections.add(ContentSection(title: currentSectionTitle, blocks: currentBlocks));
-    }
-
-    return sections;
-  }
-
-  String _tableToText(Element table) {
-    final buffer = StringBuffer();
-    final rows = table.querySelectorAll('tr');
-
-    for (final row in rows) {
-      final cells = row.querySelectorAll('td, th');
-      final cellTexts = cells.map((c) => c.text.trim()).toList();
-      buffer.writeln(cellTexts.join(' | '));
-    }
-
-    return buffer.toString().trim();
   }
 
   List<ContentSection> _parseAsciiSections(Element faqTextElement) {

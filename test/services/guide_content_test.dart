@@ -62,29 +62,7 @@ void main() {
   });
 
   group('GuideContent', () {
-    test('isMultiPage returns true when sectionUrls is not empty', () {
-      final guide = GuideContent(
-        title: 'Test Guide',
-        author: 'Test Author',
-        sections: [],
-        sectionUrls: ['http://example.com/page1', 'http://example.com/page2'],
-      );
-
-      expect(guide.isMultiPage, true);
-    });
-
-    test('isMultiPage returns false when sectionUrls is empty', () {
-      final guide = GuideContent(
-        title: 'Test Guide',
-        author: 'Test Author',
-        sections: [],
-        sectionUrls: const [],
-      );
-
-      expect(guide.isMultiPage, false);
-    });
-
-    test('toJson includes sectionUrls', () {
+    test('toJson returns correct map', () {
       final guide = GuideContent(
         title: 'Test Guide',
         author: 'Test Author',
@@ -95,7 +73,6 @@ void main() {
             blocks: [ContentBlock(content: 'Content', preformatted: false)],
           ),
         ],
-        sectionUrls: ['http://example.com/page1'],
       );
       final json = guide.toJson();
 
@@ -103,7 +80,7 @@ void main() {
       expect(json['author'], 'Test Author');
       expect(json['url'], 'http://example.com');
       expect(json['sections'], isA<List>());
-      expect(json['sectionUrls'], ['http://example.com/page1']);
+      expect(json.containsKey('sectionUrls'), false);
     });
 
     test('fromJson creates correct instance', () {
@@ -119,7 +96,6 @@ void main() {
             ],
           },
         ],
-        'sectionUrls': ['http://example.com/page1', 'http://example.com/page2'],
       };
       final guide = GuideContent.fromJson(json);
 
@@ -127,19 +103,19 @@ void main() {
       expect(guide.author, 'Test Author');
       expect(guide.url, 'http://example.com');
       expect(guide.sections.length, 1);
-      expect(guide.sectionUrls.length, 2);
     });
 
-    test('fromJson handles missing sectionUrls', () {
+    test('fromJson ignores legacy sectionUrls key', () {
       final json = {
         'title': 'Test Guide',
         'author': 'Test Author',
         'sections': [],
+        'sectionUrls': ['http://example.com/page1'],
       };
       final guide = GuideContent.fromJson(json);
 
-      expect(guide.sectionUrls, isEmpty);
-      expect(guide.isMultiPage, false);
+      expect(guide.title, 'Test Guide');
+      expect(guide.sections, isEmpty);
     });
 
     test('toJsonString produces valid JSON', () {
@@ -181,8 +157,8 @@ void main() {
       fetcher = GuideContentFetcher();
     });
 
-    group('parseFromHtml - ASCII guides', () {
-      test('parses simple ASCII guide', () {
+    group('parseFromHtml - text guides', () {
+      test('parses simple text guide', () {
         const html = '''
           <html>
             <head>
@@ -205,17 +181,21 @@ It has multiple paragraphs.
           </html>
         ''';
 
-        final content = fetcher.parseFromHtml(html);
+        final page = fetcher.parseFromHtml(html);
 
+        expect(page, isA<TextGuidePage>());
+        expect(page.title, 'Test Guide (PS5)');
+        expect(page.author, 'TestAuthor');
+        expect(page.url, 'http://example.com/guide');
+
+        final content = (page as TextGuidePage).content;
         expect(content.title, 'Test Guide (PS5)');
         expect(content.author, 'TestAuthor');
         expect(content.url, 'http://example.com/guide');
         expect(content.sections.isNotEmpty, true);
-        expect(content.sectionUrls, isEmpty);
-        expect(content.isMultiPage, false);
       });
 
-      test('handles ASCII guide without canonical URL', () {
+      test('handles text guide without canonical URL', () {
         const html = '''
           <html>
             <body>
@@ -227,15 +207,17 @@ It has multiple paragraphs.
           </html>
         ''';
 
-        final content = fetcher.parseFromHtml(html);
+        final page = fetcher.parseFromHtml(html);
 
-        expect(content.url, isNull);
-        expect(content.title, 'Fallback Title');
+        expect(page, isA<TextGuidePage>());
+        expect(page.url, isNull);
+        expect(page.title, 'Fallback Title');
+        expect(page.author, 'Unknown Author');
       });
     });
 
     group('parseFromHtml - HTML guides', () {
-      test('parses HTML guide with TOC', () {
+      test('returns a link page without parsing content', () {
         const html = '''
           <html>
             <head>
@@ -255,157 +237,47 @@ It has multiple paragraphs.
           </html>
         ''';
 
-        final content = fetcher.parseFromHtml(html);
+        final page = fetcher.parseFromHtml(html);
 
-        expect(content.title, 'HTML Guide');
-        expect(content.author, 'Author');
-        expect(content.isMultiPage, true);
-        expect(content.sectionUrls.length, 2);
-        expect(content.sectionUrls[0], contains('intro'));
-        expect(content.sectionUrls[1], contains('walkthrough'));
+        expect(page, isA<HtmlGuidePage>());
+        expect(page.title, 'HTML Guide');
+        expect(page.author, 'Author');
+        expect(page.url, 'http://gamefaqs.gamespot.com/ps5/123-game/faqs/456');
       });
 
-      test('parses HTML guide sections correctly', () {
+      test('handles HTML guide without canonical URL', () {
         const html = '''
           <html>
             <body>
               <div id="faqwrap">
                 <h2>Section One</h2>
                 <p>First paragraph.</p>
-                <p>Second paragraph.</p>
-                <h3>Subsection</h3>
-                <ul>
-                  <li>Item 1</li>
-                  <li>Item 2</li>
-                </ul>
               </div>
             </body>
           </html>
         ''';
 
-        final content = fetcher.parseFromHtml(html);
+        final page = fetcher.parseFromHtml(html);
 
-        expect(content.sections.isNotEmpty, true);
-        final sectionTitles = content.sections.map((s) => s.title).toList();
-        expect(sectionTitles, contains('Section One'));
-        expect(sectionTitles, contains('Subsection'));
+        expect(page, isA<HtmlGuidePage>());
+        expect(page.url, isNull);
+        expect(page.title, 'Unknown Guide');
+        expect(page.author, 'Unknown Author');
       });
-    });
 
-    group('parseFromHtml - multi-page merging', () {
-      test('throws ArgumentError when isFirstPage is false without previousJson', () {
+      test('prefers text content when both containers are present', () {
         const html = '''
           <html>
             <body>
-              <div id="faqwrap">
-                <p>Content</p>
-              </div>
+              <div id="faqtext"><pre>Plain text guide</pre></div>
+              <div id="faqwrap"><p>Formatted guide</p></div>
             </body>
           </html>
         ''';
 
-        expect(
-          () => fetcher.parseFromHtml(html, isFirstPage: false),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+        final page = fetcher.parseFromHtml(html);
 
-      test('merges sections from subsequent pages', () {
-        const firstPageHtml = '''
-          <html>
-            <head>
-              <link rel="canonical" href="http://gamefaqs.gamespot.com/ps5/123-game/faqs/456">
-            </head>
-            <body>
-              <h2 class="title">Multi-Page Guide by <a href="#">Author</a></h2>
-              <div id="faqwrap">
-                <div class="ftoc">
-                  <a href="page1">Page 1</a>
-                  <a href="page2">Page 2</a>
-                </div>
-                <h2>First Section</h2>
-                <p>First page content.</p>
-              </div>
-            </body>
-          </html>
-        ''';
-
-        const secondPageHtml = '''
-          <html>
-            <body>
-              <div id="faqwrap">
-                <h2>Second Section</h2>
-                <p>Second page content.</p>
-              </div>
-            </body>
-          </html>
-        ''';
-
-        final firstResult = fetcher.parseFromHtml(firstPageHtml);
-        expect(firstResult.sections.length, 1);
-        expect(firstResult.isMultiPage, true);
-
-        final firstJson = firstResult.toJson();
-
-        final mergedResult = fetcher.parseFromHtml(
-          secondPageHtml,
-          isFirstPage: false,
-          previousJson: firstJson,
-        );
-
-        expect(mergedResult.title, 'Multi-Page Guide');
-        expect(mergedResult.author, 'Author');
-        expect(mergedResult.sections.length, 2);
-        expect(mergedResult.sections[0].title, 'First Section');
-        expect(mergedResult.sections[1].title, 'Second Section');
-        expect(mergedResult.sectionUrls.length, 2);
-      });
-
-      test('preserves metadata from first page during merge', () {
-        const firstPageHtml = '''
-          <html>
-            <head>
-              <link rel="canonical" href="http://original-url.com">
-            </head>
-            <body>
-              <h2 class="title">Original Title by <a href="#">Original Author</a></h2>
-              <div id="faqwrap">
-                <div class="ftoc">
-                  <a href="page1">Page 1</a>
-                  <a href="page2">Page 2</a>
-                </div>
-                <p>Content</p>
-              </div>
-            </body>
-          </html>
-        ''';
-
-        const secondPageHtml = '''
-          <html>
-            <head>
-              <link rel="canonical" href="http://different-url.com">
-            </head>
-            <body>
-              <h2 class="title">Different Title by <a href="#">Different Author</a></h2>
-              <div id="faqwrap">
-                <p>More content</p>
-              </div>
-            </body>
-          </html>
-        ''';
-
-        final firstResult = fetcher.parseFromHtml(firstPageHtml);
-        final firstJson = firstResult.toJson();
-
-        final mergedResult = fetcher.parseFromHtml(
-          secondPageHtml,
-          isFirstPage: false,
-          previousJson: firstJson,
-        );
-
-        expect(mergedResult.title, 'Original Title');
-        expect(mergedResult.author, 'Original Author');
-        expect(mergedResult.url, 'http://original-url.com');
+        expect(page, isA<TextGuidePage>());
       });
     });
 

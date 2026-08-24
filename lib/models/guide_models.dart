@@ -5,6 +5,8 @@ import 'package:chkpnt/models/game_models.dart';
 part 'guide_models.freezed.dart';
 part 'guide_models.g.dart';
 
+enum GuideFormat { text, html }
+
 @freezed
 class GuideId with _$GuideId {
   const factory GuideId(String value) = _GuideId;
@@ -30,6 +32,7 @@ class GuideItem with _$GuideItem {
     @Default(0) int lastReadBlock,
     String? sourceUrl,
     @Default(false) bool hasSeenAttribution,
+    @Default(GuideFormat.text) GuideFormat format,
   }) = _GuideItem;
 
   factory GuideItem.create({
@@ -49,6 +52,24 @@ class GuideItem with _$GuideItem {
       lastReadSection: 0,
       lastReadBlock: 0,
       sourceUrl: sourceUrl,
+    );
+  }
+
+  factory GuideItem.createHtmlLink({
+    required GameId gameId,
+    required String title,
+    required String author,
+    required String sourceUrl,
+  }) {
+    return GuideItem(
+      id: GuideId.generate(),
+      gameId: gameId,
+      title: title,
+      author: author,
+      fileName: '',
+      createdAt: DateTime.now(),
+      sourceUrl: sourceUrl,
+      format: GuideFormat.html,
     );
   }
 

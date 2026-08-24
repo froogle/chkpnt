@@ -1,16 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:chkpnt/models/guide_models.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/shared/widgets/dialogs/confirm_delete_dialog.dart';
 import 'package:chkpnt/services/guide_parser/guide_content.dart';
-import 'package:chkpnt/services/guide_parser/guide_serialization.dart';
 import 'package:chkpnt/services/guide_storage_service.dart';
 import 'package:chkpnt/services/guide_reader_preferences_service.dart';
 import 'package:chkpnt/providers/guide_provider.dart';
+import 'package:chkpnt/screens/guide_reader/guide_web_reader_screen.dart';
 import 'package:chkpnt/screens/guide_reader/widgets/attribution_modal.dart';
 
 sealed class GuideListItem {}
@@ -126,7 +126,9 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       final jsonContent = await storageService.loadGuideJson(
         widget.guide.fileName,
       );
-      final content = GuideContentSerialization.fromJsonString(jsonContent);
+      final content = GuideContent.fromJson(
+        jsonDecode(jsonContent) as Map<String, dynamic>,
+      );
       final flattenedItems = _buildFlattenedItems(content);
 
       if (mounted) {
@@ -234,7 +236,12 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => _GuideSourceBrowserScreen(url: sourceUrl),
+        builder:
+            (context) => GuideWebReaderScreen(
+              guide: widget.guide,
+              url: sourceUrl,
+              canDelete: false,
+            ),
       ),
     );
   }
@@ -652,151 +659,6 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
       onPressed: _showDeleteConfirmation,
       icon: Icon(Icons.delete_outline, color: Colors.red),
       tooltip: 'Delete guide',
-    );
-  }
-}
-
-class _GuideSourceBrowserScreen extends StatefulWidget {
-  final String url;
-
-  const _GuideSourceBrowserScreen({required this.url});
-
-  @override
-  State<_GuideSourceBrowserScreen> createState() =>
-      _GuideSourceBrowserScreenState();
-}
-
-class _GuideSourceBrowserScreenState extends State<_GuideSourceBrowserScreen> {
-  late final WebViewController _controller;
-  bool _canGoBack = false;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _initWebView();
-  }
-
-  void _initWebView() {
-    _controller =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onPageStarted: (_) {
-                setState(() {
-                  _isLoading = true;
-                });
-              },
-              onPageFinished: (_) async {
-                final canGoBack = await _controller.canGoBack();
-                setState(() {
-                  _isLoading = false;
-                  _canGoBack = canGoBack;
-                });
-              },
-            ),
-          )
-          ..loadRequest(Uri.parse(widget.url));
-  }
-
-  Future<void> _handleBack() async {
-    if (await _controller.canGoBack()) {
-      await _controller.goBack();
-    }
-  }
-
-  void _handleClose() {
-    Navigator.of(context).pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [_buildToolbar(), Expanded(child: _buildWebView())],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildToolbar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildBackButton(),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Original Guide',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          _buildCloseButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBackButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _canGoBack ? _handleBack : null,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Icon(
-            Icons.arrow_back,
-            color: _canGoBack ? Colors.black87 : Colors.black26,
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCloseButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _handleClose,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: const Icon(Icons.close, color: Colors.black87, size: 24),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWebView() {
-    return Stack(
-      children: [
-        WebViewWidget(controller: _controller),
-        if (_isLoading)
-          Center(
-            child: CircularProgressIndicator(color: AppColors.primaryPurple),
-          ),
-      ],
     );
   }
 }

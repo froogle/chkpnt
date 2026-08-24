@@ -24,6 +24,9 @@ _$GuideItemImpl _$$GuideItemImplFromJson(Map<String, dynamic> json) =>
       lastReadBlock: (json['lastReadBlock'] as num?)?.toInt() ?? 0,
       sourceUrl: json['sourceUrl'] as String?,
       hasSeenAttribution: json['hasSeenAttribution'] as bool? ?? false,
+      format:
+          $enumDecodeNullable(_$GuideFormatEnumMap, json['format']) ??
+          GuideFormat.text,
     );
 
 Map<String, dynamic> _$$GuideItemImplToJson(_$GuideItemImpl instance) =>
@@ -38,4 +41,10 @@ Map<String, dynamic> _$$GuideItemImplToJson(_$GuideItemImpl instance) =>
       'lastReadBlock': instance.lastReadBlock,
       'sourceUrl': instance.sourceUrl,
       'hasSeenAttribution': instance.hasSeenAttribution,
+      'format': _$GuideFormatEnumMap[instance.format]!,
     };
+
+const _$GuideFormatEnumMap = {
+  GuideFormat.text: 'text',
+  GuideFormat.html: 'html',
+};

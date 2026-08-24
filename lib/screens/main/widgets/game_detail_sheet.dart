@@ -11,6 +11,7 @@ import 'package:chkpnt/providers/guide_provider.dart';
 import 'package:chkpnt/screens/guide_browser/guide_browser_screen.dart';
 import 'package:chkpnt/screens/guide_browser/widgets/guide_browser_page_route.dart';
 import 'package:chkpnt/screens/guide_reader/guide_reader_screen.dart';
+import 'package:chkpnt/screens/guide_reader/guide_web_reader_screen.dart';
 import 'package:chkpnt/screens/guide_reader/widgets/guide_reader_page_route.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/shared/widgets/dialogs/confirm_delete_dialog.dart';
@@ -159,7 +160,7 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: InkWell(
-        onTap: () => _openGuideReader(guide),
+        onTap: () => _openGuide(guide),
         borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -170,7 +171,9 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
           child: Row(
             children: [
               Icon(
-                Icons.menu_book,
+                guide.format == GuideFormat.html
+                    ? Icons.language
+                    : Icons.menu_book,
                 size: 18,
                 color: AppColors.primaryPurple,
               ),
@@ -229,13 +232,14 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
     );
   }
 
-  void _openGuideReader(GuideItem guide) {
+  void _openGuide(GuideItem guide) {
+    final screen = switch (guide) {
+      GuideItem(format: GuideFormat.html, sourceUrl: final url?) =>
+        GuideWebReaderScreen(guide: guide, url: url),
+      _ => GuideReaderScreen(guide: guide),
+    };
     Navigator.of(context).pop();
-    Navigator.of(context).push(
-      GuideReaderPageRoute(
-        child: GuideReaderScreen(guide: guide),
-      ),
-    );
+    Navigator.of(context).push(GuideReaderPageRoute(child: screen));
   }
 
   Widget _buildActions() {
