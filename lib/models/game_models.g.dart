@@ -46,4 +46,5 @@ const _$GameStatusEnumMap = {
   GameStatus.wishlist: 'wishlist',
   GameStatus.ordered: 'ordered',
   GameStatus.ongoing: 'ongoing',
+  GameStatus.owned: 'owned',
 };

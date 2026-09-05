@@ -125,7 +125,7 @@ class GameDatabase extends _$GameDatabase {
       id: GameId(game.id),
       title: game.title,
       platform: game.platform,
-      status: GameStatus.values[game.status],
+      status: _statusFromIndex(game.status),
       lastModified: game.lastModified,
       lastStatusChange: game.lastStatusChange,
       imagePath: game.imagePath,
@@ -436,7 +436,7 @@ class DriftGameRepository implements GameRepository {
           id: GameId(gameData['id']),
           title: gameData['title'],
           platform: gameData['platform'],
-          status: GameStatus.values[gameData['status']],
+          status: _statusFromIndex(gameData['status']),
           lastModified: DateTime.parse(gameData['lastModified']),
           lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
           imagePath: gameData['imagePath'],
@@ -485,6 +485,11 @@ class DriftGameRepository implements GameRepository {
     return p.join(dbFolder.path, 'chkpnt.db');
   }
 }
+
+GameStatus _statusFromIndex(int index) =>
+    index >= 0 && index < GameStatus.values.length
+        ? GameStatus.values[index]
+        : GameStatus.owned;
 
 LazyDatabase _openConnection(StorageService storageService) {
   return LazyDatabase(() async {

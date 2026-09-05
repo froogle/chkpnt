@@ -74,6 +74,7 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
         GameStatus.ongoing,
         GameStatus.completed,
         GameStatus.abandoned,
+        GameStatus.owned,
         GameStatus.wishlist,
         GameStatus.ordered,
       ];
@@ -91,13 +92,15 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
         widget.selectedStatus == GameStatus.backlog ||
         widget.selectedStatus == GameStatus.ongoing ||
         widget.selectedStatus == GameStatus.completed ||
-        widget.selectedStatus == GameStatus.abandoned) {
+        widget.selectedStatus == GameStatus.abandoned ||
+        widget.selectedStatus == GameStatus.owned) {
       return [
         GameStatus.playing,
         GameStatus.backlog,
         GameStatus.ongoing,
         GameStatus.completed,
         GameStatus.abandoned,
+        GameStatus.owned,
       ];
     }
 
@@ -108,6 +111,7 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
       GameStatus.ongoing,
       GameStatus.completed,
       GameStatus.abandoned,
+      GameStatus.owned,
       GameStatus.wishlist,
       GameStatus.ordered,
     ];

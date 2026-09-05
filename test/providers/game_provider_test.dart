@@ -545,4 +545,114 @@ void main() {
       expect(updatedGame.status, GameStatus.completed);
     });
   });
+
+  group('Collection provider filtering', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          gameListProvider.overrideWith(() => IsolatedTestGameListNotifier()),
+        ],
+      );
+
+      final notifier = container.read(gameListProvider.notifier);
+      notifier.addGame(
+        GameItem.create(
+          title: 'Owned Physical Game',
+          platform: 'PS5',
+          status: GameStatus.owned,
+          isPhysical: true,
+        ),
+      );
+      notifier.addGame(
+        GameItem.create(
+          title: 'Owned Digital Game',
+          platform: 'PC',
+          status: GameStatus.owned,
+        ),
+      );
+      notifier.addGame(
+        GameItem.create(
+          title: 'Playing Physical Game',
+          platform: 'PS5',
+          status: GameStatus.playing,
+          isPhysical: true,
+        ),
+      );
+      notifier.addGame(
+        GameItem.create(
+          title: 'Wishlist Physical Game',
+          platform: 'PS5',
+          status: GameStatus.wishlist,
+          isPhysical: true,
+        ),
+      );
+      notifier.addGame(
+        GameItem.create(
+          title: 'Ordered Digital Game',
+          platform: 'PC',
+          status: GameStatus.ordered,
+        ),
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('collectionGamesProvider includes a physical owned game', () {
+      final collectionGames = container.read(collectionGamesProvider);
+
+      expect(
+        collectionGames.map((game) => game.title),
+        contains('Owned Physical Game'),
+      );
+    });
+
+    test('collectionGamesProvider includes a digital owned game', () {
+      final collectionGames = container.read(collectionGamesProvider);
+
+      expect(
+        collectionGames.map((game) => game.title),
+        contains('Owned Digital Game'),
+      );
+    });
+
+    test('collectionGamesProvider includes a physical playing game', () {
+      final collectionGames = container.read(collectionGamesProvider);
+
+      expect(
+        collectionGames.map((game) => game.title),
+        contains('Playing Physical Game'),
+      );
+    });
+
+    test('collectionGamesProvider excludes wishlist and ordered games', () {
+      final collectionGames = container.read(collectionGamesProvider);
+
+      expect(
+        collectionGames.map((game) => game.title),
+        isNot(contains('Wishlist Physical Game')),
+      );
+      expect(
+        collectionGames.map((game) => game.title),
+        isNot(contains('Ordered Digital Game')),
+      );
+    });
+
+    test('collectionGamesByPlatformProvider groups by platform', () {
+      final grouped = container.read(collectionGamesByPlatformProvider);
+
+      expect(grouped.keys, containsAll(['PC', 'PS5']));
+      expect(
+        grouped['PS5']!.map((game) => game.title),
+        containsAll(['Owned Physical Game', 'Playing Physical Game']),
+      );
+      expect(
+        grouped['PC']!.map((game) => game.title),
+        contains('Owned Digital Game'),
+      );
+    });
+  });
 }

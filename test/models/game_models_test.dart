@@ -2,6 +2,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/models/game_models.dart';
 
 void main() {
+  group('GameStatus enum ordering', () {
+    test('owned is appended as the final value', () {
+      expect(GameStatus.owned.index, 7);
+      expect(GameStatus.values.length, 8);
+    });
+
+    test('existing statuses keep their persisted indices', () {
+      expect(GameStatus.playing.index, 0);
+      expect(GameStatus.completed.index, 1);
+      expect(GameStatus.backlog.index, 2);
+      expect(GameStatus.abandoned.index, 3);
+      expect(GameStatus.wishlist.index, 4);
+      expect(GameStatus.ordered.index, 5);
+      expect(GameStatus.ongoing.index, 6);
+    });
+  });
+
   group('GameItem Model Tests', () {
     late GameItem testGame;
     late DateTime initialTime;

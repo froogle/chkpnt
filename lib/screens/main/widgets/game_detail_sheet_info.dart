@@ -180,6 +180,8 @@ class GameDetailSheetInfo extends StatelessWidget {
         return Colors.purple;
       case GameStatus.ongoing:
         return const Color(0xFF06B6D4);
+      case GameStatus.owned:
+        return const Color(0xFF64748B);
     }
   }
 
@@ -199,6 +201,8 @@ class GameDetailSheetInfo extends StatelessWidget {
         return Icons.shopping_cart;
       case GameStatus.ongoing:
         return Icons.replay;
+      case GameStatus.owned:
+        return Icons.bookmark;
     }
   }
 
@@ -246,6 +250,12 @@ class GameDetailSheetInfo extends StatelessWidget {
           color: AppColors.primaryPurple,
           size: InputStyles.statusButtonIconSize,
         );
+      case GameStatus.owned:
+        return Icon(
+          Icons.bookmark,
+          color: AppColors.primaryPurple,
+          size: InputStyles.statusButtonIconSize,
+        );
     }
   }
 
@@ -272,6 +282,8 @@ class GameDetailSheetInfo extends StatelessWidget {
         return 'Ordered';
       case GameStatus.ongoing:
         return 'Ongoing';
+      case GameStatus.owned:
+        return 'Owned';
     }
   }
 

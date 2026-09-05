@@ -283,21 +283,20 @@ List<String> backlogPlatforms(Ref ref) {
   return ['All', ...platforms];
 }
 
-// === PHYSICAL COLLECTION PROVIDERS ===
+// === COLLECTION PROVIDERS ===
 @riverpod
-List<GameItem> physicalGames(Ref ref) {
+List<GameItem> collectionGames(Ref ref) {
   final games = ref.watch(gameListProvider);
   return games
       .where((game) =>
-          game.isPhysical &&
           game.status != GameStatus.wishlist &&
           game.status != GameStatus.ordered)
       .toList();
 }
 
 @riverpod
-Map<String, List<GameItem>> physicalGamesByPlatform(Ref ref) {
-  final games = ref.watch(physicalGamesProvider);
+Map<String, List<GameItem>> collectionGamesByPlatform(Ref ref) {
+  final games = ref.watch(collectionGamesProvider);
   final searchQuery = ref.watch(searchQueryProvider);
   final selectedPlatform = ref.watch(selectedPlatformProvider);
 
@@ -339,8 +338,8 @@ Map<String, List<GameItem>> physicalGamesByPlatform(Ref ref) {
 }
 
 @riverpod
-List<String> physicalPlatforms(Ref ref) {
-  final games = ref.watch(physicalGamesProvider);
+List<String> collectionPlatforms(Ref ref) {
+  final games = ref.watch(collectionGamesProvider);
   final platforms = games.map((game) => game.platform).toSet().toList();
   platforms.sort();
   return ['All', ...platforms];

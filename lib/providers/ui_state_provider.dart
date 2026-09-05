@@ -108,6 +108,8 @@ class SectionExpansion extends _$SectionExpansion {
     'Abandoned': false,
     'Ordered': true,
     'Wish List': false,
+    'Physical': true,
+    'Digital': true,
   };
 
   // Track which sections have been manually controlled by the user
@@ -116,7 +118,7 @@ class SectionExpansion extends _$SectionExpansion {
   void toggleSection(String sectionName) {
     // Mark this section as manually controlled
     _manuallyControlledSections.add(sectionName);
-    state = {...state, sectionName: !(state[sectionName] ?? false)};
+    state = {...state, sectionName: !(state[sectionName] ?? true)};
   }
 
   void expandSection(String sectionName) {

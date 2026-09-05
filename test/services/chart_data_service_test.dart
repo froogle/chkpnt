@@ -185,6 +185,45 @@ void main() {
         expect(labels.contains('Wishlist'), isTrue);
         expect(labels.contains('Ordered'), isTrue);
       });
+
+      test('labels owned games as Owned', () {
+        final result = ChartDataService.generateStatusData([
+          TestHelpers.createTestGame(
+            title: 'Owned Game',
+            platform: 'PlayStation 5',
+            status: GameStatus.owned,
+          ),
+        ]);
+
+        expect(result.length, equals(1));
+        expect(result.first.label, equals('Owned'));
+        expect(result.first.label, isNot(equals('GameStatus.owned')));
+      });
+
+      test('gives owned a colour distinct from every other status', () {
+        final everyStatusGames =
+            GameStatus.values
+                .map(
+                  (status) => TestHelpers.createTestGame(
+                    title: 'Game ${status.index}',
+                    platform: 'PlayStation 5',
+                    status: status,
+                  ),
+                )
+                .toList();
+
+        final result = ChartDataService.generateStatusData(everyStatusGames);
+        final ownedData = result.firstWhere((data) => data.label == 'Owned');
+        final otherColours =
+            result
+                .where((data) => data.label != 'Owned')
+                .map((data) => data.color)
+                .toList();
+
+        expect(ownedData.color, isNotNull);
+        expect(otherColours.length, equals(7));
+        expect(otherColours.contains(ownedData.color), isFalse);
+      });
     });
 
     group('generateChartData', () {

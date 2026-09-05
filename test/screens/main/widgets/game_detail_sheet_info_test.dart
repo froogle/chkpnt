@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/screens/main/widgets/game_detail_sheet_info.dart';
 import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/styles/styles.dart';
 
 void main() {
   group('GameDetailSheetInfo Widget Tests', () {
@@ -129,6 +130,63 @@ void main() {
         expect(find.text('Ordered'), findsOneWidget);
         expect(find.byIcon(Icons.shopping_cart), findsNWidgets(2));
       });
+
+      testWidgets('should display owned status correctly', (
+        WidgetTester tester,
+      ) async {
+        final ownedGame = testGame.copyWith(status: GameStatus.owned);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(body: GameDetailSheetInfo(game: ownedGame)),
+          ),
+        );
+
+        expect(find.text('Owned'), findsOneWidget);
+        expect(find.byIcon(Icons.bookmark), findsNWidgets(2));
+      });
+
+      testWidgets(
+        'should paint the owned badge in the owned colour',
+        (WidgetTester tester) async {
+          final ownedGame = testGame.copyWith(status: GameStatus.owned);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(body: GameDetailSheetInfo(game: ownedGame)),
+            ),
+          );
+
+          final ownedBadge = _statusBadgeDecoration(tester);
+          expect(
+            ownedBadge.color,
+            const Color(0xFF64748B).withValues(alpha: 0.9),
+          );
+
+          final badgeIcon = tester.widget<Icon>(
+            find.byIcon(Icons.bookmark).first,
+          );
+          expect(badgeIcon.color, Colors.white);
+
+          final statusText = tester.widget<Text>(find.text('Owned'));
+          expect(statusText.style?.color, AppLayout.detailSubtitleStyle.color);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                body: GameDetailSheetInfo(
+                  game: testGame.copyWith(status: GameStatus.playing),
+                ),
+              ),
+            ),
+          );
+
+          expect(
+            _statusBadgeDecoration(tester).color,
+            isNot(equals(ownedBadge.color)),
+          );
+        },
+      );
     });
 
     testWidgets('should handle long game titles gracefully', (
@@ -323,4 +381,18 @@ void main() {
       );
     });
   });
+}
+
+BoxDecoration _statusBadgeDecoration(WidgetTester tester) {
+  return tester
+          .widget<Container>(
+            find
+                .ancestor(
+                  of: find.text('Test Platfor...'),
+                  matching: find.byType(Container),
+                )
+                .first,
+          )
+          .decoration
+      as BoxDecoration;
 }

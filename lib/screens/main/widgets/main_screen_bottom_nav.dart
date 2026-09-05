@@ -31,7 +31,7 @@ class MainScreenBottomNav extends ConsumerWidget {
           ),
           Expanded(
             child: _buildNavButton(
-              Icons.sd_card_outlined,
+              Icons.collections_bookmark_outlined,
               2,
               currentScreen == 2,
             ),
@@ -77,7 +77,7 @@ class MainScreenBottomNav extends ConsumerWidget {
         return 0;
       case '/backlog':
         return 1;
-      case '/physical':
+      case '/collection':
         return 2;
       case '/wishlist':
         return 3;

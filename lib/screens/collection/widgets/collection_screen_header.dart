@@ -7,17 +7,17 @@ import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/styles/styles.dart';
 
-class PhysicalScreenHeader extends ConsumerStatefulWidget {
+class CollectionScreenHeader extends ConsumerStatefulWidget {
   final VoidCallback? onAddGamePressed;
 
-  const PhysicalScreenHeader({super.key, this.onAddGamePressed});
+  const CollectionScreenHeader({super.key, this.onAddGamePressed});
 
   @override
-  ConsumerState<PhysicalScreenHeader> createState() =>
-      _PhysicalScreenHeaderState();
+  ConsumerState<CollectionScreenHeader> createState() =>
+      _CollectionScreenHeaderState();
 }
 
-class _PhysicalScreenHeaderState extends ConsumerState<PhysicalScreenHeader> {
+class _CollectionScreenHeaderState extends ConsumerState<CollectionScreenHeader> {
   bool _showTitle = true;
   Timer? _hideTimer;
 
@@ -79,10 +79,14 @@ class _PhysicalScreenHeaderState extends ConsumerState<PhysicalScreenHeader> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.sd_card_outlined, size: 20, color: AppColors.primaryPurple),
+        Icon(
+          Icons.collections_bookmark_outlined,
+          size: 20,
+          color: AppColors.primaryPurple,
+        ),
         const SizedBox(width: 8),
         Text(
-          'Physical',
+          'Collection',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -116,7 +120,7 @@ class _PhysicalScreenHeaderState extends ConsumerState<PhysicalScreenHeader> {
 
   Widget _buildPlatformFilter() {
     final selectedPlatform = ref.watch(selectedPlatformProvider);
-    final availablePlatforms = ref.watch(physicalPlatformsProvider);
+    final availablePlatforms = ref.watch(collectionPlatformsProvider);
 
     return PlatformFilterDropdown(
       selectedPlatform: selectedPlatform,

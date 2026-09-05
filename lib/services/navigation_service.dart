@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class NavigationService {
   static const int homeIndex = 0;
   static const int backlogIndex = 1;
-  static const int physicalIndex = 2;
+  static const int collectionIndex = 2;
   static const int wishlistIndex = 3;
   static const int profileIndex = 4;
 
@@ -40,8 +40,8 @@ class NavigationService {
         return '/main';
       case backlogIndex:
         return '/backlog';
-      case physicalIndex:
-        return '/physical';
+      case collectionIndex:
+        return '/collection';
       case wishlistIndex:
         return '/wishlist';
       case profileIndex:

@@ -536,63 +536,64 @@ final backlogPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef BacklogPlatformsRef = AutoDisposeProviderRef<List<String>>;
-String _$physicalGamesHash() => r'a53cf6ba86176e06be130d3db3e2fc09251da4c9';
+String _$collectionGamesHash() => r'fdeeb63006e845d4f7f4c7551a22b37027803005';
 
-/// See also [physicalGames].
-@ProviderFor(physicalGames)
-final physicalGamesProvider = AutoDisposeProvider<List<GameItem>>.internal(
-  physicalGames,
-  name: r'physicalGamesProvider',
+/// See also [collectionGames].
+@ProviderFor(collectionGames)
+final collectionGamesProvider = AutoDisposeProvider<List<GameItem>>.internal(
+  collectionGames,
+  name: r'collectionGamesProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$physicalGamesHash,
+          : _$collectionGamesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef PhysicalGamesRef = AutoDisposeProviderRef<List<GameItem>>;
-String _$physicalGamesByPlatformHash() =>
-    r'5543870cb600a92b02a7e1265f16c50b0bb67ec8';
+typedef CollectionGamesRef = AutoDisposeProviderRef<List<GameItem>>;
+String _$collectionGamesByPlatformHash() =>
+    r'43234d50a01300ecf655ecbd59984d37450bc087';
 
-/// See also [physicalGamesByPlatform].
-@ProviderFor(physicalGamesByPlatform)
-final physicalGamesByPlatformProvider =
+/// See also [collectionGamesByPlatform].
+@ProviderFor(collectionGamesByPlatform)
+final collectionGamesByPlatformProvider =
     AutoDisposeProvider<Map<String, List<GameItem>>>.internal(
-      physicalGamesByPlatform,
-      name: r'physicalGamesByPlatformProvider',
+      collectionGamesByPlatform,
+      name: r'collectionGamesByPlatformProvider',
       debugGetCreateSourceHash:
           const bool.fromEnvironment('dart.vm.product')
               ? null
-              : _$physicalGamesByPlatformHash,
+              : _$collectionGamesByPlatformHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef PhysicalGamesByPlatformRef =
+typedef CollectionGamesByPlatformRef =
     AutoDisposeProviderRef<Map<String, List<GameItem>>>;
-String _$physicalPlatformsHash() => r'618ef3cbcd8295911ba8e752ba9af7f9b3429406';
+String _$collectionPlatformsHash() =>
+    r'eb9dc99fe4cd3d38bdbcefffcdc8aeb4f6b95cfb';
 
-/// See also [physicalPlatforms].
-@ProviderFor(physicalPlatforms)
-final physicalPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
-  physicalPlatforms,
-  name: r'physicalPlatformsProvider',
+/// See also [collectionPlatforms].
+@ProviderFor(collectionPlatforms)
+final collectionPlatformsProvider = AutoDisposeProvider<List<String>>.internal(
+  collectionPlatforms,
+  name: r'collectionPlatformsProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$physicalPlatformsHash,
+          : _$collectionPlatformsHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef PhysicalPlatformsRef = AutoDisposeProviderRef<List<String>>;
+typedef CollectionPlatformsRef = AutoDisposeProviderRef<List<String>>;
 String _$gameListHash() => r'cfd7a059515931479f934b0db4591c063c117e1e';
 
 /// See also [GameList].

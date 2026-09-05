@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/main/main_screen.dart';
 import 'package:chkpnt/screens/main/widgets/welcome_empty_state.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/models/game_models.dart';
 import '../../test_helpers.dart';
 
 void main() {
@@ -150,5 +152,48 @@ void main() {
       });
     });
 
+
+    testWidgets('does not show owned games in any section', (tester) async {
+      container = ProviderContainer(
+        overrides: [
+          gameListProvider.overrideWith(() => IsolatedTestGameListNotifier()),
+        ],
+      );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: MainScreen()),
+        ),
+      );
+
+      final notifier = container.read(gameListProvider.notifier);
+      await notifier.addGame(
+        TestHelpers.createPlayingGame(title: 'Visible Playing Game'),
+      );
+      await notifier.addGame(
+        GameItem.create(
+          title: 'Hidden Owned Game',
+          platform: 'PC',
+          status: GameStatus.owned,
+        ),
+      );
+
+      final expansion = container.read(sectionExpansionProvider.notifier);
+      for (final section in const [
+        'Playing',
+        'Ongoing/Frequently Played',
+        'Backlog',
+        'Completed',
+        'Abandoned',
+      ]) {
+        expansion.expandSection(section);
+      }
+
+      await tester.pump();
+
+      expect(find.text('Visible Playing Game'), findsOneWidget);
+      expect(find.text('Hidden Owned Game'), findsNothing);
+    });
   });
 }
