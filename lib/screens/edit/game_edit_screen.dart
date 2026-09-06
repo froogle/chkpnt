@@ -517,7 +517,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           ),
         ),
         content: const Text(
-          'To take photos of your game collection, ChkPnt needs access to your camera.\n\n'
+          'ChkPnt uses your camera to photograph your games and to scan barcodes.\n\n'
           'Tap "Open Settings" to go to the app settings page, then enable the Camera permission.',
           style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.4),
         ),
