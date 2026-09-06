@@ -106,6 +106,17 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _barcodeMeta = const VerificationMeta(
+    'barcode',
+  );
+  @override
+  late final GeneratedColumn<String> barcode = GeneratedColumn<String>(
+    'barcode',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -117,6 +128,7 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
     imagePath,
     remoteImageUrl,
     isPhysical,
+    barcode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -202,6 +214,12 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
         isPhysical.isAcceptableOrUnknown(data['is_physical']!, _isPhysicalMeta),
       );
     }
+    if (data.containsKey('barcode')) {
+      context.handle(
+        _barcodeMeta,
+        barcode.isAcceptableOrUnknown(data['barcode']!, _barcodeMeta),
+      );
+    }
     return context;
   }
 
@@ -254,6 +272,10 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
             DriftSqlType.bool,
             data['${effectivePrefix}is_physical'],
           )!,
+      barcode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}barcode'],
+      ),
     );
   }
 
@@ -273,6 +295,7 @@ class Game extends DataClass implements Insertable<Game> {
   final String? imagePath;
   final String? remoteImageUrl;
   final bool isPhysical;
+  final String? barcode;
   const Game({
     required this.id,
     required this.title,
@@ -283,6 +306,7 @@ class Game extends DataClass implements Insertable<Game> {
     this.imagePath,
     this.remoteImageUrl,
     required this.isPhysical,
+    this.barcode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -300,6 +324,9 @@ class Game extends DataClass implements Insertable<Game> {
       map['remote_image_url'] = Variable<String>(remoteImageUrl);
     }
     map['is_physical'] = Variable<bool>(isPhysical);
+    if (!nullToAbsent || barcode != null) {
+      map['barcode'] = Variable<String>(barcode);
+    }
     return map;
   }
 
@@ -320,6 +347,10 @@ class Game extends DataClass implements Insertable<Game> {
               ? const Value.absent()
               : Value(remoteImageUrl),
       isPhysical: Value(isPhysical),
+      barcode:
+          barcode == null && nullToAbsent
+              ? const Value.absent()
+              : Value(barcode),
     );
   }
 
@@ -338,6 +369,7 @@ class Game extends DataClass implements Insertable<Game> {
       imagePath: serializer.fromJson<String?>(json['imagePath']),
       remoteImageUrl: serializer.fromJson<String?>(json['remoteImageUrl']),
       isPhysical: serializer.fromJson<bool>(json['isPhysical']),
+      barcode: serializer.fromJson<String?>(json['barcode']),
     );
   }
   @override
@@ -353,6 +385,7 @@ class Game extends DataClass implements Insertable<Game> {
       'imagePath': serializer.toJson<String?>(imagePath),
       'remoteImageUrl': serializer.toJson<String?>(remoteImageUrl),
       'isPhysical': serializer.toJson<bool>(isPhysical),
+      'barcode': serializer.toJson<String?>(barcode),
     };
   }
 
@@ -366,6 +399,7 @@ class Game extends DataClass implements Insertable<Game> {
     Value<String?> imagePath = const Value.absent(),
     Value<String?> remoteImageUrl = const Value.absent(),
     bool? isPhysical,
+    Value<String?> barcode = const Value.absent(),
   }) => Game(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -377,6 +411,7 @@ class Game extends DataClass implements Insertable<Game> {
     remoteImageUrl:
         remoteImageUrl.present ? remoteImageUrl.value : this.remoteImageUrl,
     isPhysical: isPhysical ?? this.isPhysical,
+    barcode: barcode.present ? barcode.value : this.barcode,
   );
   Game copyWithCompanion(GamesCompanion data) {
     return Game(
@@ -399,6 +434,7 @@ class Game extends DataClass implements Insertable<Game> {
               : this.remoteImageUrl,
       isPhysical:
           data.isPhysical.present ? data.isPhysical.value : this.isPhysical,
+      barcode: data.barcode.present ? data.barcode.value : this.barcode,
     );
   }
 
@@ -413,7 +449,8 @@ class Game extends DataClass implements Insertable<Game> {
           ..write('lastStatusChange: $lastStatusChange, ')
           ..write('imagePath: $imagePath, ')
           ..write('remoteImageUrl: $remoteImageUrl, ')
-          ..write('isPhysical: $isPhysical')
+          ..write('isPhysical: $isPhysical, ')
+          ..write('barcode: $barcode')
           ..write(')'))
         .toString();
   }
@@ -429,6 +466,7 @@ class Game extends DataClass implements Insertable<Game> {
     imagePath,
     remoteImageUrl,
     isPhysical,
+    barcode,
   );
   @override
   bool operator ==(Object other) =>
@@ -442,7 +480,8 @@ class Game extends DataClass implements Insertable<Game> {
           other.lastStatusChange == this.lastStatusChange &&
           other.imagePath == this.imagePath &&
           other.remoteImageUrl == this.remoteImageUrl &&
-          other.isPhysical == this.isPhysical);
+          other.isPhysical == this.isPhysical &&
+          other.barcode == this.barcode);
 }
 
 class GamesCompanion extends UpdateCompanion<Game> {
@@ -455,6 +494,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
   final Value<String?> imagePath;
   final Value<String?> remoteImageUrl;
   final Value<bool> isPhysical;
+  final Value<String?> barcode;
   final Value<int> rowid;
   const GamesCompanion({
     this.id = const Value.absent(),
@@ -466,6 +506,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     this.imagePath = const Value.absent(),
     this.remoteImageUrl = const Value.absent(),
     this.isPhysical = const Value.absent(),
+    this.barcode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GamesCompanion.insert({
@@ -478,6 +519,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     this.imagePath = const Value.absent(),
     this.remoteImageUrl = const Value.absent(),
     this.isPhysical = const Value.absent(),
+    this.barcode = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
@@ -495,6 +537,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Expression<String>? imagePath,
     Expression<String>? remoteImageUrl,
     Expression<bool>? isPhysical,
+    Expression<String>? barcode,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -507,6 +550,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
       if (imagePath != null) 'image_path': imagePath,
       if (remoteImageUrl != null) 'remote_image_url': remoteImageUrl,
       if (isPhysical != null) 'is_physical': isPhysical,
+      if (barcode != null) 'barcode': barcode,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -521,6 +565,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Value<String?>? imagePath,
     Value<String?>? remoteImageUrl,
     Value<bool>? isPhysical,
+    Value<String?>? barcode,
     Value<int>? rowid,
   }) {
     return GamesCompanion(
@@ -533,6 +578,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
       imagePath: imagePath ?? this.imagePath,
       remoteImageUrl: remoteImageUrl ?? this.remoteImageUrl,
       isPhysical: isPhysical ?? this.isPhysical,
+      barcode: barcode ?? this.barcode,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -567,6 +613,9 @@ class GamesCompanion extends UpdateCompanion<Game> {
     if (isPhysical.present) {
       map['is_physical'] = Variable<bool>(isPhysical.value);
     }
+    if (barcode.present) {
+      map['barcode'] = Variable<String>(barcode.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -585,6 +634,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
           ..write('imagePath: $imagePath, ')
           ..write('remoteImageUrl: $remoteImageUrl, ')
           ..write('isPhysical: $isPhysical, ')
+          ..write('barcode: $barcode, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1289,6 +1339,7 @@ typedef $$GamesTableCreateCompanionBuilder =
       Value<String?> imagePath,
       Value<String?> remoteImageUrl,
       Value<bool> isPhysical,
+      Value<String?> barcode,
       Value<int> rowid,
     });
 typedef $$GamesTableUpdateCompanionBuilder =
@@ -1302,6 +1353,7 @@ typedef $$GamesTableUpdateCompanionBuilder =
       Value<String?> imagePath,
       Value<String?> remoteImageUrl,
       Value<bool> isPhysical,
+      Value<String?> barcode,
       Value<int> rowid,
     });
 
@@ -1379,6 +1431,11 @@ class $$GamesTableFilterComposer extends Composer<_$GameDatabase, $GamesTable> {
 
   ColumnFilters<bool> get isPhysical => $composableBuilder(
     column: $table.isPhysical,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get barcode => $composableBuilder(
+    column: $table.barcode,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1461,6 +1518,11 @@ class $$GamesTableOrderingComposer
     column: $table.isPhysical,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get barcode => $composableBuilder(
+    column: $table.barcode,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$GamesTableAnnotationComposer
@@ -1506,6 +1568,9 @@ class $$GamesTableAnnotationComposer
     column: $table.isPhysical,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get barcode =>
+      $composableBuilder(column: $table.barcode, builder: (column) => column);
 
   Expression<T> guidesRefs<T extends Object>(
     Expression<T> Function($$GuidesTableAnnotationComposer a) f,
@@ -1570,6 +1635,7 @@ class $$GamesTableTableManager
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> remoteImageUrl = const Value.absent(),
                 Value<bool> isPhysical = const Value.absent(),
+                Value<String?> barcode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamesCompanion(
                 id: id,
@@ -1581,6 +1647,7 @@ class $$GamesTableTableManager
                 imagePath: imagePath,
                 remoteImageUrl: remoteImageUrl,
                 isPhysical: isPhysical,
+                barcode: barcode,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1594,6 +1661,7 @@ class $$GamesTableTableManager
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> remoteImageUrl = const Value.absent(),
                 Value<bool> isPhysical = const Value.absent(),
+                Value<String?> barcode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamesCompanion.insert(
                 id: id,
@@ -1605,6 +1673,7 @@ class $$GamesTableTableManager
                 imagePath: imagePath,
                 remoteImageUrl: remoteImageUrl,
                 isPhysical: isPhysical,
+                barcode: barcode,
                 rowid: rowid,
               ),
           withReferenceMapper:

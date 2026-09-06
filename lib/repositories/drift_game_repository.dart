@@ -25,6 +25,7 @@ class Games extends Table {
   TextColumn get imagePath => text().nullable()();
   TextColumn get remoteImageUrl => text().nullable()();
   BoolColumn get isPhysical => boolean().withDefault(const Constant(false))();
+  TextColumn get barcode => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -56,7 +57,7 @@ class GameDatabase extends _$GameDatabase {
   }
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   Future<void> ensureInitialized() async {
     await customSelect('SELECT 1').get();
@@ -108,6 +109,11 @@ class GameDatabase extends _$GameDatabase {
           await m.addColumn(guides, guides.format);
         }
       }
+      if (from < 7) {
+        if (!await _columnExists('games', 'barcode')) {
+          await m.addColumn(games, games.barcode);
+        }
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -131,6 +137,7 @@ class GameDatabase extends _$GameDatabase {
       imagePath: game.imagePath,
       remoteImageUrl: game.remoteImageUrl,
       isPhysical: game.isPhysical,
+      barcode: game.barcode,
     );
   }
 
@@ -145,6 +152,7 @@ class GameDatabase extends _$GameDatabase {
       imagePath: Value(gameItem.imagePath),
       remoteImageUrl: Value(gameItem.remoteImageUrl),
       isPhysical: Value(gameItem.isPhysical),
+      barcode: Value(gameItem.barcode),
     );
   }
 
@@ -398,6 +406,7 @@ class DriftGameRepository implements GameRepository {
         'imagePath': game.imagePath,
         'remoteImageUrl': game.remoteImageUrl,
         'isPhysical': game.isPhysical,
+        'barcode': game.barcode,
       }).toList();
 
       final guidesJsonData = guides.map((guide) => {
@@ -442,6 +451,7 @@ class DriftGameRepository implements GameRepository {
           imagePath: gameData['imagePath'],
           remoteImageUrl: gameData['remoteImageUrl'],
           isPhysical: gameData['isPhysical'] ?? false,
+          barcode: gameData['barcode'] as String?,
         );
       }).toList();
 

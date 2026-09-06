@@ -23,6 +23,7 @@ _$GameItemImpl _$$GameItemImplFromJson(Map<String, dynamic> json) =>
       imagePath: json['imagePath'] as String?,
       remoteImageUrl: json['remoteImageUrl'] as String?,
       isPhysical: json['isPhysical'] as bool? ?? false,
+      barcode: json['barcode'] as String?,
     );
 
 Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
@@ -36,6 +37,7 @@ Map<String, dynamic> _$$GameItemImplToJson(_$GameItemImpl instance) =>
       'imagePath': instance.imagePath,
       'remoteImageUrl': instance.remoteImageUrl,
       'isPhysical': instance.isPhysical,
+      'barcode': instance.barcode,
     };
 
 const _$GameStatusEnumMap = {

@@ -94,6 +94,67 @@ class PlatformUtils {
   /// Platforms that should be kept as-is (mobile platforms)
   static const Set<String> _preservedPlatforms = {'mobile', 'ios', 'android'};
 
+  static const int _shortestUnambiguousTerm = 3;
+
+  static final List<MapEntry<String, String>> _detectionTerms =
+      _buildDetectionTerms();
+
+  static List<MapEntry<String, String>> _buildDetectionTerms() {
+    final terms = <String, String>{};
+    _platformAbbreviations.forEach((name, abbreviation) {
+      terms[name] = abbreviation;
+      terms[abbreviation.toLowerCase()] = abbreviation;
+    });
+
+    final entries = terms.entries.toList();
+    entries.sort((a, b) => b.key.length.compareTo(a.key.length));
+    return entries;
+  }
+
+  static PlatformMatch? findPlatform(String text) {
+    final haystack = text.toLowerCase();
+
+    for (final term in _detectionTerms) {
+      final matches = RegExp(
+        '(?<![a-z0-9])${RegExp.escape(term.key)}(?![a-z0-9])',
+      ).allMatches(haystack);
+
+      for (final match in matches.toList().reversed) {
+        if (term.key.length >= _shortestUnambiguousTerm ||
+            _hasEnoughContext(haystack, match)) {
+          return PlatformMatch(
+            abbreviation: term.value,
+            start: match.start,
+            end: match.end,
+          );
+        }
+      }
+    }
+
+    return null;
+  }
+
+  static bool _hasEnoughContext(String haystack, Match match) {
+    const openingBrackets = {'(', '['};
+    const closingBrackets = {')', ']'};
+
+    final before = match.start == 0 ? '' : haystack[match.start - 1];
+    final after =
+        match.end == haystack.length ? '' : haystack[match.end];
+
+    final isBracketed =
+        openingBrackets.contains(before) && closingBrackets.contains(after);
+    final isWholeString = haystack.trim() == haystack.substring(
+      match.start,
+      match.end,
+    );
+    final isStringFinal = match.end == haystack.trimRight().length;
+
+    return isBracketed || isWholeString || isStringFinal;
+  }
+
+  static String? detectPlatform(String text) => findPlatform(text)?.abbreviation;
+
   /// Abbreviates platform names to standardised short forms
   ///
   /// Takes a platform name and returns an abbreviated version suitable for display.
@@ -117,4 +178,16 @@ class PlatformUtils {
     final trimmed = platform.trim();
     return trimmed.length > 12 ? '${trimmed.substring(0, 12)}...' : trimmed;
   }
+}
+
+class PlatformMatch {
+  final String abbreviation;
+  final int start;
+  final int end;
+
+  const PlatformMatch({
+    required this.abbreviation,
+    required this.start,
+    required this.end,
+  });
 }

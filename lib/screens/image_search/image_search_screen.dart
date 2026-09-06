@@ -4,7 +4,15 @@ import 'package:chkpnt/services/web_image_search_service.dart';
 
 class ImageSearchScreen extends StatefulWidget {
   final String initialQuery;
-  const ImageSearchScreen({super.key, required this.initialQuery});
+  final List<String> suggestedImageUrls;
+  final WebImageSearchService? searchService;
+
+  const ImageSearchScreen({
+    super.key,
+    required this.initialQuery,
+    this.suggestedImageUrls = const [],
+    this.searchService,
+  });
 
   @override
   State<ImageSearchScreen> createState() => _ImageSearchScreenState();
@@ -30,10 +38,14 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       _imageUrls = [];
     });
     try {
-      final service = WebImageSearchService();
-      _imageUrls = await service.searchImages(_query);
+      final service = widget.searchService ?? WebImageSearchService();
+      final results = await service.searchImages(_query);
+      _imageUrls = [...widget.suggestedImageUrls, ...results];
     } catch (e) {
-      _error = 'Failed to load images.';
+      _imageUrls = [...widget.suggestedImageUrls];
+      if (_imageUrls.isEmpty) {
+        _error = 'Failed to load images.';
+      }
     } finally {
       setState(() {
         _loading = false;

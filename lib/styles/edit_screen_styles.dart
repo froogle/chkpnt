@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'global_styles.dart';
 
 class EditScreenStyles {
   // Save button styles
@@ -197,4 +198,27 @@ class EditScreenStyles {
   static const double horizontalSpacing = 24.0;
   static const double verticalSpacing = 16.0;
   static const double gameImageWidth = 120.0;
+
+  static const Color scanBarcodeColour = AppColors.primaryPurple;
+  static const double scanBarcodeIconSize = 16.0;
+
+  static const TextStyle scanBarcodeTextStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: scanBarcodeColour,
+  );
+
+  static const EdgeInsets scanBarcodePadding = EdgeInsets.symmetric(
+    horizontal: 4,
+    vertical: 4,
+  );
+
+  static const Color lookupOverlayColour = Color(0xB3FFFFFF);
+
+  static const Color scanMessageBackgroundColour = AppColors.darkSidebar;
+
+  static const TextStyle scanMessageTextStyle = TextStyle(
+    fontSize: 14,
+    color: Colors.white,
+  );
 }

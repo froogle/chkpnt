@@ -30,6 +30,7 @@ class GameItem with _$GameItem {
     String? imagePath,
     String? remoteImageUrl,
     @Default(false) bool isPhysical,
+    String? barcode,
   }) = _GameItem;
 
   factory GameItem.create({
@@ -39,6 +40,7 @@ class GameItem with _$GameItem {
     String? imagePath,
     String? remoteImageUrl,
     bool isPhysical = false,
+    String? barcode,
   }) {
     final now = DateTime.now();
     return GameItem(
@@ -51,6 +53,7 @@ class GameItem with _$GameItem {
       imagePath: imagePath,
       remoteImageUrl: remoteImageUrl,
       isPhysical: isPhysical,
+      barcode: barcode,
     );
   }
 

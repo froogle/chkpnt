@@ -165,4 +165,102 @@ void main() {
       });
     });
   });
+
+  group('PlatformUtils.detectPlatform', () {
+    test('prefers the longest match over a shorter one', () {
+      expect(
+        PlatformUtils.detectPlatform('Elden Ring - PlayStation 5'),
+        'PS5',
+      );
+      expect(
+        PlatformUtils.detectPlatform('Uncharted Sony Playstation 3 Game'),
+        'PS3',
+      );
+      expect(
+        PlatformUtils.detectPlatform('Red Dead Redemption (Xbox 360)'),
+        'Xbox 360',
+      );
+    });
+
+    test('resolves short forms inside a longer title', () {
+      expect(PlatformUtils.detectPlatform('Elden Ring PS5 Disc'), 'PS5');
+      expect(
+        PlatformUtils.detectPlatform('Metal Gear Solid - Peace Walker (PSP)'),
+        'PSP',
+      );
+      expect(
+        PlatformUtils.detectPlatform('Virtua Tennis 4 PS Vita Game'),
+        'PS Vita',
+      );
+      expect(
+        PlatformUtils.detectPlatform('Mario Kart 8 Deluxe Switch'),
+        'Switch',
+      );
+    });
+
+    test('matches regardless of casing', () {
+      expect(PlatformUtils.detectPlatform('Peace Walker (psp)'), 'PSP');
+      expect(PlatformUtils.detectPlatform('Virtua Tennis 4 (ps vita)'), 'PS Vita');
+      expect(PlatformUtils.detectPlatform('HALO xBoX oNe'), 'Xbox One');
+    });
+
+    test('returns null when no platform is present', () {
+      expect(PlatformUtils.detectPlatform('Trails From Zero'), isNull);
+      expect(
+        PlatformUtils.detectPlatform('The Llamasoft Collection'),
+        isNull,
+      );
+      expect(PlatformUtils.detectPlatform(''), isNull);
+    });
+
+    test('does not match a platform hidden inside another word', () {
+      expect(PlatformUtils.detectPlatform('Snesology Adventures'), isNull);
+      expect(PlatformUtils.detectPlatform('Xboxing Champions'), isNull);
+    });
+
+    test('very short abbreviations need bracketing or the end of the string', () {
+      expect(PlatformUtils.detectPlatform('Elden Ring (PC)'), 'PC');
+      expect(PlatformUtils.detectPlatform('Pokemon Black (DS)'), 'DS');
+      expect(PlatformUtils.detectPlatform('Tetris (GB)'), 'GB');
+      expect(PlatformUtils.detectPlatform('Tetris [GB]'), 'GB');
+      expect(PlatformUtils.detectPlatform('Elden Ring PC'), 'PC');
+
+      expect(PlatformUtils.detectPlatform('PC'), 'PC');
+      expect(PlatformUtils.detectPlatform('ds'), 'DS');
+      expect(PlatformUtils.detectPlatform('Nintendo DS'), 'DS');
+    });
+
+    test('very short abbreviations do not match bare in the middle', () {
+      expect(PlatformUtils.detectPlatform('A DS game'), isNull);
+      expect(PlatformUtils.detectPlatform('16GB Memory Card'), isNull);
+      expect(PlatformUtils.detectPlatform('Building a PC together'), isNull);
+      expect(PlatformUtils.detectPlatform('The PC Master Race Bundle'), isNull);
+    });
+  });
+
+  group('PlatformUtils.findPlatform', () {
+    test('reports where the platform was matched', () {
+      final match = PlatformUtils.findPlatform('Mario Kart 8 (Nintendo Switch)');
+
+      expect(match, isNotNull);
+      expect(match!.abbreviation, 'Switch');
+      expect(
+        'Mario Kart 8 (Nintendo Switch)'.substring(match.start, match.end),
+        'Nintendo Switch',
+      );
+    });
+
+    test('reports the last occurrence so trailing segments can be cut', () {
+      const title = 'Wii Sports Resort Nintendo Wii';
+      final match = PlatformUtils.findPlatform(title);
+
+      expect(match, isNotNull);
+      expect(match!.end, title.length);
+      expect(title.substring(0, match.start).trim(), 'Wii Sports Resort');
+    });
+
+    test('returns null when nothing matches', () {
+      expect(PlatformUtils.findPlatform('Trails From Zero'), isNull);
+    });
+  });
 }

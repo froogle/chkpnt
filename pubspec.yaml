@@ -82,6 +82,9 @@ dependencies:
   # Local key-value storage for preferences
   shared_preferences: ^2.2.2
 
+  # Barcode scanning for physical game entry
+  mobile_scanner: ^7.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

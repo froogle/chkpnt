@@ -256,6 +256,7 @@ class GameEditFormState {
   final String? imagePath;
   final bool hasUnsavedChanges;
   final bool isPhysical;
+  final String? barcode;
 
   const GameEditFormState({
     required this.title,
@@ -264,6 +265,7 @@ class GameEditFormState {
     this.imagePath,
     this.hasUnsavedChanges = false,
     this.isPhysical = false,
+    this.barcode,
   });
 
   GameEditFormState copyWith({
@@ -274,6 +276,7 @@ class GameEditFormState {
     bool? hasUnsavedChanges,
     bool clearImagePath = false,
     bool? isPhysical,
+    String? barcode,
   }) {
     return GameEditFormState(
       title: title ?? this.title,
@@ -282,6 +285,7 @@ class GameEditFormState {
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
       hasUnsavedChanges: hasUnsavedChanges ?? this.hasUnsavedChanges,
       isPhysical: isPhysical ?? this.isPhysical,
+      barcode: barcode ?? this.barcode,
     );
   }
 
@@ -294,7 +298,8 @@ class GameEditFormState {
         other.status == status &&
         other.imagePath == imagePath &&
         other.hasUnsavedChanges == hasUnsavedChanges &&
-        other.isPhysical == isPhysical;
+        other.isPhysical == isPhysical &&
+        other.barcode == barcode;
   }
 
   @override
@@ -306,6 +311,7 @@ class GameEditFormState {
       imagePath,
       hasUnsavedChanges,
       isPhysical,
+      barcode,
     );
   }
 }
@@ -361,6 +367,21 @@ class GameEditState extends _$GameEditState {
 
   void updateIsPhysical(bool isPhysical) {
     state = state.copyWith(isPhysical: isPhysical, hasUnsavedChanges: true);
+  }
+
+  void applyBarcodeScan({
+    required String barcode,
+    required String title,
+    required String platform,
+  }) {
+    state = state.copyWith(
+      title: title.isEmpty ? null : title,
+      platform: platform.isEmpty ? null : platform,
+      status: GameStatus.owned,
+      isPhysical: true,
+      barcode: barcode,
+      hasUnsavedChanges: true,
+    );
   }
 
   bool get hasChanges => state.hasUnsavedChanges;

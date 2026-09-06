@@ -637,4 +637,107 @@ void main() {
       expect(editState.title, equals('Test Game')); // Unchanged
     });
   });
+
+  group('GameEditState barcode scanning', () {
+    late ProviderContainer container;
+    const addContext = GameEditContext(isAddMode: true);
+
+    setUp(() {
+      container = ProviderContainer();
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('starts with no barcode', () {
+      expect(container.read(gameEditStateProvider(addContext)).barcode, isNull);
+    });
+
+    test('a successful scan fills the form and marks it owned', () {
+      container
+          .read(gameEditStateProvider(addContext).notifier)
+          .applyBarcodeScan(
+            barcode: '5026555248082',
+            title: 'Red Dead Redemption',
+            platform: 'Xbox 360',
+          );
+
+      final state = container.read(gameEditStateProvider(addContext));
+
+      expect(state.barcode, '5026555248082');
+      expect(state.title, 'Red Dead Redemption');
+      expect(state.platform, 'Xbox 360');
+      expect(state.status, GameStatus.owned);
+      expect(state.isPhysical, isTrue);
+      expect(state.hasUnsavedChanges, isTrue);
+    });
+
+    test('a failed lookup still carries the barcode', () {
+      container
+          .read(gameEditStateProvider(addContext).notifier)
+          .applyBarcodeScan(barcode: '5060990241239', title: '', platform: '');
+
+      final state = container.read(gameEditStateProvider(addContext));
+
+      expect(state.barcode, '5060990241239');
+      expect(state.status, GameStatus.owned);
+      expect(state.isPhysical, isTrue);
+    });
+
+    test('a failed lookup never blanks a title or platform', () {
+      final notifier = container.read(
+        gameEditStateProvider(addContext).notifier,
+      );
+      notifier.updateTitle('Trails From Zero');
+      notifier.updatePlatform('PS4');
+
+      notifier.applyBarcodeScan(
+        barcode: '5060990241239',
+        title: '',
+        platform: '',
+      );
+
+      final state = container.read(gameEditStateProvider(addContext));
+
+      expect(state.title, 'Trails From Zero');
+      expect(state.platform, 'PS4');
+      expect(state.barcode, '5060990241239');
+    });
+
+    test('a partial lookup keeps the platform the user chose', () {
+      final notifier = container.read(
+        gameEditStateProvider(addContext).notifier,
+      );
+      notifier.updatePlatform('PS4');
+
+      notifier.applyBarcodeScan(
+        barcode: '4012927064528',
+        title: 'Metal Gear Solid - Peace Walker',
+        platform: '',
+      );
+
+      final state = container.read(gameEditStateProvider(addContext));
+
+      expect(state.title, 'Metal Gear Solid - Peace Walker');
+      expect(state.platform, 'PS4');
+    });
+
+    test('a scanned barcode survives later form edits', () {
+      final notifier = container.read(gameEditStateProvider(addContext).notifier);
+      notifier.applyBarcodeScan(
+        barcode: '4012927064528',
+        title: 'Metal Gear Solid - Peace Walker',
+        platform: 'PSP',
+      );
+      notifier.updateTitle('Metal Gear Solid: Peace Walker');
+      notifier.updateStatus(GameStatus.playing);
+
+      final state = container.read(gameEditStateProvider(addContext));
+
+      expect(state.barcode, '4012927064528');
+      expect(state.title, 'Metal Gear Solid: Peace Walker');
+      expect(state.status, GameStatus.playing);
+    });
+  });
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/services/barcode_lookup_service.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
@@ -9,6 +11,7 @@ import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_info_section.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_actions.dart';
+import 'package:chkpnt/screens/edit/widgets/barcode_scanner_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/image_selection_bottom_sheet.dart';
 import 'package:chkpnt/screens/image_search/image_search_screen.dart';
 
@@ -57,6 +60,7 @@ class GameEditScreen extends ConsumerStatefulWidget {
 class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   late TextEditingController _titleController;
   late GameEditContext _editContext;
+  bool _isLookingUpBarcode = false;
 
   @override
   void initState() {
@@ -87,7 +91,14 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: SafeArea(child: _buildContent()),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            _buildContent(),
+            if (_isLookingUpBarcode) _buildLookupOverlay(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -151,10 +162,45 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   Widget _buildGameImage(GameEditFormState editState) {
     return SizedBox(
       width: EditScreenStyles.gameImageWidth,
-      child: GameImage(
-        heroTag: 'game_image_${widget.game?.id ?? ''}',
-        imagePath: editState.imagePath,
-        onTap: _handleImageTap,
+      child: Column(
+        children: [
+          GameImage(
+            heroTag: 'game_image_${widget.game?.id ?? ''}',
+            imagePath: editState.imagePath,
+            onTap: _handleImageTap,
+          ),
+          if (widget.isAddMode) _buildScanBarcodeButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScanBarcodeButton() {
+    return TextButton.icon(
+      onPressed: _handleBarcodeScan,
+      icon: const Icon(
+        Icons.qr_code_scanner,
+        size: EditScreenStyles.scanBarcodeIconSize,
+        color: EditScreenStyles.scanBarcodeColour,
+      ),
+      label: const Text(
+        'Scan Barcode',
+        style: EditScreenStyles.scanBarcodeTextStyle,
+      ),
+      style: TextButton.styleFrom(
+        foregroundColor: EditScreenStyles.scanBarcodeColour,
+        padding: EditScreenStyles.scanBarcodePadding,
+      ),
+    );
+  }
+
+  Widget _buildLookupOverlay() {
+    return const Positioned.fill(
+      child: ColoredBox(
+        color: EditScreenStyles.lookupOverlayColour,
+        child: Center(
+          child: CircularProgressIndicator(color: AppColors.primaryPurple),
+        ),
       ),
     );
   }
@@ -192,6 +238,215 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   // Business logic methods
+
+  Future<void> _handleBarcodeScan() async {
+    final gameImageService = ref.read(gameImageServiceProvider);
+    final permissionResult =
+        await gameImageService.checkAndRequestCameraPermission();
+
+    if (!mounted) return;
+
+    switch (permissionResult) {
+      case CameraPermissionResult.granted:
+        await _scanAndPrefill();
+      case CameraPermissionResult.denied:
+      case CameraPermissionResult.openedSettings:
+        await _showCameraPermissionDialog();
+    }
+  }
+
+  Future<void> _scanAndPrefill() async {
+    final barcode = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (buildContext) => const BarcodeScannerScreen()),
+    );
+
+    if (barcode == null || !mounted) return;
+
+    final existingGame = _findGameWithBarcode(barcode);
+    if (existingGame != null) {
+      await _showDuplicateGameDialog(existingGame);
+      return;
+    }
+
+    setState(() => _isLookingUpBarcode = true);
+    final result = await ref.read(barcodeLookupServiceProvider).lookup(barcode);
+
+    if (!mounted) return;
+    setState(() => _isLookingUpBarcode = false);
+
+    _applyScanResult(barcode, result);
+
+    final message = _lookupFailureMessage(result.outcome);
+    if (message != null) {
+      _showScanMessage(message);
+      return;
+    }
+
+    if (result.title.isNotEmpty) {
+      _offerCoverArt(result);
+    }
+  }
+
+  GameItem? _findGameWithBarcode(String barcode) {
+    final scanned = BarcodeLookupService.normaliseBarcode(barcode);
+
+    for (final game in ref.read(gameListProvider)) {
+      final stored = game.barcode;
+      if (stored != null &&
+          BarcodeLookupService.normaliseBarcode(stored) == scanned) {
+        return game;
+      }
+    }
+    return null;
+  }
+
+  void _applyScanResult(String barcode, BarcodeLookupResult result) {
+    if (result.title.isNotEmpty) {
+      _titleController.text = result.title;
+    }
+    ref
+        .read(gameEditStateProvider(_editContext).notifier)
+        .applyBarcodeScan(
+          barcode: barcode,
+          title: result.title,
+          platform: _matchExistingPlatform(result.platform),
+        );
+  }
+
+  String _matchExistingPlatform(String? detectedPlatform) {
+    if (detectedPlatform == null) return '';
+
+    for (final platform in ref.read(availablePlatformsProvider)) {
+      if (platform.toLowerCase() == detectedPlatform.toLowerCase()) {
+        return platform;
+      }
+    }
+
+    return '';
+  }
+
+  String? _lookupFailureMessage(BarcodeLookupOutcome outcome) {
+    switch (outcome) {
+      case BarcodeLookupOutcome.found:
+        return null;
+      case BarcodeLookupOutcome.notFound:
+        return 'That barcode is not in the lookup service. Fill in the details '
+            'yourself and the code will be saved with the game.';
+      case BarcodeLookupOutcome.noNetwork:
+        return 'The lookup could not reach the internet. Fill in the details '
+            'yourself and the code will be saved with the game.';
+      case BarcodeLookupOutcome.limitReached:
+        return 'The daily barcode lookup limit has been reached. Try again '
+            'tomorrow, or fill in the details yourself.';
+      case BarcodeLookupOutcome.serverError:
+        return 'The lookup service is not answering right now. Fill in the '
+            'details yourself and the code will be saved with the game.';
+    }
+  }
+
+  void _offerCoverArt(BarcodeLookupResult result) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Found ${result.title}. Add cover art?',
+          style: EditScreenStyles.scanMessageTextStyle,
+        ),
+        backgroundColor: EditScreenStyles.scanMessageBackgroundColour,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: 'Find Cover',
+          textColor: EditScreenStyles.scanBarcodeColour,
+          onPressed: () => _searchCoverArt(result),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _searchCoverArt(BarcodeLookupResult result) async {
+    if (!mounted) return;
+
+    final query = '${result.title} ${result.platform ?? ''}'.trim();
+    final suggestedImageUrls =
+        result.imageUrl == null ? <String>[] : <String>[result.imageUrl!];
+
+    final selectedImageUrl = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder:
+            (buildContext) => ImageSearchScreen(
+              initialQuery: query,
+              suggestedImageUrls: suggestedImageUrls,
+            ),
+      ),
+    );
+
+    if (selectedImageUrl != null && mounted) {
+      await _selectImageFromUrl(selectedImageUrl);
+    }
+  }
+
+  Future<void> _showDuplicateGameDialog(GameItem existingGame) async {
+    final shouldOpenGame = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppDialogStyles.backgroundColor,
+        surfaceTintColor: AppDialogStyles.surfaceTintColor,
+        elevation: AppDialogStyles.elevation,
+        shape: AppDialogStyles.shape,
+        title: const Text(
+          'Already In Your Collection',
+          style: AppDialogStyles.titleTextStyle,
+        ),
+        content: Text(
+          '${existingGame.title} (${existingGame.platform}) already has this '
+          'barcode, so it has not been added again.',
+          style: AppDialogStyles.contentTextStyle,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            style: AppDialogStyles.buttonStyle(
+              AppDialogStyles.cancelButtonColor,
+            ),
+            child: const Text('Cancel', style: AppDialogStyles.buttonTextStyle),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppDialogStyles.confirmButtonColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              'Open Game',
+              style: AppDialogStyles.buttonTextStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldOpenGame == true && mounted) {
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (buildContext) => GameEditScreen.edit(game: existingGame),
+        ),
+      );
+    }
+  }
+
+  void _showScanMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: EditScreenStyles.scanMessageTextStyle,
+        ),
+        backgroundColor: EditScreenStyles.scanMessageBackgroundColour,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
 
   Future<void> _handleImageTap() async {
     await Future.delayed(const Duration(milliseconds: 50));
@@ -366,6 +621,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         status: editState.status,
         imagePath: editState.imagePath,
         isPhysical: editState.isPhysical,
+        barcode: editState.barcode,
       );
 
       final isBacklogGame = newGame.status == GameStatus.backlog;

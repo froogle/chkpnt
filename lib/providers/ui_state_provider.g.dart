@@ -247,7 +247,7 @@ final backlogShowOngoingFilterProvider =
     );
 
 typedef _$BacklogShowOngoingFilter = Notifier<bool>;
-String _$sectionExpansionHash() => r'02c4ac42a9cbeb707a329a7f4f14eef607b119b0';
+String _$sectionExpansionHash() => r'c93461a3d098b40887b13f169876e9c97b202e5d';
 
 /// See also [SectionExpansion].
 @ProviderFor(SectionExpansion)
