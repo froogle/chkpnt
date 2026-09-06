@@ -13,44 +13,50 @@ class MainScreenBottomNav extends ConsumerWidget {
     final currentRoute = ModalRoute.of(context)?.settings.name;
     final currentScreen = _getScreenIndexFromRoute(currentRoute);
 
-    return Container(
-      height: MainScreenStyles.bottomNavHeight,
+    return DecoratedBox(
       decoration: MainScreenStyles.bottomNavDecoration,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Expanded(
-            child: _buildNavButton(Icons.home_outlined, 0, currentScreen == 0),
-          ),
-          Expanded(
-            child: _buildNavButton(
-              Icons.list_alt_outlined,
-              1,
-              currentScreen == 1,
+      child: SizedBox(
+        height: MainScreenStyles.bottomNavHeight,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: _buildNavButton(
+                Icons.home_outlined,
+                0,
+                currentScreen == 0,
+              ),
             ),
-          ),
-          Expanded(
-            child: _buildNavButton(
-              Icons.collections_bookmark_outlined,
-              2,
-              currentScreen == 2,
+            Expanded(
+              child: _buildNavButton(
+                Icons.list_alt_outlined,
+                1,
+                currentScreen == 1,
+              ),
             ),
-          ),
-          Expanded(
-            child: _buildNavButton(
-              Icons.favorite_outline,
-              3,
-              currentScreen == 3,
+            Expanded(
+              child: _buildNavButton(
+                Icons.collections_bookmark_outlined,
+                2,
+                currentScreen == 2,
+              ),
             ),
-          ),
-          Expanded(
-            child: _buildNavButton(
-              Icons.person_outline,
-              4,
-              currentScreen == 4,
+            Expanded(
+              child: _buildNavButton(
+                Icons.favorite_outline,
+                3,
+                currentScreen == 3,
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              child: _buildNavButton(
+                Icons.person_outline,
+                4,
+                currentScreen == 4,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -59,7 +65,10 @@ class MainScreenBottomNav extends ConsumerWidget {
     return IconButton(
       onPressed: () => onNavItemPressed?.call(index),
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 32, minHeight: 40),
+      constraints: const BoxConstraints(
+        minWidth: MainScreenStyles.bottomNavItemMinSize,
+        minHeight: MainScreenStyles.bottomNavItemMinSize,
+      ),
       icon: Icon(
         icon,
         color:

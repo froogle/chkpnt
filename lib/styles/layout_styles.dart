@@ -11,6 +11,7 @@ class LayoutStyles {
   // Layout dimensions
   static const double sidebarWidth = 160.0;
   static const double bottomNavHeight = 48.0;
+  static const double bottomNavItemMinSize = 48.0;
   static const double dividerHeight = 1.0;
 
   // Header and content padding

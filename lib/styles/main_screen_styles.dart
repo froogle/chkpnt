@@ -25,6 +25,7 @@ class MainScreenStyles {
   // Layout dimensions (from LayoutStyles)
   static const double sidebarWidth = LayoutStyles.sidebarWidth;
   static const double bottomNavHeight = LayoutStyles.bottomNavHeight;
+  static const double bottomNavItemMinSize = LayoutStyles.bottomNavItemMinSize;
   static const double dividerHeight = LayoutStyles.dividerHeight;
 
   // Game card dimensions (from GameCardStyles)
