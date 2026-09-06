@@ -83,7 +83,7 @@ dependencies:
   shared_preferences: ^2.2.2
 
   # Barcode scanning for physical game entry
-  mobile_scanner: ^7.4.0
+  mobile_scanner: '>=7.1.4 <7.2.0'
 
 dev_dependencies:
   flutter_test:
