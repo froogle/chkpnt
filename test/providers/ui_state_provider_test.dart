@@ -27,8 +27,6 @@ void main() {
         'Abandoned': false,
         'Ordered': true,
         'Wish List': false,
-        'Physical': true,
-        'Digital': true,
       });
     });
 

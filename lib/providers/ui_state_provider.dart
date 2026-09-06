@@ -96,6 +96,34 @@ class BacklogShowOngoingFilter extends _$BacklogShowOngoingFilter {
   }
 }
 
+@Riverpod(keepAlive: true)
+class CollectionShowPhysicalFilter extends _$CollectionShowPhysicalFilter {
+  @override
+  bool build() => true;
+
+  void toggle() {
+    state = !state;
+  }
+
+  void setValue(bool value) {
+    state = value;
+  }
+}
+
+@Riverpod(keepAlive: true)
+class CollectionShowDigitalFilter extends _$CollectionShowDigitalFilter {
+  @override
+  bool build() => true;
+
+  void toggle() {
+    state = !state;
+  }
+
+  void setValue(bool value) {
+    state = value;
+  }
+}
+
 // Section expansion state - Using Notifier to preserve state across navigation
 @Riverpod(keepAlive: true)
 class SectionExpansion extends _$SectionExpansion {
@@ -108,8 +136,6 @@ class SectionExpansion extends _$SectionExpansion {
     'Abandoned': false,
     'Ordered': true,
     'Wish List': false,
-    'Physical': true,
-    'Digital': true,
   };
 
   // Track which sections have been manually controlled by the user

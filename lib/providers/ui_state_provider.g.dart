@@ -247,7 +247,43 @@ final backlogShowOngoingFilterProvider =
     );
 
 typedef _$BacklogShowOngoingFilter = Notifier<bool>;
-String _$sectionExpansionHash() => r'c93461a3d098b40887b13f169876e9c97b202e5d';
+String _$collectionShowPhysicalFilterHash() =>
+    r'6e3aecb06956be6b6f2c4adc7b3708e86dfbe905';
+
+/// See also [CollectionShowPhysicalFilter].
+@ProviderFor(CollectionShowPhysicalFilter)
+final collectionShowPhysicalFilterProvider =
+    NotifierProvider<CollectionShowPhysicalFilter, bool>.internal(
+      CollectionShowPhysicalFilter.new,
+      name: r'collectionShowPhysicalFilterProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$collectionShowPhysicalFilterHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$CollectionShowPhysicalFilter = Notifier<bool>;
+String _$collectionShowDigitalFilterHash() =>
+    r'85a7d8b921fff4414b4f144f0febc1a9adae536a';
+
+/// See also [CollectionShowDigitalFilter].
+@ProviderFor(CollectionShowDigitalFilter)
+final collectionShowDigitalFilterProvider =
+    NotifierProvider<CollectionShowDigitalFilter, bool>.internal(
+      CollectionShowDigitalFilter.new,
+      name: r'collectionShowDigitalFilterProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$collectionShowDigitalFilterHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$CollectionShowDigitalFilter = Notifier<bool>;
+String _$sectionExpansionHash() => r'd39dab82a28e9d915afafb05d2fc7208fa8bde5d';
 
 /// See also [SectionExpansion].
 @ProviderFor(SectionExpansion)
@@ -264,7 +300,7 @@ final sectionExpansionProvider =
     );
 
 typedef _$SectionExpansion = Notifier<Map<String, bool>>;
-String _$gameEditStateHash() => r'ebe4f4d0d0dc7079d7b73d4a092d78900b0a9b39';
+String _$gameEditStateHash() => r'652f80ab03cc9dbcffe16290367937cfab19d3d9';
 
 abstract class _$GameEditState
     extends BuildlessAutoDisposeNotifier<GameEditFormState> {

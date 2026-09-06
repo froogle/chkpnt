@@ -299,8 +299,15 @@ Map<String, List<GameItem>> collectionGamesByPlatform(Ref ref) {
   final games = ref.watch(collectionGamesProvider);
   final searchQuery = ref.watch(searchQueryProvider);
   final selectedPlatform = ref.watch(selectedPlatformProvider);
+  final showPhysical = ref.watch(collectionShowPhysicalFilterProvider);
+  final showDigital = ref.watch(collectionShowDigitalFilterProvider);
 
-  List<GameItem> filteredGames = games;
+  List<GameItem> filteredGames =
+      games.where((game) {
+        if (showPhysical && game.isPhysical) return true;
+        if (showDigital && !game.isPhysical) return true;
+        return false;
+      }).toList();
 
   if (selectedPlatform != 'All') {
     filteredGames =

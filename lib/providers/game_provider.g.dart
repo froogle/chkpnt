@@ -555,7 +555,7 @@ final collectionGamesProvider = AutoDisposeProvider<List<GameItem>>.internal(
 // ignore: unused_element
 typedef CollectionGamesRef = AutoDisposeProviderRef<List<GameItem>>;
 String _$collectionGamesByPlatformHash() =>
-    r'43234d50a01300ecf655ecbd59984d37450bc087';
+    r'3fd072d3eb8c2d528c2568e70abd161bf67c301b';
 
 /// See also [collectionGamesByPlatform].
 @ProviderFor(collectionGamesByPlatform)

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/styles/backlog_styles.dart';
 
-enum StatusFilterType { backlog, ongoing }
+enum StatusFilterType { backlog, ongoing, physical, digital }
 
 class StatusFilterChip extends ConsumerWidget {
   final String label;
@@ -54,12 +54,18 @@ class StatusFilterChip extends ConsumerWidget {
         return ref.watch(backlogShowBacklogFilterProvider);
       case StatusFilterType.ongoing:
         return ref.watch(backlogShowOngoingFilterProvider);
+      case StatusFilterType.physical:
+        return ref.watch(collectionShowPhysicalFilterProvider);
+      case StatusFilterType.digital:
+        return ref.watch(collectionShowDigitalFilterProvider);
     }
   }
 
   void _handleTap(WidgetRef ref) {
     final showBacklog = ref.read(backlogShowBacklogFilterProvider);
     final showOngoing = ref.read(backlogShowOngoingFilterProvider);
+    final showPhysical = ref.read(collectionShowPhysicalFilterProvider);
+    final showDigital = ref.read(collectionShowDigitalFilterProvider);
 
     switch (filterType) {
       case StatusFilterType.backlog:
@@ -73,6 +79,20 @@ class StatusFilterChip extends ConsumerWidget {
           ref.read(backlogShowBacklogFilterProvider.notifier).setValue(true);
         }
         ref.read(backlogShowOngoingFilterProvider.notifier).toggle();
+        break;
+      case StatusFilterType.physical:
+        if (showPhysical && !showDigital) {
+          ref.read(collectionShowDigitalFilterProvider.notifier).setValue(true);
+        }
+        ref.read(collectionShowPhysicalFilterProvider.notifier).toggle();
+        break;
+      case StatusFilterType.digital:
+        if (showDigital && !showPhysical) {
+          ref
+              .read(collectionShowPhysicalFilterProvider.notifier)
+              .setValue(true);
+        }
+        ref.read(collectionShowDigitalFilterProvider.notifier).toggle();
         break;
     }
   }

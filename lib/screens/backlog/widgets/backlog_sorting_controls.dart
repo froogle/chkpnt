@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/styles/backlog_styles.dart';
+import 'package:chkpnt/shared/widgets/status_filter_chip.dart';
 import 'sort_chip.dart';
-import 'status_filter_chip.dart';
 
 class BacklogSortingControls extends ConsumerWidget {
   const BacklogSortingControls({super.key});
