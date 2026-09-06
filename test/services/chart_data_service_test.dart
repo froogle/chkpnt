@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/services/chart_data_service.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/screens/profile/widgets/shared/chart_segmented_control.dart';
+import 'package:chkpnt/styles/profile_styles.dart';
 import '../test_helpers.dart';
 
 void main() {
@@ -186,7 +187,7 @@ void main() {
         expect(labels.contains('Ordered'), isTrue);
       });
 
-      test('labels owned games as Owned', () {
+      test('labels owned games as In Collection', () {
         final result = ChartDataService.generateStatusData([
           TestHelpers.createTestGame(
             title: 'Owned Game',
@@ -196,11 +197,28 @@ void main() {
         ]);
 
         expect(result.length, equals(1));
-        expect(result.first.label, equals('Owned'));
+        expect(result.first.label, equals('In Collection'));
         expect(result.first.label, isNot(equals('GameStatus.owned')));
       });
 
-      test('gives owned a colour distinct from every other status', () {
+      test('keeps the In Collection label and colour keys in agreement', () {
+        final result = ChartDataService.generateStatusData([
+          TestHelpers.createTestGame(
+            title: 'Owned Game',
+            platform: 'PlayStation 5',
+            status: GameStatus.owned,
+          ),
+        ]);
+
+        expect(ProfileStyles.statusColors['In Collection'], isNotNull);
+        expect(
+          result.first.color,
+          equals(ProfileStyles.statusColors['In Collection']),
+        );
+        expect(result.first.color, isNot(equals(ProfileStyles.chartColors[0])));
+      });
+
+      test('gives In Collection a colour distinct from every other status', () {
         final everyStatusGames =
             GameStatus.values
                 .map(
@@ -213,10 +231,12 @@ void main() {
                 .toList();
 
         final result = ChartDataService.generateStatusData(everyStatusGames);
-        final ownedData = result.firstWhere((data) => data.label == 'Owned');
+        final ownedData = result.firstWhere(
+          (data) => data.label == 'In Collection',
+        );
         final otherColours =
             result
-                .where((data) => data.label != 'Owned')
+                .where((data) => data.label != 'In Collection')
                 .map((data) => data.color)
                 .toList();
 

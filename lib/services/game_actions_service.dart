@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/styles/global_styles.dart';
 
 class GameActionsService {
   final Ref _ref;
@@ -64,13 +65,15 @@ class GameActionsService {
 
     // Build feedback message based on what changed
     String message = '${updatedGame.title} updated!';
-    IconData icon = Icons.check_circle;
+    IconData? icon = Icons.check_circle;
     Color color = Colors.green;
 
     if (statusChanged) {
       // Expand the relevant section if status changed
       final statusName = _getStatusDisplayName(updatedGame.status);
-      _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+      if (updatedGame.status != GameStatus.owned) {
+        _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+      }
 
       message = '${updatedGame.title} moved to $statusName!';
       icon = _getStatusIcon(updatedGame.status);
@@ -98,7 +101,9 @@ class GameActionsService {
 
     // Expand the relevant section for the new game's status
     final statusName = _getStatusDisplayName(newGame.status);
-    _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+    if (newGame.status != GameStatus.owned) {
+      _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+    }
 
     // Show feedback
     if (context.mounted) {
@@ -164,15 +169,17 @@ class GameActionsService {
   void _showGameActionFeedback({
     required BuildContext context,
     required String message,
-    required IconData icon,
+    required IconData? icon,
     required Color color,
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(icon, color: Colors.white),
-            const SizedBox(width: 8),
+            if (icon != null) ...[
+              Icon(icon, color: Colors.white),
+              const SizedBox(width: 8),
+            ],
             Expanded(child: Text(message)),
           ],
         ),
@@ -202,12 +209,12 @@ class GameActionsService {
       case GameStatus.ongoing:
         return 'Ongoing/Frequently Played';
       case GameStatus.owned:
-        return 'Owned';
+        return 'In Collection';
     }
   }
 
   /// Gets the appropriate icon for a game status
-  IconData _getStatusIcon(GameStatus status) {
+  IconData? _getStatusIcon(GameStatus status) {
     switch (status) {
       case GameStatus.playing:
         return Icons.play_circle_fill;
@@ -224,7 +231,7 @@ class GameActionsService {
       case GameStatus.ongoing:
         return Icons.replay;
       case GameStatus.owned:
-        return Icons.bookmark;
+        return null;
     }
   }
 
@@ -246,7 +253,7 @@ class GameActionsService {
       case GameStatus.ongoing:
         return const Color(0xFF06B6D4);
       case GameStatus.owned:
-        return const Color(0xFF64748B);
+        return AppColors.emptyStateIcon;
     }
   }
 }

@@ -57,6 +57,10 @@ class GameDetailSheetInfo extends StatelessWidget {
   }
 
   Widget _buildStatusRow() {
+    if (game.status == GameStatus.owned) {
+      return Row(children: [_buildCompactPlatformBadge()]);
+    }
+
     return Row(
       children: [
         _buildCompactPlatformBadge(),
@@ -134,20 +138,26 @@ class GameDetailSheetInfo extends StatelessWidget {
 
   Widget _buildCompactPlatformBadge() {
     final displayPlatform = PlatformUtils.abbreviatePlatformName(game.platform);
+    final hasState = game.status != GameStatus.owned;
 
     return GestureDetector(
       onTap: onEditPressed,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: _getStatusColor().withValues(alpha: 0.9),
+          color:
+              hasState
+                  ? _getStatusColor().withValues(alpha: 0.9)
+                  : AppColors.emptyStateIcon.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(_getStatusIcon(), size: 14, color: Colors.white),
-            const SizedBox(width: 6),
+            if (hasState) ...[
+              Icon(_getStatusIcon(), size: 14, color: Colors.white),
+              const SizedBox(width: 6),
+            ],
             Text(
               displayPlatform,
               style: const TextStyle(
@@ -283,7 +293,7 @@ class GameDetailSheetInfo extends StatelessWidget {
       case GameStatus.ongoing:
         return 'Ongoing';
       case GameStatus.owned:
-        return 'Owned';
+        return 'In Collection';
     }
   }
 

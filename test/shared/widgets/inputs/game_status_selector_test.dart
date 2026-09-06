@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
 import 'package:chkpnt/shared/widgets/buttons/status_button.dart';
-import 'package:chkpnt/styles/styles.dart';
 
 void main() {
   group('GameStatusSelector Widget Tests', () {
@@ -319,7 +318,8 @@ void main() {
       });
     });
 
-    group('Owned Status Tests', () {
+
+    group('State Deselection Tests', () {
       Widget buildSelector({
         required GameStatus selectedStatus,
         bool isAddMode = false,
@@ -338,55 +338,31 @@ void main() {
         );
       }
 
-      testWidgets('offers Owned in add mode', (tester) async {
+      Finder buttonFor(GameStatus status) {
+        return find.byWidgetPredicate(
+          (widget) => widget is StatusButton && widget.status == status,
+        );
+      }
+
+      testWidgets('never offers an Owned chip in add mode', (tester) async {
         await tester.pumpWidget(
           buildSelector(selectedStatus: GameStatus.backlog, isAddMode: true),
         );
 
-        expect(find.text('Owned'), findsOneWidget);
+        expect(buttonFor(GameStatus.owned), findsNothing);
+        expect(find.text('In Collection'), findsNothing);
       });
 
-      testWidgets('offers Owned for a playing game', (tester) async {
+      testWidgets('never offers an Owned chip in edit mode', (tester) async {
         await tester.pumpWidget(
           buildSelector(selectedStatus: GameStatus.playing),
         );
 
-        expect(find.text('Owned'), findsOneWidget);
+        expect(buttonFor(GameStatus.owned), findsNothing);
+        expect(find.text('In Collection'), findsNothing);
       });
 
-      testWidgets('offers the general options for an owned game', (
-        tester,
-      ) async {
-        await tester.pumpWidget(buildSelector(selectedStatus: GameStatus.owned));
-
-        expect(find.text('Owned'), findsOneWidget);
-        expect(find.text('Playing'), findsOneWidget);
-        expect(find.text('Backlog'), findsOneWidget);
-        expect(find.text('Completed'), findsOneWidget);
-        expect(find.text('Abandoned'), findsOneWidget);
-        expect(find.text('Wishlist'), findsNothing);
-        expect(find.text('Ordered'), findsNothing);
-      });
-
-      testWidgets('does not offer Owned for a wishlist game', (tester) async {
-        await tester.pumpWidget(
-          buildSelector(selectedStatus: GameStatus.wishlist),
-        );
-
-        expect(find.text('Owned'), findsNothing);
-      });
-
-      testWidgets('does not offer Owned for an ordered game', (tester) async {
-        await tester.pumpWidget(
-          buildSelector(selectedStatus: GameStatus.ordered),
-        );
-
-        expect(find.text('Owned'), findsNothing);
-      });
-
-      testWidgets('calls onStatusChanged with owned when tapped', (
-        tester,
-      ) async {
+      testWidgets('deselects a playing game back to owned', (tester) async {
         GameStatus? changedStatus;
 
         await tester.pumpWidget(
@@ -396,102 +372,112 @@ void main() {
           ),
         );
 
-        await tester.tap(find.text('Owned'));
+        await tester.tap(find.text('Playing'));
         await tester.pump();
 
         expect(changedStatus, equals(GameStatus.owned));
       });
 
-      testWidgets('paints the selected Owned button in the selected colours', (
+      testWidgets('deselects every other general state back to owned', (
         tester,
       ) async {
-        await tester.pumpWidget(buildSelector(selectedStatus: GameStatus.owned));
+        final labels = {
+          GameStatus.backlog: 'Backlog',
+          GameStatus.ongoing: 'Ongoing',
+          GameStatus.completed: 'Completed',
+          GameStatus.abandoned: 'Abandoned',
+        };
 
-        final ownedButton = find.byWidgetPredicate(
-          (widget) => widget is StatusButton && widget.status == GameStatus.owned,
-        );
-        expect(ownedButton, findsOneWidget);
-        expect(
-          tester.widget<StatusButton>(ownedButton).isSelected,
-          isTrue,
-        );
+        for (final entry in labels.entries) {
+          GameStatus? changedStatus;
 
-        final label = tester.widget<Text>(
-          find.descendant(of: ownedButton, matching: find.text('Owned')),
-        );
-        final icon = tester.widget<Icon>(
-          find.descendant(of: ownedButton, matching: find.byType(Icon)),
-        );
-        final decoration =
-            tester
-                    .widget<Container>(
-                      find
-                          .descendant(
-                            of: ownedButton,
-                            matching: find.byType(Container),
-                          )
-                          .first,
-                    )
-                    .decoration
-                as BoxDecoration;
+          await tester.pumpWidget(
+            buildSelector(
+              selectedStatus: entry.key,
+              onStatusChanged: (status) => changedStatus = status,
+            ),
+          );
 
-        expect(label.style?.color, AppColors.primaryPurple);
-        expect(icon.color, AppColors.primaryPurple);
-        expect(
-          decoration.gradient,
-          isNot(equals(AppGradients.cardGradient)),
-        );
-        expect(
-          (decoration.border as Border).top.width,
-          2,
-        );
+          await tester.tap(find.text(entry.value));
+          await tester.pump();
+
+          expect(
+            changedStatus,
+            equals(GameStatus.owned),
+            reason: 'tapping the selected ${entry.key} chip should deselect it',
+          );
+        }
       });
 
-      testWidgets(
-        'paints the unselected Owned button in the unselected colours',
-        (tester) async {
-          await tester.pumpWidget(
-            buildSelector(selectedStatus: GameStatus.playing),
-          );
+      testWidgets('does not deselect a wishlist game', (tester) async {
+        GameStatus? changedStatus;
 
-          final ownedButton = find.byWidgetPredicate(
-            (widget) =>
-                widget is StatusButton && widget.status == GameStatus.owned,
-          );
-          expect(
-            tester.widget<StatusButton>(ownedButton).isSelected,
-            isFalse,
-          );
+        await tester.pumpWidget(
+          buildSelector(
+            selectedStatus: GameStatus.wishlist,
+            onStatusChanged: (status) => changedStatus = status,
+          ),
+        );
 
-          final label = tester.widget<Text>(
-            find.descendant(of: ownedButton, matching: find.text('Owned')),
-          );
-          final icon = tester.widget<Icon>(
-            find.descendant(of: ownedButton, matching: find.byType(Icon)),
-          );
-          final decoration =
-              tester
-                      .widget<Container>(
-                        find
-                            .descendant(
-                              of: ownedButton,
-                              matching: find.byType(Container),
-                            )
-                            .first,
-                      )
-                      .decoration
-                  as BoxDecoration;
+        await tester.tap(find.text('Wishlist'));
+        await tester.pump();
 
-          expect(label.style?.color, AppColors.expandIcon);
-          expect(icon.color, AppColors.expandIcon);
-          expect(decoration.gradient, AppGradients.cardGradient);
-          expect((decoration.border as Border).top.width, 1);
-          expect(
-            label.style?.color,
-            isNot(equals(AppColors.primaryPurple)),
-          );
-        },
-      );
+        expect(changedStatus, isNull);
+      });
+
+      testWidgets('does not deselect an ordered game', (tester) async {
+        GameStatus? changedStatus;
+
+        await tester.pumpWidget(
+          buildSelector(
+            selectedStatus: GameStatus.ordered,
+            onStatusChanged: (status) => changedStatus = status,
+          ),
+        );
+
+        await tester.tap(find.text('Ordered'));
+        await tester.pump();
+
+        expect(changedStatus, isNull);
+      });
+
+      testWidgets('renders the general chips unselected for an owned game', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildSelector(selectedStatus: GameStatus.owned),
+        );
+
+        expect(find.text('Playing'), findsOneWidget);
+        expect(find.text('Backlog'), findsOneWidget);
+        expect(find.text('Ongoing'), findsOneWidget);
+        expect(find.text('Completed'), findsOneWidget);
+        expect(find.text('Abandoned'), findsOneWidget);
+        expect(find.text('Wishlist'), findsNothing);
+        expect(find.text('Ordered'), findsNothing);
+
+        final buttons = tester.widgetList<StatusButton>(
+          find.byType(StatusButton),
+        );
+        expect(buttons, isNotEmpty);
+        expect(buttons.every((button) => !button.isSelected), isTrue);
+      });
+
+      testWidgets('selects a status normally on an owned game', (tester) async {
+        GameStatus? changedStatus;
+
+        await tester.pumpWidget(
+          buildSelector(
+            selectedStatus: GameStatus.owned,
+            onStatusChanged: (status) => changedStatus = status,
+          ),
+        );
+
+        await tester.tap(find.text('Completed'));
+        await tester.pump();
+
+        expect(changedStatus, equals(GameStatus.completed));
+      });
     });
   });
 }

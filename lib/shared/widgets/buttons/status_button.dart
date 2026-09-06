@@ -100,7 +100,7 @@ class StatusButton extends StatelessWidget {
       case GameStatus.ongoing:
         return 'Ongoing';
       case GameStatus.owned:
-        return 'Owned';
+        return 'In Collection';
     }
   }
 

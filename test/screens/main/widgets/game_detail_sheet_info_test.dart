@@ -131,7 +131,7 @@ void main() {
         expect(find.byIcon(Icons.shopping_cart), findsNWidgets(2));
       });
 
-      testWidgets('should display owned status correctly', (
+      testWidgets('should render no status badge for a game with no state', (
         WidgetTester tester,
       ) async {
         final ownedGame = testGame.copyWith(status: GameStatus.owned);
@@ -142,51 +142,119 @@ void main() {
           ),
         );
 
-        expect(find.text('Owned'), findsOneWidget);
-        expect(find.byIcon(Icons.bookmark), findsNWidgets(2));
+        expect(find.text('Owned'), findsNothing);
+        expect(find.text('In Collection'), findsNothing);
+        expect(find.byIcon(Icons.bookmark), findsNothing);
+        expect(find.text('Test Platfor...'), findsOneWidget);
       });
 
-      testWidgets(
-        'should paint the owned badge in the owned colour',
-        (WidgetTester tester) async {
-          final ownedGame = testGame.copyWith(status: GameStatus.owned);
+      testWidgets('should paint the platform badge in the status colour', (
+        WidgetTester tester,
+      ) async {
+        final playingGame = testGame.copyWith(status: GameStatus.playing);
 
-          await tester.pumpWidget(
-            MaterialApp(
-              home: Scaffold(body: GameDetailSheetInfo(game: ownedGame)),
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(body: GameDetailSheetInfo(game: playingGame)),
+          ),
+        );
+
+        final playingBadge = _statusBadgeDecoration(tester);
+        expect(playingBadge.color, Colors.orange.withValues(alpha: 0.9));
+
+        final badgeIcon = tester.widget<Icon>(
+          find.byIcon(Icons.play_circle_fill).first,
+        );
+        expect(badgeIcon.color, Colors.white);
+        expect(badgeIcon.size, 14);
+
+        final statusText = tester.widget<Text>(find.text('Playing'));
+        expect(statusText.style?.color, AppLayout.detailSubtitleStyle.color);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: GameDetailSheetInfo(
+                game: testGame.copyWith(status: GameStatus.completed),
+              ),
             ),
-          );
+          ),
+        );
 
-          final ownedBadge = _statusBadgeDecoration(tester);
-          expect(
-            ownedBadge.color,
-            const Color(0xFF64748B).withValues(alpha: 0.9),
-          );
+        expect(
+          _statusBadgeDecoration(tester).color,
+          Colors.green.withValues(alpha: 0.9),
+        );
+        expect(
+          _statusBadgeDecoration(tester).color,
+          isNot(equals(playingBadge.color)),
+        );
+      });
 
-          final badgeIcon = tester.widget<Icon>(
-            find.byIcon(Icons.bookmark).first,
-          );
-          expect(badgeIcon.color, Colors.white);
+      testWidgets('should paint a no-state badge in the neutral colour', (
+        WidgetTester tester,
+      ) async {
+        final ownedGame = testGame.copyWith(status: GameStatus.owned);
 
-          final statusText = tester.widget<Text>(find.text('Owned'));
-          expect(statusText.style?.color, AppLayout.detailSubtitleStyle.color);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(body: GameDetailSheetInfo(game: ownedGame)),
+          ),
+        );
 
+        final neutralBadge = _statusBadgeDecoration(tester);
+        expect(
+          neutralBadge.color,
+          AppColors.emptyStateIcon.withValues(alpha: 0.9),
+        );
+        expect(
+          neutralBadge.color,
+          isNot(equals(const Color(0xFF64748B).withValues(alpha: 0.9))),
+        );
+
+        final badgeText = tester.widget<Text>(find.text('Test Platfor...'));
+        expect(badgeText.style?.color, Colors.white);
+
+        expect(
+          find.descendant(
+            of: find.byType(GameDetailSheetInfo),
+            matching: find.byIcon(Icons.bookmark),
+          ),
+          findsNothing,
+        );
+      });
+
+      testWidgets('should render a status badge for every other status', (
+        WidgetTester tester,
+      ) async {
+        final labels = {
+          GameStatus.playing: 'Playing',
+          GameStatus.backlog: 'Backlog',
+          GameStatus.ongoing: 'Ongoing',
+          GameStatus.completed: 'Completed',
+          GameStatus.abandoned: 'Abandoned',
+          GameStatus.wishlist: 'Wishlist',
+          GameStatus.ordered: 'Ordered',
+        };
+
+        for (final entry in labels.entries) {
           await tester.pumpWidget(
             MaterialApp(
               home: Scaffold(
                 body: GameDetailSheetInfo(
-                  game: testGame.copyWith(status: GameStatus.playing),
+                  game: testGame.copyWith(status: entry.key),
                 ),
               ),
             ),
           );
 
           expect(
-            _statusBadgeDecoration(tester).color,
-            isNot(equals(ownedBadge.color)),
+            find.text(entry.value),
+            findsOneWidget,
+            reason: '${entry.key} should still show its status badge',
           );
-        },
-      );
+        }
+      });
     });
 
     testWidgets('should handle long game titles gracefully', (

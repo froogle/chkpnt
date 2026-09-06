@@ -202,7 +202,7 @@ class ProfileStyles {
     'Wishlist': Color(0xFF3B82F6),
     'Ordered': Color(0xFF06B6D4),
     'Ongoing': Color(0xFF06B6D4),
-    'Owned': Color(0xFF64748B),
+    'In Collection': Color(0xFF64748B),
   };
 
   // Responsive helpers

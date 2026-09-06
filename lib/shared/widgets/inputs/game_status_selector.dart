@@ -74,7 +74,6 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
         GameStatus.ongoing,
         GameStatus.completed,
         GameStatus.abandoned,
-        GameStatus.owned,
         GameStatus.wishlist,
         GameStatus.ordered,
       ];
@@ -100,7 +99,6 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
         GameStatus.ongoing,
         GameStatus.completed,
         GameStatus.abandoned,
-        GameStatus.owned,
       ];
     }
 
@@ -111,7 +109,6 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
       GameStatus.ongoing,
       GameStatus.completed,
       GameStatus.abandoned,
-      GameStatus.owned,
       GameStatus.wishlist,
       GameStatus.ordered,
     ];
@@ -168,8 +165,21 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
       child: StatusButton(
         status: status,
         isSelected: isSelected,
-        onTap: () => widget.onStatusChanged(status),
+        onTap: () => _handleStatusTap(status, isSelected),
       ),
     );
+  }
+
+  void _handleStatusTap(GameStatus status, bool isSelected) {
+    if (!isSelected) {
+      widget.onStatusChanged(status);
+      return;
+    }
+
+    if (status == GameStatus.wishlist || status == GameStatus.ordered) {
+      return;
+    }
+
+    widget.onStatusChanged(GameStatus.owned);
   }
 }

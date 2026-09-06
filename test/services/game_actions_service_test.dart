@@ -5,6 +5,7 @@ import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/styles/global_styles.dart';
 import '../test_helpers.dart';
 
 void main() {
@@ -121,6 +122,146 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('New Title details updated!'), findsOneWidget);
+      });
+    });
+
+    group('no-state toast', () {
+      Widget buildHost(void Function(BuildContext) onPressed) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) {
+                return ElevatedButton(
+                  onPressed: () => onPressed(context),
+                  child: const Text('Update'),
+                );
+              },
+            ),
+          ),
+        );
+      }
+
+      Finder inSnackBar(Finder matching) {
+        return find.descendant(of: find.byType(SnackBar), matching: matching);
+      }
+
+      testWidgets('shows a neutral glyph-free toast for a deselected game', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildHost((context) {
+            service.updateGame(
+              testGame,
+              testGame.copyWith(status: GameStatus.owned),
+              context,
+            );
+          }),
+        );
+
+        await tester.tap(find.text('Update'));
+        await tester.pumpAndSettle();
+
+        final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+        expect(snackBar.backgroundColor, AppColors.emptyStateIcon);
+        expect(snackBar.backgroundColor, isNot(const Color(0xFF64748B)));
+        expect(inSnackBar(find.byIcon(Icons.bookmark)), findsNothing);
+        expect(inSnackBar(find.byType(Icon)), findsNothing);
+      });
+
+      testWidgets('keeps the deselection toast wording unchanged', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildHost((context) {
+            service.updateGame(
+              testGame,
+              testGame.copyWith(status: GameStatus.owned),
+              context,
+            );
+          }),
+        );
+
+        await tester.tap(find.text('Update'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('${testGame.title} moved to In Collection!'),
+          findsOneWidget,
+        );
+        expect(
+          container.read(sectionExpansionProvider).containsKey('In Collection'),
+          isFalse,
+        );
+      });
+
+      testWidgets('keeps every other status toast icon and colour', (
+        tester,
+      ) async {
+        final expected = {
+          GameStatus.completed: (
+            'Completed',
+            Icons.check_circle,
+            Colors.green,
+          ),
+          GameStatus.playing: (
+            'Playing',
+            Icons.play_circle_fill,
+            Colors.orange,
+          ),
+          GameStatus.ordered: (
+            'Ordered',
+            Icons.shopping_cart,
+            Colors.purple,
+          ),
+        };
+
+        for (final entry in expected.entries) {
+          final (name, icon, colour) = entry.value;
+
+          await tester.pumpWidget(
+            buildHost((context) {
+              service.updateGame(
+                testGame,
+                testGame.copyWith(status: entry.key),
+                context,
+              );
+            }),
+          );
+
+          await tester.tap(find.text('Update'));
+          await tester.pumpAndSettle();
+
+          expect(
+            find.text('${testGame.title} moved to $name!'),
+            findsOneWidget,
+            reason: '$name should keep its toast wording',
+          );
+
+          final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+          expect(
+            snackBar.backgroundColor,
+            colour,
+            reason: '$name should keep its toast colour',
+          );
+          expect(
+            snackBar.backgroundColor,
+            isNot(AppColors.emptyStateIcon),
+            reason: 'the neutral colour must not leak to $name',
+          );
+
+          expect(
+            inSnackBar(find.byIcon(icon)),
+            findsOneWidget,
+            reason: '$name should keep its toast icon',
+          );
+          expect(
+            tester.widget<Icon>(inSnackBar(find.byIcon(icon))).color,
+            Colors.white,
+          );
+
+          await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pumpAndSettle();
+        }
       });
     });
 
