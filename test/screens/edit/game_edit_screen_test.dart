@@ -87,7 +87,7 @@ void main() {
         expect(find.text('New Game'), findsOneWidget);
       });
 
-      testWidgets('shows Add Game button', (tester) async {
+      testWidgets('shows Scan Barcode button before any entry', (tester) async {
         await tester.pumpWidget(
           ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
         );
@@ -96,12 +96,28 @@ void main() {
         await tester.pump();
 
         expect(
-          find.descendant(
-            of: find.byType(ElevatedButton),
-            matching: find.text('Add Game'),
-          ),
+          find.widgetWithText(ElevatedButton, 'Scan Barcode'),
           findsOneWidget,
         );
+        expect(find.widgetWithText(ElevatedButton, 'Add Game'), findsNothing);
+      });
+
+      testWidgets('keeps offering a scan when only a title is entered', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+        );
+        await tester.pump();
+
+        await tester.enterText(find.byType(TextField).first, 'Elden Ring');
+        await tester.pump();
+
+        expect(
+          find.widgetWithText(ElevatedButton, 'Scan Barcode'),
+          findsOneWidget,
+        );
+        expect(find.widgetWithText(ElevatedButton, 'Add Game'), findsNothing);
       });
     });
 

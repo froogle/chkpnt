@@ -102,6 +102,11 @@ class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection> {
       decoration: EditScreenStyles.titleFieldDecoration,
       maxLines: 1,
       textCapitalization: TextCapitalization.words,
+      onChanged: (value) {
+        ref
+            .read(gameEditStateProvider(widget.editContext).notifier)
+            .updateTitle(value);
+      },
       onTap: () {
         // Ensure focus is maintained on tap
         if (!_titleFocusNode.hasFocus) {
