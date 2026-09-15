@@ -61,6 +61,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   late TextEditingController _titleController;
   late GameEditContext _editContext;
   bool _isLookingUpBarcode = false;
+  bool _isScanning = false;
 
   @override
   void initState() {
@@ -230,28 +231,51 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   }
 
   Widget _buildActionButtons() {
+    final editState = ref.watch(gameEditStateProvider(_editContext));
+    final isScanMode = widget.isAddMode && !editState.hasStartedEntry;
+
     return GameEditActions(
-      onSavePressed: _saveChanges,
-      hasChanges: true,
-      buttonText: widget.isAddMode ? 'Add Game' : 'Save Changes',
+      onSavePressed: isScanMode ? _handleBarcodeScan : _saveChanges,
+      hasChanges: isScanMode || _hasUsableTitle(),
+      buttonText: _primaryButtonText(isScanMode),
+      icon: isScanMode ? Icons.qr_code_scanner : Icons.save,
     );
+  }
+
+  String _primaryButtonText(bool isScanMode) {
+    if (isScanMode) return 'Scan Barcode';
+    return widget.isAddMode ? 'Add Game' : 'Save Changes';
+  }
+
+  bool _hasUsableTitle() {
+    if (!widget.isAddMode) return true;
+
+    final title = _titleController.text.trim();
+    return title.isNotEmpty && title != kDefaultAddGameTitle;
   }
 
   // Business logic methods
 
   Future<void> _handleBarcodeScan() async {
-    final gameImageService = ref.read(gameImageServiceProvider);
-    final permissionResult =
-        await gameImageService.checkAndRequestCameraPermission();
+    if (_isScanning) return;
+    _isScanning = true;
 
-    if (!mounted) return;
+    try {
+      final gameImageService = ref.read(gameImageServiceProvider);
+      final permissionResult =
+          await gameImageService.checkAndRequestCameraPermission();
 
-    switch (permissionResult) {
-      case CameraPermissionResult.granted:
-        await _scanAndPrefill();
-      case CameraPermissionResult.denied:
-      case CameraPermissionResult.openedSettings:
-        await _showCameraPermissionDialog();
+      if (!mounted) return;
+
+      switch (permissionResult) {
+        case CameraPermissionResult.granted:
+          await _scanAndPrefill();
+        case CameraPermissionResult.denied:
+        case CameraPermissionResult.openedSettings:
+          await _showCameraPermissionDialog();
+      }
+    } finally {
+      _isScanning = false;
     }
   }
 
@@ -283,7 +307,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     }
 
     if (result.title.isNotEmpty) {
-      _offerCoverArt(result);
+      await _offerCoverArt(result);
     }
   }
 
@@ -344,23 +368,43 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     }
   }
 
-  void _offerCoverArt(BarcodeLookupResult result) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+  Future<void> _offerCoverArt(BarcodeLookupResult result) async {
+    final shouldSearch = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppDialogStyles.backgroundColor,
+        surfaceTintColor: AppDialogStyles.surfaceTintColor,
+        elevation: AppDialogStyles.elevation,
+        shape: AppDialogStyles.shape,
+        title: const Text('Game Found', style: AppDialogStyles.titleTextStyle),
         content: Text(
-          'Found ${result.title}. Add cover art?',
-          style: EditScreenStyles.scanMessageTextStyle,
+          '${result.title} has been found and the details filled in. Would '
+          'you like to search for box art?',
+          style: AppDialogStyles.contentTextStyle,
         ),
-        backgroundColor: EditScreenStyles.scanMessageBackgroundColour,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 6),
-        action: SnackBarAction(
-          label: 'Find Cover',
-          textColor: EditScreenStyles.scanBarcodeColour,
-          onPressed: () => _searchCoverArt(result),
-        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            style: AppDialogStyles.buttonStyle(
+              AppDialogStyles.cancelButtonColor,
+            ),
+            child: const Text('No', style: AppDialogStyles.buttonTextStyle),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppDialogStyles.confirmButtonColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Yes', style: AppDialogStyles.buttonTextStyle),
+          ),
+        ],
       ),
     );
+
+    if (shouldSearch == true && mounted) {
+      await _searchCoverArt(result);
+    }
   }
 
   Future<void> _searchCoverArt(BarcodeLookupResult result) async {

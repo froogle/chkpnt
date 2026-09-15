@@ -738,4 +738,173 @@ void main() {
       expect(state.status, GameStatus.playing);
     });
   });
+
+  group('GameEditState started entry latch', () {
+    late ProviderContainer container;
+    const addContext = GameEditContext(isAddMode: true);
+
+    setUp(() {
+      container = ProviderContainer();
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    GameEditState notifier() =>
+        container.read(gameEditStateProvider(addContext).notifier);
+
+    bool hasStartedEntry() =>
+        container.read(gameEditStateProvider(addContext)).hasStartedEntry;
+
+    test('an untouched add form has not started entry', () {
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('an existing game has always started entry', () {
+      final context = GameEditContext(
+        isAddMode: false,
+        game: GameItem.create(
+          title: 'Existing Game',
+          platform: 'PS5',
+          status: GameStatus.playing,
+        ),
+      );
+
+      expect(
+        container.read(gameEditStateProvider(context)).hasStartedEntry,
+        isTrue,
+      );
+    });
+
+    test('re-entering the default title does not start entry', () {
+      notifier().updatePlatform('PS5');
+      notifier().updateTitle(kDefaultAddGameTitle);
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('clearing the title does not start entry', () {
+      notifier().updatePlatform('PS5');
+      notifier().updateTitle('');
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('a title alone does not start entry', () {
+      notifier().updateTitle('Elden Ring');
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('a platform alone does not start entry', () {
+      notifier().updatePlatform('PS5');
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('a title and a platform together start entry', () {
+      notifier().updateTitle('Elden Ring');
+      notifier().updatePlatform('PS5');
+
+      expect(hasStartedEntry(), isTrue);
+    });
+
+    test('the order the two are entered in does not matter', () {
+      notifier().updatePlatform('PS5');
+      notifier().updateTitle('Elden Ring');
+
+      expect(hasStartedEntry(), isTrue);
+    });
+
+    test('an empty platform does not start entry', () {
+      notifier().updatePlatform('');
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('status, physical and image alone do not start entry', () {
+      notifier().updateStatus(GameStatus.playing);
+      notifier().updateIsPhysical(true);
+      notifier().updateImagePath('/path/to/image.jpg');
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('a status change never substitutes for a platform', () {
+      notifier().updateTitle('Elden Ring');
+      notifier().updateStatus(GameStatus.playing);
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('a successful scan filling both fields starts entry', () {
+      notifier().applyBarcodeScan(
+        barcode: '5026555248082',
+        title: 'Red Dead Redemption',
+        platform: 'Xbox 360',
+      );
+
+      expect(hasStartedEntry(), isTrue);
+    });
+
+    test('a scanned title starts entry even with no matched platform', () {
+      notifier().applyBarcodeScan(
+        barcode: '5026555248082',
+        title: 'Red Dead Redemption',
+        platform: '',
+      );
+
+      expect(hasStartedEntry(), isTrue);
+    });
+
+    test('a scanned title of only whitespace does not start entry', () {
+      notifier().applyBarcodeScan(
+        barcode: '5026555248082',
+        title: '   ',
+        platform: '',
+      );
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('a failed lookup does not start entry', () {
+      notifier().applyBarcodeScan(
+        barcode: '5060990241239',
+        title: '',
+        platform: '',
+      );
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('a failed lookup after a full form keeps entry started', () {
+      notifier().updateTitle('Trails From Zero');
+      notifier().updatePlatform('PS4');
+      notifier().applyBarcodeScan(
+        barcode: '5060990241239',
+        title: '',
+        platform: '',
+      );
+
+      expect(hasStartedEntry(), isTrue);
+    });
+
+    test('a whitespace-only title does not start entry', () {
+      notifier().updatePlatform('PS5');
+      notifier().updateTitle('   ');
+
+      expect(hasStartedEntry(), isFalse);
+    });
+
+    test('started entry never unsets', () {
+      notifier().updateTitle('Elden Ring');
+      notifier().updatePlatform('PS5');
+      notifier().updateTitle(kDefaultAddGameTitle);
+      notifier().updateTitle('');
+      notifier().updatePlatform('');
+
+      expect(hasStartedEntry(), isTrue);
+    });
+  });
 }

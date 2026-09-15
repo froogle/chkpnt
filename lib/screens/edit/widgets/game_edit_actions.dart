@@ -5,12 +5,14 @@ class GameEditActions extends StatelessWidget {
   final VoidCallback onSavePressed;
   final bool hasChanges;
   final String buttonText;
+  final IconData icon;
 
   const GameEditActions({
     super.key,
     required this.onSavePressed,
     required this.hasChanges,
     this.buttonText = 'Save Changes',
+    this.icon = Icons.save,
   });
 
   @override
@@ -28,7 +30,7 @@ class GameEditActions extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.save,
+              icon,
               size: EditScreenStyles.saveButtonIconSize,
               color: EditScreenStyles.saveButtonIconColour(hasChanges),
             ),

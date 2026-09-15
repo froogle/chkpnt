@@ -242,6 +242,8 @@ Future<String?> gameImage(Ref ref, String imagePath) async {
   return await imageService.getImagePath(imagePath);
 }
 
+const String kDefaultAddGameTitle = 'New Game';
+
 // Game edit context data class to identify the editing context
 class GameEditContext {
   final bool isAddMode;
@@ -283,6 +285,7 @@ class GameEditFormState {
   final bool hasUnsavedChanges;
   final bool isPhysical;
   final String? barcode;
+  final bool hasStartedEntry;
 
   const GameEditFormState({
     required this.title,
@@ -292,6 +295,7 @@ class GameEditFormState {
     this.hasUnsavedChanges = false,
     this.isPhysical = false,
     this.barcode,
+    this.hasStartedEntry = false,
   });
 
   GameEditFormState copyWith({
@@ -303,6 +307,7 @@ class GameEditFormState {
     bool clearImagePath = false,
     bool? isPhysical,
     String? barcode,
+    bool? hasStartedEntry,
   }) {
     return GameEditFormState(
       title: title ?? this.title,
@@ -312,6 +317,7 @@ class GameEditFormState {
       hasUnsavedChanges: hasUnsavedChanges ?? this.hasUnsavedChanges,
       isPhysical: isPhysical ?? this.isPhysical,
       barcode: barcode ?? this.barcode,
+      hasStartedEntry: hasStartedEntry ?? this.hasStartedEntry,
     );
   }
 
@@ -325,7 +331,8 @@ class GameEditFormState {
         other.imagePath == imagePath &&
         other.hasUnsavedChanges == hasUnsavedChanges &&
         other.isPhysical == isPhysical &&
-        other.barcode == barcode;
+        other.barcode == barcode &&
+        other.hasStartedEntry == hasStartedEntry;
   }
 
   @override
@@ -338,6 +345,7 @@ class GameEditFormState {
       hasUnsavedChanges,
       isPhysical,
       barcode,
+      hasStartedEntry,
     );
   }
 }
@@ -351,12 +359,13 @@ class GameEditState extends _$GameEditState {
     if (context.isAddMode) {
       final defaultStatus = context.defaultStatus ?? GameStatus.backlog;
       return GameEditFormState(
-        title: 'New Game',
+        title: kDefaultAddGameTitle,
         platform: '',
         status: defaultStatus,
         imagePath: null,
         hasUnsavedChanges: false,
         isPhysical: context.defaultIsPhysical,
+        hasStartedEntry: false,
       );
     } else {
       final game = context.game!;
@@ -367,16 +376,25 @@ class GameEditState extends _$GameEditState {
         imagePath: game.imagePath,
         hasUnsavedChanges: false,
         isPhysical: game.isPhysical,
+        hasStartedEntry: true,
       );
     }
   }
 
   void updateTitle(String title) {
-    state = state.copyWith(title: title, hasUnsavedChanges: true);
+    state = state.copyWith(
+      title: title,
+      hasUnsavedChanges: true,
+      hasStartedEntry: _latchStartedEntry(title, state.platform),
+    );
   }
 
   void updatePlatform(String platform) {
-    state = state.copyWith(platform: platform, hasUnsavedChanges: true);
+    state = state.copyWith(
+      platform: platform,
+      hasUnsavedChanges: true,
+      hasStartedEntry: _latchStartedEntry(state.title, platform),
+    );
   }
 
   void updateStatus(GameStatus status) {
@@ -407,7 +425,16 @@ class GameEditState extends _$GameEditState {
       isPhysical: true,
       barcode: barcode,
       hasUnsavedChanges: true,
+      hasStartedEntry: state.hasStartedEntry || title.trim().isNotEmpty,
     );
+  }
+
+  bool _latchStartedEntry(String title, String platform) {
+    if (state.hasStartedEntry) return true;
+    final enteredTitle = title.trim();
+    return enteredTitle.isNotEmpty &&
+        enteredTitle != kDefaultAddGameTitle &&
+        platform.isNotEmpty;
   }
 
   bool get hasChanges => state.hasUnsavedChanges;
