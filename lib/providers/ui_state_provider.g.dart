@@ -6,7 +6,7 @@ part of 'ui_state_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameImageHash() => r'fdf973fe399f1ff49676445525ce980114f90df4';
+String _$sectionExpandedHash() => r'56978dd650a0cdbe95774d91a79b182060d32441';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -28,6 +28,124 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
+
+/// See also [sectionExpanded].
+@ProviderFor(sectionExpanded)
+const sectionExpandedProvider = SectionExpandedFamily();
+
+/// See also [sectionExpanded].
+class SectionExpandedFamily extends Family<bool> {
+  /// See also [sectionExpanded].
+  const SectionExpandedFamily();
+
+  /// See also [sectionExpanded].
+  SectionExpandedProvider call(Section section) {
+    return SectionExpandedProvider(section);
+  }
+
+  @override
+  SectionExpandedProvider getProviderOverride(
+    covariant SectionExpandedProvider provider,
+  ) {
+    return call(provider.section);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'sectionExpandedProvider';
+}
+
+/// See also [sectionExpanded].
+class SectionExpandedProvider extends AutoDisposeProvider<bool> {
+  /// See also [sectionExpanded].
+  SectionExpandedProvider(Section section)
+    : this._internal(
+        (ref) => sectionExpanded(ref as SectionExpandedRef, section),
+        from: sectionExpandedProvider,
+        name: r'sectionExpandedProvider',
+        debugGetCreateSourceHash:
+            const bool.fromEnvironment('dart.vm.product')
+                ? null
+                : _$sectionExpandedHash,
+        dependencies: SectionExpandedFamily._dependencies,
+        allTransitiveDependencies:
+            SectionExpandedFamily._allTransitiveDependencies,
+        section: section,
+      );
+
+  SectionExpandedProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.section,
+  }) : super.internal();
+
+  final Section section;
+
+  @override
+  Override overrideWith(bool Function(SectionExpandedRef provider) create) {
+    return ProviderOverride(
+      origin: this,
+      override: SectionExpandedProvider._internal(
+        (ref) => create(ref as SectionExpandedRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        section: section,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<bool> createElement() {
+    return _SectionExpandedProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SectionExpandedProvider && other.section == section;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, section.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin SectionExpandedRef on AutoDisposeProviderRef<bool> {
+  /// The parameter `section` of this provider.
+  Section get section;
+}
+
+class _SectionExpandedProviderElement extends AutoDisposeProviderElement<bool>
+    with SectionExpandedRef {
+  _SectionExpandedProviderElement(super.provider);
+
+  @override
+  Section get section => (origin as SectionExpandedProvider).section;
+}
+
+String _$gameImageHash() => r'fdf973fe399f1ff49676445525ce980114f90df4';
 
 /// See also [gameImage].
 @ProviderFor(gameImage)
@@ -283,12 +401,12 @@ final collectionShowDigitalFilterProvider =
     );
 
 typedef _$CollectionShowDigitalFilter = Notifier<bool>;
-String _$sectionExpansionHash() => r'd39dab82a28e9d915afafb05d2fc7208fa8bde5d';
+String _$sectionExpansionHash() => r'1098edc5f41d29be7f00fb7d0ca347970569c7bf';
 
 /// See also [SectionExpansion].
 @ProviderFor(SectionExpansion)
 final sectionExpansionProvider =
-    NotifierProvider<SectionExpansion, Map<String, bool>>.internal(
+    NotifierProvider<SectionExpansion, Map<Section, bool>>.internal(
       SectionExpansion.new,
       name: r'sectionExpansionProvider',
       debugGetCreateSourceHash:
@@ -299,8 +417,8 @@ final sectionExpansionProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$SectionExpansion = Notifier<Map<String, bool>>;
-String _$gameEditStateHash() => r'2235ad2dc0ed05d7dde2a98a1aa0eee43507c450';
+typedef _$SectionExpansion = Notifier<Map<Section, bool>>;
+String _$gameEditStateHash() => r'a369dd2644968a6f39cc4939d20cbe4e66128f72';
 
 abstract class _$GameEditState
     extends BuildlessAutoDisposeNotifier<GameEditFormState> {

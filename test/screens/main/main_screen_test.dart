@@ -222,14 +222,14 @@ void main() {
       );
 
       final expansion = container.read(sectionExpansionProvider.notifier);
-      for (final section in const [
-        'Playing',
-        'Ongoing',
-        'Backlog',
-        'Completed',
-        'Abandoned',
+      for (final status in const [
+        GameStatus.playing,
+        GameStatus.ongoing,
+        GameStatus.backlog,
+        GameStatus.completed,
+        GameStatus.abandoned,
       ]) {
-        expansion.expandSection(section);
+        expansion.expandSection(StatusSection(status));
       }
 
       await tester.pump();

@@ -14,7 +14,7 @@ class BacklogPlatformSection extends ConsumerWidget {
   final bool isAnimating;
   final Function(GameItem) onGameTap;
   final Function(GameItem)? onPlayPressed;
-  final String? expansionKey;
+  final PlatformList list;
 
   const BacklogPlatformSection({
     super.key,
@@ -24,7 +24,7 @@ class BacklogPlatformSection extends ConsumerWidget {
     this.animatingGame,
     this.isAnimating = false,
     this.onPlayPressed,
-    this.expansionKey,
+    required this.list,
   });
 
   @override
@@ -33,15 +33,13 @@ class BacklogPlatformSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final sectionExpansion = ref.watch(sectionExpansionProvider);
     final selectedPlatform = ref.watch(selectedPlatformProvider);
     final searchQuery = ref.watch(searchQueryProvider);
 
-    final sectionKey = expansionKey ?? platform;
+    final section = PlatformSection(list, platform);
+    final isOpenByPlayer = ref.watch(sectionExpandedProvider(section));
     final filtersActive = selectedPlatform != 'All' || searchQuery.isNotEmpty;
-    final isExpanded = filtersActive
-        ? games.isNotEmpty
-        : (sectionExpansion[sectionKey] ?? true);
+    final isExpanded = filtersActive ? games.isNotEmpty : isOpenByPlayer;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +50,7 @@ class BacklogPlatformSection extends ConsumerWidget {
           onToggle:
               () => ref
                   .read(sectionExpansionProvider.notifier)
-                  .toggleSection(sectionKey),
+                  .toggleSection(section),
           isEmpty: false,
           gameCount: games.length,
         ),

@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/models/game_models.dart';
-import '../test_helpers.dart';
 
 void main() {
   group('SectionExpansion', () {
@@ -16,240 +15,75 @@ void main() {
       container.dispose();
     });
 
-    void expectSections(Map<String, bool> expected) {
-      final expansion = container.read(sectionExpansionProvider);
+    bool isExpanded(Section section) =>
+        container.read(sectionExpandedProvider(section));
 
-      expect({
-        for (final section in expected.keys) section: expansion[section],
-      }, expected);
-    }
+    SectionExpansion notifier() =>
+        container.read(sectionExpansionProvider.notifier);
 
-    Map<String, bool> everySection(bool isExpanded) => {
-      'Playing': isExpanded,
-      'Backlog': isExpanded,
-      'Completed': isExpanded,
-      'Abandoned': isExpanded,
-      'Ordered': isExpanded,
-      'Wishlist': isExpanded,
-    };
+    const playing = StatusSection(GameStatus.playing);
 
-    test('should have default expansion state', () {
-      final expansion = container.read(sectionExpansionProvider);
+    test('opens only the Playing Status section by default', () {
+      final statuses = GameStatus.values.where((s) => s != GameStatus.owned);
 
-      expect(expansion, {
-        'Playing': true,
-        'Ongoing': false,
-        'Backlog': false,
-        'Completed': false,
-        'Abandoned': false,
-        'Ordered': true,
-        'Wishlist': false,
-      });
+      for (final status in statuses) {
+        expect(
+          isExpanded(StatusSection(status)),
+          status == GameStatus.playing,
+          reason: '$status section',
+        );
+      }
     });
 
-    test('should toggle section expansion', () {
-      final notifier = container.read(sectionExpansionProvider.notifier);
-
-      // Initially, Backlog is false
-      expect(container.read(sectionExpansionProvider)['Backlog'], false);
-
-      // Toggle Backlog
-      notifier.toggleSection('Backlog');
-      expect(container.read(sectionExpansionProvider)['Backlog'], true);
-
-      // Toggle again
-      notifier.toggleSection('Backlog');
-      expect(container.read(sectionExpansionProvider)['Backlog'], false);
+    test('opens every Platform section by default', () {
+      expect(
+        isExpanded(const PlatformSection(PlatformList.backlog, 'PS5')),
+        isTrue,
+      );
+      expect(
+        isExpanded(const PlatformSection(PlatformList.collection, 'PS5')),
+        isTrue,
+      );
     });
 
-    test('should expand specific section', () {
-      final notifier = container.read(sectionExpansionProvider.notifier);
+    test('toggles a section closed and open again', () {
+      notifier().toggleSection(playing);
+      expect(isExpanded(playing), isFalse);
 
-      notifier.expandSection('Completed');
-      expect(container.read(sectionExpansionProvider)['Completed'], true);
+      notifier().toggleSection(playing);
+      expect(isExpanded(playing), isTrue);
     });
 
-    test('should collapse specific section', () {
-      final notifier = container.read(sectionExpansionProvider.notifier);
+    test('expands a closed section and keeps an open one open', () {
+      const completed = StatusSection(GameStatus.completed);
 
-      // Playing starts as true
-      expect(container.read(sectionExpansionProvider)['Playing'], true);
+      notifier().expandSection(completed);
+      notifier().expandSection(playing);
 
-      notifier.collapseSection('Playing');
-      expect(container.read(sectionExpansionProvider)['Playing'], false);
+      expect(isExpanded(completed), isTrue);
+      expect(isExpanded(playing), isTrue);
     });
 
-    test('should expand all sections', () {
-      container.read(sectionExpansionProvider.notifier).expandAll();
+    test('keeps a Platform named Playing apart from the Playing section', () {
+      const platformNamedPlaying = PlatformSection(
+        PlatformList.backlog,
+        'Playing',
+      );
 
-      expectSections(everySection(true));
+      notifier().toggleSection(platformNamedPlaying);
+
+      expect(isExpanded(platformNamedPlaying), isFalse);
+      expect(isExpanded(playing), isTrue);
     });
 
-    test('should collapse all sections', () {
-      container.read(sectionExpansionProvider.notifier).collapseAll();
+    test('opens one Platform on Backlog and Collection independently', () {
+      const backlogPs5 = PlatformSection(PlatformList.backlog, 'PS5');
+      const collectionPs5 = PlatformSection(PlatformList.collection, 'PS5');
 
-      expectSections(everySection(false));
-    });
+      notifier().toggleSection(backlogPs5);
 
-    group('updateExpansionBasedOnResults', () {
-      test('should expand sections with games and collapse empty sections', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        final playingGames = [
-          TestHelpers.createPlayingGame(title: 'Test Game 1', platform: 'PS5'),
-        ];
-
-        final backlogGames = <GameItem>[];
-        final completedGames = [
-          TestHelpers.createCompletedGame(
-            title: 'Test Game 2',
-            platform: 'Xbox',
-          ),
-        ];
-        final abandonedGames = <GameItem>[];
-
-        notifier.updateExpansionBasedOnResults(
-          playingGames: playingGames,
-          backlogGames: backlogGames,
-          completedGames: completedGames,
-          abandonedGames: abandonedGames,
-        );
-
-        expectSections({
-          'Playing': true,
-          'Backlog': false,
-          'Completed': true,
-          'Abandoned': false,
-        });
-      });
-
-      test('should collapse all sections when no games match filter', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        notifier.updateExpansionBasedOnResults(
-          playingGames: [],
-          backlogGames: [],
-          completedGames: [],
-          abandonedGames: [],
-        );
-
-        expectSections({
-          'Playing': false,
-          'Backlog': false,
-          'Completed': false,
-          'Abandoned': false,
-        });
-      });
-
-      test('should expand all sections when all have matching games', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        final gamesList = [
-          TestHelpers.createPlayingGame(title: 'Test Game', platform: 'PS5'),
-        ];
-
-        notifier.updateExpansionBasedOnResults(
-          playingGames: gamesList,
-          backlogGames: gamesList,
-          completedGames: gamesList,
-          abandonedGames: gamesList,
-        );
-
-        expectSections({
-          'Playing': true,
-          'Backlog': true,
-          'Completed': true,
-          'Abandoned': true,
-        });
-      });
-
-      test('should preserve manually controlled sections', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        // User manually expands Backlog
-        notifier.toggleSection('Backlog');
-        expect(container.read(sectionExpansionProvider)['Backlog'], true);
-
-        // System tries to collapse it based on empty results
-        notifier.updateExpansionBasedOnResults(
-          playingGames: [],
-          backlogGames: [], // Empty - would normally collapse
-          completedGames: [],
-          abandonedGames: [],
-        );
-
-        expectSections({'Backlog': true, 'Playing': false});
-      });
-
-      test('should only update sections that are provided', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        // Initially, Playing is true, Backlog is false
-        expect(container.read(sectionExpansionProvider)['Playing'], true);
-        expect(container.read(sectionExpansionProvider)['Backlog'], false);
-
-        // Update only wishlist sections (like when on wishlist screen)
-        notifier.updateExpansionBasedOnResults(
-          orderedGames: [],
-          wishlistGames: [],
-        );
-
-        expectSections({
-          'Playing': true,
-          'Backlog': false,
-          'Ordered': false,
-          'Wishlist': false,
-        });
-      });
-    });
-
-    group('Manual Control Tracking', () {
-      test('should track manually controlled sections', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        // Reset any existing manual control
-        notifier.resetManualControl();
-
-        // Initially, automatic updates should work
-        notifier.updateExpansionBasedOnResults(
-          playingGames: [],
-          backlogGames: [],
-        );
-
-        expect(container.read(sectionExpansionProvider)['Playing'], false);
-        expect(container.read(sectionExpansionProvider)['Backlog'], false);
-
-        // User manually toggles Backlog
-        notifier.toggleSection('Backlog');
-        expect(container.read(sectionExpansionProvider)['Backlog'], true);
-
-        // Automatic update should not affect manually controlled Backlog
-        notifier.updateExpansionBasedOnResults(
-          playingGames: [],
-          backlogGames: [], // Still empty
-        );
-
-        final expansion = container.read(sectionExpansionProvider);
-        expect(expansion['Playing'], false); // Can still be auto-updated
-        expect(expansion['Backlog'], true); // Preserved due to manual control
-      });
-
-      test('should reset manual control when requested', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        // User manually controls a section
-        notifier.toggleSection('Completed');
-
-        // Reset manual control
-        notifier.resetManualControl();
-
-        // Now automatic updates should work again
-        notifier.updateExpansionBasedOnResults(
-          completedGames: [], // Empty
-        );
-
-        expect(container.read(sectionExpansionProvider)['Completed'], false);
-      });
+      expect(isExpanded(backlogPs5), isFalse);
+      expect(isExpanded(collectionPs5), isTrue);
     });
   });
 

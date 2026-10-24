@@ -96,8 +96,12 @@ void main() {
         await tester.tap(find.text('Update'));
         await tester.pump();
 
-        final sectionExpansion = container.read(sectionExpansionProvider);
-        expect(sectionExpansion['Completed'], true);
+        expect(
+          container.read(
+            sectionExpandedProvider(const StatusSection(GameStatus.completed)),
+          ),
+          isTrue,
+        );
       });
 
       testWidgets('should show feedback when updating', (tester) async {
@@ -190,7 +194,9 @@ void main() {
           findsOneWidget,
         );
         expect(
-          container.read(sectionExpansionProvider).containsKey('In Collection'),
+          container
+              .read(sectionExpansionProvider)
+              .containsKey(const StatusSection(GameStatus.owned)),
           isFalse,
         );
       });
@@ -231,7 +237,7 @@ void main() {
               reason: '$status toast icon',
             );
             expect(
-              container.read(sectionExpansionProvider)[style.label],
+              container.read(sectionExpandedProvider(StatusSection(status))),
               isTrue,
               reason: '$status section expands',
             );
@@ -264,35 +270,6 @@ void main() {
         final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
         expect(snackBar.backgroundColor, style.colour);
         expect(inSnackBar(find.byIcon(style.icon!)), findsOneWidget);
-      });
-    });
-
-    group('updateSectionExpansionForFilters', () {
-      test('should not change expansion when no filters active', () {
-        // Set initial state
-        container.read(sectionExpansionProvider.notifier).expandAll();
-
-        service.updateSectionExpansionForFilters();
-
-        final sectionExpansion = container.read(sectionExpansionProvider);
-        expect(sectionExpansion['Playing'], true);
-        expect(sectionExpansion['Backlog'], true);
-      });
-
-      test('should update expansion based on filtered results', () {
-        // Set a platform filter
-        container
-            .read(selectedPlatformProvider.notifier)
-            .selectPlatform('NonExistent');
-
-        service.updateSectionExpansionForFilters();
-
-        final sectionExpansion = container.read(sectionExpansionProvider);
-        // All sections should be collapsed as no games match the filter
-        expect(sectionExpansion['Playing'], false);
-        expect(sectionExpansion['Backlog'], false);
-        expect(sectionExpansion['Completed'], false);
-        expect(sectionExpansion['Abandoned'], false);
       });
     });
   });

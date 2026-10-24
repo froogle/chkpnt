@@ -11,6 +11,7 @@ import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/services/paywall_service.dart';
@@ -107,6 +108,7 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
         BacklogPlatformSection(
           platform: platform,
           games: games,
+          list: PlatformList.backlog,
           animatingGame: _animatingGame,
           isAnimating: _isAnimating,
           onGameTap: _handleGameTap,

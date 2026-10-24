@@ -15,7 +15,9 @@ class GameActionsService {
     final playing = StatusStyles.of(GameStatus.playing);
 
     // Ensure playing section is expanded for better visual feedback
-    _ref.read(sectionExpansionProvider.notifier).expandSection(playing.label);
+    _ref
+        .read(sectionExpansionProvider.notifier)
+        .expandSection(const StatusSection(GameStatus.playing));
 
     // Small delay before making the actual change for better visual effect
     await Future.delayed(const Duration(milliseconds: 100));
@@ -60,7 +62,9 @@ class GameActionsService {
       // Expand the relevant section if status changed
       final style = StatusStyles.of(updatedGame.status);
       if (updatedGame.status != GameStatus.owned) {
-        _ref.read(sectionExpansionProvider.notifier).expandSection(style.label);
+        _ref
+            .read(sectionExpansionProvider.notifier)
+            .expandSection(StatusSection(updatedGame.status));
       }
 
       message = '${updatedGame.title} moved to ${style.label}!';
@@ -90,7 +94,9 @@ class GameActionsService {
     // Expand the relevant section for the new game's status
     final style = StatusStyles.of(newGame.status);
     if (newGame.status != GameStatus.owned) {
-      _ref.read(sectionExpansionProvider.notifier).expandSection(style.label);
+      _ref
+          .read(sectionExpansionProvider.notifier)
+          .expandSection(StatusSection(newGame.status));
     }
 
     // Show feedback
@@ -115,41 +121,6 @@ class GameActionsService {
         icon: Icons.delete_forever,
         color: Colors.red,
       );
-    }
-  }
-
-  /// Updates section expansion based on current filters
-  void updateSectionExpansionForFilters() {
-    final platform = _ref.read(selectedPlatformProvider);
-    final searchQuery = _ref.read(searchQueryProvider);
-
-    // Only auto-expand/collapse when filters are active
-    final hasActiveFilters = platform != 'All' || searchQuery.isNotEmpty;
-
-    if (hasActiveFilters) {
-      // Get filtered games for each section
-      final playingGames = _ref.read(
-        fullyFilteredGamesProvider(GameStatus.playing, platform, searchQuery),
-      );
-      final backlogGames = _ref.read(
-        fullyFilteredGamesProvider(GameStatus.backlog, platform, searchQuery),
-      );
-      final completedGames = _ref.read(
-        fullyFilteredGamesProvider(GameStatus.completed, platform, searchQuery),
-      );
-      final abandonedGames = _ref.read(
-        fullyFilteredGamesProvider(GameStatus.abandoned, platform, searchQuery),
-      );
-
-      // Update section expansion based on results
-      _ref
-          .read(sectionExpansionProvider.notifier)
-          .updateExpansionBasedOnResults(
-            playingGames: playingGames,
-            backlogGames: backlogGames,
-            completedGames: completedGames,
-            abandonedGames: abandonedGames,
-          );
     }
   }
 

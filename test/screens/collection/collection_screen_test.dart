@@ -318,9 +318,10 @@ void main() {
 
       expect(find.text('Collected PS5 Game'), findsNothing);
 
-      final expansion = container.read(sectionExpansionProvider);
-      expect(expansion['Collection/PS5'], false);
-      expect(expansion['PS5'], isNot(false));
+      bool isExpanded(PlatformList list) =>
+          container.read(sectionExpandedProvider(PlatformSection(list, 'PS5')));
+      expect(isExpanded(PlatformList.collection), isFalse);
+      expect(isExpanded(PlatformList.backlog), isTrue);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
