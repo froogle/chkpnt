@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_info_section.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/providers/game_edit_provider.dart';
 import '../../../test_helpers.dart';
 
 void main() {

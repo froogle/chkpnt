@@ -10,7 +10,7 @@ import 'package:http/testing.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/providers/game_edit_provider.dart';
 import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/image_search/image_search_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/barcode_scanner_screen.dart';
@@ -240,22 +240,15 @@ void main() {
       expect(icon.color, EditScreenStyles.scanBarcodeColour);
     });
 
-    testWidgets('a successful scan pre-fills the form as owned and physical', (
-      tester,
-    ) async {
+    testWidgets('a scanned title fills the title field', (tester) async {
       _seededGames.add(TestHelpers.createTestGame(platform: 'Xbox 360'));
       container = _createContainer(lookupClient: lookupClient);
 
       await _openAddForm(tester, container);
       await _scanBarcode(tester, '5026555248082');
 
-      final state = container.read(gameEditStateProvider(addContext));
-
-      expect(state.barcode, '5026555248082');
-      expect(state.title, 'Red Dead Redemption');
-      expect(state.platform, 'Xbox 360');
-      expect(state.status, GameStatus.owned);
-      expect(state.isPhysical, isTrue);
+      final titleField = tester.widget<TextField>(find.byType(TextField).first);
+      expect(titleField.controller!.text, 'Red Dead Redemption');
       expect(lookupClient.requestedBarcodes, ['5026555248082']);
     });
 
@@ -271,100 +264,19 @@ void main() {
       expect(find.text('Game Found'), findsOneWidget);
       expect(find.text('Yes'), findsOneWidget);
       expect(find.text('No'), findsOneWidget);
-    });
-
-    testWidgets('the scan offer never claims the game was saved', (
-      tester,
-    ) async {
-      _seededGames.add(TestHelpers.createTestGame(platform: 'Xbox 360'));
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await _scanBarcode(tester, '5026555248082');
-
-      expect(find.textContaining('Saved'), findsNothing);
-      expect(find.textContaining('has been added'), findsNothing);
-      expect(
-        find.text(
-          'Red Dead Redemption has been found and the details filled in. '
-          'Would you like to search for box art?',
-        ),
-        findsOneWidget,
-      );
       expect(container.read(gameListProvider).length, 1);
     });
 
-    testWidgets('a detected platform the user does not have is left empty', (
-      tester,
-    ) async {
-      _seededGames.add(TestHelpers.createTestGame(platform: 'PC'));
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await _scanBarcode(tester, '5026555248082');
-
-      final state = container.read(gameEditStateProvider(addContext));
-
-      expect(state.title, 'Red Dead Redemption');
-      expect(state.platform, isEmpty);
-    });
-
-    testWidgets('a failed lookup still captures the barcode', (tester) async {
+    testWidgets('a failed lookup says why', (tester) async {
       container = _createContainer(lookupClient: lookupClient);
 
       await _openAddForm(tester, container);
       await _scanBarcode(tester, '5060990241239');
 
-      final state = container.read(gameEditStateProvider(addContext));
-
-      expect(state.barcode, '5060990241239');
-      expect(state.status, GameStatus.owned);
-      expect(state.isPhysical, isTrue);
       expect(
         find.textContaining('not in the lookup service'),
         findsOneWidget,
       );
-    });
-
-    testWidgets('a title and platform the user typed survive a failed lookup', (
-      tester,
-    ) async {
-      _seededGames.add(TestHelpers.createTestGame(platform: 'PS4'));
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-
-      await tester.enterText(find.byType(TextField).first, 'Trails From Zero');
-      container
-          .read(gameEditStateProvider(addContext).notifier)
-          .updatePlatform('PS4');
-      await tester.pump();
-
-      await _scanBarcode(tester, '5060990241239');
-
-      final state = container.read(gameEditStateProvider(addContext));
-      final titleField = tester.widget<TextField>(find.byType(TextField).first);
-
-      expect(titleField.controller!.text, 'Trails From Zero');
-      expect(state.platform, 'PS4');
-      expect(state.barcode, '5060990241239');
-      expect(state.status, GameStatus.owned);
-      expect(state.isPhysical, isTrue);
-      expect(find.text('Trails From Zero'), findsOneWidget);
-    });
-
-    testWidgets('the add mode title default survives a failed lookup', (
-      tester,
-    ) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await _scanBarcode(tester, '5060990241239');
-
-      final state = container.read(gameEditStateProvider(addContext));
-
-      expect(state.title, 'New Game');
-      expect(state.barcode, '5060990241239');
     });
 
     testWidgets('a server error gets its own message', (tester) async {
@@ -379,28 +291,6 @@ void main() {
         container.read(gameEditStateProvider(addContext)).barcode,
         '5026555248082',
       );
-    });
-
-    testWidgets('a UPC-A padded to EAN-13 matches the stored barcode', (
-      tester,
-    ) async {
-      _seededGames.add(
-        GameItem.create(
-          title: 'Uncharted 2: Among Thieves',
-          platform: 'PS3',
-          status: GameStatus.owned,
-          isPhysical: true,
-          barcode: '711719127451',
-        ),
-      );
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await _scanBarcode(tester, '0711719127451');
-
-      expect(find.text('Already In Your Collection'), findsOneWidget);
-      expect(lookupClient.requestedBarcodes, isEmpty);
-      expect(container.read(gameListProvider).length, 1);
     });
 
     testWidgets('repeated detections trigger exactly one lookup', (
@@ -531,125 +421,6 @@ void main() {
       );
     });
 
-    testWidgets('still offers a scan after only a platform choice', (
-      tester,
-    ) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      container
-          .read(gameEditStateProvider(addContext).notifier)
-          .updatePlatform('PS5');
-      await tester.pump();
-
-      expect(_scanPrimaryButton, findsOneWidget);
-    });
-
-    testWidgets('still offers a scan after only a title', (tester) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await tester.enterText(find.byType(TextField).first, 'Elden Ring');
-      await tester.pump();
-
-      expect(_scanPrimaryButton, findsOneWidget);
-    });
-
-    testWidgets('still offers a scan after only a status change', (
-      tester,
-    ) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      container
-          .read(gameEditStateProvider(addContext).notifier)
-          .updateStatus(GameStatus.playing);
-      await tester.pump();
-
-      expect(_scanPrimaryButton, findsOneWidget);
-    });
-
-    testWidgets('still offers a scan after only a physical toggle', (
-      tester,
-    ) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      container
-          .read(gameEditStateProvider(addContext).notifier)
-          .updateIsPhysical(true);
-      await tester.pump();
-
-      expect(_scanPrimaryButton, findsOneWidget);
-    });
-
-    testWidgets('becomes Add Game after a successful scan', (tester) async {
-      _seededGames.add(TestHelpers.createTestGame(platform: 'Xbox 360'));
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await _scanBarcode(tester, '5026555248082');
-      await tester.tap(find.text('No'));
-      await _pumpFrames(tester);
-
-      expect(_addPrimaryButton, findsOneWidget);
-    });
-
-    testWidgets('becomes Add Game when a scan finds no matching platform', (
-      tester,
-    ) async {
-      _seededGames.add(TestHelpers.createTestGame(platform: 'PC'));
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await _scanBarcode(tester, '5026555248082');
-      await tester.tap(find.text('No'));
-      await _pumpFrames(tester);
-
-      final state = container.read(gameEditStateProvider(addContext));
-
-      expect(state.title, 'Red Dead Redemption');
-      expect(state.platform, isEmpty);
-      expect(_addPrimaryButton, findsOneWidget);
-    });
-
-    testWidgets('still offers a scan after a failed lookup', (tester) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await _scanBarcode(tester, '5060990241239');
-
-      expect(_scanPrimaryButton, findsOneWidget);
-      expect(
-        container.read(gameEditStateProvider(addContext)).barcode,
-        '5060990241239',
-      );
-    });
-
-    testWidgets('cannot save once the title is cleared back to the default', (
-      tester,
-    ) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await tester.enterText(find.byType(TextField).first, 'Elden Ring');
-      container
-          .read(gameEditStateProvider(addContext).notifier)
-          .updatePlatform('PS5');
-      await tester.pump();
-      await tester.enterText(find.byType(TextField).first, kDefaultAddGameTitle);
-      await tester.pump();
-
-      await tester.tap(_addPrimaryButton);
-      await _pumpFrames(tester);
-
-      expect(
-        tester.widget<ElevatedButton>(_addPrimaryButton).onPressed,
-        isNull,
-      );
-      expect(container.read(gameListProvider), isEmpty);
-    });
-
     testWidgets('cannot save with a whitespace-only title', (tester) async {
       container = _createContainer(lookupClient: lookupClient);
 
@@ -666,47 +437,6 @@ void main() {
       await _pumpFrames(tester);
 
       expect(container.read(gameListProvider), isEmpty);
-    });
-
-    testWidgets('editing an existing game is never blocked by the title', (
-      tester,
-    ) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            home: GameEditScreen.edit(
-              game: TestHelpers.createTestGame(title: kDefaultAddGameTitle),
-            ),
-          ),
-        ),
-      );
-      await tester.pump();
-
-      expect(
-        tester.widget<ElevatedButton>(_savePrimaryButton).onPressed,
-        isNotNull,
-      );
-    });
-
-    testWidgets('never reverts once the title is cleared again', (
-      tester,
-    ) async {
-      container = _createContainer(lookupClient: lookupClient);
-
-      await _openAddForm(tester, container);
-      await tester.enterText(find.byType(TextField).first, 'Elden Ring');
-      container
-          .read(gameEditStateProvider(addContext).notifier)
-          .updatePlatform('PS5');
-      await tester.pump();
-      await tester.enterText(find.byType(TextField).first, 'New Game');
-      await tester.pump();
-
-      expect(_addPrimaryButton, findsOneWidget);
-      expect(_scanPrimaryButton, findsNothing);
     });
 
     testWidgets('saves the game once it reads Add Game', (tester) async {

@@ -3,12 +3,11 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
 import '../buttons/status_button.dart';
 
-class GameStatusSelector extends StatefulWidget {
+class GameStatusSelector extends StatelessWidget {
   final GameStatus selectedStatus;
   final ValueChanged<GameStatus> onStatusChanged;
   final bool isAddMode;
   final List<GameStatus>? availableStatuses;
-  final GameStatus? defaultStatus;
 
   const GameStatusSelector({
     super.key,
@@ -16,36 +15,10 @@ class GameStatusSelector extends StatefulWidget {
     required this.onStatusChanged,
     this.isAddMode = false,
     this.availableStatuses,
-    this.defaultStatus,
   });
 
   @override
-  State<GameStatusSelector> createState() => _GameStatusSelectorState();
-}
-
-class _GameStatusSelectorState extends State<GameStatusSelector> {
-  bool _hasSetInitialDefault = false;
-  GameStatus? _lastSelectedStatus;
-
-  @override
   Widget build(BuildContext context) {
-    // Only set default status on the very first build when:
-    // 1. Default status is provided
-    // 2. Current status doesn't match default
-    // 3. We haven't set the initial default yet
-    // 4. The selected status hasn't been changed by user (hasn't changed from last build)
-    if (widget.defaultStatus != null &&
-        widget.selectedStatus != widget.defaultStatus &&
-        !_hasSetInitialDefault &&
-        (_lastSelectedStatus == null ||
-            _lastSelectedStatus == widget.selectedStatus)) {
-      _hasSetInitialDefault = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.onStatusChanged(widget.defaultStatus!);
-      });
-    }
-
-    _lastSelectedStatus = widget.selectedStatus;
     return _buildStatusGrid();
   }
 
@@ -62,12 +35,12 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
   /// Determines which status options to show based on the current game status
   List<GameStatus> _getAvailableStatuses() {
     // If availableStatuses is provided, use it (for screen-specific behaviour)
-    if (widget.availableStatuses != null) {
-      return widget.availableStatuses!;
+    if (availableStatuses != null) {
+      return availableStatuses!;
     }
 
     // If this is add mode (new game), show all available statuses
-    if (widget.isAddMode) {
+    if (isAddMode) {
       return [
         GameStatus.playing,
         GameStatus.backlog,
@@ -80,19 +53,19 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
     }
 
     // If the game is currently wishlist or ordered, show only wishlist flow options
-    if (widget.selectedStatus == GameStatus.wishlist ||
-        widget.selectedStatus == GameStatus.ordered) {
+    if (selectedStatus == GameStatus.wishlist ||
+        selectedStatus == GameStatus.ordered) {
       return [GameStatus.wishlist, GameStatus.ordered, GameStatus.backlog];
     }
 
     // If the game is in playing, backlog, ongoing, completed, or abandoned states,
     // exclude wishlist and ordered options as they don't make sense in this context
-    if (widget.selectedStatus == GameStatus.playing ||
-        widget.selectedStatus == GameStatus.backlog ||
-        widget.selectedStatus == GameStatus.ongoing ||
-        widget.selectedStatus == GameStatus.completed ||
-        widget.selectedStatus == GameStatus.abandoned ||
-        widget.selectedStatus == GameStatus.owned) {
+    if (selectedStatus == GameStatus.playing ||
+        selectedStatus == GameStatus.backlog ||
+        selectedStatus == GameStatus.ongoing ||
+        selectedStatus == GameStatus.completed ||
+        selectedStatus == GameStatus.abandoned ||
+        selectedStatus == GameStatus.owned) {
       return [
         GameStatus.playing,
         GameStatus.backlog,
@@ -157,7 +130,7 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
   }
 
   Widget _buildStatusButton(GameStatus status, double buttonWidth) {
-    final isSelected = status == widget.selectedStatus;
+    final isSelected = status == selectedStatus;
 
     return SizedBox(
       width: buttonWidth,
@@ -172,7 +145,7 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
 
   void _handleStatusTap(GameStatus status, bool isSelected) {
     if (!isSelected) {
-      widget.onStatusChanged(status);
+      onStatusChanged(status);
       return;
     }
 
@@ -180,6 +153,6 @@ class _GameStatusSelectorState extends State<GameStatusSelector> {
       return;
     }
 
-    widget.onStatusChanged(GameStatus.owned);
+    onStatusChanged(GameStatus.owned);
   }
 }
