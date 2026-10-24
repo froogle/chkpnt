@@ -77,7 +77,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
         children: [
           _buildGameSection('Ordered', GameStatus.ordered),
           const SizedBox(height: 20),
-          _buildGameSection('Wish List', GameStatus.wishlist),
+          _buildGameSection('Wishlist', GameStatus.wishlist),
           const SizedBox(height: 24),
         ],
       ),

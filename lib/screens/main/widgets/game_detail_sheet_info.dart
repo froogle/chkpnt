@@ -185,7 +185,7 @@ class GameDetailSheetInfo extends StatelessWidget {
       case GameStatus.abandoned:
         return Colors.grey;
       case GameStatus.wishlist:
-        return Colors.red;
+        return Colors.pink;
       case GameStatus.ordered:
         return Colors.purple;
       case GameStatus.ongoing:
@@ -204,7 +204,7 @@ class GameDetailSheetInfo extends StatelessWidget {
       case GameStatus.backlog:
         return Icons.schedule;
       case GameStatus.abandoned:
-        return Icons.pause_circle_filled;
+        return Icons.do_not_disturb_on;
       case GameStatus.wishlist:
         return Icons.favorite;
       case GameStatus.ordered:
@@ -232,7 +232,7 @@ class GameDetailSheetInfo extends StatelessWidget {
         );
       case GameStatus.abandoned:
         return Icon(
-          Icons.pause_circle_filled,
+          Icons.do_not_disturb_on,
           color: AppColors.expandIcon,
           size: InputStyles.statusButtonIconSize,
         );

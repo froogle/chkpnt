@@ -30,7 +30,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
 
       expect(find.text('Title'), findsOneWidget);
-      expect(find.text('Date Added'), findsOneWidget);
+      expect(find.text('Status Changed'), findsOneWidget);
     });
 
     testWidgets('should show Title chip as active by default', (tester) async {
@@ -43,12 +43,11 @@ void main() {
       final titleChip = tester.widget<SortChip>(titleChipFinder);
       expect(titleChip.isActive, true);
 
-      // Find the Date Added chip
-      final dateChipFinder = find.widgetWithText(SortChip, 'Date Added');
-      expect(dateChipFinder, findsOneWidget);
+      final statusChangeChipFinder = find.widgetWithText(SortChip, 'Status Changed');
+      expect(statusChangeChipFinder, findsOneWidget);
 
-      final dateChip = tester.widget<SortChip>(dateChipFinder);
-      expect(dateChip.isActive, false);
+      final statusChangeChip = tester.widget<SortChip>(statusChangeChipFinder);
+      expect(statusChangeChip.isActive, false);
     });
 
     testWidgets('should show ascending arrow on active chip', (tester) async {
@@ -66,24 +65,22 @@ void main() {
 
       // Initially Title is active
       final titleChipFinder = find.widgetWithText(SortChip, 'Title');
-      final dateChipFinder = find.widgetWithText(SortChip, 'Date Added');
+      final statusChangeChipFinder = find.widgetWithText(SortChip, 'Status Changed');
 
       SortChip titleChip = tester.widget<SortChip>(titleChipFinder);
-      SortChip dateChip = tester.widget<SortChip>(dateChipFinder);
+      SortChip statusChangeChip = tester.widget<SortChip>(statusChangeChipFinder);
 
       expect(titleChip.isActive, true);
-      expect(dateChip.isActive, false);
+      expect(statusChangeChip.isActive, false);
 
-      // Tap on Date Added chip
-      await tester.tap(dateChipFinder);
+      await tester.tap(statusChangeChipFinder);
       await tester.pumpAndSettle();
 
-      // Check that Date Added is now active
       titleChip = tester.widget<SortChip>(titleChipFinder);
-      dateChip = tester.widget<SortChip>(dateChipFinder);
+      statusChangeChip = tester.widget<SortChip>(statusChangeChipFinder);
 
       expect(titleChip.isActive, false);
-      expect(dateChip.isActive, true);
+      expect(statusChangeChip.isActive, true);
     });
 
     testWidgets('should toggle direction when tapping active chip', (
@@ -118,7 +115,7 @@ void main() {
 
       // Check that both chips exist - this validates the structure
       expect(find.text('Title'), findsOneWidget);
-      expect(find.text('Date Added'), findsOneWidget);
+      expect(find.text('Status Changed'), findsOneWidget);
 
       // Verify both SortChip widgets are present
       expect(find.byType(SortChip), findsNWidgets(2));
@@ -137,23 +134,21 @@ void main() {
         SortDirection.ascending,
       );
 
-      // Tap Date Added chip
-      await tester.tap(find.widgetWithText(SortChip, 'Date Added'));
+      await tester.tap(find.widgetWithText(SortChip, 'Status Changed'));
       await tester.pumpAndSettle();
 
       // Check provider state changed
-      expect(container.read(backlogSortProvider), BacklogSortType.dateAdded);
+      expect(container.read(backlogSortProvider), BacklogSortType.statusChange);
       expect(
         container.read(backlogSortDirectionStateProvider),
         SortDirection.ascending,
       );
 
-      // Tap Date Added chip again to toggle direction
-      await tester.tap(find.widgetWithText(SortChip, 'Date Added'));
+      await tester.tap(find.widgetWithText(SortChip, 'Status Changed'));
       await tester.pumpAndSettle();
 
       // Sort type should remain the same, direction should toggle
-      expect(container.read(backlogSortProvider), BacklogSortType.dateAdded);
+      expect(container.read(backlogSortProvider), BacklogSortType.statusChange);
       expect(
         container.read(backlogSortDirectionStateProvider),
         SortDirection.descending,

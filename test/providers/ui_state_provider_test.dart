@@ -30,7 +30,7 @@ void main() {
       'Completed': isExpanded,
       'Abandoned': isExpanded,
       'Ordered': isExpanded,
-      'Wish List': isExpanded,
+      'Wishlist': isExpanded,
     };
 
     test('should have default expansion state', () {
@@ -43,7 +43,7 @@ void main() {
         'Completed': false,
         'Abandoned': false,
         'Ordered': true,
-        'Wish List': false,
+        'Wishlist': false,
       });
     });
 
@@ -198,7 +198,7 @@ void main() {
           'Playing': true,
           'Backlog': false,
           'Ordered': false,
-          'Wish List': false,
+          'Wishlist': false,
         });
       });
     });

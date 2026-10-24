@@ -25,9 +25,9 @@ class BacklogSortingControls extends ConsumerWidget {
           ),
           SizedBox(width: BacklogStyles.sortingChipSpacing),
           SortChip(
-            label: 'Date Added',
-            sortType: BacklogSortType.dateAdded,
-            isActive: currentSortType == BacklogSortType.dateAdded,
+            label: 'Status Changed',
+            sortType: BacklogSortType.statusChange,
+            isActive: currentSortType == BacklogSortType.statusChange,
             currentDirection: currentSortDirection,
           ),
           const Spacer(),

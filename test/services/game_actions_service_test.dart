@@ -213,6 +213,16 @@ void main() {
             Icons.shopping_cart,
             Colors.purple,
           ),
+          GameStatus.abandoned: (
+            'Abandoned',
+            Icons.do_not_disturb_on,
+            Colors.grey,
+          ),
+          GameStatus.wishlist: (
+            'Wishlist',
+            Icons.favorite,
+            Colors.pink,
+          ),
         };
 
         for (final entry in expected.entries) {
