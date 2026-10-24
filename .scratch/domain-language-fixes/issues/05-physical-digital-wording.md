@@ -1,6 +1,6 @@
 # Say Physical and Digital in the detail sheet's copy row
 
-Status: ready-for-human
+Status: resolved
 
 The game detail sheet describes the kind of copy twice, using different words each time:
 
@@ -21,3 +21,7 @@ The badge and the copy row's icon and text sit in the same row, so relabelling t
 - The detail sheet names the kind of copy only as Physical or Digital.
 - A test in `test/screens/main/widgets/game_detail_sheet_info_test.dart` covers both a Physical and a Digital Game.
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #23 (`fix/physical-digital-wording`).
