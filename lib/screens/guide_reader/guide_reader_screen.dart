@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -10,22 +8,9 @@ import 'package:chkpnt/services/guide_parser/guide_content.dart';
 import 'package:chkpnt/services/guide_storage_service.dart';
 import 'package:chkpnt/services/guide_reader_preferences_service.dart';
 import 'package:chkpnt/providers/guide_provider.dart';
+import 'package:chkpnt/providers/reading_position_provider.dart';
 import 'package:chkpnt/screens/guide_reader/guide_web_reader_screen.dart';
 import 'package:chkpnt/screens/guide_reader/widgets/attribution_modal.dart';
-
-sealed class GuideListItem {}
-
-class SectionHeaderItem extends GuideListItem {
-  final String title;
-  SectionHeaderItem(this.title);
-}
-
-class ContentBlockItem extends GuideListItem {
-  final ContentBlock block;
-  ContentBlockItem(this.block);
-}
-
-class SectionSpacerItem extends GuideListItem {}
 
 class GuideReaderScreen extends ConsumerStatefulWidget {
   final GuideItem guide;
@@ -37,48 +22,36 @@ class GuideReaderScreen extends ConsumerStatefulWidget {
 }
 
 class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
-  GuideContent? _guideContent;
-  List<GuideListItem> _flattenedItems = [];
-  bool _isLoading = true;
-  String? _errorMessage;
   bool _showToolbar = false;
   GuideReaderPreferences _preferences = const GuideReaderPreferences();
 
-  final ItemScrollController _itemScrollController = ItemScrollController();
   final ItemPositionsListener _itemPositionsListener =
       ItemPositionsListener.create();
-  Timer? _scrollDebounceTimer;
-  int _currentItemIndex = 0;
-  bool _hasRestoredPosition = false;
 
   @override
   void initState() {
     super.initState();
     _itemPositionsListener.itemPositions.addListener(_onPositionsChanged);
-    _loadGuideContent();
     _loadPreferences();
   }
 
   @override
   void dispose() {
-    _scrollDebounceTimer?.cancel();
-    _updateCurrentItemIndex();
-    _saveReadPosition();
     _itemPositionsListener.itemPositions.removeListener(_onPositionsChanged);
     super.dispose();
   }
 
   void _onPositionsChanged() {
-    _scrollDebounceTimer?.cancel();
-    _scrollDebounceTimer = Timer(const Duration(milliseconds: 500), () {
-      _updateCurrentItemIndex();
-      _saveReadPosition();
-    });
+    final topIndex = _topVisibleIndex();
+    if (topIndex == null) return;
+    ref
+        .read(readingPositionProvider(widget.guide.id).notifier)
+        .moveTo(topIndex);
   }
 
-  void _updateCurrentItemIndex() {
+  int? _topVisibleIndex() {
     final positions = _itemPositionsListener.itemPositions.value;
-    if (positions.isEmpty) return;
+    if (positions.isEmpty) return null;
 
     final visibleItems =
         positions
@@ -88,79 +61,10 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
             )
             .toList();
 
-    if (visibleItems.isEmpty) return;
+    if (visibleItems.isEmpty) return null;
 
     visibleItems.sort((a, b) => a.itemLeadingEdge.compareTo(b.itemLeadingEdge));
-    _currentItemIndex = visibleItems.first.index;
-  }
-
-  Future<void> _saveReadPosition() async {
-    if (_guideContent == null) return;
-
-    try {
-      await ref
-          .read(guidesForGameProvider(widget.guide.gameId).notifier)
-          .updateReadPosition(widget.guide.id, _currentItemIndex, 0);
-    } catch (e) {
-      // Silently fail - position saving is not critical
-    }
-  }
-
-  void _restoreReadPosition() {
-    if (_hasRestoredPosition) return;
-    _hasRestoredPosition = true;
-
-    final savedIndex = widget.guide.lastReadSection;
-    if (savedIndex <= 0) return;
-    if (savedIndex >= _flattenedItems.length) return;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_itemScrollController.isAttached) return;
-      _itemScrollController.jumpTo(index: savedIndex);
-      _currentItemIndex = savedIndex;
-    });
-  }
-
-  Future<void> _loadGuideContent() async {
-    try {
-      final storageService = ref.read(guideStorageServiceProvider);
-      final jsonContent = await storageService.loadGuideJson(
-        widget.guide.fileName,
-      );
-      final content = GuideContent.fromJson(
-        jsonDecode(jsonContent) as Map<String, dynamic>,
-      );
-      final flattenedItems = _buildFlattenedItems(content);
-
-      if (mounted) {
-        setState(() {
-          _guideContent = content;
-          _flattenedItems = flattenedItems;
-          _isLoading = false;
-        });
-
-        _restoreReadPosition();
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Unable to load guide content';
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  List<GuideListItem> _buildFlattenedItems(GuideContent content) {
-    final items = <GuideListItem>[];
-    for (final section in content.sections) {
-      items.add(SectionHeaderItem(section.title));
-      for (final block in section.blocks) {
-        items.add(ContentBlockItem(block));
-      }
-      items.add(SectionSpacerItem());
-    }
-    return items;
+    return visibleItems.first.index;
   }
 
   Future<void> _loadPreferences() async {
@@ -195,8 +99,6 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   void _handleClose() {
-    _updateCurrentItemIndex();
-    _saveReadPosition();
     Navigator.of(context).pop();
   }
 
@@ -309,24 +211,15 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: true,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          _updateCurrentItemIndex();
-          _saveReadPosition();
-        }
-      },
-      child: Scaffold(
-        backgroundColor: _backgroundColor,
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildAnimatedToolbar(),
-              Expanded(child: _buildContent()),
-            ],
-          ),
+    return Scaffold(
+      backgroundColor: _backgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            _buildAnimatedToolbar(),
+            Expanded(child: _buildContent()),
+          ],
         ),
       ),
     );
@@ -419,21 +312,18 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildContent() {
-    if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: AppColors.primaryPurple),
-      );
-    }
-
-    if (_errorMessage != null) {
-      return _buildErrorState();
-    }
-
-    if (_guideContent == null) {
-      return _buildErrorState();
-    }
-
-    return _buildGuideContent();
+    return ref
+        .watch(readingPositionProvider(widget.guide.id))
+        .when(
+          data: _buildGuideContent,
+          loading:
+              () => Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryPurple,
+                ),
+              ),
+          error: (error, stack) => _buildErrorState(),
+        );
   }
 
   Widget _buildErrorState() {
@@ -450,7 +340,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              _errorMessage ?? 'Unable to load guide',
+              'Unable to load guide content',
               style: TextStyle(fontSize: 16, color: _textColour),
               textAlign: TextAlign.center,
             ),
@@ -469,13 +359,13 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     );
   }
 
-  Widget _buildGuideContent() {
+  Widget _buildGuideContent(TextGuideReading reading) {
     return ScrollablePositionedList.builder(
-      itemScrollController: _itemScrollController,
+      initialScrollIndex: reading.startIndex,
       itemPositionsListener: _itemPositionsListener,
       padding: const EdgeInsets.all(16),
-      itemCount: _flattenedItems.length,
-      itemBuilder: (context, index) => _buildListItem(_flattenedItems[index]),
+      itemCount: reading.items.length,
+      itemBuilder: (context, index) => _buildListItem(reading.items[index]),
     );
   }
 

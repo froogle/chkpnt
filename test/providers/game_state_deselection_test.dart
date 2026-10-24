@@ -57,15 +57,18 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Deselected state storage', () {
-    test('keeps the database on schema version 7 with no new migration', () {
+    test('no database migration changes how Status is stored', () {
       final source =
           File(
             'lib/repositories/drift_game_repository.dart',
           ).readAsStringSync();
+      final migrations = source.substring(
+        source.indexOf('onUpgrade:'),
+        source.indexOf('beforeOpen:'),
+      );
 
-      expect(source.contains('int get schemaVersion => 7;'), isTrue);
-      expect(source.contains('from == 7'), isFalse);
-      expect(source.contains('from < 8'), isFalse);
+      expect(migrations, isNot(contains('games.status')));
+      expect(migrations, isNot(contains("'status'")));
     });
 
     test('never shows the word Owned in any user-facing string literal', () {

@@ -52,13 +52,15 @@ class Guides extends Table {
 @DriftDatabase(tables: [Games, Guides])
 class GameDatabase extends _$GameDatabase {
   GameDatabase(StorageService storageService)
-    : super(_openConnection(storageService)) {
+    : this.withExecutor(_openConnection(storageService));
+
+  GameDatabase.withExecutor(super.executor) {
     // Suppress multiple database warnings in tests
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   }
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   Future<void> ensureInitialized() async {
     await customSelect('SELECT 1').get();
@@ -113,6 +115,14 @@ class GameDatabase extends _$GameDatabase {
         if (!await _columnExists('games', 'barcode')) {
           await m.addColumn(games, games.barcode);
         }
+      }
+      if (from < 8) {
+        await update(guides).write(
+          const GuidesCompanion(
+            lastReadSection: Value(0),
+            lastReadBlock: Value(0),
+          ),
+        );
       }
     },
     beforeOpen: (details) async {

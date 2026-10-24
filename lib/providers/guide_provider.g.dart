@@ -168,7 +168,7 @@ class _GuidesForGameStreamProviderElement
   GameId get gameId => (origin as GuidesForGameStreamProvider).gameId;
 }
 
-String _$guidesForGameHash() => r'dd8d411a847ee335915d2203ceb6afbe2837a89d';
+String _$guidesForGameHash() => r'adf71186a72673bbf288edfeb26e3b97d907cca2';
 
 abstract class _$GuidesForGame
     extends BuildlessAutoDisposeNotifier<List<GuideItem>> {
