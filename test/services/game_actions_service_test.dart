@@ -6,6 +6,7 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/styles/global_styles.dart';
+import 'package:chkpnt/styles/status_styles.dart';
 import '../test_helpers.dart';
 
 void main() {
@@ -194,84 +195,75 @@ void main() {
         );
       });
 
-      testWidgets('keeps every other status toast icon and colour', (
+      testWidgets(
+        'presents every other Status toast as Status presentation does',
+        (tester) async {
+          final statuses = GameStatus.values.where(
+            (status) => status != GameStatus.owned && status != testGame.status,
+          );
+
+          for (final status in statuses) {
+            final style = StatusStyles.of(status);
+
+            await tester.pumpWidget(
+              buildHost((context) {
+                service.updateGame(
+                  testGame,
+                  testGame.copyWith(status: status),
+                  context,
+                );
+              }),
+            );
+
+            await tester.tap(find.text('Update'));
+            await tester.pumpAndSettle();
+
+            expect(
+              find.text('${testGame.title} moved to ${style.label}!'),
+              findsOneWidget,
+              reason: '$status toast wording',
+            );
+            final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+            expect(snackBar.backgroundColor, style.colour, reason: '$status');
+            expect(
+              inSnackBar(find.byIcon(style.icon!)),
+              findsOneWidget,
+              reason: '$status toast icon',
+            );
+            expect(
+              container.read(sectionExpansionProvider)[style.label],
+              isTrue,
+              reason: '$status section expands',
+            );
+
+            await tester.pumpWidget(const SizedBox.shrink());
+            await tester.pumpAndSettle();
+          }
+        },
+      );
+
+      testWidgets('presents the start playing toast as Playing', (
         tester,
       ) async {
-        final expected = {
-          GameStatus.completed: (
-            'Completed',
-            Icons.check_circle,
-            Colors.green,
-          ),
-          GameStatus.playing: (
-            'Playing',
-            Icons.play_circle_fill,
-            Colors.orange,
-          ),
-          GameStatus.ordered: (
-            'Ordered',
-            Icons.shopping_cart,
-            Colors.purple,
-          ),
-          GameStatus.abandoned: (
-            'Abandoned',
-            Icons.do_not_disturb_on,
-            Colors.grey,
-          ),
-          GameStatus.wishlist: (
-            'Wishlist',
-            Icons.favorite,
-            Colors.pink,
-          ),
-        };
+        final style = StatusStyles.of(GameStatus.playing);
 
-        for (final entry in expected.entries) {
-          final (name, icon, colour) = entry.value;
+        await tester.pumpWidget(
+          buildHost((context) {
+            service.startPlayingGame(testGame, context);
+          }),
+        );
 
-          await tester.pumpWidget(
-            buildHost((context) {
-              service.updateGame(
-                testGame,
-                testGame.copyWith(status: entry.key),
-                context,
-              );
-            }),
-          );
+        await tester.tap(find.text('Update'));
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pumpAndSettle();
 
-          await tester.tap(find.text('Update'));
-          await tester.pumpAndSettle();
-
-          expect(
-            find.text('${testGame.title} moved to $name!'),
-            findsOneWidget,
-            reason: '$name should keep its toast wording',
-          );
-
-          final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
-          expect(
-            snackBar.backgroundColor,
-            colour,
-            reason: '$name should keep its toast colour',
-          );
-          expect(
-            snackBar.backgroundColor,
-            isNot(AppColors.emptyStateIcon),
-            reason: 'the neutral colour must not leak to $name',
-          );
-
-          expect(
-            inSnackBar(find.byIcon(icon)),
-            findsOneWidget,
-            reason: '$name should keep its toast icon',
-          );
-          expect(
-            tester.widget<Icon>(inSnackBar(find.byIcon(icon))).color,
-            Colors.white,
-          );
-
-          await tester.pumpWidget(const SizedBox.shrink());
-          await tester.pumpAndSettle();
-        }
+        expect(
+          find.text('${testGame.title} moved to ${style.label}!'),
+          findsOneWidget,
+        );
+        final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+        expect(snackBar.backgroundColor, style.colour);
+        expect(inSnackBar(find.byIcon(style.icon!)), findsOneWidget);
       });
     });
 

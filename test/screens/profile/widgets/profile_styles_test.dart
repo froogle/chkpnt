@@ -86,15 +86,6 @@ void main() {
           equals(const Color(0xFF8B5CF6)),
         );
       });
-
-      test('provides status color mapping', () {
-        expect(ProfileStyles.statusColors.containsKey('Playing'), isTrue);
-        expect(ProfileStyles.statusColors.containsKey('Completed'), isTrue);
-        expect(ProfileStyles.statusColors.containsKey('Backlog'), isTrue);
-        expect(ProfileStyles.statusColors.containsKey('Abandoned'), isTrue);
-        expect(ProfileStyles.statusColors.containsKey('Wishlist'), isTrue);
-        expect(ProfileStyles.statusColors.containsKey('Ordered'), isTrue);
-      });
     });
 
     group('Decorations', () {

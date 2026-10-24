@@ -130,7 +130,7 @@ class SectionExpansion extends _$SectionExpansion {
   @override
   Map<String, bool> build() => {
     'Playing': true,
-    'Ongoing/Frequently Played': false,
+    'Ongoing': false,
     'Backlog': false,
     'Completed': false,
     'Abandoned': false,
@@ -220,7 +220,7 @@ class SectionExpansion extends _$SectionExpansion {
     _manuallyControlledSections.clear();
     state = {
       'Playing': true,
-      'Ongoing/Frequently Played': false,
+      'Ongoing': false,
       'Backlog': false,
       'Completed': false,
       'Abandoned': false,

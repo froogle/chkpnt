@@ -193,18 +193,6 @@ class ProfileStyles {
     Color(0xFF6366F1), // Indigo
   ];
 
-  // Status colors mapping
-  static const Map<String, Color> statusColors = {
-    'Playing': Color(0xFF10B981),
-    'Completed': Color(0xFF8B5CF6),
-    'Backlog': Color(0xFFF59E0B),
-    'Abandoned': Color(0xFFEF4444),
-    'Wishlist': Color(0xFF3B82F6),
-    'Ordered': Color(0xFF06B6D4),
-    'Ongoing': Color(0xFF06B6D4),
-    'In Collection': Color(0xFF64748B),
-  };
-
   // Responsive helpers
   static double getChartHeight(bool isLandscape) =>
       isLandscape ? chartLandscapeHeight : chartPortraitHeight;

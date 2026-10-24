@@ -139,23 +139,21 @@ class GameDetailSheetInfo extends StatelessWidget {
   Widget _buildCompactPlatformBadge() {
     final displayPlatform = PlatformUtils.abbreviatePlatformName(game.platform);
     final hasState = game.status != GameStatus.owned;
+    final style = StatusStyles.of(game.status);
 
     return GestureDetector(
       onTap: onEditPressed,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color:
-              hasState
-                  ? _getStatusColor().withValues(alpha: 0.9)
-                  : AppColors.emptyStateIcon.withValues(alpha: 0.9),
+          color: style.colour.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (hasState) ...[
-              Icon(_getStatusIcon(), size: 14, color: Colors.white),
+              Icon(style.icon, size: 14, color: Colors.white),
               const SizedBox(width: 6),
             ],
             Text(
@@ -174,127 +172,22 @@ class GameDetailSheetInfo extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor() {
-    switch (game.status) {
-      case GameStatus.playing:
-        return Colors.orange;
-      case GameStatus.completed:
-        return Colors.green;
-      case GameStatus.backlog:
-        return Colors.blue;
-      case GameStatus.abandoned:
-        return Colors.grey;
-      case GameStatus.wishlist:
-        return Colors.pink;
-      case GameStatus.ordered:
-        return Colors.purple;
-      case GameStatus.ongoing:
-        return const Color(0xFF06B6D4);
-      case GameStatus.owned:
-        return const Color(0xFF64748B);
-    }
-  }
-
-  IconData _getStatusIcon() {
-    switch (game.status) {
-      case GameStatus.playing:
-        return Icons.play_circle_fill;
-      case GameStatus.completed:
-        return Icons.check_circle;
-      case GameStatus.backlog:
-        return Icons.schedule;
-      case GameStatus.abandoned:
-        return Icons.do_not_disturb_on;
-      case GameStatus.wishlist:
-        return Icons.favorite;
-      case GameStatus.ordered:
-        return Icons.shopping_cart;
-      case GameStatus.ongoing:
-        return Icons.replay;
-      case GameStatus.owned:
-        return Icons.bookmark;
-    }
-  }
-
   Widget _buildCurrentStatusIcon() {
-    switch (game.status) {
-      case GameStatus.completed:
-        return Icon(
-          Icons.check_circle,
-          color: AppColors.primaryPurple,
-          size: InputStyles.statusButtonIconSize,
-        );
-      case GameStatus.playing:
-        return Icon(
-          Icons.play_circle_filled,
-          color: AppColors.primaryPurple,
-          size: InputStyles.statusButtonIconSize,
-        );
-      case GameStatus.abandoned:
-        return Icon(
-          Icons.do_not_disturb_on,
-          color: AppColors.expandIcon,
-          size: InputStyles.statusButtonIconSize,
-        );
-      case GameStatus.backlog:
-        return Icon(
-          Icons.list,
-          color: AppColors.primaryPurple,
-          size: InputStyles.statusButtonIconSize,
-        );
-      case GameStatus.wishlist:
-        return Icon(
-          Icons.favorite,
-          color: AppColors.primaryPurple,
-          size: InputStyles.statusButtonIconSize,
-        );
-      case GameStatus.ordered:
-        return Icon(
-          Icons.shopping_cart,
-          color: AppColors.primaryPurple,
-          size: InputStyles.statusButtonIconSize,
-        );
-      case GameStatus.ongoing:
-        return Icon(
-          Icons.replay,
-          color: AppColors.primaryPurple,
-          size: InputStyles.statusButtonIconSize,
-        );
-      case GameStatus.owned:
-        return Icon(
-          Icons.bookmark,
-          color: AppColors.primaryPurple,
-          size: InputStyles.statusButtonIconSize,
-        );
-    }
+    return Icon(
+      StatusStyles.of(game.status).icon,
+      color:
+          game.status == GameStatus.abandoned
+              ? AppColors.expandIcon
+              : AppColors.primaryPurple,
+      size: InputStyles.statusButtonIconSize,
+    );
   }
 
   Widget _buildCurrentStatusText() {
     return Text(
-      _getStatusDisplayText(game.status),
+      StatusStyles.of(game.status).label,
       style: AppLayout.detailSubtitleStyle,
     );
-  }
-
-  String _getStatusDisplayText(GameStatus status) {
-    switch (status) {
-      case GameStatus.playing:
-        return 'Playing';
-      case GameStatus.completed:
-        return 'Completed';
-      case GameStatus.backlog:
-        return 'Backlog';
-      case GameStatus.abandoned:
-        return 'Abandoned';
-      case GameStatus.wishlist:
-        return 'Wishlist';
-      case GameStatus.ordered:
-        return 'Ordered';
-      case GameStatus.ongoing:
-        return 'Ongoing';
-      case GameStatus.owned:
-        return 'In Collection';
-    }
   }
 
   Widget _buildStatusChangedText() {

@@ -47,7 +47,7 @@ class StatusButton extends StatelessWidget {
 
   Widget _buildIcon() {
     return Icon(
-      _getStatusIcon(),
+      StatusStyles.of(status).icon,
       size: InputStyles.statusButtonIconSize,
       color: _getIconColor(),
     );
@@ -55,53 +55,11 @@ class StatusButton extends StatelessWidget {
 
   Widget _buildLabel() {
     return Text(
-      _getStatusLabel(),
+      StatusStyles.of(status).label,
       style: InputStyles.statusButtonTextStyle(isSelected),
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
     );
-  }
-
-  IconData _getStatusIcon() {
-    switch (status) {
-      case GameStatus.playing:
-        return Icons.play_circle_filled;
-      case GameStatus.completed:
-        return Icons.check_circle;
-      case GameStatus.backlog:
-        return Icons.list;
-      case GameStatus.abandoned:
-        return Icons.do_not_disturb_on;
-      case GameStatus.wishlist:
-        return Icons.favorite;
-      case GameStatus.ordered:
-        return Icons.shopping_cart;
-      case GameStatus.ongoing:
-        return Icons.replay;
-      case GameStatus.owned:
-        return Icons.bookmark;
-    }
-  }
-
-  String _getStatusLabel() {
-    switch (status) {
-      case GameStatus.playing:
-        return 'Playing';
-      case GameStatus.completed:
-        return 'Completed';
-      case GameStatus.backlog:
-        return 'Backlog';
-      case GameStatus.abandoned:
-        return 'Abandoned';
-      case GameStatus.wishlist:
-        return 'Wishlist';
-      case GameStatus.ordered:
-        return 'Ordered';
-      case GameStatus.ongoing:
-        return 'Ongoing';
-      case GameStatus.owned:
-        return 'In Collection';
-    }
   }
 
   Color _getIconColor() {

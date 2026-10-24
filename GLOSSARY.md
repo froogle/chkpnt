@@ -58,7 +58,7 @@ _Avoid_: Finished, beaten
 The Status of a Game the player stopped playing with no intention of returning. A Game the player means to come back to belongs in the Backlog instead.
 _Avoid_: On hold, paused, dropped
 
-A Game in the Collection with no Status is simply in the Collection; there is no name for that condition.
+A Game in the Collection with no Status is simply in the Collection; there is no name for that condition. "In Collection" may describe such Games, for example in statistics or in the message shown when a Status is cleared, but it is never offered as a Status to pick.
 _Avoid_: Owned, In Collection (as Status names)
 
 **Status Change**:
