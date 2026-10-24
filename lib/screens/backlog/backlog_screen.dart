@@ -205,7 +205,7 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
     final canProceed = await paywallService.checkAndShowPaywall(context);
     if (!canProceed || !mounted) return;
 
-    final result = await Navigator.of(context).push<GameItem?>(
+    Navigator.of(context).push(
       EditScreenPageRoute(
         child: GameEditScreen.add(
           availableStatuses: [
@@ -217,24 +217,6 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
         ),
       ),
     );
-
-    // If a game was added, show simple feedback
-    if (result != null) {
-      _showGameAddedFeedback(result);
-    }
-  }
-
-  /// Simple feedback for game added
-  void _showGameAddedFeedback(GameItem newGame) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${newGame.title} added to backlog!'),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
   }
 
   void _handleNavigation(int index) {

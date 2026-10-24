@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
 import 'package:chkpnt/providers/game_provider.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/providers/game_edit_provider.dart';
 import 'package:chkpnt/shared/widgets/inputs/platform_edit_dropdown.dart';
 
 class GameEditInfoSection extends ConsumerStatefulWidget {

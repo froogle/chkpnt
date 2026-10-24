@@ -58,6 +58,43 @@ void main() {
       // No exception should be thrown during dispose
     });
 
+    testWidgets('adding a Game shows one confirmation', (tester) async {
+      container.dispose();
+      container = ProviderContainer(
+        overrides: [
+          gameListProvider.overrideWith(() => IsolatedTestGameListNotifier()),
+        ],
+      );
+      await container
+          .read(gameListProvider.notifier)
+          .addGame(TestHelpers.createBacklogGame(title: 'Hades'));
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: BacklogScreen()),
+        ),
+      );
+      await tester.tap(find.byIcon(Icons.add_rounded));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField).first, 'Celeste');
+      await tester.tap(find.byIcon(Icons.gamepad_outlined));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ListTile, 'PC'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add Game'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text('Celeste added to Backlog!'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
     testWidgets('does not list owned games', (tester) async {
       container.dispose();
       container = ProviderContainer(

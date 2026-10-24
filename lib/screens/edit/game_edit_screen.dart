@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/styles.dart';
-import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/services/barcode_lookup_service.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
 import 'package:chkpnt/shared/widgets/cards/game_image.dart';
 import 'package:chkpnt/shared/widgets/inputs/game_status_selector.dart';
-import 'package:chkpnt/providers/ui_state_provider.dart';
+import 'package:chkpnt/providers/game_edit_provider.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_info_section.dart';
 import 'package:chkpnt/screens/edit/widgets/game_edit_actions.dart';
 import 'package:chkpnt/screens/edit/widgets/barcode_scanner_screen.dart';
@@ -60,7 +59,6 @@ class GameEditScreen extends ConsumerStatefulWidget {
 class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   late TextEditingController _titleController;
   late GameEditContext _editContext;
-  bool _isLookingUpBarcode = false;
   bool _isScanning = false;
 
   @override
@@ -89,6 +87,14 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final editState = ref.watch(gameEditStateProvider(_editContext));
+    ref.listen(
+      gameEditStateProvider(_editContext).select((state) => state.title),
+      (_, title) {
+        if (_titleController.text != title) _titleController.text = title;
+      },
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
@@ -96,7 +102,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         child: Stack(
           children: [
             _buildContent(),
-            if (_isLookingUpBarcode) _buildLookupOverlay(),
+            if (editState.isLookingUpBarcode) _buildLookupOverlay(),
           ],
         ),
       ),
@@ -226,32 +232,24 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
       onStatusChanged: _handleStatusChange,
       isAddMode: widget.isAddMode,
       availableStatuses: widget.availableStatuses,
-      defaultStatus: widget.defaultStatus,
     );
   }
 
   Widget _buildActionButtons() {
     final editState = ref.watch(gameEditStateProvider(_editContext));
-    final isScanMode = widget.isAddMode && !editState.hasStartedEntry;
+    final offersScan = editState.offersScan;
 
     return GameEditActions(
-      onSavePressed: isScanMode ? _handleBarcodeScan : _saveChanges,
-      hasChanges: isScanMode || _hasUsableTitle(),
-      buttonText: _primaryButtonText(isScanMode),
-      icon: isScanMode ? Icons.qr_code_scanner : Icons.save,
+      onSavePressed: offersScan ? _handleBarcodeScan : _saveChanges,
+      hasChanges: offersScan || editState.canSave,
+      buttonText: _primaryButtonText(offersScan),
+      icon: offersScan ? Icons.qr_code_scanner : Icons.save,
     );
   }
 
-  String _primaryButtonText(bool isScanMode) {
-    if (isScanMode) return 'Scan Barcode';
+  String _primaryButtonText(bool offersScan) {
+    if (offersScan) return 'Scan Barcode';
     return widget.isAddMode ? 'Add Game' : 'Save Changes';
-  }
-
-  bool _hasUsableTitle() {
-    if (!widget.isAddMode) return true;
-
-    final title = _titleController.text.trim();
-    return title.isNotEmpty && title != kDefaultAddGameTitle;
   }
 
   // Business logic methods
@@ -286,67 +284,22 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
     if (barcode == null || !mounted) return;
 
-    final existingGame = _findGameWithBarcode(barcode);
-    if (existingGame != null) {
-      await _showDuplicateGameDialog(existingGame);
-      return;
-    }
-
-    setState(() => _isLookingUpBarcode = true);
-    final result = await ref.read(barcodeLookupServiceProvider).lookup(barcode);
-
-    if (!mounted) return;
-    setState(() => _isLookingUpBarcode = false);
-
-    _applyScanResult(barcode, result);
-
-    final message = _lookupFailureMessage(result.outcome);
-    if (message != null) {
-      _showScanMessage(message);
-      return;
-    }
-
-    if (result.title.isNotEmpty) {
-      await _offerCoverArt(result);
-    }
-  }
-
-  GameItem? _findGameWithBarcode(String barcode) {
-    final scanned = BarcodeLookupService.normaliseBarcode(barcode);
-
-    for (final game in ref.read(gameListProvider)) {
-      final stored = game.barcode;
-      if (stored != null &&
-          BarcodeLookupService.normaliseBarcode(stored) == scanned) {
-        return game;
-      }
-    }
-    return null;
-  }
-
-  void _applyScanResult(String barcode, BarcodeLookupResult result) {
-    if (result.title.isNotEmpty) {
-      _titleController.text = result.title;
-    }
-    ref
+    final scan = await ref
         .read(gameEditStateProvider(_editContext).notifier)
-        .applyBarcodeScan(
-          barcode: barcode,
-          title: result.title,
-          platform: _matchExistingPlatform(result.platform),
-        );
-  }
+        .scanBarcode(barcode);
+    if (!mounted) return;
 
-  String _matchExistingPlatform(String? detectedPlatform) {
-    if (detectedPlatform == null) return '';
-
-    for (final platform in ref.read(everyPlatformProvider)) {
-      if (platform.toLowerCase() == detectedPlatform.toLowerCase()) {
-        return platform;
-      }
+    switch (scan) {
+      case DuplicateBarcode(:final game):
+        await _showDuplicateGameDialog(game);
+      case BarcodeLookedUp(:final result):
+        final message = _lookupFailureMessage(result.outcome);
+        if (message != null) {
+          _showScanMessage(message);
+        } else if (result.title.isNotEmpty) {
+          await _offerCoverArt(result);
+        }
     }
-
-    return '';
   }
 
   String? _lookupFailureMessage(BarcodeLookupOutcome outcome) {
@@ -518,7 +471,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
           MaterialPageRoute(
             builder:
                 (buildContext) =>
-                    ImageSearchScreen(initialQuery: _titleController.text),
+                    ImageSearchScreen(initialQuery: editState.title),
           ),
         );
         if (selectedImageUrl != null && mounted) {
@@ -656,40 +609,14 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   Future<void> _saveChanges() async {
     final gameActionsService = ref.read(gameActionsServiceProvider);
-    final editState = ref.read(gameEditStateProvider(_editContext));
+    final game = ref
+        .read(gameEditStateProvider(_editContext).notifier)
+        .gameToSave();
 
     if (widget.isAddMode) {
-      final newGame = GameItem.create(
-        title: _titleController.text.trim(),
-        platform: editState.platform,
-        status: editState.status,
-        imagePath: editState.imagePath,
-        isPhysical: editState.isPhysical,
-        barcode: editState.barcode,
-      );
-
-      final isBacklogGame = newGame.status == GameStatus.backlog;
-
-      if (isBacklogGame) {
-        await gameActionsService.addGame(newGame, context);
-
-        if (mounted) {
-          Navigator.of(context).pop(newGame);
-        }
-        return;
-      } else {
-        await gameActionsService.addGame(newGame, context);
-      }
+      await gameActionsService.addGame(game, context);
     } else {
-      final updatedGame = widget.game!.copyWith(
-        title: _titleController.text.trim(),
-        platform: editState.platform,
-        status: editState.status,
-        imagePath: editState.imagePath,
-        isPhysical: editState.isPhysical,
-      );
-
-      await gameActionsService.updateGame(widget.game!, updatedGame, context);
+      await gameActionsService.updateGame(widget.game!, game, context);
     }
 
     if (mounted) {

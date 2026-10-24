@@ -322,7 +322,7 @@ final everyPlatformProvider = AutoDisposeProvider<List<String>>.internal(
 // ignore: unused_element
 typedef EveryPlatformRef = AutoDisposeProviderRef<List<String>>;
 String _$statusSectionGamesHash() =>
-    r'2b3ad7460b35a1c7fb34faddf477c2a9e43c0434';
+    r'1106efee6aebc01fc477c150a9f0b3d6b5286b31';
 
 /// See also [statusSectionGames].
 @ProviderFor(statusSectionGames)
@@ -443,7 +443,7 @@ class _StatusSectionGamesProviderElement
   GameStatus get status => (origin as StatusSectionGamesProvider).status;
 }
 
-String _$platformSectionsHash() => r'd9f99a86bbb55e0d9e3137135e1c269fc1066b85';
+String _$platformSectionsHash() => r'4cc15b66127bc12cd8246de9ac9e41d7d8ba8cb2';
 
 /// See also [platformSections].
 @ProviderFor(platformSections)
