@@ -75,6 +75,10 @@ _Avoid_: Walkthrough, FAQ
 A Guide downloaded as a file and read in ChkPnt's own reader, which remembers the player's place.
 _Avoid_: TXT guide
 
+**Reading Position**:
+The place in a Text Guide the player last had at the top of the reader, which the reader returns them to when they next open it. Each Text Guide has one.
+_Avoid_: Bookmark, progress, place
+
 **Web Guide**:
 A Guide kept as a link to a page hosted elsewhere and opened in an embedded browser.
 _Avoid_: HTML guide, link guide
