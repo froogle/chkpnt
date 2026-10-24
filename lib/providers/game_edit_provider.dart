@@ -40,8 +40,13 @@ class GameEditContext {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(isAddMode, game, availableStatuses, defaultStatus, defaultIsPhysical);
+  int get hashCode => Object.hash(
+    isAddMode,
+    game,
+    availableStatuses,
+    defaultStatus,
+    defaultIsPhysical,
+  );
 }
 
 // Game edit form state data class

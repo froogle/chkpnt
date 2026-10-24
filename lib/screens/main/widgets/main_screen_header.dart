@@ -57,10 +57,7 @@ class _MainScreenHeaderState extends ConsumerState<MainScreenHeader> {
       padding: MainScreenStyles.headerPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildAnimatedTitleRow(),
-          _buildControlsRow(),
-        ],
+        children: [_buildAnimatedTitleRow(), _buildControlsRow()],
       ),
     );
   }

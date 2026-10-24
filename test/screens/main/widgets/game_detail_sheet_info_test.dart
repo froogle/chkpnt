@@ -30,7 +30,9 @@ void main() {
       expect(find.text('Test Game'), findsOneWidget);
     });
 
-    testWidgets('should render compact platform badge', (WidgetTester tester) async {
+    testWidgets('should render compact platform badge', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
       );

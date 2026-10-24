@@ -6,7 +6,7 @@ part of 'backup_state_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$backupStateHash() => r'7600dbab6f2c6d810f409d9a3283bbaec77edf2a';
+String _$backupStateHash() => r'64488b4ec520ab7b5efc849afe327e621d2b14fb';
 
 /// Riverpod state provider for backup operations
 ///

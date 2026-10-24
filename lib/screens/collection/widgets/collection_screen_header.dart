@@ -17,7 +17,8 @@ class CollectionScreenHeader extends ConsumerStatefulWidget {
       _CollectionScreenHeaderState();
 }
 
-class _CollectionScreenHeaderState extends ConsumerState<CollectionScreenHeader> {
+class _CollectionScreenHeaderState
+    extends ConsumerState<CollectionScreenHeader> {
   bool _showTitle = true;
   Timer? _hideTimer;
 
@@ -49,10 +50,7 @@ class _CollectionScreenHeaderState extends ConsumerState<CollectionScreenHeader>
       padding: MainScreenStyles.headerPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildAnimatedTitleRow(),
-          _buildControlsRow(),
-        ],
+        children: [_buildAnimatedTitleRow(), _buildControlsRow()],
       ),
     );
   }
@@ -128,9 +126,7 @@ class _CollectionScreenHeaderState extends ConsumerState<CollectionScreenHeader>
       selectedPlatform: selectedPlatform,
       platforms: availablePlatforms,
       onPlatformChanged: (platform) {
-        ref
-            .read(selectedPlatformProvider.notifier)
-            .selectPlatform(platform);
+        ref.read(selectedPlatformProvider.notifier).selectPlatform(platform);
       },
     );
   }

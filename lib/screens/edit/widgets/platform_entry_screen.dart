@@ -11,8 +11,9 @@ class PlatformEntryScreen extends StatefulWidget {
 }
 
 class _PlatformEntryScreenState extends State<PlatformEntryScreen> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initialPlatform);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialPlatform,
+  );
 
   @override
   void dispose() {

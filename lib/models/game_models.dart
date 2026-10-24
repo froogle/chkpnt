@@ -4,7 +4,16 @@ import 'package:uuid/uuid.dart';
 part 'game_models.freezed.dart';
 part 'game_models.g.dart';
 
-enum GameStatus { playing, completed, backlog, abandoned, wishlist, ordered, ongoing, owned }
+enum GameStatus {
+  playing,
+  completed,
+  backlog,
+  abandoned,
+  wishlist,
+  ordered,
+  ongoing,
+  owned,
+}
 
 @freezed
 class GameId with _$GameId {

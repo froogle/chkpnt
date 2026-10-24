@@ -41,7 +41,8 @@ class Guides extends Table {
   IntColumn get lastReadSection => integer().withDefault(const Constant(0))();
   IntColumn get lastReadBlock => integer().withDefault(const Constant(0))();
   TextColumn get sourceUrl => text().nullable()();
-  BoolColumn get hasSeenAttribution => boolean().withDefault(const Constant(false))();
+  BoolColumn get hasSeenAttribution =>
+      boolean().withDefault(const Constant(false))();
   IntColumn get format => integer().withDefault(const Constant(0))();
 
   @override
@@ -64,17 +65,16 @@ class GameDatabase extends _$GameDatabase {
   }
 
   Future<bool> _columnExists(String tableName, String columnName) async {
-    final result = await customSelect(
-      "PRAGMA table_info($tableName)",
-    ).get();
+    final result = await customSelect("PRAGMA table_info($tableName)").get();
     return result.any((row) => row.data['name'] == columnName);
   }
 
   Future<bool> _tableExists(String tableName) async {
-    final result = await customSelect(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-      variables: [Variable.withString(tableName)],
-    ).get();
+    final result =
+        await customSelect(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+          variables: [Variable.withString(tableName)],
+        ).get();
     return result.isNotEmpty;
   }
 
@@ -228,18 +228,28 @@ class GameDatabase extends _$GameDatabase {
 
   // Guide database operations
   Future<List<GuideItem>> getGuidesForGameInternal(String gameId) async {
-    final query = select(guides)
-      ..where((t) => t.gameId.equals(gameId))
-      ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
+    final query =
+        select(guides)
+          ..where((t) => t.gameId.equals(gameId))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]);
     final results = await query.get();
     return results.map(_guideToGuideItem).toList();
   }
 
   Stream<List<GuideItem>> watchGuidesForGame(String gameId) {
-    final query = select(guides)
-      ..where((t) => t.gameId.equals(gameId))
-      ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
-    return query.watch().map((guides) => guides.map(_guideToGuideItem).toList());
+    final query =
+        select(guides)
+          ..where((t) => t.gameId.equals(gameId))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]);
+    return query.watch().map(
+      (guides) => guides.map(_guideToGuideItem).toList(),
+    );
   }
 
   Future<List<GuideItem>> getAllGuidesInternal() async {
@@ -340,7 +350,7 @@ class DriftGameRepository implements GameRepository {
       }
 
       // Clean up old image if imagePath has changed
-      if (existing.imagePath != null && 
+      if (existing.imagePath != null &&
           existing.imagePath != game.imagePath &&
           existing.imagePath!.isNotEmpty) {
         try {
@@ -348,7 +358,9 @@ class DriftGameRepository implements GameRepository {
         } catch (e) {
           // Log but don't fail the update if image deletion fails
           // The old image might have already been deleted or moved
-          debugPrint('Warning: Failed to delete old image ${existing.imagePath}: $e');
+          debugPrint(
+            'Warning: Failed to delete old image ${existing.imagePath}: $e',
+          );
         }
       }
 
@@ -396,32 +408,42 @@ class DriftGameRepository implements GameRepository {
       final games = await getAllGames();
       final guides = await _database.getAllGuidesInternal();
 
-      final gamesJsonData = games.map((game) => {
-        'id': game.id.value,
-        'title': game.title,
-        'platform': game.platform,
-        'status': game.status.index,
-        'lastModified': game.lastModified.toIso8601String(),
-        'lastStatusChange': game.lastStatusChange.toIso8601String(),
-        'imagePath': game.imagePath,
-        'remoteImageUrl': game.remoteImageUrl,
-        'isPhysical': game.isPhysical,
-        'barcode': game.barcode,
-      }).toList();
+      final gamesJsonData =
+          games
+              .map(
+                (game) => {
+                  'id': game.id.value,
+                  'title': game.title,
+                  'platform': game.platform,
+                  'status': game.status.index,
+                  'lastModified': game.lastModified.toIso8601String(),
+                  'lastStatusChange': game.lastStatusChange.toIso8601String(),
+                  'imagePath': game.imagePath,
+                  'remoteImageUrl': game.remoteImageUrl,
+                  'isPhysical': game.isPhysical,
+                  'barcode': game.barcode,
+                },
+              )
+              .toList();
 
-      final guidesJsonData = guides.map((guide) => {
-        'id': guide.id.value,
-        'gameId': guide.gameId.value,
-        'title': guide.title,
-        'author': guide.author,
-        'fileName': guide.fileName,
-        'createdAt': guide.createdAt.toIso8601String(),
-        'lastReadSection': guide.lastReadSection,
-        'lastReadBlock': guide.lastReadBlock,
-        'sourceUrl': guide.sourceUrl,
-        'hasSeenAttribution': guide.hasSeenAttribution,
-        'format': guide.format.index,
-      }).toList();
+      final guidesJsonData =
+          guides
+              .map(
+                (guide) => {
+                  'id': guide.id.value,
+                  'gameId': guide.gameId.value,
+                  'title': guide.title,
+                  'author': guide.author,
+                  'fileName': guide.fileName,
+                  'createdAt': guide.createdAt.toIso8601String(),
+                  'lastReadSection': guide.lastReadSection,
+                  'lastReadBlock': guide.lastReadBlock,
+                  'sourceUrl': guide.sourceUrl,
+                  'hasSeenAttribution': guide.hasSeenAttribution,
+                  'format': guide.format.index,
+                },
+              )
+              .toList();
 
       return jsonEncode({
         'version': 6,
@@ -440,37 +462,40 @@ class DriftGameRepository implements GameRepository {
       await _database.ensureInitialized();
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
 
-      final games = (data['games'] as List).map((gameData) {
-        return GameItem(
-          id: GameId(gameData['id']),
-          title: gameData['title'],
-          platform: gameData['platform'],
-          status: _statusFromIndex(gameData['status']),
-          lastModified: DateTime.parse(gameData['lastModified']),
-          lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
-          imagePath: gameData['imagePath'],
-          remoteImageUrl: gameData['remoteImageUrl'],
-          isPhysical: gameData['isPhysical'] ?? false,
-          barcode: gameData['barcode'] as String?,
-        );
-      }).toList();
+      final games =
+          (data['games'] as List).map((gameData) {
+            return GameItem(
+              id: GameId(gameData['id']),
+              title: gameData['title'],
+              platform: gameData['platform'],
+              status: _statusFromIndex(gameData['status']),
+              lastModified: DateTime.parse(gameData['lastModified']),
+              lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
+              imagePath: gameData['imagePath'],
+              remoteImageUrl: gameData['remoteImageUrl'],
+              isPhysical: gameData['isPhysical'] ?? false,
+              barcode: gameData['barcode'] as String?,
+            );
+          }).toList();
 
       final guidesData = data['guides'] as List? ?? [];
-      final guides = guidesData.map((guideData) {
-        return GuideItem(
-          id: GuideId(guideData['id']),
-          gameId: GameId(guideData['gameId']),
-          title: guideData['title'],
-          author: guideData['author'],
-          fileName: guideData['fileName'],
-          createdAt: DateTime.parse(guideData['createdAt']),
-          lastReadSection: guideData['lastReadSection'] ?? 0,
-          lastReadBlock: guideData['lastReadBlock'] ?? 0,
-          sourceUrl: guideData['sourceUrl'] as String?,
-          hasSeenAttribution: guideData['hasSeenAttribution'] as bool? ?? false,
-          format: GuideFormat.values[guideData['format'] as int? ?? 0],
-        );
-      }).toList();
+      final guides =
+          guidesData.map((guideData) {
+            return GuideItem(
+              id: GuideId(guideData['id']),
+              gameId: GameId(guideData['gameId']),
+              title: guideData['title'],
+              author: guideData['author'],
+              fileName: guideData['fileName'],
+              createdAt: DateTime.parse(guideData['createdAt']),
+              lastReadSection: guideData['lastReadSection'] ?? 0,
+              lastReadBlock: guideData['lastReadBlock'] ?? 0,
+              sourceUrl: guideData['sourceUrl'] as String?,
+              hasSeenAttribution:
+                  guideData['hasSeenAttribution'] as bool? ?? false,
+              format: GuideFormat.values[guideData['format'] as int? ?? 0],
+            );
+          }).toList();
 
       await _database.transaction(() async {
         await _database.delete(_database.guides).go();

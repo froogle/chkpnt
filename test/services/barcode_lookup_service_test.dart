@@ -120,26 +120,29 @@ void main() {
       expect(result.title, isNot(contains('Drakes')));
     });
 
-    test('falls back to the top level title when no platform is found', () async {
-      final payload = jsonEncode({
-        'code': 'OK',
-        'total': 1,
-        'items': [
-          {
-            'title': 'Trails From Zero. Free Shipping. Brand New.',
-            'offers': [
-              {'title': 'Trails From Zero Boxed Copy'},
-            ],
-          },
-        ],
-      });
+    test(
+      'falls back to the top level title when no platform is found',
+      () async {
+        final payload = jsonEncode({
+          'code': 'OK',
+          'total': 1,
+          'items': [
+            {
+              'title': 'Trails From Zero. Free Shipping. Brand New.',
+              'offers': [
+                {'title': 'Trails From Zero Boxed Copy'},
+              ],
+            },
+          ],
+        });
 
-      final result = await _serviceReturning(payload).lookup('123');
+        final result = await _serviceReturning(payload).lookup('123');
 
-      expect(result.outcome, BarcodeLookupOutcome.found);
-      expect(result.title, 'Trails From Zero');
-      expect(result.platform, isNull);
-    });
+        expect(result.outcome, BarcodeLookupOutcome.found);
+        expect(result.title, 'Trails From Zero');
+        expect(result.platform, isNull);
+      },
+    );
 
     test('brand is never used to populate a field', () async {
       final result = await _serviceForFixtures().lookup('5055277016211');
@@ -261,14 +264,17 @@ void main() {
   });
 
   group('BarcodeLookupService outcomes', () {
-    test('a server error is reported separately from a network failure', () async {
-      final result = await _serviceReturning(
-        'Server Error',
-        statusCode: 500,
-      ).lookup('123');
+    test(
+      'a server error is reported separately from a network failure',
+      () async {
+        final result = await _serviceReturning(
+          'Server Error',
+          statusCode: 500,
+        ).lookup('123');
 
-      expect(result.outcome, BarcodeLookupOutcome.serverError);
-    });
+        expect(result.outcome, BarcodeLookupOutcome.serverError);
+      },
+    );
 
     test('a rate limited response is reported as limit reached', () async {
       final result = await _serviceReturning(
@@ -295,8 +301,10 @@ void main() {
       );
 
       await expectLater(service.lookup('123'), completes);
-      expect((await service.lookup('123')).outcome,
-          BarcodeLookupOutcome.noNetwork);
+      expect(
+        (await service.lookup('123')).outcome,
+        BarcodeLookupOutcome.noNetwork,
+      );
     });
 
     test('malformed json does not escape the service', () async {

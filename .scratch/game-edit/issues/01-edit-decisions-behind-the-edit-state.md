@@ -1,6 +1,6 @@
 # Move the Game edit decisions behind the edit state
 
-Status: ready-for-agent
+Status: resolved
 
 The edit screen widget makes the edit flow's decisions itself: it checks for a duplicate barcode, runs the lookup, matches the scanned Platform, decides whether the button offers a scan or a save, and builds the Game to save. The title is held twice, in the text field and in the edit state. `GameStatusSelector` sets the default Status a second time after the first frame. Adding a Game from the Backlog screen shows two confirmations. A scan always clears the Status, so a Game scanned from the Backlog or Wishlist screen lands only in the Collection.
 
@@ -30,3 +30,7 @@ The edit screen widget makes the edit flow's decisions itself: it checks for a d
 - `GameStatusSelector` never changes the Status by itself.
 - Adding a Game from the Backlog screen shows one confirmation.
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #20 (`refactor/game-edit`).

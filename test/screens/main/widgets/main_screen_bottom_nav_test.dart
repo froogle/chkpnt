@@ -154,9 +154,7 @@ void main() {
       await tester.pumpWidget(buildNavApp('/main'));
       await tester.pumpAndSettle();
 
-      final activeIcon = tester.widget<Icon>(
-        find.byIcon(Icons.home_outlined),
-      );
+      final activeIcon = tester.widget<Icon>(find.byIcon(Icons.home_outlined));
       expect(activeIcon.size, 24);
       expect(activeIcon.color, AppColors.primaryPurple);
 

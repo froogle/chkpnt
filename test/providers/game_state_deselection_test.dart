@@ -59,7 +59,9 @@ void main() {
   group('Deselected state storage', () {
     test('keeps the database on schema version 7 with no new migration', () {
       final source =
-          File('lib/repositories/drift_game_repository.dart').readAsStringSync();
+          File(
+            'lib/repositories/drift_game_repository.dart',
+          ).readAsStringSync();
 
       expect(source.contains('int get schemaVersion => 7;'), isTrue);
       expect(source.contains('from == 7'), isFalse);
@@ -119,37 +121,42 @@ void main() {
       container.dispose();
     });
 
-    test('shows a deselected game in the collection but not the dashboard',
-        () async {
-      final deselected = GameItem.create(
-        title: 'Deselected Game',
-        platform: 'PS5',
-        status: GameStatus.owned,
-        isPhysical: true,
-      );
-
-      await container.read(gameListProvider.notifier).addGame(deselected);
-
-      final collection = container
-          .read(platformSectionsProvider(GameScreen.collection))
-          .values
-          .expand((games) => games);
-      expect(collection.map((game) => game.title), contains('Deselected Game'));
-
-      for (final status in [
-        GameStatus.playing,
-        GameStatus.backlog,
-        GameStatus.ongoing,
-        GameStatus.completed,
-        GameStatus.abandoned,
-      ]) {
-        expect(
-          container.read(gamesByStatusProvider(status)),
-          isEmpty,
-          reason: 'a deselected game must not appear under $status',
+    test(
+      'shows a deselected game in the collection but not the dashboard',
+      () async {
+        final deselected = GameItem.create(
+          title: 'Deselected Game',
+          platform: 'PS5',
+          status: GameStatus.owned,
+          isPhysical: true,
         );
-      }
-    });
+
+        await container.read(gameListProvider.notifier).addGame(deselected);
+
+        final collection = container
+            .read(platformSectionsProvider(GameScreen.collection))
+            .values
+            .expand((games) => games);
+        expect(
+          collection.map((game) => game.title),
+          contains('Deselected Game'),
+        );
+
+        for (final status in [
+          GameStatus.playing,
+          GameStatus.backlog,
+          GameStatus.ongoing,
+          GameStatus.completed,
+          GameStatus.abandoned,
+        ]) {
+          expect(
+            container.read(gamesByStatusProvider(status)),
+            isEmpty,
+            reason: 'a deselected game must not appear under $status',
+          );
+        }
+      },
+    );
   });
 
   group('Deselected state persistence', () {
@@ -159,7 +166,10 @@ void main() {
     setUp(() {
       tempDir = Directory.systemTemp.createTempSync('deselection_test_');
       PathProviderPlatform.instance = TempPathProviderPlatform(tempDir.path);
-      repository = DriftGameRepository(StorageService(), MockGameImageService());
+      repository = DriftGameRepository(
+        StorageService(),
+        MockGameImageService(),
+      );
     });
 
     tearDown(() async {

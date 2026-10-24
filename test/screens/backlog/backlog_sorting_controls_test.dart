@@ -43,7 +43,10 @@ void main() {
       final titleChip = tester.widget<SortChip>(titleChipFinder);
       expect(titleChip.isActive, true);
 
-      final statusChangeChipFinder = find.widgetWithText(SortChip, 'Status Changed');
+      final statusChangeChipFinder = find.widgetWithText(
+        SortChip,
+        'Status Changed',
+      );
       expect(statusChangeChipFinder, findsOneWidget);
 
       final statusChangeChip = tester.widget<SortChip>(statusChangeChipFinder);
@@ -65,10 +68,15 @@ void main() {
 
       // Initially Title is active
       final titleChipFinder = find.widgetWithText(SortChip, 'Title');
-      final statusChangeChipFinder = find.widgetWithText(SortChip, 'Status Changed');
+      final statusChangeChipFinder = find.widgetWithText(
+        SortChip,
+        'Status Changed',
+      );
 
       SortChip titleChip = tester.widget<SortChip>(titleChipFinder);
-      SortChip statusChangeChip = tester.widget<SortChip>(statusChangeChipFinder);
+      SortChip statusChangeChip = tester.widget<SortChip>(
+        statusChangeChipFinder,
+      );
 
       expect(titleChip.isActive, true);
       expect(statusChangeChip.isActive, false);

@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 import 'storage_service.dart';
 
-final guideReaderPreferencesServiceProvider = Provider<GuideReaderPreferencesService>((ref) {
-  return GuideReaderPreferencesService(ref.read(storageServiceProvider));
-});
+final guideReaderPreferencesServiceProvider =
+    Provider<GuideReaderPreferencesService>((ref) {
+      return GuideReaderPreferencesService(ref.read(storageServiceProvider));
+    });
 
-final guideReaderPreferencesProvider = StreamProvider<GuideReaderPreferences>((ref) {
+final guideReaderPreferencesProvider = StreamProvider<GuideReaderPreferences>((
+  ref,
+) {
   final service = ref.watch(guideReaderPreferencesServiceProvider);
   return service.watchPreferences();
 });
@@ -27,10 +30,7 @@ class GuideReaderPreferences {
     this.invertedColours = false,
   });
 
-  GuideReaderPreferences copyWith({
-    double? fontSize,
-    bool? invertedColours,
-  }) {
+  GuideReaderPreferences copyWith({double? fontSize, bool? invertedColours}) {
     return GuideReaderPreferences(
       fontSize: fontSize ?? this.fontSize,
       invertedColours: invertedColours ?? this.invertedColours,

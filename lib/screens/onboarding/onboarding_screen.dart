@@ -7,10 +7,7 @@ class OnboardingScreen extends StatelessWidget {
 
   final bool showCloseButton;
 
-  const OnboardingScreen({
-    super.key,
-    this.showCloseButton = false,
-  });
+  const OnboardingScreen({super.key, this.showCloseButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +48,8 @@ class OnboardingScreen extends StatelessWidget {
   Future<void> _navigateToSubscription(BuildContext context) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => const OnboardingSubscriptionScreen(showCloseButton: true),
+        builder:
+            (_) => const OnboardingSubscriptionScreen(showCloseButton: true),
       ),
     );
 
@@ -68,10 +66,7 @@ class OnboardingSubscriptionScreen extends StatelessWidget {
 
   final bool showCloseButton;
 
-  const OnboardingSubscriptionScreen({
-    super.key,
-    this.showCloseButton = false,
-  });
+  const OnboardingSubscriptionScreen({super.key, this.showCloseButton = false});
 
   @override
   Widget build(BuildContext context) {

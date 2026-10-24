@@ -364,7 +364,9 @@ void main() {
     });
 
     group('Compact Platform Badge Tests', () {
-      testWidgets('should render compact platform badge', (WidgetTester tester) async {
+      testWidgets('should render compact platform badge', (
+        WidgetTester tester,
+      ) async {
         // Set to a larger screen size to prevent layout issues
         await tester.binding.setSurfaceSize(const Size(600, 800));
 

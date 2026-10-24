@@ -150,9 +150,7 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
     if (!canProceed || !mounted) return;
 
     Navigator.of(context).push(
-      EditScreenPageRoute(
-        child: GameEditScreen.add(defaultIsPhysical: true),
-      ),
+      EditScreenPageRoute(child: GameEditScreen.add(defaultIsPhysical: true)),
     );
   }
 }

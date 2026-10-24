@@ -23,35 +23,45 @@ void main() {
       return UncontrolledProviderScope(
         container: container,
         child: ProviderScope(
-          overrides: initialState != null
-              ? [
-                  backupStateProvider.overrideWith(() => MockBackupState(initialState)),
-                ]
-              : [],
+          overrides:
+              initialState != null
+                  ? [
+                    backupStateProvider.overrideWith(
+                      () => MockBackupState(initialState),
+                    ),
+                  ]
+                  : [],
           child: const MaterialApp(
-            home: Scaffold(
-              body: ProfileBackupSection(),
-            ),
+            home: Scaffold(body: ProfileBackupSection()),
           ),
         ),
       );
     }
 
-    testWidgets('should display backup section in idle state', (WidgetTester tester) async {
+    testWidgets('should display backup section in idle state', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
 
       expect(find.text('Backup & Restore'), findsOneWidget);
       expect(find.text('Create Backup'), findsOneWidget);
       expect(find.text('Restore Backup'), findsOneWidget);
-      expect(find.text('Create a complete backup of your games library and images, or restore from a previous backup.'), findsOneWidget);
-      
+      expect(
+        find.text(
+          'Create a complete backup of your games library and images, or restore from a previous backup.',
+        ),
+        findsOneWidget,
+      );
+
       // Ensure widget tree is properly disposed and allow any pending microtasks to complete
       await tester.pumpWidget(Container());
       await tester.pump(Duration.zero);
       await tester.idle();
     });
 
-    testWidgets('should display progress state correctly', (WidgetTester tester) async {
+    testWidgets('should display progress state correctly', (
+      WidgetTester tester,
+    ) async {
       const progressState = BackupOperationState.creatingBackup(
         progress: 0.5,
         currentStep: 'Creating archive...',
@@ -67,7 +77,9 @@ void main() {
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('should display error state correctly', (WidgetTester tester) async {
+    testWidgets('should display error state correctly', (
+      WidgetTester tester,
+    ) async {
       const errorState = BackupOperationState.error(
         message: 'Failed to create backup',
         code: 'BACKUP_CREATION_FAILED',
@@ -81,7 +93,9 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
-    testWidgets('should display success state correctly', (WidgetTester tester) async {
+    testWidgets('should display success state correctly', (
+      WidgetTester tester,
+    ) async {
       const successState = BackupOperationState.success(
         message: 'Backup created successfully!',
         filePath: '/path/to/backup.zip',
@@ -95,7 +109,9 @@ void main() {
       expect(find.byIcon(Icons.check_circle_outlined), findsOneWidget);
     });
 
-    testWidgets('should display confirmation state with metadata', (WidgetTester tester) async {
+    testWidgets('should display confirmation state with metadata', (
+      WidgetTester tester,
+    ) async {
       final metadata = BackupMetadata(
         version: '1.0.0',
         createdAt: DateTime(2024, 1, 15, 10, 30),
@@ -119,7 +135,9 @@ void main() {
       expect(find.text('Restore'), findsOneWidget);
     });
 
-    testWidgets('should display loading states correctly', (WidgetTester tester) async {
+    testWidgets('should display loading states correctly', (
+      WidgetTester tester,
+    ) async {
       const selectingState = BackupOperationState.selectingDirectory();
 
       await tester.pumpWidget(createTestWidget(initialState: selectingState));

@@ -205,7 +205,10 @@ void main() {
       await legacyDatabase.customStatement('PRAGMA user_version = 6');
       await legacyDatabase.close();
 
-      repository = DriftGameRepository(StorageService(), MockGameImageService());
+      repository = DriftGameRepository(
+        StorageService(),
+        MockGameImageService(),
+      );
       final migrated = await repository.getAllGames();
 
       expect(migrated.length, 1);
@@ -233,7 +236,10 @@ void main() {
       await legacyDatabase.customStatement('PRAGMA user_version = 6');
       await legacyDatabase.close();
 
-      repository = DriftGameRepository(StorageService(), MockGameImageService());
+      repository = DriftGameRepository(
+        StorageService(),
+        MockGameImageService(),
+      );
       final scanned = GameItem.create(
         title: 'Post Migration Scan',
         platform: 'PS4',

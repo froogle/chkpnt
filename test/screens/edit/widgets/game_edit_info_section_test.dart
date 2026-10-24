@@ -141,7 +141,9 @@ void main() {
       expect(tester.testTextInput.hasAnyClients, isTrue);
     });
 
-    testWidgets('calls onPlatformChanged when platform is changed', (tester) async {
+    testWidgets('calls onPlatformChanged when platform is changed', (
+      tester,
+    ) async {
       String? changedPlatform;
 
       await tester.pumpWidget(

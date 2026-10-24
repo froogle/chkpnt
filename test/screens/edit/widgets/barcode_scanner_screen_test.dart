@@ -23,9 +23,7 @@ void _clearScannerChannel() {
 }
 
 BarcodeCapture _capture(String value, BarcodeFormat format) {
-  return BarcodeCapture(
-    barcodes: [Barcode(rawValue: value, format: format)],
-  );
+  return BarcodeCapture(barcodes: [Barcode(rawValue: value, format: format)]);
 }
 
 Future<List<String?>> _pumpScanner(WidgetTester tester) async {

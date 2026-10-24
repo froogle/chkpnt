@@ -80,13 +80,19 @@ void main() {
   group('DriftGameRepository', () {
     group('Repository Interface', () {
       test('should implement GameRepository interface', () {
-        final repository = DriftGameRepository(storageService, mockImageService);
+        final repository = DriftGameRepository(
+          storageService,
+          mockImageService,
+        );
         expect(repository, isA<GameRepository>());
         repository.dispose();
       });
 
       test('should have required methods', () {
-        final repository = DriftGameRepository(storageService, mockImageService);
+        final repository = DriftGameRepository(
+          storageService,
+          mockImageService,
+        );
 
         // Verify methods exist without calling them to avoid DB creation
         expect(repository.getAllGames, isA<Function>());
@@ -104,13 +110,22 @@ void main() {
 
     group('Basic Functionality', () {
       test('should be instantiable', () {
-        expect(() => DriftGameRepository(storageService, mockImageService), returnsNormally);
-        final repository = DriftGameRepository(storageService, mockImageService);
+        expect(
+          () => DriftGameRepository(storageService, mockImageService),
+          returnsNormally,
+        );
+        final repository = DriftGameRepository(
+          storageService,
+          mockImageService,
+        );
         repository.dispose();
       });
 
       test('should be disposable', () {
-        final repository = DriftGameRepository(storageService, mockImageService);
+        final repository = DriftGameRepository(
+          storageService,
+          mockImageService,
+        );
         expect(() => repository.dispose(), returnsNormally);
       });
     });

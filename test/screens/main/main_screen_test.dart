@@ -17,19 +17,22 @@ void main() {
       container.dispose();
     });
 
-    testWidgets('renders correctly with scroll functionality when games exist', (tester) async {
-      container = TestHelpers.createTestContainer();
+    testWidgets(
+      'renders correctly with scroll functionality when games exist',
+      (tester) async {
+        container = TestHelpers.createTestContainer();
 
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: const MaterialApp(home: MainScreen()),
-        ),
-      );
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: MainScreen()),
+          ),
+        );
 
-      expect(find.byType(MainScreen), findsOneWidget);
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
-    });
+        expect(find.byType(MainScreen), findsOneWidget);
+        expect(find.byType(SingleChildScrollView), findsOneWidget);
+      },
+    );
 
     testWidgets('renders welcome empty state when no games exist', (
       tester,
@@ -152,7 +155,6 @@ void main() {
         );
       });
     });
-
 
     testWidgets('titles each section with its Status label', (tester) async {
       container = ProviderContainer(

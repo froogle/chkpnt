@@ -28,7 +28,7 @@ class BackupPermissionService {
       } else if (sdkInt >= 23) {
         return await _requestLegacyStoragePermission();
       }
-      
+
       return true;
     } catch (e) {
       debugPrint('Error checking storage permissions: $e');
@@ -38,14 +38,14 @@ class BackupPermissionService {
 
   Future<bool> _requestLegacyStoragePermission() async {
     final PermissionStatus status = await Permission.storage.status;
-    
+
     if (status.isGranted) {
       return true;
     } else if (status.isDenied) {
       final PermissionStatus result = await Permission.storage.request();
       return result.isGranted;
     }
-    
+
     return false;
   }
 
@@ -54,7 +54,7 @@ class BackupPermissionService {
       if (Platform.isAndroid) {
         return await _getAndroidBackupDirectory();
       }
-      
+
       return await _getFallbackBackupDirectory();
     } catch (e) {
       debugPrint('Error getting recommended backup directory: $e');
@@ -65,13 +65,15 @@ class BackupPermissionService {
   Future<String?> _getAndroidBackupDirectory() async {
     final Directory downloadsDir = Directory('/storage/emulated/0/Download');
     if (await downloadsDir.exists()) {
-      final Directory backupDir = Directory(path.join(downloadsDir.path, 'ChkPnt Backups'));
+      final Directory backupDir = Directory(
+        path.join(downloadsDir.path, 'ChkPnt Backups'),
+      );
       if (!await backupDir.exists()) {
         await backupDir.create(recursive: true);
       }
       return backupDir.path;
     }
-    
+
     return await _getFallbackBackupDirectory();
   }
 
@@ -79,14 +81,17 @@ class BackupPermissionService {
     if (Platform.isIOS) {
       // Use Documents directory on iOS for user-accessible files
       final Directory documentsDir = await getApplicationDocumentsDirectory();
-      final Directory backupDir = Directory(path.join(documentsDir.path, 'ChkPnt Backups'));
+      final Directory backupDir = Directory(
+        path.join(documentsDir.path, 'ChkPnt Backups'),
+      );
       if (!await backupDir.exists()) {
         await backupDir.create(recursive: true);
       }
       return backupDir.path;
     }
-    
-    final Directory appDir = await _storageService.getPersistentStorageDirectory();
+
+    final Directory appDir =
+        await _storageService.getPersistentStorageDirectory();
     final Directory backupDir = Directory(path.join(appDir.path, 'backups'));
     if (!await backupDir.exists()) {
       await backupDir.create(recursive: true);
@@ -97,7 +102,9 @@ class BackupPermissionService {
   Future<String?> selectBackupDirectory() async {
     final bool hasPermission = await checkStoragePermissions();
     if (!hasPermission) {
-      throw Exception('Storage permission is required to create backups. Please grant storage access in app settings.');
+      throw Exception(
+        'Storage permission is required to create backups. Please grant storage access in app settings.',
+      );
     }
 
     try {
@@ -116,7 +123,9 @@ class BackupPermissionService {
         return selectedPath;
       }
 
-      debugPrint('User cancelled directory selection, trying recommended directory');
+      debugPrint(
+        'User cancelled directory selection, trying recommended directory',
+      );
       return await getRecommendedBackupDirectory();
     } catch (e) {
       debugPrint('File picker failed, trying recommended directory: $e');
@@ -143,19 +152,21 @@ class BackupPermissionService {
   Future<bool> isDirectoryWritable(String directoryPath) async {
     try {
       final Directory directory = Directory(directoryPath);
-      
+
       if (!await directory.exists()) {
         return false;
       }
 
-      final File testFile = File(path.join(directoryPath, '.chkpnt_write_test'));
+      final File testFile = File(
+        path.join(directoryPath, '.chkpnt_write_test'),
+      );
       await testFile.writeAsString('test');
       final bool fileExists = await testFile.exists();
-      
+
       if (fileExists) {
         await testFile.delete();
       }
-      
+
       return fileExists;
     } catch (e) {
       return false;
@@ -202,7 +213,7 @@ class BackupPermissionService {
     try {
       final File backupFile = File(backupFilePath);
       final String fileName = path.basename(backupFilePath);
-      
+
       // Use Share Intent to let user save to any cloud storage app
       final XFile xFile = XFile(
         backupFile.path,
