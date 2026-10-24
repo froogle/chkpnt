@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/screens/image_search/image_search_screen.dart';
 import 'package:chkpnt/services/web_image_search_service.dart';
 
@@ -28,11 +29,13 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: ImageSearchScreen(
-          initialQuery: 'Test Game',
-          searchService: StubImageSearchService(const []),
-        ),
+      ProviderScope(
+        overrides: [
+          webImageSearchServiceProvider.overrideWithValue(
+            StubImageSearchService(const []),
+          ),
+        ],
+        child: MaterialApp(home: ImageSearchScreen(initialQuery: 'Test Game')),
       ),
     );
     // Should show loading indicator
@@ -47,11 +50,13 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: ImageSearchScreen(
-          initialQuery: 'Test Game',
-          searchService: FailingImageSearchService(),
-        ),
+      ProviderScope(
+        overrides: [
+          webImageSearchServiceProvider.overrideWithValue(
+            FailingImageSearchService(),
+          ),
+        ],
+        child: MaterialApp(home: ImageSearchScreen(initialQuery: 'Test Game')),
       ),
     );
     await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -68,11 +73,13 @@ void main() {
     ]);
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: ImageSearchScreen(
-          initialQuery: 'Red Dead Redemption Xbox 360',
-          suggestedImageUrls: const ['https://example.com/suggested.jpg'],
-          searchService: service,
+      ProviderScope(
+        overrides: [webImageSearchServiceProvider.overrideWithValue(service)],
+        child: MaterialApp(
+          home: ImageSearchScreen(
+            initialQuery: 'Red Dead Redemption Xbox 360',
+            suggestedImageUrls: const ['https://example.com/suggested.jpg'],
+          ),
         ),
       ),
     );
@@ -92,11 +99,17 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: ImageSearchScreen(
-          initialQuery: 'Red Dead Redemption Xbox 360',
-          suggestedImageUrls: const ['https://example.com/suggested.jpg'],
-          searchService: FailingImageSearchService(),
+      ProviderScope(
+        overrides: [
+          webImageSearchServiceProvider.overrideWithValue(
+            FailingImageSearchService(),
+          ),
+        ],
+        child: MaterialApp(
+          home: ImageSearchScreen(
+            initialQuery: 'Red Dead Redemption Xbox 360',
+            suggestedImageUrls: const ['https://example.com/suggested.jpg'],
+          ),
         ),
       ),
     );

@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/global_styles.dart';
 import 'package:chkpnt/services/web_image_search_service.dart';
 
-class ImageSearchScreen extends StatefulWidget {
+class ImageSearchScreen extends ConsumerStatefulWidget {
   final String initialQuery;
   final List<String> suggestedImageUrls;
-  final WebImageSearchService? searchService;
 
   const ImageSearchScreen({
     super.key,
     required this.initialQuery,
     this.suggestedImageUrls = const [],
-    this.searchService,
   });
 
   @override
-  State<ImageSearchScreen> createState() => _ImageSearchScreenState();
+  ConsumerState<ImageSearchScreen> createState() => _ImageSearchScreenState();
 }
 
-class _ImageSearchScreenState extends State<ImageSearchScreen> {
+class _ImageSearchScreenState extends ConsumerState<ImageSearchScreen> {
   late String _query;
   List<String> _imageUrls = [];
   bool _loading = false;
@@ -38,7 +37,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       _imageUrls = [];
     });
     try {
-      final service = widget.searchService ?? WebImageSearchService();
+      final service = ref.read(webImageSearchServiceProvider);
       final results = await service.searchImages(_query);
       _imageUrls = [...widget.suggestedImageUrls, ...results];
     } catch (e) {

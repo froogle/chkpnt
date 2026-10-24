@@ -1,5 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+
+final webImageSearchServiceProvider = Provider<WebImageSearchService>((ref) {
+  return WebImageSearchService();
+});
 
 class WebImageSearchService {
   /// Searches Bing Images for the given query and returns a list of image URLs.

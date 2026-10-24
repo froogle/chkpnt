@@ -16,6 +16,7 @@ import 'package:chkpnt/screens/image_search/image_search_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/barcode_scanner_screen.dart';
 import 'package:chkpnt/services/barcode_lookup_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
+import 'package:chkpnt/services/web_image_search_service.dart';
 import 'package:chkpnt/styles/styles.dart';
 import '../../test_helpers.dart';
 
@@ -74,6 +75,16 @@ class FakeGameImageService implements GameImageService {
   Future<bool> openCameraSettings() async => true;
 }
 
+class RecordingImageSearchService extends WebImageSearchService {
+  final List<String> queries = [];
+
+  @override
+  Future<List<String>> searchImages(String query) async {
+    queries.add(query);
+    return const [];
+  }
+}
+
 class RecordingLookupClient {
   RecordingLookupClient({this.statusCode = 200});
 
@@ -100,6 +111,7 @@ ProviderContainer _createContainer({
   required RecordingLookupClient lookupClient,
   CameraPermissionResult permission = CameraPermissionResult.granted,
   FakeGameImageService? imageService,
+  RecordingImageSearchService? imageSearchService,
 }) {
   return ProviderContainer(
     overrides: [
@@ -109,6 +121,9 @@ ProviderContainer _createContainer({
       ),
       barcodeLookupServiceProvider.overrideWithValue(
         BarcodeLookupService(client: lookupClient.client),
+      ),
+      webImageSearchServiceProvider.overrideWithValue(
+        imageSearchService ?? RecordingImageSearchService(),
       ),
     ],
   );
@@ -573,7 +588,11 @@ void main() {
 
     testWidgets('answering yes opens the image search', (tester) async {
       _seededGames.add(TestHelpers.createTestGame(platform: 'Xbox 360'));
-      container = _createContainer(lookupClient: lookupClient);
+      final imageSearchService = RecordingImageSearchService();
+      container = _createContainer(
+        lookupClient: lookupClient,
+        imageSearchService: imageSearchService,
+      );
 
       await _openAddForm(tester, container);
       await _scanBarcode(tester, '5026555248082');
@@ -581,6 +600,7 @@ void main() {
       await _pumpFrames(tester);
 
       expect(find.byType(ImageSearchScreen), findsOneWidget);
+      expect(imageSearchService.queries, ['Red Dead Redemption Xbox 360']);
     });
 
     testWidgets('answering no leaves the pre-filled form alone', (
