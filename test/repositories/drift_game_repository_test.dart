@@ -5,6 +5,7 @@ import 'package:chkpnt/services/storage_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import '../test_helpers.dart';
 
 // Mock PathProviderPlatform for testing
 class MockPathProviderPlatform extends Fake
@@ -23,44 +24,6 @@ class MockPathProviderPlatform extends Fake
   @override
   Future<String?> getExternalStoragePath() async {
     return '/mock/external';
-  }
-}
-
-// Mock GameImageService for testing
-class MockGameImageService implements GameImageService {
-  @override
-  Future<String?> selectAndSaveImage(GameImageSource source) async {
-    return null;
-  }
-
-  @override
-  Future<bool> deleteImage(String imagePath) async {
-    return true; // Always succeed in tests
-  }
-
-  @override
-  Future<bool> imageExists(String imagePath) async {
-    return false;
-  }
-
-  @override
-  Future<String> getImagePath(String imagePath) async {
-    return imagePath;
-  }
-
-  @override
-  Future<String?> downloadAndSaveImageFromUrl(String imageUrl) async {
-    return null;
-  }
-
-  @override
-  Future<CameraPermissionResult> checkAndRequestCameraPermission() async {
-    return CameraPermissionResult.granted;
-  }
-
-  @override
-  Future<bool> openCameraSettings() async {
-    return true;
   }
 }
 

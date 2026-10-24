@@ -4,7 +4,6 @@ import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/models/guide_models.dart';
 import 'package:chkpnt/providers/guide_provider.dart';
@@ -12,23 +11,7 @@ import 'package:chkpnt/providers/reading_position_provider.dart';
 import 'package:chkpnt/repositories/drift_game_repository.dart';
 import 'package:chkpnt/services/guide_parser/guide_content.dart';
 import 'package:chkpnt/services/guide_storage_service.dart';
-
-class TempPathProviderPlatform extends Fake
-    with MockPlatformInterfaceMixin
-    implements PathProviderPlatform {
-  TempPathProviderPlatform(this.path);
-
-  final String path;
-
-  @override
-  Future<String?> getApplicationDocumentsPath() async => path;
-
-  @override
-  Future<String?> getApplicationSupportPath() async => path;
-
-  @override
-  Future<String?> getExternalStoragePath() async => path;
-}
+import '../test_helpers.dart';
 
 final _content = GuideContent(
   title: 'Walkthrough',
