@@ -1,6 +1,6 @@
 # Run every screen's Game list through one module
 
-Status: ready-for-agent
+Status: resolved
 
 Four screen pipelines (`fullyFilteredGames`, `sortedBacklogGamesByPlatform`, `collectionGamesByPlatform`, plus the Wishlist's use of the first) each repeat the same filter, search, group and sort steps, and four Platform lists (`availablePlatforms`, `wishlistPlatforms`, `backlogPlatforms`, `collectionPlatforms`) are built by four different rules. "No Platform chosen" is the string `'All'` in 13 places, which a player-named Platform called "All" would collide with.
 
@@ -36,3 +36,7 @@ Four screen pipelines (`fullyFilteredGames`, `sortedBacklogGamesByPlatform`, `co
 - The eight old providers and `gamesByPlatform` are gone.
 - No screen builds its own filter, search, group or sort chain.
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #19 (`refactor/game-list`).
