@@ -81,24 +81,24 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildGameSection('Playing', GameStatus.playing),
+          _buildGameSection(GameStatus.playing),
           const SizedBox(height: 20),
-          _buildGameSection('Ongoing/Frequently Played', GameStatus.ongoing),
+          _buildGameSection(GameStatus.ongoing),
           const SizedBox(height: 20),
-          _buildGameSection('Backlog', GameStatus.backlog),
+          _buildGameSection(GameStatus.backlog),
           const SizedBox(height: 20),
-          _buildGameSection('Completed', GameStatus.completed),
+          _buildGameSection(GameStatus.completed),
           const SizedBox(height: 20),
-          _buildGameSection('Abandoned', GameStatus.abandoned),
+          _buildGameSection(GameStatus.abandoned),
           const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildGameSection(String title, GameStatus status) {
+  Widget _buildGameSection(GameStatus status) {
     return GameSection(
-      title: title,
+      title: StatusStyles.of(status).label,
       status: status,
       animatingGame: _animatingGame,
       isAnimating: _isAnimating,

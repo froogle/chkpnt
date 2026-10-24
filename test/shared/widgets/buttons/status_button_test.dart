@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/shared/widgets/buttons/status_button.dart';
 import 'package:chkpnt/models/game_models.dart';
+import 'package:chkpnt/styles/status_styles.dart';
 
 void main() {
   group('StatusButton Widget Tests', () {
@@ -91,15 +92,19 @@ void main() {
       expect(container.decoration, isNotNull);
     });
 
-    group('Status-specific tests', () {
-      testWidgets('should render Completed status correctly', (
-        WidgetTester tester,
-      ) async {
+    testWidgets('presents every Status as Status presentation does', (
+      WidgetTester tester,
+    ) async {
+      final statuses = GameStatus.values.where((s) => s != GameStatus.owned);
+
+      for (final status in statuses) {
+        final style = StatusStyles.of(status);
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
               body: StatusButton(
-                status: GameStatus.completed,
+                status: status,
                 isSelected: false,
                 onTap: () {},
               ),
@@ -107,104 +112,9 @@ void main() {
           ),
         );
 
-        expect(find.text('Completed'), findsOneWidget);
-        expect(find.byIcon(Icons.check_circle), findsOneWidget);
-      });
-
-      testWidgets('should render Playing status correctly', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: StatusButton(
-                status: GameStatus.playing,
-                isSelected: false,
-                onTap: () {},
-              ),
-            ),
-          ),
-        );
-
-        expect(find.text('Playing'), findsOneWidget);
-        expect(find.byIcon(Icons.play_circle_filled), findsOneWidget);
-      });
-
-      testWidgets('should render Abandoned status correctly', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: StatusButton(
-                status: GameStatus.abandoned,
-                isSelected: false,
-                onTap: () {},
-              ),
-            ),
-          ),
-        );
-
-        expect(find.text('Abandoned'), findsOneWidget);
-        expect(find.byIcon(Icons.do_not_disturb_on), findsOneWidget);
-      });
-
-      testWidgets('should render Backlog status correctly', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: StatusButton(
-                status: GameStatus.backlog,
-                isSelected: false,
-                onTap: () {},
-              ),
-            ),
-          ),
-        );
-
-        expect(find.text('Backlog'), findsOneWidget);
-        expect(find.byIcon(Icons.list), findsOneWidget);
-      });
-
-      testWidgets('should render Wishlist status correctly', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: StatusButton(
-                status: GameStatus.wishlist,
-                isSelected: false,
-                onTap: () {},
-              ),
-            ),
-          ),
-        );
-
-        expect(find.text('Wishlist'), findsOneWidget);
-        expect(find.byIcon(Icons.favorite), findsOneWidget);
-      });
-
-      testWidgets('should render Ordered status correctly', (
-        WidgetTester tester,
-      ) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: StatusButton(
-                status: GameStatus.ordered,
-                isSelected: false,
-                onTap: () {},
-              ),
-            ),
-          ),
-        );
-
-        expect(find.text('Ordered'), findsOneWidget);
-        expect(find.byIcon(Icons.shopping_cart), findsOneWidget);
-      });
+        expect(find.text(style.label), findsOneWidget, reason: '$status');
+        expect(find.byIcon(style.icon!), findsOneWidget, reason: '$status');
+      }
     });
 
     testWidgets('should respect custom width when provided', (

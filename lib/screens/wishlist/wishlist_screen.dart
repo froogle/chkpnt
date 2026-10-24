@@ -75,18 +75,18 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildGameSection('Ordered', GameStatus.ordered),
+          _buildGameSection(GameStatus.ordered),
           const SizedBox(height: 20),
-          _buildGameSection('Wishlist', GameStatus.wishlist),
+          _buildGameSection(GameStatus.wishlist),
           const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildGameSection(String title, GameStatus status) {
+  Widget _buildGameSection(GameStatus status) {
     return GameSection(
-      title: title,
+      title: StatusStyles.of(status).label,
       status: status,
       animatingGame: _animatingGame,
       isAnimating: _isAnimating,

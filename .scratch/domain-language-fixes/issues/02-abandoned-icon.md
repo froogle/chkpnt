@@ -1,6 +1,6 @@
 # Give Abandoned an icon that doesn't mean "on hold"
 
-Status: ready-for-agent
+Status: resolved
 
 `GLOSSARY.md` defines **Abandoned** as a Game the player stopped with no intention of returning; one they mean to come back to belongs in the Backlog. Abandoned currently uses `Icons.pause_circle_filled`, which reads as "paused" or "on hold", the very meanings the glossary rules out.
 
@@ -17,3 +17,7 @@ Decision: use `Icons.do_not_disturb_on`, a filled circle like the other Status i
 
 - All four sites use `Icons.do_not_disturb_on`.
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #16 (`fix/domain-language`).

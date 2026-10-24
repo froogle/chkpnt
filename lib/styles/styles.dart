@@ -16,6 +16,7 @@ export 'image_selection_styles.dart';
 export 'platform_entry_styles.dart';
 export 'backlog_styles.dart';
 export 'barcode_scanner_styles.dart';
+export 'status_styles.dart';
 
 // Export the legacy compatibility class for backward compatibility
 export 'main_screen_styles.dart';

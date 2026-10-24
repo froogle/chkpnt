@@ -38,7 +38,7 @@ void main() {
 
       expect(expansion, {
         'Playing': true,
-        'Ongoing/Frequently Played': false,
+        'Ongoing': false,
         'Backlog': false,
         'Completed': false,
         'Abandoned': false,

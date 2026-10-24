@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/styles/profile_styles.dart';
+import 'package:chkpnt/styles/status_styles.dart';
 import 'package:chkpnt/screens/profile/widgets/shared/chart_segmented_control.dart';
 
 class ChartData {
@@ -51,15 +52,9 @@ class ChartDataService {
       statusCounts[game.status] = (statusCounts[game.status] ?? 0) + 1;
     }
 
-    final statusLabels = _getStatusLabels();
-
     return statusCounts.entries.map((entry) {
-      final status = entry.key;
-      final count = entry.value;
-      final label = statusLabels[status] ?? status.toString();
-      final color = _getStatusColor(label);
-
-      return ChartData(label, count, color);
+      final style = StatusStyles.of(entry.key);
+      return ChartData(style.label, entry.value, style.colour);
     }).toList();
   }
 
@@ -74,25 +69,5 @@ class ChartDataService {
       case ChartViewMode.status:
         return generateStatusData(games);
     }
-  }
-
-  /// Get status labels mapping
-  static Map<GameStatus, String> _getStatusLabels() {
-    return const {
-      GameStatus.playing: 'Playing',
-      GameStatus.completed: 'Completed',
-      GameStatus.backlog: 'Backlog',
-      GameStatus.abandoned: 'Abandoned',
-      GameStatus.wishlist: 'Wishlist',
-      GameStatus.ordered: 'Ordered',
-      GameStatus.ongoing: 'Ongoing',
-      GameStatus.owned: 'In Collection',
-    };
-  }
-
-  /// Get color for a status label
-  static Color _getStatusColor(String statusLabel) {
-    return ProfileStyles.statusColors[statusLabel] ??
-        ProfileStyles.chartColors[0]; // Fallback to first chart color
   }
 }

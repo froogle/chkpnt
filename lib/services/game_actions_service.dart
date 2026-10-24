@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
-import 'package:chkpnt/styles/global_styles.dart';
+import 'package:chkpnt/styles/status_styles.dart';
 
 class GameActionsService {
   final Ref _ref;
@@ -12,8 +12,10 @@ class GameActionsService {
 
   /// Handles starting to play a game (moving from backlog to playing)
   Future<void> startPlayingGame(GameItem game, BuildContext context) async {
+    final playing = StatusStyles.of(GameStatus.playing);
+
     // Ensure playing section is expanded for better visual feedback
-    _ref.read(sectionExpansionProvider.notifier).expandSection('Playing');
+    _ref.read(sectionExpansionProvider.notifier).expandSection(playing.label);
 
     // Small delay before making the actual change for better visual effect
     await Future.delayed(const Duration(milliseconds: 100));
@@ -28,23 +30,9 @@ class GameActionsService {
     if (context.mounted) {
       _showGameActionFeedback(
         context: context,
-        message: '${game.title} moved to Playing!',
-        icon: Icons.play_circle_fill,
-        color: Colors.green,
-      );
-    }
-  }
-
-  /// Handles marking a game as completed
-  Future<void> markGameCompleted(GameItem game, BuildContext context) async {
-    await _ref.read(gameListProvider.notifier).markCompleted(game.id);
-
-    if (context.mounted) {
-      _showGameActionFeedback(
-        context: context,
-        message: '${game.title} completed!',
-        icon: Icons.check_circle,
-        color: Colors.blue,
+        message: '${game.title} moved to ${playing.label}!',
+        icon: playing.icon,
+        color: playing.colour,
       );
     }
   }
@@ -70,14 +58,14 @@ class GameActionsService {
 
     if (statusChanged) {
       // Expand the relevant section if status changed
-      final statusName = _getStatusDisplayName(updatedGame.status);
+      final style = StatusStyles.of(updatedGame.status);
       if (updatedGame.status != GameStatus.owned) {
-        _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+        _ref.read(sectionExpansionProvider.notifier).expandSection(style.label);
       }
 
-      message = '${updatedGame.title} moved to $statusName!';
-      icon = _getStatusIcon(updatedGame.status);
-      color = _getStatusColor(updatedGame.status);
+      message = '${updatedGame.title} moved to ${style.label}!';
+      icon = style.icon;
+      color = style.colour;
     } else if (titleChanged || platformChanged) {
       message = '${updatedGame.title} details updated!';
       icon = Icons.edit;
@@ -100,18 +88,18 @@ class GameActionsService {
     await _ref.read(gameListProvider.notifier).addGame(newGame);
 
     // Expand the relevant section for the new game's status
-    final statusName = _getStatusDisplayName(newGame.status);
+    final style = StatusStyles.of(newGame.status);
     if (newGame.status != GameStatus.owned) {
-      _ref.read(sectionExpansionProvider.notifier).expandSection(statusName);
+      _ref.read(sectionExpansionProvider.notifier).expandSection(style.label);
     }
 
     // Show feedback
     if (context.mounted) {
       _showGameActionFeedback(
         context: context,
-        message: '${newGame.title} added to $statusName!',
-        icon: _getStatusIcon(newGame.status),
-        color: _getStatusColor(newGame.status),
+        message: '${newGame.title} added to ${style.label}!',
+        icon: style.icon,
+        color: style.colour,
       );
     }
   }
@@ -189,72 +177,6 @@ class GameActionsService {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
-  }
-
-  /// Gets the display name for a game status
-  String _getStatusDisplayName(GameStatus status) {
-    switch (status) {
-      case GameStatus.playing:
-        return 'Playing';
-      case GameStatus.completed:
-        return 'Completed';
-      case GameStatus.backlog:
-        return 'Backlog';
-      case GameStatus.abandoned:
-        return 'Abandoned';
-      case GameStatus.wishlist:
-        return 'Wishlist';
-      case GameStatus.ordered:
-        return 'Ordered';
-      case GameStatus.ongoing:
-        return 'Ongoing/Frequently Played';
-      case GameStatus.owned:
-        return 'In Collection';
-    }
-  }
-
-  /// Gets the appropriate icon for a game status
-  IconData? _getStatusIcon(GameStatus status) {
-    switch (status) {
-      case GameStatus.playing:
-        return Icons.play_circle_fill;
-      case GameStatus.completed:
-        return Icons.check_circle;
-      case GameStatus.backlog:
-        return Icons.list;
-      case GameStatus.abandoned:
-        return Icons.do_not_disturb_on;
-      case GameStatus.wishlist:
-        return Icons.favorite;
-      case GameStatus.ordered:
-        return Icons.shopping_cart;
-      case GameStatus.ongoing:
-        return Icons.replay;
-      case GameStatus.owned:
-        return null;
-    }
-  }
-
-  /// Gets the appropriate color for a game status
-  Color _getStatusColor(GameStatus status) {
-    switch (status) {
-      case GameStatus.playing:
-        return Colors.orange;
-      case GameStatus.completed:
-        return Colors.green;
-      case GameStatus.backlog:
-        return Colors.blue;
-      case GameStatus.abandoned:
-        return Colors.grey;
-      case GameStatus.wishlist:
-        return Colors.pink;
-      case GameStatus.ordered:
-        return Colors.purple;
-      case GameStatus.ongoing:
-        return const Color(0xFF06B6D4);
-      case GameStatus.owned:
-        return AppColors.emptyStateIcon;
-    }
   }
 }
 
