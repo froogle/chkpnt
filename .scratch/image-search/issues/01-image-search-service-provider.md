@@ -21,4 +21,4 @@ Status: resolved
 
 ## Comments
 
-Implemented in PR #TBD (`refactor/image-search-provider`).
+Implemented in PR #26 (`refactor/image-search-provider`).
