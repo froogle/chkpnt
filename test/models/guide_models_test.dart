@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/models/guide_models.dart';
@@ -45,40 +44,6 @@ void main() {
       expect(guide.gameId, gameId);
       expect(guide.title, 'HTML Guide');
       expect(guide.author, 'Author');
-    });
-  });
-
-  group('GuideItem JSON', () {
-    Map<String, dynamic> roundTrip(GuideItem guide) =>
-        jsonDecode(jsonEncode(guide.toJson())) as Map<String, dynamic>;
-
-    test('round-trips the format', () {
-      final guide = GuideItem.createHtmlLink(
-        gameId: GameId.generate(),
-        title: 'HTML Guide',
-        author: 'Author',
-        sourceUrl: 'http://example.com/html-guide',
-      );
-
-      final restored = GuideItem.fromJson(roundTrip(guide));
-
-      expect(restored, guide);
-      expect(restored.format, GuideFormat.html);
-    });
-
-    test('defaults to text when the format key is missing', () {
-      final json = roundTrip(
-        GuideItem.create(
-          gameId: GameId.generate(),
-          title: 'Legacy Guide',
-          author: 'Author',
-          fileName: 'guide_1.json',
-        ),
-      )..remove('format');
-
-      final restored = GuideItem.fromJson(json);
-
-      expect(restored.format, GuideFormat.text);
     });
   });
 }

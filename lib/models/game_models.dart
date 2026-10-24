@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 part 'game_models.freezed.dart';
-part 'game_models.g.dart';
 
 enum GameStatus {
   playing,
@@ -23,8 +22,6 @@ class GameId with _$GameId {
     final uuid = const Uuid();
     return GameId(uuid.v4());
   }
-
-  factory GameId.fromJson(Map<String, dynamic> json) => _$GameIdFromJson(json);
 }
 
 @freezed
@@ -65,7 +62,4 @@ class GameItem with _$GameItem {
       barcode: barcode,
     );
   }
-
-  factory GameItem.fromJson(Map<String, dynamic> json) =>
-      _$GameItemFromJson(json);
 }

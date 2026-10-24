@@ -3,7 +3,6 @@ import 'package:uuid/uuid.dart';
 import 'package:chkpnt/models/game_models.dart';
 
 part 'guide_models.freezed.dart';
-part 'guide_models.g.dart';
 
 enum GuideFormat { text, html }
 
@@ -15,9 +14,6 @@ class GuideId with _$GuideId {
     final uuid = const Uuid();
     return GuideId(uuid.v4());
   }
-
-  factory GuideId.fromJson(Map<String, dynamic> json) =>
-      _$GuideIdFromJson(json);
 }
 
 @freezed
@@ -73,7 +69,4 @@ class GuideItem with _$GuideItem {
       format: GuideFormat.html,
     );
   }
-
-  factory GuideItem.fromJson(Map<String, dynamic> json) =>
-      _$GuideItemFromJson(json);
 }
