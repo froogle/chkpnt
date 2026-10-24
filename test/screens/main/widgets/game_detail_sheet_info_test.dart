@@ -81,7 +81,7 @@ void main() {
         );
 
         expect(find.text('Abandoned'), findsOneWidget);
-        expect(find.byIcon(Icons.pause_circle_filled), findsNWidgets(2));
+        expect(find.byIcon(Icons.do_not_disturb_on), findsNWidgets(2));
       });
 
       testWidgets('should display backlog status correctly', (
@@ -114,6 +114,10 @@ void main() {
 
         expect(find.text('Wishlist'), findsOneWidget);
         expect(find.byIcon(Icons.favorite), findsNWidgets(2));
+        expect(
+          _statusBadgeDecoration(tester).color,
+          Colors.pink.withValues(alpha: 0.9),
+        );
       });
 
       testWidgets('should display ordered status correctly', (

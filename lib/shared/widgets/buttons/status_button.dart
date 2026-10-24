@@ -71,7 +71,7 @@ class StatusButton extends StatelessWidget {
       case GameStatus.backlog:
         return Icons.list;
       case GameStatus.abandoned:
-        return Icons.pause_circle_filled;
+        return Icons.do_not_disturb_on;
       case GameStatus.wishlist:
         return Icons.favorite;
       case GameStatus.ordered:

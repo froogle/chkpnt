@@ -22,9 +22,8 @@ void main() {
     test('should update sort type', () {
       final notifier = container.read(backlogSortProvider.notifier);
 
-      // Change to date added
-      notifier.setSortType(BacklogSortType.dateAdded);
-      expect(container.read(backlogSortProvider), BacklogSortType.dateAdded);
+      notifier.setSortType(BacklogSortType.statusChange);
+      expect(container.read(backlogSortProvider), BacklogSortType.statusChange);
 
       // Change back to title
       notifier.setSortType(BacklogSortType.title);
@@ -125,10 +124,10 @@ void main() {
       );
 
       // Set up non-default state
-      sortNotifier.setSortType(BacklogSortType.dateAdded);
+      sortNotifier.setSortType(BacklogSortType.statusChange);
       directionNotifier.setSortDirection(SortDirection.descending);
 
-      expect(container.read(backlogSortProvider), BacklogSortType.dateAdded);
+      expect(container.read(backlogSortProvider), BacklogSortType.statusChange);
       expect(
         container.read(backlogSortDirectionStateProvider),
         SortDirection.descending,

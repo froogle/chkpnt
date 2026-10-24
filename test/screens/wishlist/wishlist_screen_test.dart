@@ -68,6 +68,22 @@ void main() {
       }
     });
 
+    testWidgets('spells the Wishlist section as one word', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            gameListProvider.overrideWith(() => EmptyGameListNotifier()),
+          ],
+          child: const MaterialApp(home: WishlistScreen()),
+        ),
+      );
+
+      await tester.pump();
+
+      expect(find.text('Wish List'), findsNothing);
+      expect(find.text('No games in wishlist'), findsOneWidget);
+    });
+
     testWidgets('displays wishlist sections with proper titles', (
       tester,
     ) async {

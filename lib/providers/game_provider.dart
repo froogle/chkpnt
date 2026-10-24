@@ -247,7 +247,7 @@ Map<String, List<GameItem>> sortedBacklogGamesByPlatform(Ref ref) {
               : -comparison;
         });
         break;
-      case BacklogSortType.dateAdded:
+      case BacklogSortType.statusChange:
         gamesList.sort((a, b) {
           final comparison = a.lastStatusChange.compareTo(b.lastStatusChange);
           return sortDirection == SortDirection.ascending

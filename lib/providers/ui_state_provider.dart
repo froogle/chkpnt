@@ -6,7 +6,7 @@ import 'package:chkpnt/services/game_image_service.dart';
 part 'ui_state_provider.g.dart';
 
 // Backlog sorting enum
-enum BacklogSortType { title, dateAdded }
+enum BacklogSortType { title, statusChange }
 
 enum SortDirection { ascending, descending }
 
@@ -135,7 +135,7 @@ class SectionExpansion extends _$SectionExpansion {
     'Completed': false,
     'Abandoned': false,
     'Ordered': true,
-    'Wish List': false,
+    'Wishlist': false,
   };
 
   // Track which sections have been manually controlled by the user
@@ -206,8 +206,8 @@ class SectionExpansion extends _$SectionExpansion {
       newState['Ordered'] = orderedGames.isNotEmpty;
     }
     if (wishlistGames != null &&
-        !_manuallyControlledSections.contains('Wish List')) {
-      newState['Wish List'] = wishlistGames.isNotEmpty;
+        !_manuallyControlledSections.contains('Wishlist')) {
+      newState['Wishlist'] = wishlistGames.isNotEmpty;
     }
 
     // Merge with existing state, only updating the sections that were provided and not manually controlled
@@ -225,7 +225,7 @@ class SectionExpansion extends _$SectionExpansion {
       'Completed': false,
       'Abandoned': false,
       'Ordered': true,
-      'Wish List': false,
+      'Wishlist': false,
     };
   }
 

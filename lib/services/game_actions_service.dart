@@ -223,7 +223,7 @@ class GameActionsService {
       case GameStatus.backlog:
         return Icons.list;
       case GameStatus.abandoned:
-        return Icons.pause_circle_filled;
+        return Icons.do_not_disturb_on;
       case GameStatus.wishlist:
         return Icons.favorite;
       case GameStatus.ordered:
@@ -247,7 +247,7 @@ class GameActionsService {
       case GameStatus.abandoned:
         return Colors.grey;
       case GameStatus.wishlist:
-        return Colors.green;
+        return Colors.pink;
       case GameStatus.ordered:
         return Colors.purple;
       case GameStatus.ongoing:

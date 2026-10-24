@@ -146,7 +146,7 @@ void main() {
         );
 
         expect(find.text('Abandoned'), findsOneWidget);
-        expect(find.byIcon(Icons.pause_circle_filled), findsOneWidget);
+        expect(find.byIcon(Icons.do_not_disturb_on), findsOneWidget);
       });
 
       testWidgets('should render Backlog status correctly', (
