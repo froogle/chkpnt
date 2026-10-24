@@ -45,7 +45,8 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   GuideReaderPreferences _preferences = const GuideReaderPreferences();
 
   final ItemScrollController _itemScrollController = ItemScrollController();
-  final ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  final ItemPositionsListener _itemPositionsListener =
+      ItemPositionsListener.create();
   Timer? _scrollDebounceTimer;
   int _currentItemIndex = 0;
   bool _hasRestoredPosition = false;
@@ -79,9 +80,13 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     final positions = _itemPositionsListener.itemPositions.value;
     if (positions.isEmpty) return;
 
-    final visibleItems = positions
-        .where((position) => position.itemLeadingEdge < 1 && position.itemTrailingEdge > 0)
-        .toList();
+    final visibleItems =
+        positions
+            .where(
+              (position) =>
+                  position.itemLeadingEdge < 1 && position.itemTrailingEdge > 0,
+            )
+            .toList();
 
     if (visibleItems.isEmpty) return;
 
@@ -95,11 +100,7 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     try {
       await ref
           .read(guidesForGameProvider(widget.guide.gameId).notifier)
-          .updateReadPosition(
-            widget.guide.id,
-            _currentItemIndex,
-            0,
-          );
+          .updateReadPosition(widget.guide.id, _currentItemIndex, 0);
     } catch (e) {
       // Silently fail - position saving is not critical
     }

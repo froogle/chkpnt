@@ -11,7 +11,9 @@ class StatusFilterChip extends ConsumerWidget {
 
   static const Color _activeColor = Colors.orange;
   static final Color _inactiveColor = Colors.orange.withValues(alpha: 0.1);
-  static final Color _inactiveBorderColor = Colors.orange.withValues(alpha: 0.3);
+  static final Color _inactiveBorderColor = Colors.orange.withValues(
+    alpha: 0.3,
+  );
   static final Color _inactiveTextColor = Colors.orange.withValues(alpha: 0.8);
 
   const StatusFilterChip({

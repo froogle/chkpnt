@@ -45,7 +45,10 @@ class GameList extends _$GameList {
     await _waitForGameInStream(repository, game.id);
   }
 
-  Future<void> _waitForGameInStream(GameRepository repository, GameId gameId) async {
+  Future<void> _waitForGameInStream(
+    GameRepository repository,
+    GameId gameId,
+  ) async {
     final completer = Completer<void>();
     StreamSubscription<List<GameItem>>? subscription;
 

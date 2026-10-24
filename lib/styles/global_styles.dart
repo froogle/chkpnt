@@ -187,7 +187,12 @@ class AppLayout {
   // ========================================
 
   /// Standard content padding for sheets and modals
-  static const EdgeInsets sheetContentPadding = EdgeInsets.fromLTRB(24, 20, 20, 28);
+  static const EdgeInsets sheetContentPadding = EdgeInsets.fromLTRB(
+    24,
+    20,
+    20,
+    28,
+  );
 
   /// Standard spacing values for sheets
   static const double sheetSectionSpacing = 24.0;

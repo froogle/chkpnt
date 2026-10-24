@@ -28,7 +28,7 @@ void main() {
 
     test('should start with idle state', () {
       final backupState = container.read(backupStateProvider);
-      
+
       expect(backupState, isA<BackupOperationState>());
       backupState.when(
         idle: () => expect(true, isTrue),
@@ -43,44 +43,60 @@ void main() {
       );
     });
 
-    test('should transition to success state after successful backup', () async {
-      // Mock successful backup flow
-      when(() => mockBackupService.selectBackupDirectory())
-          .thenAnswer((_) async => '/test/directory');
-      when(() => mockBackupService.isDirectoryWritable('/test/directory'))
-          .thenAnswer((_) async => true);
-      when(() => mockBackupService.estimateBackupSize())
-          .thenAnswer((_) async => 1024);
-      when(() => mockBackupService.createFullBackupWithProgress('/test/directory'))
-          .thenAnswer((_) => Stream.fromIterable([
+    test(
+      'should transition to success state after successful backup',
+      () async {
+        // Mock successful backup flow
+        when(
+          () => mockBackupService.selectBackupDirectory(),
+        ).thenAnswer((_) async => '/test/directory');
+        when(
+          () => mockBackupService.isDirectoryWritable('/test/directory'),
+        ).thenAnswer((_) async => true);
+        when(
+          () => mockBackupService.estimateBackupSize(),
+        ).thenAnswer((_) async => 1024);
+        when(
+          () =>
+              mockBackupService.createFullBackupWithProgress('/test/directory'),
+        ).thenAnswer(
+          (_) => Stream.fromIterable([
             BackupProgressResult(progress: 0.0),
             BackupProgressResult(progress: 0.5),
-            BackupProgressResult(progress: 1.0, filePath: '/test/directory/backup.zip'),
-          ]));
+            BackupProgressResult(
+              progress: 1.0,
+              filePath: '/test/directory/backup.zip',
+            ),
+          ]),
+        );
 
-      final backupStateNotifier = container.read(backupStateProvider.notifier);
-      
-      // Start backup
-      backupStateNotifier.startBackup();
-      
-      // Wait for state updates
-      await container.pump();
-      
-      // Verify final success state (this is a simplified test)
-      final finalState = container.read(backupStateProvider);
-      expect(finalState, isA<BackupOperationState>());
-    });
+        final backupStateNotifier = container.read(
+          backupStateProvider.notifier,
+        );
+
+        // Start backup
+        backupStateNotifier.startBackup();
+
+        // Wait for state updates
+        await container.pump();
+
+        // Verify final success state (this is a simplified test)
+        final finalState = container.read(backupStateProvider);
+        expect(finalState, isA<BackupOperationState>());
+      },
+    );
 
     test('should handle backup errors correctly', () async {
       // Mock error scenario
-      when(() => mockBackupService.selectBackupDirectory())
-          .thenThrow(Exception('Directory selection failed'));
+      when(
+        () => mockBackupService.selectBackupDirectory(),
+      ).thenThrow(Exception('Directory selection failed'));
 
       final backupStateNotifier = container.read(backupStateProvider.notifier);
-      
+
       // Start backup
       await backupStateNotifier.startBackup();
-      
+
       final state = container.read(backupStateProvider);
       state.when(
         idle: () => fail('Expected error state'),
@@ -100,9 +116,9 @@ void main() {
 
     test('should reset to idle state', () async {
       final backupStateNotifier = container.read(backupStateProvider.notifier);
-      
+
       await backupStateNotifier.reset();
-      
+
       final state = container.read(backupStateProvider);
       state.when(
         idle: () => expect(true, isTrue),
@@ -127,15 +143,17 @@ void main() {
       );
 
       // Mock restore flow
-      when(() => mockBackupService.selectBackupFile())
-          .thenAnswer((_) async => '/test/backup.zip');
-      when(() => mockBackupService.validateBackupFile('/test/backup.zip'))
-          .thenAnswer((_) async => BackupValidationResult.valid(metadata));
+      when(
+        () => mockBackupService.selectBackupFile(),
+      ).thenAnswer((_) async => '/test/backup.zip');
+      when(
+        () => mockBackupService.validateBackupFile('/test/backup.zip'),
+      ).thenAnswer((_) async => BackupValidationResult.valid(metadata));
 
       final backupStateNotifier = container.read(backupStateProvider.notifier);
-      
+
       await backupStateNotifier.startRestore();
-      
+
       final state = container.read(backupStateProvider);
       state.when(
         idle: () => fail('Expected confirmation state'),

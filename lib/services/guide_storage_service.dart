@@ -71,7 +71,9 @@ class GuideStorageService {
   Future<Directory> _getGuidesDirectory() async {
     final Directory appDir =
         await _storageService.getPersistentStorageDirectory();
-    final Directory guidesDir = Directory(path.join(appDir.path, guidesDirectory));
+    final Directory guidesDir = Directory(
+      path.join(appDir.path, guidesDirectory),
+    );
 
     if (!await guidesDir.exists()) {
       await guidesDir.create(recursive: true);

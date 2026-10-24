@@ -86,7 +86,6 @@ class MainScreenStyles {
   static const TextStyle collapsibleSectionHeaderStyle =
       CollapsibleSectionStyles.collapsibleSectionHeaderStyle;
 
-
   // Dropdown text styles (from DropdownStyles) - Updated to getters where needed
   static TextStyle get filterDropdownSelectedTextStyle =>
       DropdownStyles.filterDropdownSelectedTextStyle;

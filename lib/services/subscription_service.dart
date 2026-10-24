@@ -9,16 +9,11 @@ final subscriptionServiceProvider = Provider<SubscriptionService>((ref) {
 
 final subscriptionStateProvider =
     StateNotifierProvider<SubscriptionStateNotifier, SubscriptionState>((ref) {
-  final service = ref.watch(subscriptionServiceProvider);
-  return SubscriptionStateNotifier(service);
-});
+      final service = ref.watch(subscriptionServiceProvider);
+      return SubscriptionStateNotifier(service);
+    });
 
-enum SubscriptionStatus {
-  unknown,
-  active,
-  inactive,
-  expired,
-}
+enum SubscriptionStatus { unknown, active, inactive, expired }
 
 class SubscriptionState {
   final SubscriptionStatus status;
@@ -50,7 +45,7 @@ class SubscriptionStateNotifier extends StateNotifier<SubscriptionState> {
   final SubscriptionService _service;
 
   SubscriptionStateNotifier(this._service)
-      : super(const SubscriptionState(isLoading: true));
+    : super(const SubscriptionState(isLoading: true));
 
   Future<void> initialise() async {
     if (!kPaywallEnabled) {

@@ -318,7 +318,6 @@ void main() {
       });
     });
 
-
     group('State Deselection Tests', () {
       Widget buildSelector({
         required GameStatus selectedStatus,

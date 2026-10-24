@@ -481,9 +481,8 @@ class CustomPlatformDialogStyles {
     fontWeight: FontWeight.w600,
   );
 
-  static RoundedRectangleBorder get dialogShape => RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(borderRadius),
-  );
+  static RoundedRectangleBorder get dialogShape =>
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius));
 
   static InputDecoration get inputDecoration => InputDecoration(
     hintText: hintText,
@@ -512,9 +511,8 @@ class CustomPlatformDialogStyles {
     ),
   );
 
-  static ButtonStyle buttonStyle(Color foregroundColor) =>
-      TextButton.styleFrom(
-        foregroundColor: foregroundColor,
-        textStyle: buttonTextStyle,
-      );
+  static ButtonStyle buttonStyle(Color foregroundColor) => TextButton.styleFrom(
+    foregroundColor: foregroundColor,
+    textStyle: buttonTextStyle,
+  );
 }

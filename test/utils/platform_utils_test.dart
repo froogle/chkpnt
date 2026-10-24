@@ -168,10 +168,7 @@ void main() {
 
   group('PlatformUtils.detectPlatform', () {
     test('prefers the longest match over a shorter one', () {
-      expect(
-        PlatformUtils.detectPlatform('Elden Ring - PlayStation 5'),
-        'PS5',
-      );
+      expect(PlatformUtils.detectPlatform('Elden Ring - PlayStation 5'), 'PS5');
       expect(
         PlatformUtils.detectPlatform('Uncharted Sony Playstation 3 Game'),
         'PS3',
@@ -200,16 +197,16 @@ void main() {
 
     test('matches regardless of casing', () {
       expect(PlatformUtils.detectPlatform('Peace Walker (psp)'), 'PSP');
-      expect(PlatformUtils.detectPlatform('Virtua Tennis 4 (ps vita)'), 'PS Vita');
+      expect(
+        PlatformUtils.detectPlatform('Virtua Tennis 4 (ps vita)'),
+        'PS Vita',
+      );
       expect(PlatformUtils.detectPlatform('HALO xBoX oNe'), 'Xbox One');
     });
 
     test('returns null when no platform is present', () {
       expect(PlatformUtils.detectPlatform('Trails From Zero'), isNull);
-      expect(
-        PlatformUtils.detectPlatform('The Llamasoft Collection'),
-        isNull,
-      );
+      expect(PlatformUtils.detectPlatform('The Llamasoft Collection'), isNull);
       expect(PlatformUtils.detectPlatform(''), isNull);
     });
 
@@ -218,17 +215,20 @@ void main() {
       expect(PlatformUtils.detectPlatform('Xboxing Champions'), isNull);
     });
 
-    test('very short abbreviations need bracketing or the end of the string', () {
-      expect(PlatformUtils.detectPlatform('Elden Ring (PC)'), 'PC');
-      expect(PlatformUtils.detectPlatform('Pokemon Black (DS)'), 'DS');
-      expect(PlatformUtils.detectPlatform('Tetris (GB)'), 'GB');
-      expect(PlatformUtils.detectPlatform('Tetris [GB]'), 'GB');
-      expect(PlatformUtils.detectPlatform('Elden Ring PC'), 'PC');
+    test(
+      'very short abbreviations need bracketing or the end of the string',
+      () {
+        expect(PlatformUtils.detectPlatform('Elden Ring (PC)'), 'PC');
+        expect(PlatformUtils.detectPlatform('Pokemon Black (DS)'), 'DS');
+        expect(PlatformUtils.detectPlatform('Tetris (GB)'), 'GB');
+        expect(PlatformUtils.detectPlatform('Tetris [GB]'), 'GB');
+        expect(PlatformUtils.detectPlatform('Elden Ring PC'), 'PC');
 
-      expect(PlatformUtils.detectPlatform('PC'), 'PC');
-      expect(PlatformUtils.detectPlatform('ds'), 'DS');
-      expect(PlatformUtils.detectPlatform('Nintendo DS'), 'DS');
-    });
+        expect(PlatformUtils.detectPlatform('PC'), 'PC');
+        expect(PlatformUtils.detectPlatform('ds'), 'DS');
+        expect(PlatformUtils.detectPlatform('Nintendo DS'), 'DS');
+      },
+    );
 
     test('very short abbreviations do not match bare in the middle', () {
       expect(PlatformUtils.detectPlatform('A DS game'), isNull);
@@ -240,7 +240,9 @@ void main() {
 
   group('PlatformUtils.findPlatform', () {
     test('reports where the platform was matched', () {
-      final match = PlatformUtils.findPlatform('Mario Kart 8 (Nintendo Switch)');
+      final match = PlatformUtils.findPlatform(
+        'Mario Kart 8 (Nintendo Switch)',
+      );
 
       expect(match, isNotNull);
       expect(match!.abbreviation, 'Switch');

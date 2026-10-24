@@ -59,10 +59,11 @@ class BackupState extends _$BackupState {
 
     try {
       state = const BackupOperationState.selectingDirectory();
-      
+
       // Let user select backup directory
-      final String? selectedDirectory = await _backupService.selectBackupDirectory();
-      
+      final String? selectedDirectory =
+          await _backupService.selectBackupDirectory();
+
       if (selectedDirectory == null) {
         // User cancelled directory selection
         state = const BackupOperationState.idle();
@@ -70,10 +71,13 @@ class BackupState extends _$BackupState {
       }
 
       // Check if directory is writable
-      final bool isWritable = await _backupService.isDirectoryWritable(selectedDirectory);
+      final bool isWritable = await _backupService.isDirectoryWritable(
+        selectedDirectory,
+      );
       if (!isWritable) {
         state = const BackupOperationState.error(
-          message: 'Cannot write to selected directory. Please choose a different location or check app permissions.',
+          message:
+              'Cannot write to selected directory. Please choose a different location or check app permissions.',
           code: 'DIRECTORY_NOT_WRITABLE',
         );
         return;
@@ -82,7 +86,7 @@ class BackupState extends _$BackupState {
       // Estimate backup size
       final int estimatedSize = await _backupService.estimateBackupSize();
       final String sizeString = _formatBytes(estimatedSize);
-      
+
       state = BackupOperationState.creatingBackup(
         progress: 0.0,
         currentStep: 'Starting backup...',
@@ -91,7 +95,9 @@ class BackupState extends _$BackupState {
 
       // Create backup with progress tracking
       String? backupFilePath;
-      await for (final result in _backupService.createFullBackupWithProgress(selectedDirectory)) {
+      await for (final result in _backupService.createFullBackupWithProgress(
+        selectedDirectory,
+      )) {
         if (state is! _CreatingBackup) {
           // Operation was cancelled
           return;
@@ -101,7 +107,8 @@ class BackupState extends _$BackupState {
         state = BackupOperationState.creatingBackup(
           progress: result.progress,
           currentStep: stepMessage,
-          statusMessage: result.progress < 1.0 ? 'Creating backup...' : 'Backup complete!',
+          statusMessage:
+              result.progress < 1.0 ? 'Creating backup...' : 'Backup complete!',
         );
 
         // Store the result when complete
@@ -113,7 +120,7 @@ class BackupState extends _$BackupState {
       if (backupFilePath != null) {
         final File backupFile = File(backupFilePath);
         final String fileSize = _backupService.getBackupSizeString(backupFile);
-        
+
         // On iOS, offer to export the backup file to user's chosen location
         if (Platform.isIOS) {
           state = BackupOperationState.creatingBackup(
@@ -121,16 +128,20 @@ class BackupState extends _$BackupState {
             currentStep: 'Backup complete',
             statusMessage: 'Choose where to save your backup file...',
           );
-          
-          final String? exportedPath = await _backupService.exportBackupFile(backupFilePath);
+
+          final String? exportedPath = await _backupService.exportBackupFile(
+            backupFilePath,
+          );
           if (exportedPath != null) {
             state = BackupOperationState.success(
-              message: 'Backup created and saved successfully! File size: $fileSize',
+              message:
+                  'Backup created and saved successfully! File size: $fileSize',
               filePath: exportedPath,
             );
           } else {
             state = BackupOperationState.success(
-              message: 'Backup created successfully! File size: $fileSize\nBackup saved to app documents.',
+              message:
+                  'Backup created successfully! File size: $fileSize\nBackup saved to app documents.',
               filePath: backupFilePath,
             );
           }
@@ -164,10 +175,10 @@ class BackupState extends _$BackupState {
 
     try {
       state = const BackupOperationState.selectingFile();
-      
+
       // Let user select backup file
       final String? selectedFile = await _backupService.selectBackupFile();
-      
+
       if (selectedFile == null) {
         // User cancelled file selection
         state = const BackupOperationState.idle();
@@ -176,9 +187,10 @@ class BackupState extends _$BackupState {
 
       // Validate backup file
       state = BackupOperationState.validatingBackup(filePath: selectedFile);
-      
-      final BackupValidationResult validationResult = await _backupService.validateBackupFile(selectedFile);
-      
+
+      final BackupValidationResult validationResult = await _backupService
+          .validateBackupFile(selectedFile);
+
       validationResult.when(
         valid: (metadata) {
           // Show confirmation dialog with backup details
@@ -219,7 +231,8 @@ class BackupState extends _$BackupState {
       );
 
       // Restore backup with progress tracking
-      await for (final progress in _backupService.restoreFromFullBackupWithProgress(backupFilePath)) {
+      await for (final progress in _backupService
+          .restoreFromFullBackupWithProgress(backupFilePath)) {
         if (state is! _RestoringBackup) {
           // Operation was cancelled
           return;
@@ -229,7 +242,8 @@ class BackupState extends _$BackupState {
         state = BackupOperationState.restoringBackup(
           progress: progress,
           currentStep: stepMessage,
-          statusMessage: progress < 1.0 ? 'Restoring data...' : 'Restore complete!',
+          statusMessage:
+              progress < 1.0 ? 'Restoring data...' : 'Restore complete!',
         );
       }
 
@@ -284,7 +298,9 @@ class BackupState extends _$BackupState {
   String _formatBytes(int bytes) {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+    if (bytes < 1024 * 1024 * 1024) {
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 }

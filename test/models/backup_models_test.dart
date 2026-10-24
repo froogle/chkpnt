@@ -6,7 +6,7 @@ void main() {
     test('should create BackupMetadata with required fields', () {
       final now = DateTime.now();
       const imageList = ['game_001.jpg', 'game_002.png'];
-      
+
       final metadata = BackupMetadata(
         version: '1.0.0',
         createdAt: now,
@@ -42,10 +42,22 @@ void main() {
       // Deserialize from JSON
       final deserializedMetadata = BackupMetadata.fromJson(json);
       expect(deserializedMetadata.version, equals(originalMetadata.version));
-      expect(deserializedMetadata.createdAt, equals(originalMetadata.createdAt));
-      expect(deserializedMetadata.gameCount, equals(originalMetadata.gameCount));
-      expect(deserializedMetadata.imageCount, equals(originalMetadata.imageCount));
-      expect(deserializedMetadata.includedImages, equals(originalMetadata.includedImages));
+      expect(
+        deserializedMetadata.createdAt,
+        equals(originalMetadata.createdAt),
+      );
+      expect(
+        deserializedMetadata.gameCount,
+        equals(originalMetadata.gameCount),
+      );
+      expect(
+        deserializedMetadata.imageCount,
+        equals(originalMetadata.imageCount),
+      );
+      expect(
+        deserializedMetadata.includedImages,
+        equals(originalMetadata.includedImages),
+      );
     });
 
     test('should handle empty image list', () {
@@ -59,7 +71,7 @@ void main() {
 
       final json = metadata.toJson();
       final deserialized = BackupMetadata.fromJson(json);
-      
+
       expect(deserialized.includedImages, isEmpty);
       expect(deserialized.imageCount, equals(0));
     });
@@ -76,7 +88,7 @@ void main() {
       );
 
       final result = BackupValidationResult.valid(metadata);
-      
+
       expect(result, isA<BackupValidationResult>());
       result.when(
         valid: (meta) => expect(meta, equals(metadata)),
@@ -88,7 +100,7 @@ void main() {
     test('should create invalid result', () {
       const reason = 'Missing metadata file';
       const result = BackupValidationResult.invalid(reason);
-      
+
       expect(result, isA<BackupValidationResult>());
       result.when(
         valid: (_) => fail('Expected invalid result'),
@@ -100,7 +112,7 @@ void main() {
     test('should create corrupted result', () {
       const details = 'ZIP file is corrupted';
       const result = BackupValidationResult.corrupted(details);
-      
+
       expect(result, isA<BackupValidationResult>());
       result.when(
         valid: (_) => fail('Expected corrupted result'),
@@ -146,7 +158,7 @@ void main() {
       );
 
       expect(progress.statusMessage, isNull);
-      
+
       final json = progress.toJson();
       final deserialized = BackupProgress.fromJson(json);
       expect(deserialized.statusMessage, isNull);
@@ -216,13 +228,25 @@ void main() {
       expect(BackupOperationType.values, hasLength(3));
       expect(BackupOperationType.values, contains(BackupOperationType.create));
       expect(BackupOperationType.values, contains(BackupOperationType.restore));
-      expect(BackupOperationType.values, contains(BackupOperationType.validate));
+      expect(
+        BackupOperationType.values,
+        contains(BackupOperationType.validate),
+      );
     });
 
     test('should have correct string representations', () {
-      expect(BackupOperationType.create.toString(), equals('BackupOperationType.create'));
-      expect(BackupOperationType.restore.toString(), equals('BackupOperationType.restore'));
-      expect(BackupOperationType.validate.toString(), equals('BackupOperationType.validate'));
+      expect(
+        BackupOperationType.create.toString(),
+        equals('BackupOperationType.create'),
+      );
+      expect(
+        BackupOperationType.restore.toString(),
+        equals('BackupOperationType.restore'),
+      );
+      expect(
+        BackupOperationType.validate.toString(),
+        equals('BackupOperationType.validate'),
+      );
     });
   });
 }

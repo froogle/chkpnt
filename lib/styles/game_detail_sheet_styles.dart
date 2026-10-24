@@ -5,7 +5,12 @@ import 'global_styles.dart';
 class GameDetailSheetStyles {
   // Container and layout
   static const EdgeInsets contentPadding = EdgeInsets.fromLTRB(24, 20, 20, 28);
-  static const EdgeInsets editContentPadding = EdgeInsets.fromLTRB(24, 16, 12, 24);
+  static const EdgeInsets editContentPadding = EdgeInsets.fromLTRB(
+    24,
+    16,
+    12,
+    24,
+  );
   static const EdgeInsets headerPadding = EdgeInsets.only(top: 12, bottom: 12);
 
   // Spacing

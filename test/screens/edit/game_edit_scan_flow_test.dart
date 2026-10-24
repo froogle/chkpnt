@@ -273,10 +273,7 @@ void main() {
       await _openAddForm(tester, container);
       await _scanBarcode(tester, '5060990241239');
 
-      expect(
-        find.textContaining('not in the lookup service'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('not in the lookup service'), findsOneWidget);
     });
 
     testWidgets('a server error gets its own message', (tester) async {
@@ -376,12 +373,14 @@ void main() {
       expect(_scanPrimaryButton, findsOneWidget);
       expect(_addPrimaryButton, findsNothing);
       expect(
-        tester.widget<Icon>(
-          find.descendant(
-            of: _scanPrimaryButton,
-            matching: find.byType(Icon),
-          ),
-        ).icon,
+        tester
+            .widget<Icon>(
+              find.descendant(
+                of: _scanPrimaryButton,
+                matching: find.byType(Icon),
+              ),
+            )
+            .icon,
         Icons.qr_code_scanner,
       );
     });
@@ -411,12 +410,14 @@ void main() {
       expect(_addPrimaryButton, findsOneWidget);
       expect(_scanPrimaryButton, findsNothing);
       expect(
-        tester.widget<Icon>(
-          find.descendant(
-            of: _addPrimaryButton,
-            matching: find.byType(Icon),
-          ),
-        ).icon,
+        tester
+            .widget<Icon>(
+              find.descendant(
+                of: _addPrimaryButton,
+                matching: find.byType(Icon),
+              ),
+            )
+            .icon,
         Icons.save,
       );
     });

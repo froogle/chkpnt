@@ -139,21 +139,19 @@ class PlatformUtils {
     const closingBrackets = {')', ']'};
 
     final before = match.start == 0 ? '' : haystack[match.start - 1];
-    final after =
-        match.end == haystack.length ? '' : haystack[match.end];
+    final after = match.end == haystack.length ? '' : haystack[match.end];
 
     final isBracketed =
         openingBrackets.contains(before) && closingBrackets.contains(after);
-    final isWholeString = haystack.trim() == haystack.substring(
-      match.start,
-      match.end,
-    );
+    final isWholeString =
+        haystack.trim() == haystack.substring(match.start, match.end);
     final isStringFinal = match.end == haystack.trimRight().length;
 
     return isBracketed || isWholeString || isStringFinal;
   }
 
-  static String? detectPlatform(String text) => findPlatform(text)?.abbreviation;
+  static String? detectPlatform(String text) =>
+      findPlatform(text)?.abbreviation;
 
   /// Abbreviates platform names to standardised short forms
   ///

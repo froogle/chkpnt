@@ -9,9 +9,7 @@ void main() {
   group('AttributionModal', () {
     Widget wrap({VoidCallback? onDismiss}) {
       return MaterialApp(
-        home: Scaffold(
-          body: AttributionModal(onDismiss: onDismiss ?? () {}),
-        ),
+        home: Scaffold(body: AttributionModal(onDismiss: onDismiss ?? () {})),
       );
     }
 

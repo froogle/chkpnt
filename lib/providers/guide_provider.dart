@@ -10,7 +10,8 @@ part 'guide_provider.g.dart';
 
 @riverpod
 GuideRepository guideRepository(Ref ref) {
-  final gameRepository = ref.watch(gameRepositoryProvider) as DriftGameRepository;
+  final gameRepository =
+      ref.watch(gameRepositoryProvider) as DriftGameRepository;
   return DriftGuideRepository(gameRepository.database);
 }
 
@@ -37,7 +38,11 @@ class GuidesForGame extends _$GuidesForGame {
     await repository.createGuide(guide);
   }
 
-  Future<void> updateReadPosition(GuideId guideId, int section, int block) async {
+  Future<void> updateReadPosition(
+    GuideId guideId,
+    int section,
+    int block,
+  ) async {
     final repository = ref.read(guideRepositoryProvider);
     await repository.updateGuideReadPosition(guideId, section, block);
   }

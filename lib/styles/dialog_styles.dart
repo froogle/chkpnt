@@ -32,9 +32,8 @@ class AppDialogStyles {
   static RoundedRectangleBorder get shape =>
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius));
 
-  static ButtonStyle buttonStyle(Color foregroundColor) =>
-      TextButton.styleFrom(
-        foregroundColor: foregroundColor,
-        textStyle: buttonTextStyle,
-      );
+  static ButtonStyle buttonStyle(Color foregroundColor) => TextButton.styleFrom(
+    foregroundColor: foregroundColor,
+    textStyle: buttonTextStyle,
+  );
 }

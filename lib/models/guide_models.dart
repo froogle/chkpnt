@@ -16,7 +16,8 @@ class GuideId with _$GuideId {
     return GuideId(uuid.v4());
   }
 
-  factory GuideId.fromJson(Map<String, dynamic> json) => _$GuideIdFromJson(json);
+  factory GuideId.fromJson(Map<String, dynamic> json) =>
+      _$GuideIdFromJson(json);
 }
 
 @freezed

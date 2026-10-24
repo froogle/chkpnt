@@ -119,11 +119,7 @@ void main() {
     });
 
     test('toJsonString produces valid JSON', () {
-      final guide = GuideContent(
-        title: 'Test',
-        author: 'Author',
-        sections: [],
-      );
+      final guide = GuideContent(title: 'Test', author: 'Author', sections: []);
       final jsonString = guide.toJsonString();
 
       expect(jsonString, contains('"title":"Test"'));
@@ -138,7 +134,10 @@ void main() {
           ContentSection(
             title: 'Introduction',
             blocks: [
-              ContentBlock(content: 'Welcome to the guide.', preformatted: false),
+              ContentBlock(
+                content: 'Welcome to the guide.',
+                preformatted: false,
+              ),
             ],
           ),
         ],
@@ -291,10 +290,7 @@ It has multiple paragraphs.
           </html>
         ''';
 
-        expect(
-          () => fetcher.parseFromHtml(html),
-          throwsA(isA<Exception>()),
-        );
+        expect(() => fetcher.parseFromHtml(html), throwsA(isA<Exception>()));
       });
     });
   });

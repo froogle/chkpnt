@@ -181,19 +181,12 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
               Expanded(
                 child: Text(
                   guide.title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.primaryText,
-                  ),
+                  style: TextStyle(fontSize: 14, color: AppColors.primaryText),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                size: 20,
-                color: AppColors.expandIcon,
-              ),
+              Icon(Icons.chevron_right, size: 20, color: AppColors.expandIcon),
             ],
           ),
         ),
@@ -210,11 +203,11 @@ class _GameDetailSheetState extends ConsumerState<GameDetailSheet> {
         label: Text('Find a Guide'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryPurple,
-          side: BorderSide(color: AppColors.primaryPurple.withValues(alpha: 0.5)),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            color: AppColors.primaryPurple.withValues(alpha: 0.5),
           ),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
     );

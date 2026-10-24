@@ -6,10 +6,7 @@ class ContentBlock {
   final String content;
   final bool preformatted;
 
-  ContentBlock({
-    required this.content,
-    this.preformatted = false,
-  });
+  ContentBlock({required this.content, this.preformatted = false});
 
   Map<String, dynamic> toJson() => {
     'content': content,
@@ -26,10 +23,7 @@ class ContentSection {
   final String title;
   final List<ContentBlock> blocks;
 
-  ContentSection({
-    required this.title,
-    required this.blocks,
-  });
+  ContentSection({required this.title, required this.blocks});
 
   Map<String, dynamic> toJson() => {
     'title': title,
@@ -38,9 +32,10 @@ class ContentSection {
 
   factory ContentSection.fromJson(Map<String, dynamic> json) => ContentSection(
     title: json['title'] as String,
-    blocks: (json['blocks'] as List<dynamic>)
-        .map((b) => ContentBlock.fromJson(b as Map<String, dynamic>))
-        .toList(),
+    blocks:
+        (json['blocks'] as List<dynamic>)
+            .map((b) => ContentBlock.fromJson(b as Map<String, dynamic>))
+            .toList(),
   );
 }
 
@@ -68,15 +63,15 @@ class GuideContent {
     title: json['title'] as String,
     author: json['author'] as String,
     url: json['url'] as String?,
-    sections: (json['sections'] as List<dynamic>)
-        .map((s) => ContentSection.fromJson(s as Map<String, dynamic>))
-        .toList(),
+    sections:
+        (json['sections'] as List<dynamic>)
+            .map((s) => ContentSection.fromJson(s as Map<String, dynamic>))
+            .toList(),
   );
 
   String toJsonString({bool pretty = false}) {
-    final encoder = pretty
-        ? const JsonEncoder.withIndent('  ')
-        : const JsonEncoder();
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(toJson());
   }
 
@@ -125,11 +120,7 @@ final class HtmlGuidePage implements GuidePage {
   @override
   final String? url;
 
-  const HtmlGuidePage({
-    required this.title,
-    required this.author,
-    this.url,
-  });
+  const HtmlGuidePage({required this.title, required this.author, this.url});
 }
 
 class GuideContentFetcher {
@@ -139,27 +130,30 @@ class GuideContentFetcher {
 
   GuidePage parseFromHtml(String html) {
     final document = html_parser.parse(html);
-    final url = document
-        .querySelector('link[rel="canonical"]')
-        ?.attributes['href'];
+    final url =
+        document.querySelector('link[rel="canonical"]')?.attributes['href'];
     final (extractedTitle, extractedAuthor) = _extractTitleAndAuthor(document);
-    final title = extractedTitle ??
+    final title =
+        extractedTitle ??
         document.querySelector('h1.page-title')?.text.trim() ??
         'Unknown Guide';
-    final author = extractedAuthor ??
+    final author =
+        extractedAuthor ??
         document.querySelector('.faq_author a')?.text.trim() ??
         'Unknown Author';
 
     final faqText = document.querySelector('#faqtext');
     if (faqText != null && faqText.querySelectorAll('pre').isNotEmpty) {
-      return TextGuidePage(GuideContent(
-        title: title,
-        author: author,
-        url: url,
-        sections: _mergeConsecutivePreformattedBlocks(
-          _parseAsciiSections(faqText),
+      return TextGuidePage(
+        GuideContent(
+          title: title,
+          author: author,
+          url: url,
+          sections: _mergeConsecutivePreformattedBlocks(
+            _parseAsciiSections(faqText),
+          ),
         ),
-      ));
+      );
     }
 
     if (document.querySelector('#faqwrap') != null) {
@@ -183,7 +177,8 @@ class GuideContentFetcher {
       if (authorLinkStart > 0) {
         var extractedTitle = h2Html.substring(0, authorLinkStart).trim();
         if (extractedTitle.toLowerCase().endsWith(' by')) {
-          extractedTitle = extractedTitle.substring(0, extractedTitle.length - 3).trim();
+          extractedTitle =
+              extractedTitle.substring(0, extractedTitle.length - 3).trim();
         }
         title = extractedTitle;
       }
@@ -192,7 +187,9 @@ class GuideContentFetcher {
     return (title, author);
   }
 
-  List<ContentSection> _mergeConsecutivePreformattedBlocks(List<ContentSection> sections) {
+  List<ContentSection> _mergeConsecutivePreformattedBlocks(
+    List<ContentSection> sections,
+  ) {
     return sections.map((section) {
       final mergedBlocks = <ContentBlock>[];
 
@@ -201,10 +198,12 @@ class GuideContentFetcher {
             mergedBlocks.isNotEmpty &&
             mergedBlocks.last.preformatted) {
           final lastBlock = mergedBlocks.removeLast();
-          mergedBlocks.add(ContentBlock(
-            content: '${lastBlock.content}\n\n${block.content}',
-            preformatted: true,
-          ));
+          mergedBlocks.add(
+            ContentBlock(
+              content: '${lastBlock.content}\n\n${block.content}',
+              preformatted: true,
+            ),
+          );
         } else {
           mergedBlocks.add(block);
         }
@@ -239,12 +238,20 @@ class GuideContentFetcher {
       if (_isSectionDivider(trimmedLine) && i + 2 < lines.length) {
         final nextLine = lines[i + 1].trim();
         final afterNext = lines[i + 2].trimRight();
-        if (_isSectionDivider(afterNext) && nextLine.isNotEmpty &&
-            !_isSectionDivider(nextLine) && !_isTableLine(nextLine)) {
-          _flushParagraphToBlocks(paragraphBuffer, currentBlocks, lastWasPreformatted);
+        if (_isSectionDivider(afterNext) &&
+            nextLine.isNotEmpty &&
+            !_isSectionDivider(nextLine) &&
+            !_isTableLine(nextLine)) {
+          _flushParagraphToBlocks(
+            paragraphBuffer,
+            currentBlocks,
+            lastWasPreformatted,
+          );
 
           if (currentBlocks.isNotEmpty) {
-            sections.add(ContentSection(title: currentSectionTitle, blocks: currentBlocks));
+            sections.add(
+              ContentSection(title: currentSectionTitle, blocks: currentBlocks),
+            );
             currentBlocks = [];
           }
 
@@ -259,22 +266,33 @@ class GuideContentFetcher {
           _isTableLine(trimmedLine) ||
           _isComplexAsciiArt(trimmedLine) ||
           _isCenteredText(trimmedLine) ||
-          (_isPreformattedLine(trimmedLine) && !_isSimpleDivider(trimmedLine.trim()));
+          (_isPreformattedLine(trimmedLine) &&
+              !_isSimpleDivider(trimmedLine.trim()));
 
       if (isPreformatted) {
         _flushParagraphToBlocks(paragraphBuffer, currentBlocks, false);
-        if (lastWasPreformatted && currentBlocks.isNotEmpty && currentBlocks.last.preformatted) {
+        if (lastWasPreformatted &&
+            currentBlocks.isNotEmpty &&
+            currentBlocks.last.preformatted) {
           final lastBlock = currentBlocks.removeLast();
-          currentBlocks.add(ContentBlock(
-            content: '${lastBlock.content}\n$trimmedLine',
-            preformatted: true,
-          ));
+          currentBlocks.add(
+            ContentBlock(
+              content: '${lastBlock.content}\n$trimmedLine',
+              preformatted: true,
+            ),
+          );
         } else {
-          currentBlocks.add(ContentBlock(content: trimmedLine, preformatted: true));
+          currentBlocks.add(
+            ContentBlock(content: trimmedLine, preformatted: true),
+          );
         }
         lastWasPreformatted = true;
       } else if (strippedLine.isEmpty) {
-        _flushParagraphToBlocks(paragraphBuffer, currentBlocks, lastWasPreformatted);
+        _flushParagraphToBlocks(
+          paragraphBuffer,
+          currentBlocks,
+          lastWasPreformatted,
+        );
         lastWasPreformatted = false;
       } else {
         if (paragraphBuffer.isNotEmpty) {
@@ -282,7 +300,8 @@ class GuideContentFetcher {
           if (_shouldJoinLines(prevContent, strippedLine) ||
               (line.startsWith(' ') && !_isNewListItem(strippedLine))) {
             paragraphBuffer.write(' ');
-          } else if (_isNewListItem(strippedLine) || _looksLikeNewParagraph(prevContent, strippedLine)) {
+          } else if (_isNewListItem(strippedLine) ||
+              _looksLikeNewParagraph(prevContent, strippedLine)) {
             _flushParagraphToBlocks(paragraphBuffer, currentBlocks, false);
           } else {
             paragraphBuffer.write(' ');
@@ -293,15 +312,25 @@ class GuideContentFetcher {
       }
     }
 
-    _flushParagraphToBlocks(paragraphBuffer, currentBlocks, lastWasPreformatted);
+    _flushParagraphToBlocks(
+      paragraphBuffer,
+      currentBlocks,
+      lastWasPreformatted,
+    );
     if (currentBlocks.isNotEmpty) {
-      sections.add(ContentSection(title: currentSectionTitle, blocks: currentBlocks));
+      sections.add(
+        ContentSection(title: currentSectionTitle, blocks: currentBlocks),
+      );
     }
 
     return sections;
   }
 
-  void _flushParagraphToBlocks(StringBuffer buffer, List<ContentBlock> blocks, bool preformatted) {
+  void _flushParagraphToBlocks(
+    StringBuffer buffer,
+    List<ContentBlock> blocks,
+    bool preformatted,
+  ) {
     if (buffer.isNotEmpty) {
       final text = _postProcess(buffer.toString());
       if (text.isNotEmpty) {
@@ -443,7 +472,8 @@ class GuideContentFetcher {
     final firstChar = currentLine.isNotEmpty ? currentLine[0] : '';
 
     if ('.!?:'.contains(lastChar)) {
-      if (firstChar.isNotEmpty && firstChar == firstChar.toLowerCase() &&
+      if (firstChar.isNotEmpty &&
+          firstChar == firstChar.toLowerCase() &&
           RegExp(r'[a-z]').hasMatch(firstChar)) {
         return true;
       }

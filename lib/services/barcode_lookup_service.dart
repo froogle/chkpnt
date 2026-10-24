@@ -59,9 +59,7 @@ class BarcodeLookupService {
     try {
       response = await _client.get(Uri.parse('$endpoint?upc=$barcode'));
     } catch (e) {
-      return const BarcodeLookupResult(
-        outcome: BarcodeLookupOutcome.noNetwork,
-      );
+      return const BarcodeLookupResult(outcome: BarcodeLookupOutcome.noNetwork);
     }
 
     if (response.statusCode == 429) {
@@ -77,7 +75,9 @@ class BarcodeLookupService {
     }
 
     try {
-      return _parseResponse(utf8.decode(response.bodyBytes, allowMalformed: true));
+      return _parseResponse(
+        utf8.decode(response.bodyBytes, allowMalformed: true),
+      );
     } catch (e) {
       return const BarcodeLookupResult(outcome: BarcodeLookupOutcome.notFound);
     }
@@ -92,9 +92,11 @@ class BarcodeLookupService {
 
     final item = items.first as Map<String, dynamic>;
     final topLevelTitle = (item['title'] as String? ?? '').trim();
-    final candidates = [..._offerTitles(item), topLevelTitle]
-        .where((candidate) => candidate.isNotEmpty)
-        .toList();
+    final candidates =
+        [
+          ..._offerTitles(item),
+          topLevelTitle,
+        ].where((candidate) => candidate.isNotEmpty).toList();
 
     if (candidates.isEmpty) {
       return const BarcodeLookupResult(outcome: BarcodeLookupOutcome.notFound);
@@ -173,7 +175,8 @@ class BarcodeLookupService {
 
   int _removableBracketStart(String title) {
     const closingBrackets = {')': '(', ']': '['};
-    final opening = closingBrackets[title.isEmpty ? '' : title[title.length - 1]];
+    final opening =
+        closingBrackets[title.isEmpty ? '' : title[title.length - 1]];
     if (opening == null) return -1;
 
     final start = title.lastIndexOf(opening);

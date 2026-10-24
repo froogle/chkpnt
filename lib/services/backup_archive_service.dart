@@ -38,30 +38,36 @@ class BackupArchiveService {
 
   void _addMetadataToArchive(Archive archive, BackupMetadata metadata) {
     final String metadataJson = json.encode(metadata.toJson());
-    archive.addFile(ArchiveFile(
-      metadataFileName,
-      metadataJson.length,
-      utf8.encode(metadataJson),
-    ));
+    archive.addFile(
+      ArchiveFile(
+        metadataFileName,
+        metadataJson.length,
+        utf8.encode(metadataJson),
+      ),
+    );
   }
 
   void _addDatabaseToArchive(Archive archive, String databaseJson) {
-    archive.addFile(ArchiveFile(
-      databaseFileName,
-      databaseJson.length,
-      utf8.encode(databaseJson),
-    ));
+    archive.addFile(
+      ArchiveFile(
+        databaseFileName,
+        databaseJson.length,
+        utf8.encode(databaseJson),
+      ),
+    );
   }
 
   void _addImagesToArchive(Archive archive, List<File> imageFiles) {
     for (final imageFile in imageFiles) {
       final String imageName = path.basename(imageFile.path);
       final Uint8List imageBytes = imageFile.readAsBytesSync();
-      archive.addFile(ArchiveFile(
-        '$imagesDirectoryName/$imageName',
-        imageBytes.length,
-        imageBytes,
-      ));
+      archive.addFile(
+        ArchiveFile(
+          '$imagesDirectoryName/$imageName',
+          imageBytes.length,
+          imageBytes,
+        ),
+      );
     }
   }
 
@@ -69,25 +75,35 @@ class BackupArchiveService {
     for (final guideFile in guideFiles) {
       final String guideName = path.basename(guideFile.path);
       final Uint8List guideBytes = guideFile.readAsBytesSync();
-      archive.addFile(ArchiveFile(
-        '$guidesDirectoryName/$guideName',
-        guideBytes.length,
-        guideBytes,
-      ));
+      archive.addFile(
+        ArchiveFile(
+          '$guidesDirectoryName/$guideName',
+          guideBytes.length,
+          guideBytes,
+        ),
+      );
     }
   }
 
-  Future<File> writeArchiveToFile(Archive archive, String destinationDirectory) async {
+  Future<File> writeArchiveToFile(
+    Archive archive,
+    String destinationDirectory,
+  ) async {
     final Uint8List zipData = Uint8List.fromList(ZipEncoder().encode(archive)!);
     final String backupFileName = _generateBackupFileName();
-    final File backupFile = File(path.join(destinationDirectory, backupFileName));
-    
+    final File backupFile = File(
+      path.join(destinationDirectory, backupFileName),
+    );
+
     await backupFile.writeAsBytes(zipData);
     return backupFile;
   }
 
   String _generateBackupFileName() {
-    final String timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+    final String timestamp = DateTime.now().toIso8601String().replaceAll(
+      ':',
+      '-',
+    );
     return 'chkpnt_backup_$timestamp.zip';
   }
 
@@ -100,7 +116,10 @@ class BackupArchiveService {
     }
   }
 
-  Future<void> extractArchiveToDirectory(Archive archive, Directory targetDirectory) async {
+  Future<void> extractArchiveToDirectory(
+    Archive archive,
+    Directory targetDirectory,
+  ) async {
     for (final ArchiveFile file in archive.files) {
       if (file.isFile) {
         await _extractSingleFile(file, targetDirectory);
@@ -108,7 +127,10 @@ class BackupArchiveService {
     }
   }
 
-  Future<void> _extractSingleFile(ArchiveFile file, Directory targetDirectory) async {
+  Future<void> _extractSingleFile(
+    ArchiveFile file,
+    Directory targetDirectory,
+  ) async {
     final File extractedFile = File(path.join(targetDirectory.path, file.name));
     await extractedFile.parent.create(recursive: true);
     await extractedFile.writeAsBytes(file.content as List<int>);
@@ -127,20 +149,28 @@ class BackupArchiveService {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+    if (bytes < 1024 * 1024 * 1024) {
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 
   List<String> getArchiveImageFileNames(Archive archive) {
     return archive.files
-        .where((file) => file.name.startsWith('$imagesDirectoryName/') && file.isFile)
+        .where(
+          (file) =>
+              file.name.startsWith('$imagesDirectoryName/') && file.isFile,
+        )
         .map((file) => path.basename(file.name))
         .toList();
   }
 
   List<String> getArchiveGuideFileNames(Archive archive) {
     return archive.files
-        .where((file) => file.name.startsWith('$guidesDirectoryName/') && file.isFile)
+        .where(
+          (file) =>
+              file.name.startsWith('$guidesDirectoryName/') && file.isFile,
+        )
         .map((file) => path.basename(file.name))
         .toList();
   }
@@ -151,8 +181,11 @@ class BackupArchiveService {
 
   Future<Directory> createTempDirectory(String prefix) async {
     final Directory systemTemp = Directory.systemTemp;
-    final String tempDirName = '${prefix}_${DateTime.now().millisecondsSinceEpoch}';
-    final Directory tempDir = Directory(path.join(systemTemp.path, tempDirName));
+    final String tempDirName =
+        '${prefix}_${DateTime.now().millisecondsSinceEpoch}';
+    final Directory tempDir = Directory(
+      path.join(systemTemp.path, tempDirName),
+    );
     await tempDir.create(recursive: true);
     return tempDir;
   }

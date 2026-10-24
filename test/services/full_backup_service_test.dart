@@ -16,14 +16,25 @@ import 'package:chkpnt/services/full_backup_service.dart';
 
 // Mock classes
 class MockGameRepository extends Mock implements GameRepository {}
+
 class MockStorageService extends Mock implements StorageService {}
+
 class MockGameImageService extends Mock implements GameImageService {}
+
 class MockGuideStorageService extends Mock implements GuideStorageService {}
+
 class MockBackupArchiveService extends Mock implements BackupArchiveService {}
-class MockBackupValidationService extends Mock implements BackupValidationService {}
-class MockBackupPermissionService extends Mock implements BackupPermissionService {}
+
+class MockBackupValidationService extends Mock
+    implements BackupValidationService {}
+
+class MockBackupPermissionService extends Mock
+    implements BackupPermissionService {}
+
 class MockDirectory extends Mock implements Directory {}
+
 class MockFile extends Mock implements File {}
+
 class MockFileStat extends Mock implements FileStat {}
 
 void main() {
@@ -43,20 +54,22 @@ void main() {
       registerFallbackValue(File(''));
       registerFallbackValue(<GameItem>[]);
       registerFallbackValue(Archive());
-      registerFallbackValue(BackupData(
-        databaseJson: '',
-        imageFiles: [],
-        guideFiles: [],
-        metadata: BackupMetadata(
-          version: '1.0.0',
-          createdAt: DateTime.now(),
-          gameCount: 0,
-          imageCount: 0,
-          includedImages: const [],
-          guideCount: 0,
-          includedGuides: const [],
+      registerFallbackValue(
+        BackupData(
+          databaseJson: '',
+          imageFiles: [],
+          guideFiles: [],
+          metadata: BackupMetadata(
+            version: '1.0.0',
+            createdAt: DateTime.now(),
+            gameCount: 0,
+            imageCount: 0,
+            includedImages: const [],
+            guideCount: 0,
+            includedGuides: const [],
+          ),
         ),
-      ));
+      );
     });
 
     setUp(() {
@@ -91,14 +104,17 @@ void main() {
       test('validateBackupFile delegates to validation service', () async {
         const filePath = '/test/backup.zip';
         const expectedResult = BackupValidationResult.invalid('Test error');
-        
-        when(() => mockValidationService.validateBackupFile(filePath))
-            .thenAnswer((_) async => expectedResult);
+
+        when(
+          () => mockValidationService.validateBackupFile(filePath),
+        ).thenAnswer((_) async => expectedResult);
 
         final result = await backupService.validateBackupFile(filePath);
 
         expect(result, equals(expectedResult));
-        verify(() => mockValidationService.validateBackupFile(filePath)).called(1);
+        verify(
+          () => mockValidationService.validateBackupFile(filePath),
+        ).called(1);
       });
 
       test('getBackupFileInfo delegates to validation service', () async {
@@ -110,22 +126,26 @@ void main() {
           createdAt: DateTime.now(),
           metadata: null,
         );
-        
-        when(() => mockValidationService.getBackupFileInfo(filePath))
-            .thenAnswer((_) async => expectedInfo);
+
+        when(
+          () => mockValidationService.getBackupFileInfo(filePath),
+        ).thenAnswer((_) async => expectedInfo);
 
         final result = await backupService.getBackupFileInfo(filePath);
 
         expect(result, equals(expectedInfo));
-        verify(() => mockValidationService.getBackupFileInfo(filePath)).called(1);
+        verify(
+          () => mockValidationService.getBackupFileInfo(filePath),
+        ).called(1);
       });
 
       test('getBackupSizeString delegates to archive service', () {
         final mockFile = MockFile();
         const expectedSize = '1.5KB';
-        
-        when(() => mockArchiveService.getFileSizeString(mockFile))
-            .thenReturn(expectedSize);
+
+        when(
+          () => mockArchiveService.getFileSizeString(mockFile),
+        ).thenReturn(expectedSize);
 
         final result = backupService.getBackupSizeString(mockFile);
 
@@ -135,9 +155,10 @@ void main() {
 
       test('selectBackupDirectory delegates to permission service', () async {
         const expectedPath = '/selected/directory';
-        
-        when(() => mockPermissionService.selectBackupDirectory())
-            .thenAnswer((_) async => expectedPath);
+
+        when(
+          () => mockPermissionService.selectBackupDirectory(),
+        ).thenAnswer((_) async => expectedPath);
 
         final result = await backupService.selectBackupDirectory();
 
@@ -147,9 +168,10 @@ void main() {
 
       test('selectBackupFile delegates to permission service', () async {
         const expectedPath = '/selected/backup.zip';
-        
-        when(() => mockPermissionService.selectBackupFile())
-            .thenAnswer((_) async => expectedPath);
+
+        when(
+          () => mockPermissionService.selectBackupFile(),
+        ).thenAnswer((_) async => expectedPath);
 
         final result = await backupService.selectBackupFile();
 
@@ -159,14 +181,17 @@ void main() {
 
       test('isDirectoryWritable delegates to permission service', () async {
         const directoryPath = '/test/directory';
-        
-        when(() => mockPermissionService.isDirectoryWritable(directoryPath))
-            .thenAnswer((_) async => true);
+
+        when(
+          () => mockPermissionService.isDirectoryWritable(directoryPath),
+        ).thenAnswer((_) async => true);
 
         final result = await backupService.isDirectoryWritable(directoryPath);
 
         expect(result, isTrue);
-        verify(() => mockPermissionService.isDirectoryWritable(directoryPath)).called(1);
+        verify(
+          () => mockPermissionService.isDirectoryWritable(directoryPath),
+        ).called(1);
       });
     });
 
@@ -176,21 +201,26 @@ void main() {
         const destinationDir = '/backup/destination';
         const backupFilePath = '/backup/destination/backup.zip';
 
-        when(() => mockRepository.exportDatabaseToJson())
-            .thenAnswer((_) async => '{"games": []}');
-        when(() => mockRepository.getAllGames())
-            .thenAnswer((_) async => []);
-        when(() => mockStorageService.getPersistentStorageDirectory())
-            .thenAnswer((_) async => tempDir);
-        when(() => mockGuideStorageService.getAllGuideFiles())
-            .thenAnswer((_) async => []);
-        when(() => mockArchiveService.createArchive(any()))
-            .thenReturn(Archive());
-        when(() => mockArchiveService.writeArchiveToFile(any(), destinationDir))
-            .thenAnswer((_) async => mockBackupFile);
+        when(
+          () => mockRepository.exportDatabaseToJson(),
+        ).thenAnswer((_) async => '{"games": []}');
+        when(() => mockRepository.getAllGames()).thenAnswer((_) async => []);
+        when(
+          () => mockStorageService.getPersistentStorageDirectory(),
+        ).thenAnswer((_) async => tempDir);
+        when(
+          () => mockGuideStorageService.getAllGuideFiles(),
+        ).thenAnswer((_) async => []);
+        when(
+          () => mockArchiveService.createArchive(any()),
+        ).thenReturn(Archive());
+        when(
+          () => mockArchiveService.writeArchiveToFile(any(), destinationDir),
+        ).thenAnswer((_) async => mockBackupFile);
         when(() => mockBackupFile.path).thenReturn(backupFilePath);
-        when(() => mockArchiveService.getFileSizeString(mockBackupFile))
-            .thenReturn('1.0KB');
+        when(
+          () => mockArchiveService.getFileSizeString(mockBackupFile),
+        ).thenReturn('1.0KB');
 
         final result = await backupService.createFullBackup(destinationDir);
 
@@ -198,60 +228,77 @@ void main() {
         verify(() => mockRepository.exportDatabaseToJson()).called(1);
         verify(() => mockRepository.getAllGames()).called(1);
         verify(() => mockArchiveService.createArchive(any())).called(1);
-        verify(() => mockArchiveService.writeArchiveToFile(any(), destinationDir)).called(1);
+        verify(
+          () => mockArchiveService.writeArchiveToFile(any(), destinationDir),
+        ).called(1);
       });
 
       test('createFullBackup handles errors correctly', () async {
         const destinationDir = '/backup/destination';
-        
-        when(() => mockRepository.exportDatabaseToJson())
-            .thenThrow(Exception('Database export failed'));
+
+        when(
+          () => mockRepository.exportDatabaseToJson(),
+        ).thenThrow(Exception('Database export failed'));
 
         await expectLater(
           backupService.createFullBackup(destinationDir),
-          throwsA(isA<BackupException>()
-              .having((e) => e.code, 'code', 'BACKUP_CREATION_FAILED')),
+          throwsA(
+            isA<BackupException>().having(
+              (e) => e.code,
+              'code',
+              'BACKUP_CREATION_FAILED',
+            ),
+          ),
         );
       });
     });
 
     group('collectAllImages', () {
-      test('should return empty list when images directory does not exist', () async {
-        final mockAppDir = MockDirectory();
-        final mockImageDir = MockDirectory();
+      test(
+        'should return empty list when images directory does not exist',
+        () async {
+          final mockAppDir = MockDirectory();
+          final mockImageDir = MockDirectory();
 
-        when(() => mockStorageService.getPersistentStorageDirectory())
-            .thenAnswer((_) async => mockAppDir);
-        when(() => mockAppDir.path).thenReturn('/app');
-        when(() => mockImageDir.exists()).thenAnswer((_) async => false);
+          when(
+            () => mockStorageService.getPersistentStorageDirectory(),
+          ).thenAnswer((_) async => mockAppDir);
+          when(() => mockAppDir.path).thenReturn('/app');
+          when(() => mockImageDir.exists()).thenAnswer((_) async => false);
 
-        final result = await backupService.collectAllImages();
+          final result = await backupService.collectAllImages();
 
-        expect(result, isEmpty);
-      });
+          expect(result, isEmpty);
+        },
+      );
 
       test('should collect image files from images directory', () async {
         final imagesDir = Directory(path.join(tempDir.path, 'game_images'));
         await imagesDir.create();
-        
+
         final imageFile1 = File(path.join(imagesDir.path, 'game_001.jpg'));
         final imageFile2 = File(path.join(imagesDir.path, 'game_002.png'));
         final textFile = File(path.join(imagesDir.path, 'readme.txt'));
-        
+
         await imageFile1.writeAsString('fake image data 1');
         await imageFile2.writeAsString('fake image data 2');
         await textFile.writeAsString('not an image');
 
-        when(() => mockStorageService.getPersistentStorageDirectory())
-            .thenAnswer((_) async => tempDir);
+        when(
+          () => mockStorageService.getPersistentStorageDirectory(),
+        ).thenAnswer((_) async => tempDir);
 
         final result = await backupService.collectAllImages();
 
         expect(result, hasLength(2));
-        expect(result.map((f) => path.basename(f.path)), 
-               containsAll(['game_001.jpg', 'game_002.png']));
-        expect(result.map((f) => path.basename(f.path)), 
-               isNot(contains('readme.txt')));
+        expect(
+          result.map((f) => path.basename(f.path)),
+          containsAll(['game_001.jpg', 'game_002.png']),
+        );
+        expect(
+          result.map((f) => path.basename(f.path)),
+          isNot(contains('readme.txt')),
+        );
       });
     });
 
@@ -275,14 +322,16 @@ void main() {
           File(path.join(tempDir.path, 'game_002.png')),
         ];
 
-        final guideFiles = [
-          File(path.join(tempDir.path, 'guide_001.json')),
-        ];
+        final guideFiles = [File(path.join(tempDir.path, 'guide_001.json'))];
 
-        when(() => mockRepository.getAllGames())
-            .thenAnswer((_) async => testGames);
+        when(
+          () => mockRepository.getAllGames(),
+        ).thenAnswer((_) async => testGames);
 
-        final result = await backupService.createBackupMetadata(imageFiles, guideFiles);
+        final result = await backupService.createBackupMetadata(
+          imageFiles,
+          guideFiles,
+        );
 
         expect(result.version, equals('1.2.0'));
         expect(result.gameCount, equals(2));
@@ -296,29 +345,32 @@ void main() {
 
     group('estimateBackupSize', () {
       test('should calculate approximate size', () async {
-        when(() => mockRepository.exportDatabaseToJson())
-            .thenAnswer((_) async => '{"games": [{"id": "test"}]}');
-        
+        when(
+          () => mockRepository.exportDatabaseToJson(),
+        ).thenAnswer((_) async => '{"games": [{"id": "test"}]}');
+
         final imagesDir = Directory(path.join(tempDir.path, 'game_images'));
         await imagesDir.create();
         final imageFile = File(path.join(imagesDir.path, 'game_001.jpg'));
         await imageFile.writeAsString('test image data');
 
-        when(() => mockStorageService.getPersistentStorageDirectory())
-            .thenAnswer((_) async => tempDir);
+        when(
+          () => mockStorageService.getPersistentStorageDirectory(),
+        ).thenAnswer((_) async => tempDir);
 
         final result = await backupService.estimateBackupSize();
-        
+
         expect(result, greaterThan(0));
         expect(result, lessThan(1024 * 1024));
       });
 
       test('should return default size on error', () async {
-        when(() => mockRepository.exportDatabaseToJson())
-            .thenThrow(Exception('Database error'));
+        when(
+          () => mockRepository.exportDatabaseToJson(),
+        ).thenThrow(Exception('Database error'));
 
         final result = await backupService.estimateBackupSize();
-        
+
         expect(result, equals(10 * 1024 * 1024));
       });
     });
