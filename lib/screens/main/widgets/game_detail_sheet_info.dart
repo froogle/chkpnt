@@ -73,15 +73,7 @@ class GameDetailSheetInfo extends StatelessWidget {
   }
 
   Widget _buildFormatRow() {
-    return Row(
-      children: [
-        _buildFormatBadge(),
-        const SizedBox(width: 12),
-        _buildFormatIcon(),
-        const SizedBox(width: 8),
-        Expanded(child: _buildFormatText()),
-      ],
-    );
+    return Row(children: [_buildFormatBadge()]);
   }
 
   Widget _buildFormatBadge() {
@@ -118,21 +110,6 @@ class GameDetailSheetInfo extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildFormatIcon() {
-    return Icon(
-      game.isPhysical ? Icons.inventory_2_outlined : Icons.download_outlined,
-      color: AppColors.primaryPurple,
-      size: InputStyles.statusButtonIconSize,
-    );
-  }
-
-  Widget _buildFormatText() {
-    return Text(
-      game.isPhysical ? 'Boxed Copy' : 'Download',
-      style: AppLayout.detailSubtitleStyle,
     );
   }
 

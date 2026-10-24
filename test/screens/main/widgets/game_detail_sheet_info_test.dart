@@ -324,6 +324,46 @@ void main() {
         },
       );
     });
+
+    group('Kind of copy', () {
+      testWidgets('names a Physical Game once, as Physical', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: GameDetailSheetInfo(
+                game: testGame.copyWith(isPhysical: true),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Physical'), findsOneWidget);
+        expect(find.byIcon(Icons.sd_card), findsOneWidget);
+        expect(find.text('Boxed Copy'), findsNothing);
+        expect(find.byIcon(Icons.inventory_2_outlined), findsNothing);
+      });
+
+      testWidgets('names a Digital Game once, as Digital', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: GameDetailSheetInfo(
+                game: testGame.copyWith(isPhysical: false),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Digital'), findsOneWidget);
+        expect(find.byIcon(Icons.cloud_outlined), findsOneWidget);
+        expect(find.text('Download'), findsNothing);
+        expect(find.byIcon(Icons.download_outlined), findsNothing);
+      });
+    });
   });
 }
 
