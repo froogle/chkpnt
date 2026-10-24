@@ -4,6 +4,10 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/repositories/game_repository.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:chkpnt/services/game_image_service.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// Test utilities for streaming provider tests
 class TestHelpers {
@@ -571,4 +575,45 @@ class TestGameRepository implements GameRepository {
     // Test repository doesn't have a physical file
     return null;
   }
+}
+
+class TempPathProviderPlatform extends Fake
+    with MockPlatformInterfaceMixin
+    implements PathProviderPlatform {
+  TempPathProviderPlatform(this.path);
+
+  final String path;
+
+  @override
+  Future<String?> getApplicationDocumentsPath() async => path;
+
+  @override
+  Future<String?> getApplicationSupportPath() async => path;
+
+  @override
+  Future<String?> getExternalStoragePath() async => path;
+}
+
+class MockGameImageService implements GameImageService {
+  @override
+  Future<String?> selectAndSaveImage(GameImageSource source) async => null;
+
+  @override
+  Future<bool> deleteImage(String imagePath) async => true;
+
+  @override
+  Future<bool> imageExists(String imagePath) async => false;
+
+  @override
+  Future<String> getImagePath(String imagePath) async => imagePath;
+
+  @override
+  Future<String?> downloadAndSaveImageFromUrl(String imageUrl) async => null;
+
+  @override
+  Future<CameraPermissionResult> checkAndRequestCameraPermission() async =>
+      CameraPermissionResult.granted;
+
+  @override
+  Future<bool> openCameraSettings() async => true;
 }

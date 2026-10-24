@@ -298,8 +298,12 @@ class DriftGameRepository implements GameRepository {
   final GameImageService _imageService;
   late final StreamController<List<GameItem>> _gamesController;
 
-  DriftGameRepository(StorageService storageService, this._imageService)
-    : _database = GameDatabase(storageService) {
+  DriftGameRepository(
+    StorageService storageService,
+    GameImageService imageService,
+  ) : this.withDatabase(GameDatabase(storageService), imageService);
+
+  DriftGameRepository.withDatabase(this._database, this._imageService) {
     _gamesController = StreamController<List<GameItem>>.broadcast();
   }
 

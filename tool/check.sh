@@ -9,7 +9,10 @@ generated_code_fingerprint() {
 }
 
 before=$(generated_code_fingerprint)
-dart run build_runner build --delete-conflicting-outputs
+if ! build_output=$(dart run build_runner build --delete-conflicting-outputs 2>&1); then
+  echo "$build_output" >&2
+  exit 1
+fi
 if [ "$(generated_code_fingerprint)" != "$before" ]; then
   echo "Generated code was out of date. build_runner has regenerated it; review and commit the changes." >&2
   exit 1

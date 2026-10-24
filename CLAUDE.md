@@ -7,6 +7,9 @@ ChkPnt is a Flutter app for tracking the Games a player owns or wants and the St
 - `tool/check.sh` runs everything CI runs: generated code up to date, formatting, `flutter analyze` and `flutter test`. Run it before every commit; it must pass.
 - `dart run build_runner build --delete-conflicting-outputs` regenerates code after any change to a Riverpod, Freezed or Drift source. Commit the regenerated files with the change.
 - `flutter test --reporter=failures-only <path>` runs tests and prints only failures plus a one-line summary.
+- `tool/deploy-device.sh [serial]` installs a release build on an attached phone or emulator, keeping the app's data, and opens it. It is the only way to deploy: `flutter run` and `flutter install` uninstall the app first, deleting the player's Games.
+- `tool/start-android-13.sh` boots the headless Android 13 emulator and prints its serial, for the Android 13 check in `CODING_STANDARDS.md`.
+- `adb -s <serial> exec-out screencap -p > <file>.png` captures the device screen; read the file to check a screen by eye.
 
 ## Code
 
