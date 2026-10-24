@@ -1,6 +1,6 @@
 # Spell the Wishlist section heading as one word
 
-Status: ready-for-agent
+Status: resolved
 
 The Wishlist screen's section heading reads "Wish List" (`lib/screens/wishlist/wishlist_screen.dart:80`), while every Status label says "Wishlist". `GLOSSARY.md` settles on **Wishlist** and lists "Wish List" under _Avoid_.
 
@@ -14,3 +14,7 @@ The Wishlist screen forces its sections open (`forceExpanded: true`), so the key
 - The section key matches everywhere.
 - An empty Wishlist section reads "No games in wishlist".
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #16 (`fix/domain-language`).

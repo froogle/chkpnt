@@ -1,6 +1,6 @@
 # Use one colour for the Wishlist Status
 
-Status: ready-for-agent
+Status: resolved
 
 The Wishlist Status uses different colours in different places: `Colors.red` in `lib/screens/main/widgets/game_detail_sheet_info.dart:188` and `Colors.green` in `lib/services/game_actions_service.dart:250`. Green is already Completed's colour in both files, so in the save confirmation a Wishlist Game looks Completed.
 
@@ -12,3 +12,7 @@ Use `Colors.pink`, which isn't used elsewhere. Red was rejected because the save
 
 - Wishlist is `Colors.pink` in both places.
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #16 (`fix/domain-language`).

@@ -1,6 +1,6 @@
 # Present every Status from one place
 
-Status: ready-for-agent
+Status: resolved
 
 Each Status's label, icon and colour are defined separately in four label maps, four icon maps and three colour maps across eight files, and the copies disagree in at least seven places. One module, `lib/styles/status_styles.dart`, becomes the only place that says how a Status is presented.
 
@@ -21,3 +21,7 @@ Each Status's label, icon and colour are defined separately in four label maps, 
 - `ProfileStyles.statusColors` is gone.
 - "Ongoing/Frequently Played" no longer appears anywhere.
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #17 (`refactor/status-presentation`).
