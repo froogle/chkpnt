@@ -10,6 +10,7 @@ import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/services/paywall_service.dart';
 
@@ -21,8 +22,6 @@ class CollectionScreen extends ConsumerStatefulWidget {
 }
 
 class _CollectionScreenState extends ConsumerState<CollectionScreen> {
-  static const String _expansionKeyPrefix = 'Collection';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +78,7 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
         BacklogPlatformSection(
           platform: platform,
           games: games,
-          expansionKey: '$_expansionKeyPrefix/$platform',
+          list: PlatformList.collection,
           onGameTap: _handleGameTap,
         ),
         SizedBox(height: BacklogStyles.platformSectionSpacing),

@@ -134,16 +134,6 @@ class TestHelpers {
     );
   }
 
-  /// Creates multiple games for testing filter scenarios
-  static List<GameItem> createFilterTestGames() {
-    return [
-      createPlayingGame(title: 'PC Playing Game', platform: 'PC'),
-      createBacklogGame(title: 'Switch Backlog Game', platform: 'Switch'),
-      createCompletedGame(title: 'Cyberpunk PC Completed', platform: 'PC'),
-      createPlayingGame(title: 'Cyberpunk PS5 Playing', platform: 'PS5'),
-    ];
-  }
-
   /// Creates games with unique platforms for testing platform filtering
   static List<GameItem> createUniquePlatformGames() {
     return [

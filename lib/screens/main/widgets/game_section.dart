@@ -30,7 +30,8 @@ class GameSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sectionExpansion = ref.watch(sectionExpansionProvider);
+    final section = StatusSection(status);
+    final isOpenByPlayer = ref.watch(sectionExpandedProvider(section));
     final selectedPlatform = ref.watch(selectedPlatformProvider);
     final searchQuery = ref.watch(searchQueryProvider);
     final games = ref.watch(
@@ -38,8 +39,8 @@ class GameSection extends ConsumerWidget {
     );
 
     final filtersActive = selectedPlatform != 'All' || searchQuery.isNotEmpty;
-    final isExpanded = forceExpanded ||
-        (filtersActive ? games.isNotEmpty : (sectionExpansion[title] ?? false));
+    final isExpanded =
+        forceExpanded || (filtersActive ? games.isNotEmpty : isOpenByPlayer);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +51,7 @@ class GameSection extends ConsumerWidget {
           onToggle:
               () => ref
                   .read(sectionExpansionProvider.notifier)
-                  .toggleSection(title),
+                  .toggleSection(section),
           isEmpty: games.isEmpty,
           gameCount: games.length,
         ),

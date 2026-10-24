@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
-import 'package:chkpnt/services/game_actions_service.dart';
 import 'test_helpers.dart';
 
 void main() {
@@ -56,122 +55,9 @@ void main() {
         );
         expect(completedGames.any((g) => g.id == backlogGame.id), true);
       });
-
-      test('should update section expansion based on filters', () {
-        // Add test games using helper
-        final testGames = [
-          TestHelpers.createPlayingGame(
-            title: 'PC Playing Game',
-            platform: 'PC',
-          ),
-          TestHelpers.createBacklogGame(
-            title: 'Switch Backlog Game',
-            platform: 'Switch',
-          ),
-        ];
-        TestHelpers.addGamesToContainer(container, testGames);
-
-        // Apply PC filter
-        container.read(selectedPlatformProvider.notifier).selectPlatform('PC');
-
-        // Update section expansion
-        final gameActionsService = container.read(gameActionsServiceProvider);
-        gameActionsService.updateSectionExpansionForFilters();
-
-        final expansionState = container.read(sectionExpansionProvider);
-
-        // PC filter should expand sections with PC games
-        expect(expansionState['Playing'], true); // Has PC playing game
-        expect(expansionState['Backlog'], false); // No PC backlog games
-      });
-
-      test('should handle complex filter scenarios', () {
-        // Add diverse test data using helper
-        final testGames = TestHelpers.createFilterTestGames();
-        TestHelpers.addGamesToContainer(container, testGames);
-
-        // Apply platform + search filters
-        container.read(selectedPlatformProvider.notifier).selectPlatform('PC');
-        container.read(searchQueryProvider.notifier).updateQuery('cyber');
-
-        final gameActionsService2 = container.read(gameActionsServiceProvider);
-        gameActionsService2.updateSectionExpansionForFilters();
-
-        final expansionState = container.read(sectionExpansionProvider);
-
-        // Only PC + Cyberpunk in completed should be expanded
-        expect(expansionState['Completed'], true);
-        expect(expansionState['Playing'], false); // PS5 Cyberpunk filtered out
-      });
-
-      test('should not auto-expand when no active filters', () {
-        // Reset to default state
-        container.read(selectedPlatformProvider.notifier).resetToAll();
-        container.read(searchQueryProvider.notifier).clearQuery();
-
-        // Manually collapse all sections
-        container
-            .read(sectionExpansionProvider.notifier)
-            .collapseSection('Playing');
-        container
-            .read(sectionExpansionProvider.notifier)
-            .collapseSection('Completed');
-
-        final gameActionsService3 = container.read(gameActionsServiceProvider);
-        gameActionsService3.updateSectionExpansionForFilters();
-
-        final expansionState = container.read(sectionExpansionProvider);
-
-        // Should remain collapsed since no active filters
-        expect(expansionState['Playing'], false);
-        expect(expansionState['Completed'], false);
-      });
     });
 
     group('UI State Management', () {
-      test('should manage section expansion state correctly', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        // Test expansion
-        notifier.expandSection('Playing');
-        expect(container.read(sectionExpansionProvider)['Playing'], true);
-
-        // Test collapse
-        notifier.collapseSection('Playing');
-        expect(container.read(sectionExpansionProvider)['Playing'], false);
-
-        // Test toggle
-        notifier.toggleSection('Backlog');
-        expect(container.read(sectionExpansionProvider)['Backlog'], true);
-        notifier.toggleSection('Backlog');
-        expect(container.read(sectionExpansionProvider)['Backlog'], false);
-      });
-
-      test('should update expansion based on game results', () {
-        final notifier = container.read(sectionExpansionProvider.notifier);
-
-        // Mock filtered results using helpers
-        final playingGames = [TestHelpers.createPlayingGame(title: 'Game 1')];
-        final emptyBacklog = <GameItem>[];
-        final completedGames = [
-          TestHelpers.createCompletedGame(title: 'Game 2'),
-        ];
-        final emptyAbandoned = <GameItem>[];
-
-        notifier.updateExpansionBasedOnResults(
-          playingGames: playingGames,
-          backlogGames: emptyBacklog,
-          completedGames: completedGames,
-          abandonedGames: emptyAbandoned,
-        );
-
-        final expansionState = container.read(sectionExpansionProvider);
-        expect(expansionState['Playing'], true); // Has games
-        expect(expansionState['Backlog'], false); // Empty
-        expect(expansionState['Completed'], true); // Has games
-        expect(expansionState['Abandoned'], false); // Empty
-      });
-
       test('should manage platform filter state', () {
         final notifier = container.read(selectedPlatformProvider.notifier);
 
