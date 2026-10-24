@@ -67,12 +67,11 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
   }
 
   Widget _buildHeader() {
-    final backlogPlatforms = ref.watch(backlogPlatformsProvider);
     return MainScreenHeader(
+      screen: GameScreen.backlog,
       title: 'Backlog',
       icon: Icons.list_alt_outlined,
       onAddGamePressed: _handleAddGame,
-      customPlatforms: backlogPlatforms,
     );
   }
 
@@ -81,7 +80,9 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
   }
 
   Widget _buildContent() {
-    final groupedGames = ref.watch(sortedBacklogGamesByPlatformProvider);
+    final groupedGames = ref.watch(
+      platformSectionsProvider(GameScreen.backlog),
+    );
 
     if (groupedGames.isEmpty) {
       return _buildEmptyState();
@@ -108,7 +109,7 @@ class _BacklogScreenState extends ConsumerState<BacklogScreen> {
         BacklogPlatformSection(
           platform: platform,
           games: games,
-          list: PlatformList.backlog,
+          screen: GameScreen.backlog,
           animatingGame: _animatingGame,
           isAnimating: _isAnimating,
           onGameTap: _handleGameTap,

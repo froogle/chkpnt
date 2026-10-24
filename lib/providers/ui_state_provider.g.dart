@@ -277,12 +277,12 @@ final searchQueryProvider = NotifierProvider<SearchQuery, String>.internal(
 );
 
 typedef _$SearchQuery = Notifier<String>;
-String _$selectedPlatformHash() => r'582ffa04f95b8cbb013e77422e36b012106472c3';
+String _$selectedPlatformHash() => r'330289ec5724270058bc4848f789f603208da88d';
 
 /// See also [SelectedPlatform].
 @ProviderFor(SelectedPlatform)
 final selectedPlatformProvider =
-    NotifierProvider<SelectedPlatform, String>.internal(
+    NotifierProvider<SelectedPlatform, String?>.internal(
       SelectedPlatform.new,
       name: r'selectedPlatformProvider',
       debugGetCreateSourceHash:
@@ -293,7 +293,7 @@ final selectedPlatformProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$SelectedPlatform = Notifier<String>;
+typedef _$SelectedPlatform = Notifier<String?>;
 String _$backlogSortHash() => r'13a4645f9230ba2e2dab019b64630ddc60caea4d';
 
 /// See also [BacklogSort].

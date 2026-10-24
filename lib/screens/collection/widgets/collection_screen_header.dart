@@ -120,7 +120,9 @@ class _CollectionScreenHeaderState extends ConsumerState<CollectionScreenHeader>
 
   Widget _buildPlatformFilter() {
     final selectedPlatform = ref.watch(selectedPlatformProvider);
-    final availablePlatforms = ref.watch(collectionPlatformsProvider);
+    final availablePlatforms = ref.watch(
+      screenPlatformsProvider(GameScreen.collection),
+    );
 
     return PlatformFilterDropdown(
       selectedPlatform: selectedPlatform,

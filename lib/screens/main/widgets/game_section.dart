@@ -34,11 +34,9 @@ class GameSection extends ConsumerWidget {
     final isOpenByPlayer = ref.watch(sectionExpandedProvider(section));
     final selectedPlatform = ref.watch(selectedPlatformProvider);
     final searchQuery = ref.watch(searchQueryProvider);
-    final games = ref.watch(
-      fullyFilteredGamesProvider(status, selectedPlatform, searchQuery),
-    );
+    final games = ref.watch(statusSectionGamesProvider(status));
 
-    final filtersActive = selectedPlatform != 'All' || searchQuery.isNotEmpty;
+    final filtersActive = selectedPlatform != null || searchQuery.isNotEmpty;
     final isExpanded =
         forceExpanded || (filtersActive ? games.isNotEmpty : isOpenByPlayer);
 

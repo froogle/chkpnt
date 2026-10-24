@@ -134,15 +134,6 @@ class TestHelpers {
     );
   }
 
-  /// Creates games with unique platforms for testing platform filtering
-  static List<GameItem> createUniquePlatformGames() {
-    return [
-      createPlayingGame(title: 'Test Game Playing', platform: 'TestPlatform1'),
-      createBacklogGame(title: 'Test Game Backlog', platform: 'TestPlatform1'),
-      createCompletedGame(title: 'Different Game', platform: 'TestPlatform2'),
-    ];
-  }
-
   /// Creates games for search testing with specific search-friendly titles
   static List<GameItem> createSearchTestGames() {
     return [

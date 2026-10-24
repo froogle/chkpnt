@@ -114,240 +114,111 @@ List<GameItem> gamesByStatus(Ref ref, GameStatus status) {
   return filteredGames;
 }
 
-@riverpod
-List<GameItem> gamesByPlatform(Ref ref, String platform) {
+const mainScreenStatuses = [
+  GameStatus.playing,
+  GameStatus.ongoing,
+  GameStatus.backlog,
+  GameStatus.completed,
+  GameStatus.abandoned,
+];
+
+const wishlistScreenStatuses = [GameStatus.ordered, GameStatus.wishlist];
+
+List<GameItem> _screenGames(Ref ref, GameScreen screen) {
   final games = ref.watch(gameListProvider);
-  final filteredGames =
-      platform == 'All'
-          ? games.toList()
-          : games.where((game) => game.platform == platform).toList();
 
-  filteredGames.sort(
-    (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
-  );
-
-  return filteredGames;
-}
-
-@riverpod
-List<String> availablePlatforms(Ref ref) {
-  final games = ref.watch(gameListProvider);
-  final platforms = games.map((game) => game.platform).toSet().toList();
-  platforms.sort();
-  return ['All', ...platforms];
-}
-
-@riverpod
-List<String> wishlistPlatforms(Ref ref) {
-  final games = ref.watch(gameListProvider);
-  final wishlistAndOrderedGames =
-      games
+  switch (screen) {
+    case GameScreen.main:
+      return games
+          .where((game) => mainScreenStatuses.contains(game.status))
+          .toList();
+    case GameScreen.wishlist:
+      return games
+          .where((game) => wishlistScreenStatuses.contains(game.status))
+          .toList();
+    case GameScreen.backlog:
+      final showBacklog = ref.watch(backlogShowBacklogFilterProvider);
+      final showOngoing = ref.watch(backlogShowOngoingFilterProvider);
+      return games
           .where(
             (game) =>
-                game.status == GameStatus.wishlist ||
-                game.status == GameStatus.ordered,
+                (showBacklog && game.status == GameStatus.backlog) ||
+                (showOngoing && game.status == GameStatus.ongoing),
           )
           .toList();
-
-  final platforms =
-      wishlistAndOrderedGames.map((game) => game.platform).toSet().toList();
-  platforms.sort();
-  return ['All', ...platforms];
-}
-
-@riverpod
-List<GameItem> fullyFilteredGames(
-  Ref ref,
-  GameStatus status,
-  String platform,
-  String searchQuery,
-) {
-  final games = ref.watch(gameListProvider);
-  final filteredGames =
-      games.where((game) {
-        final matchesStatus = game.status == status;
-        final matchesPlatform = platform == 'All' || game.platform == platform;
-
-        bool matchesSearch = true;
-        if (searchQuery.isNotEmpty) {
-          matchesSearch = _matchesSearchQuery(game, searchQuery);
-        }
-
-        return matchesStatus && matchesPlatform && matchesSearch;
-      }).toList();
-
-  filteredGames.sort(
-    (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
-  );
-
-  return filteredGames;
-}
-
-bool _matchesSearchQuery(GameItem game, String searchQuery) {
-  final query = searchQuery.toLowerCase().trim();
-  final title = game.title.toLowerCase();
-  final platform = game.platform.toLowerCase();
-
-  if (query.isEmpty) return true;
-
-  return title.contains(query) || platform.contains(query);
-}
-
-// === BACKLOG SPECIFIC PROVIDERS ===
-@riverpod
-Map<String, List<GameItem>> sortedBacklogGamesByPlatform(Ref ref) {
-  final games = ref.watch(gameListProvider);
-  final selectedPlatform = ref.watch(selectedPlatformProvider);
-  final searchQuery = ref.watch(searchQueryProvider);
-  final sortType = ref.watch(backlogSortProvider);
-  final sortDirection = ref.watch(backlogSortDirectionStateProvider);
-  final showBacklog = ref.watch(backlogShowBacklogFilterProvider);
-  final showOngoing = ref.watch(backlogShowOngoingFilterProvider);
-
-  List<GameItem> filteredGames =
-      games.where((game) {
-        if (showBacklog && game.status == GameStatus.backlog) return true;
-        if (showOngoing && game.status == GameStatus.ongoing) return true;
-        return false;
-      }).toList();
-
-  if (selectedPlatform != 'All') {
-    filteredGames =
-        filteredGames
-            .where((game) => game.platform == selectedPlatform)
-            .toList();
+    case GameScreen.collection:
+      final showPhysical = ref.watch(collectionShowPhysicalFilterProvider);
+      final showDigital = ref.watch(collectionShowDigitalFilterProvider);
+      return games
+          .where(
+            (game) =>
+                !wishlistScreenStatuses.contains(game.status) &&
+                (game.isPhysical ? showPhysical : showDigital),
+          )
+          .toList();
   }
-
-  if (searchQuery.isNotEmpty) {
-    filteredGames =
-        filteredGames.where((game) {
-          return _matchesSearchQuery(game, searchQuery);
-        }).toList();
-  }
-
-  final Map<String, List<GameItem>> groupedGames = {};
-  for (final game in filteredGames) {
-    if (!groupedGames.containsKey(game.platform)) {
-      groupedGames[game.platform] = [];
-    }
-    groupedGames[game.platform]!.add(game);
-  }
-
-  for (final platform in groupedGames.keys) {
-    final gamesList = groupedGames[platform]!;
-
-    switch (sortType) {
-      case BacklogSortType.title:
-        gamesList.sort((a, b) {
-          final comparison = a.title.toLowerCase().compareTo(
-            b.title.toLowerCase(),
-          );
-          return sortDirection == SortDirection.ascending
-              ? comparison
-              : -comparison;
-        });
-        break;
-      case BacklogSortType.statusChange:
-        gamesList.sort((a, b) {
-          final comparison = a.lastStatusChange.compareTo(b.lastStatusChange);
-          return sortDirection == SortDirection.ascending
-              ? comparison
-              : -comparison;
-        });
-        break;
-    }
-  }
-
-  final sortedMap = Map<String, List<GameItem>>.fromEntries(
-    groupedGames.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-  );
-
-  return sortedMap;
 }
 
-@riverpod
-List<String> backlogPlatforms(Ref ref) {
-  final games = ref.watch(gameListProvider);
-  final showBacklog = ref.watch(backlogShowBacklogFilterProvider);
-  final showOngoing = ref.watch(backlogShowOngoingFilterProvider);
+List<GameItem> _matchingChoiceAndSearch(Ref ref, Iterable<GameItem> games) {
+  final platform = ref.watch(selectedPlatformProvider);
+  final query = ref.watch(searchQueryProvider).toLowerCase().trim();
 
-  final filteredGames =
-      games.where((game) {
-        if (showBacklog && game.status == GameStatus.backlog) return true;
-        if (showOngoing && game.status == GameStatus.ongoing) return true;
-        return false;
-      }).toList();
-
-  final platforms = filteredGames.map((game) => game.platform).toSet().toList();
-  platforms.sort();
-  return ['All', ...platforms];
-}
-
-// === COLLECTION PROVIDERS ===
-@riverpod
-List<GameItem> collectionGames(Ref ref) {
-  final games = ref.watch(gameListProvider);
   return games
-      .where((game) =>
-          game.status != GameStatus.wishlist &&
-          game.status != GameStatus.ordered)
+      .where(
+        (game) =>
+            (platform == null || game.platform == platform) &&
+            (game.title.toLowerCase().contains(query) ||
+                game.platform.toLowerCase().contains(query)),
+      )
       .toList();
 }
 
-@riverpod
-Map<String, List<GameItem>> collectionGamesByPlatform(Ref ref) {
-  final games = ref.watch(collectionGamesProvider);
-  final searchQuery = ref.watch(searchQueryProvider);
-  final selectedPlatform = ref.watch(selectedPlatformProvider);
-  final showPhysical = ref.watch(collectionShowPhysicalFilterProvider);
-  final showDigital = ref.watch(collectionShowDigitalFilterProvider);
+List<String> _platformsOf(Iterable<GameItem> games) =>
+    games.map((game) => game.platform).toSet().toList()..sort();
 
-  List<GameItem> filteredGames =
-      games.where((game) {
-        if (showPhysical && game.isPhysical) return true;
-        if (showDigital && !game.isPhysical) return true;
-        return false;
-      }).toList();
+int _byTitle(GameItem a, GameItem b) =>
+    a.title.toLowerCase().compareTo(b.title.toLowerCase());
 
-  if (selectedPlatform != 'All') {
-    filteredGames =
-        filteredGames
-            .where((game) => game.platform == selectedPlatform)
-            .toList();
-  }
+int _byStatusChange(GameItem a, GameItem b) =>
+    a.lastStatusChange.compareTo(b.lastStatusChange);
 
-  if (searchQuery.isNotEmpty) {
-    filteredGames =
-        filteredGames.where((game) {
-          return _matchesSearchQuery(game, searchQuery);
-        }).toList();
-  }
+Comparator<GameItem> _sortFor(Ref ref, GameScreen screen) {
+  if (screen != GameScreen.backlog) return _byTitle;
 
-  final Map<String, List<GameItem>> groupedGames = {};
-  for (final game in filteredGames) {
-    if (!groupedGames.containsKey(game.platform)) {
-      groupedGames[game.platform] = [];
-    }
-    groupedGames[game.platform]!.add(game);
-  }
+  final Comparator<GameItem> byKey = switch (ref.watch(backlogSortProvider)) {
+    BacklogSortType.title => _byTitle,
+    BacklogSortType.statusChange => _byStatusChange,
+  };
+  final direction = ref.watch(backlogSortDirectionStateProvider);
 
-  for (final platform in groupedGames.keys) {
-    groupedGames[platform]!.sort(
-      (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
-    );
-  }
-
-  final sortedMap = Map<String, List<GameItem>>.fromEntries(
-    groupedGames.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-  );
-
-  return sortedMap;
+  return direction == SortDirection.ascending ? byKey : (a, b) => byKey(b, a);
 }
 
 @riverpod
-List<String> collectionPlatforms(Ref ref) {
-  final games = ref.watch(collectionGamesProvider);
-  final platforms = games.map((game) => game.platform).toSet().toList();
-  platforms.sort();
-  return ['All', ...platforms];
+List<String> screenPlatforms(Ref ref, GameScreen screen) {
+  return _platformsOf(_screenGames(ref, screen));
+}
+
+@riverpod
+List<String> everyPlatform(Ref ref) {
+  return _platformsOf(ref.watch(gameListProvider));
+}
+
+@riverpod
+List<GameItem> statusSectionGames(Ref ref, GameStatus status) {
+  final games = ref
+      .watch(gameListProvider)
+      .where((game) => game.status == status);
+  return _matchingChoiceAndSearch(ref, games)..sort(_byTitle);
+}
+
+@riverpod
+Map<String, List<GameItem>> platformSections(Ref ref, GameScreen screen) {
+  final games = _matchingChoiceAndSearch(ref, _screenGames(ref, screen))
+    ..sort(_sortFor(ref, screen));
+
+  return {
+    for (final platform in _platformsOf(games))
+      platform: games.where((game) => game.platform == platform).toList(),
+  };
 }
