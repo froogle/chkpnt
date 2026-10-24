@@ -15,16 +15,9 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-GuideId _$GuideIdFromJson(Map<String, dynamic> json) {
-  return _GuideId.fromJson(json);
-}
-
 /// @nodoc
 mixin _$GuideId {
   String get value => throw _privateConstructorUsedError;
-
-  /// Serializes this GuideId to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of GuideId
   /// with the given fields replaced by the non-null parameter values.
@@ -105,12 +98,9 @@ class __$$GuideIdImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$GuideIdImpl implements _GuideId {
   const _$GuideIdImpl(this.value);
-
-  factory _$GuideIdImpl.fromJson(Map<String, dynamic> json) =>
-      _$$GuideIdImplFromJson(json);
 
   @override
   final String value;
@@ -128,7 +118,6 @@ class _$GuideIdImpl implements _GuideId {
             (identical(other.value, value) || other.value == value));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, value);
 
@@ -139,17 +128,10 @@ class _$GuideIdImpl implements _GuideId {
   @pragma('vm:prefer-inline')
   _$$GuideIdImplCopyWith<_$GuideIdImpl> get copyWith =>
       __$$GuideIdImplCopyWithImpl<_$GuideIdImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$GuideIdImplToJson(this);
-  }
 }
 
 abstract class _GuideId implements GuideId {
   const factory _GuideId(final String value) = _$GuideIdImpl;
-
-  factory _GuideId.fromJson(Map<String, dynamic> json) = _$GuideIdImpl.fromJson;
 
   @override
   String get value;
@@ -160,10 +142,6 @@ abstract class _GuideId implements GuideId {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$GuideIdImplCopyWith<_$GuideIdImpl> get copyWith =>
       throw _privateConstructorUsedError;
-}
-
-GuideItem _$GuideItemFromJson(Map<String, dynamic> json) {
-  return _GuideItem.fromJson(json);
 }
 
 /// @nodoc
@@ -179,9 +157,6 @@ mixin _$GuideItem {
   String? get sourceUrl => throw _privateConstructorUsedError;
   bool get hasSeenAttribution => throw _privateConstructorUsedError;
   GuideFormat get format => throw _privateConstructorUsedError;
-
-  /// Serializes this GuideItem to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of GuideItem
   /// with the given fields replaced by the non-null parameter values.
@@ -441,7 +416,7 @@ class __$$GuideItemImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$GuideItemImpl implements _GuideItem {
   const _$GuideItemImpl({
     required this.id,
@@ -456,9 +431,6 @@ class _$GuideItemImpl implements _GuideItem {
     this.hasSeenAttribution = false,
     this.format = GuideFormat.text,
   });
-
-  factory _$GuideItemImpl.fromJson(Map<String, dynamic> json) =>
-      _$$GuideItemImplFromJson(json);
 
   @override
   final GuideId id;
@@ -516,7 +488,6 @@ class _$GuideItemImpl implements _GuideItem {
             (identical(other.format, format) || other.format == format));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
@@ -540,11 +511,6 @@ class _$GuideItemImpl implements _GuideItem {
   @pragma('vm:prefer-inline')
   _$$GuideItemImplCopyWith<_$GuideItemImpl> get copyWith =>
       __$$GuideItemImplCopyWithImpl<_$GuideItemImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$GuideItemImplToJson(this);
-  }
 }
 
 abstract class _GuideItem implements GuideItem {
@@ -561,9 +527,6 @@ abstract class _GuideItem implements GuideItem {
     final bool hasSeenAttribution,
     final GuideFormat format,
   }) = _$GuideItemImpl;
-
-  factory _GuideItem.fromJson(Map<String, dynamic> json) =
-      _$GuideItemImpl.fromJson;
 
   @override
   GuideId get id;

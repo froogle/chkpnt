@@ -381,30 +381,6 @@ void main() {
         expect(game.imagePath, equals('/path/to/image.jpg'));
         expect(game.remoteImageUrl, equals('https://example.com/image.jpg'));
       });
-
-      test('should convert to and from JSON correctly', () {
-        final originalGame = GameItem(
-          id: const GameId('test-game-id'),
-          title: 'Test Game',
-          platform: 'PS5',
-          status: GameStatus.completed,
-          lastModified: initialTime,
-          lastStatusChange: laterTime,
-          imagePath: '/path/to/image.jpg',
-          remoteImageUrl: 'https://example.com/image.jpg',
-        );
-
-        final json = originalGame.toJson();
-
-        // Verify the JSON structure
-        expect(json['title'], equals('Test Game'));
-        expect(json['platform'], equals('PS5'));
-        expect(json['status'], equals('completed'));
-        expect(json['imagePath'], equals('/path/to/image.jpg'));
-        expect(json['remoteImageUrl'], equals('https://example.com/image.jpg'));
-        expect(json['lastModified'], isA<String>());
-        expect(json['lastStatusChange'], isA<String>());
-      });
     });
 
     group('GameId tests', () {
@@ -422,13 +398,6 @@ void main() {
         const gameId = GameId(testValue);
 
         expect(gameId.value, equals(testValue));
-      });
-
-      test('should convert GameId to JSON correctly', () {
-        const originalId = GameId('test-game-id');
-        final json = originalId.toJson();
-
-        expect(json['value'], equals('test-game-id'));
       });
     });
   });

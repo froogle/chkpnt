@@ -15,16 +15,9 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-GameId _$GameIdFromJson(Map<String, dynamic> json) {
-  return _GameId.fromJson(json);
-}
-
 /// @nodoc
 mixin _$GameId {
   String get value => throw _privateConstructorUsedError;
-
-  /// Serializes this GameId to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of GameId
   /// with the given fields replaced by the non-null parameter values.
@@ -105,12 +98,9 @@ class __$$GameIdImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$GameIdImpl implements _GameId {
   const _$GameIdImpl(this.value);
-
-  factory _$GameIdImpl.fromJson(Map<String, dynamic> json) =>
-      _$$GameIdImplFromJson(json);
 
   @override
   final String value;
@@ -128,7 +118,6 @@ class _$GameIdImpl implements _GameId {
             (identical(other.value, value) || other.value == value));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, value);
 
@@ -139,17 +128,10 @@ class _$GameIdImpl implements _GameId {
   @pragma('vm:prefer-inline')
   _$$GameIdImplCopyWith<_$GameIdImpl> get copyWith =>
       __$$GameIdImplCopyWithImpl<_$GameIdImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$GameIdImplToJson(this);
-  }
 }
 
 abstract class _GameId implements GameId {
   const factory _GameId(final String value) = _$GameIdImpl;
-
-  factory _GameId.fromJson(Map<String, dynamic> json) = _$GameIdImpl.fromJson;
 
   @override
   String get value;
@@ -160,10 +142,6 @@ abstract class _GameId implements GameId {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$GameIdImplCopyWith<_$GameIdImpl> get copyWith =>
       throw _privateConstructorUsedError;
-}
-
-GameItem _$GameItemFromJson(Map<String, dynamic> json) {
-  return _GameItem.fromJson(json);
 }
 
 /// @nodoc
@@ -178,9 +156,6 @@ mixin _$GameItem {
   String? get remoteImageUrl => throw _privateConstructorUsedError;
   bool get isPhysical => throw _privateConstructorUsedError;
   String? get barcode => throw _privateConstructorUsedError;
-
-  /// Serializes this GameItem to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of GameItem
   /// with the given fields replaced by the non-null parameter values.
@@ -413,7 +388,7 @@ class __$$GameItemImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$GameItemImpl implements _GameItem {
   const _$GameItemImpl({
     required this.id,
@@ -427,9 +402,6 @@ class _$GameItemImpl implements _GameItem {
     this.isPhysical = false,
     this.barcode,
   });
-
-  factory _$GameItemImpl.fromJson(Map<String, dynamic> json) =>
-      _$$GameItemImplFromJson(json);
 
   @override
   final GameId id;
@@ -481,7 +453,6 @@ class _$GameItemImpl implements _GameItem {
             (identical(other.barcode, barcode) || other.barcode == barcode));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
@@ -504,11 +475,6 @@ class _$GameItemImpl implements _GameItem {
   @pragma('vm:prefer-inline')
   _$$GameItemImplCopyWith<_$GameItemImpl> get copyWith =>
       __$$GameItemImplCopyWithImpl<_$GameItemImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$GameItemImplToJson(this);
-  }
 }
 
 abstract class _GameItem implements GameItem {
@@ -524,9 +490,6 @@ abstract class _GameItem implements GameItem {
     final bool isPhysical,
     final String? barcode,
   }) = _$GameItemImpl;
-
-  factory _GameItem.fromJson(Map<String, dynamic> json) =
-      _$GameItemImpl.fromJson;
 
   @override
   GameId get id;
