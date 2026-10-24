@@ -1,0 +1,3 @@
+# Status is stored as an enum index and only appended to
+
+A Game's Status persists as the position of its `GameStatus` value, in both the Drift database and backup JSON, so values are only ever added at the end and never reordered or removed. Storing by name was the alternative, but switching now would need a database migration and a new backup format, and older backups would still carry indices. For the same reason "no Status" is stored as `GameStatus.owned` at index 7: it was added as a selectable Status before being redefined as the absence of one, and keeping the value meant no migration and no break to backups already made. Restore falls back to `owned` for an index it doesn't recognise.
