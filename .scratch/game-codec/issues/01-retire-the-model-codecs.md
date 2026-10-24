@@ -1,6 +1,6 @@
 # Retire the generated Game and Guide codecs
 
-Status: ready-for-agent
+Status: resolved
 
 A Game and a Guide each have two JSON encodings. The backup codec, written by hand in `DriftGameRepository.exportDatabaseToJson` and `importFromJson`, is the only one the app uses. It stores Status and the Guide format as indices, as ADR-0001 describes. The generated Freezed codecs on `GameItem`, `GameId`, `GuideItem` and `GuideId` are called only from tests, and they store Status and the Guide format by name. A future caller could pick them up and write backups ADR-0001 forbids.
 
@@ -26,3 +26,7 @@ Their tests also mislead. `guide_models_test.dart` checks that the format round-
 - `GameItem`, `GameId`, `GuideItem` and `GuideId` have no JSON codec.
 - The backup's Guide format handling is tested through export and import.
 - `tool/check.sh` passes.
+
+## Comments
+
+Implemented in PR #24 (`refactor/game-codec`).
