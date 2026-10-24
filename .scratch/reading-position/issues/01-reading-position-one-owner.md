@@ -1,6 +1,6 @@
 # Give the Text Guide Reading Position one owner
 
-Status: ready-for-agent
+Status: resolved
 
 The Text Guide reader saves the Reading Position from four places: a 500ms scroll debounce, `dispose`, the close button and the `PopScope` handler. Closing the reader fires three of them. The value saved is the index into the screen's flattened list of section headers, blocks and spacers, written to `lastReadSection`, while `lastReadBlock` is always 0. The stored value therefore means something other than its columns, and would silently break if the flattening changed. Nothing tests any of it, and `GameDatabase` cannot be given an in-memory executor.
 
@@ -35,3 +35,7 @@ The Text Guide reader saves the Reading Position from four places: a 500ms scrol
 - The Reading Position is saved by one module, with no saves left in the reader screen.
 - `lastReadSection` and `lastReadBlock` hold the section and block they name.
 - The Reading Position has tests that run against in-memory Drift.
+
+## Comments
+
+Implemented in PR #22 (`refactor/reading-position`).
