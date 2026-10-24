@@ -37,11 +37,11 @@ void main() {
 
     test('opens every Platform section by default', () {
       expect(
-        isExpanded(const PlatformSection(PlatformList.backlog, 'PS5')),
+        isExpanded(const PlatformSection(GameScreen.backlog, 'PS5')),
         isTrue,
       );
       expect(
-        isExpanded(const PlatformSection(PlatformList.collection, 'PS5')),
+        isExpanded(const PlatformSection(GameScreen.collection, 'PS5')),
         isTrue,
       );
     });
@@ -66,7 +66,7 @@ void main() {
 
     test('keeps a Platform named Playing apart from the Playing section', () {
       const platformNamedPlaying = PlatformSection(
-        PlatformList.backlog,
+        GameScreen.backlog,
         'Playing',
       );
 
@@ -77,8 +77,8 @@ void main() {
     });
 
     test('opens one Platform on Backlog and Collection independently', () {
-      const backlogPs5 = PlatformSection(PlatformList.backlog, 'PS5');
-      const collectionPs5 = PlatformSection(PlatformList.collection, 'PS5');
+      const backlogPs5 = PlatformSection(GameScreen.backlog, 'PS5');
+      const collectionPs5 = PlatformSection(GameScreen.collection, 'PS5');
 
       notifier().toggleSection(backlogPs5);
 
@@ -132,9 +132,8 @@ void main() {
       container.dispose();
     });
 
-    test('should have "All" as initial platform', () {
-      final platform = container.read(selectedPlatformProvider);
-      expect(platform, 'All');
+    test('starts with no Platform chosen', () {
+      expect(container.read(selectedPlatformProvider), isNull);
     });
 
     test('should select platform', () {
@@ -144,14 +143,14 @@ void main() {
       expect(container.read(selectedPlatformProvider), 'PS5');
     });
 
-    test('should reset to "All"', () {
+    test('clears the Platform choice', () {
       final notifier = container.read(selectedPlatformProvider.notifier);
 
       notifier.selectPlatform('Xbox');
       expect(container.read(selectedPlatformProvider), 'Xbox');
 
-      notifier.resetToAll();
-      expect(container.read(selectedPlatformProvider), 'All');
+      notifier.selectPlatform(null);
+      expect(container.read(selectedPlatformProvider), isNull);
     });
   });
 

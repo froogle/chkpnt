@@ -29,14 +29,10 @@ class SearchQuery extends _$SearchQuery {
 @Riverpod(keepAlive: true)
 class SelectedPlatform extends _$SelectedPlatform {
   @override
-  String build() => 'All';
+  String? build() => null;
 
-  void selectPlatform(String platform) {
+  void selectPlatform(String? platform) {
     state = platform;
-  }
-
-  void resetToAll() {
-    state = 'All';
   }
 }
 
@@ -141,22 +137,22 @@ class StatusSection extends Section {
   int get hashCode => status.hashCode;
 }
 
-enum PlatformList { backlog, collection }
+enum GameScreen { main, wishlist, backlog, collection }
 
 class PlatformSection extends Section {
-  final PlatformList list;
+  final GameScreen screen;
   final String platform;
 
-  const PlatformSection(this.list, this.platform);
+  const PlatformSection(this.screen, this.platform);
 
   @override
   bool operator ==(Object other) =>
       other is PlatformSection &&
-      other.list == list &&
+      other.screen == screen &&
       other.platform == platform;
 
   @override
-  int get hashCode => Object.hash(list, platform);
+  int get hashCode => Object.hash(screen, platform);
 }
 
 bool _isExpandedByDefault(Section section) => switch (section) {

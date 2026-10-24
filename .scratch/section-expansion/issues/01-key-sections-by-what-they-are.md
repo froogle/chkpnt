@@ -1,6 +1,6 @@
 # Key each section by what it is
 
-Status: ready-for-agent
+Status: resolved
 
 Whether a section is open is stored in one `Map<String, bool>` keyed by three kinds of string: Status section titles, raw Platform names on the Backlog screen, and `'Collection/<Platform>'` on the Collection screen. A Platform named "Playing" or "Backlog" shares state with that Status section, defaults are split between the map and two different fallbacks in the section widgets, and about 17 tests cover methods the app never calls.
 
@@ -22,3 +22,7 @@ Whether a section is open is stored in one `Map<String, bool>` keyed by three ki
 - No `?? true` or `?? false` expansion fallback remains in a section widget.
 - None of the deleted methods remain in lib or test.
 - `flutter analyze` and `flutter test` pass.
+
+## Comments
+
+Implemented in PR #18 (`refactor/section-expansion`).

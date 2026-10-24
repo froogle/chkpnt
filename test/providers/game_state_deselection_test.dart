@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/repositories/drift_game_repository.dart';
 import 'package:chkpnt/services/storage_service.dart';
 import 'package:chkpnt/services/game_image_service.dart';
@@ -129,7 +130,10 @@ void main() {
 
       await container.read(gameListProvider.notifier).addGame(deselected);
 
-      final collection = container.read(collectionGamesProvider);
+      final collection = container
+          .read(platformSectionsProvider(GameScreen.collection))
+          .values
+          .expand((games) => games);
       expect(collection.map((game) => game.title), contains('Deselected Game'));
 
       for (final status in [

@@ -118,10 +118,7 @@ class _GameEditInfoSectionState extends ConsumerState<GameEditInfoSection> {
 
   Widget _buildPlatformSection() {
     // Use ref.read instead of ref.watch to avoid unnecessary rebuilds
-    final availablePlatforms = ref.read(availablePlatformsProvider);
-    // Remove 'All' from platforms list for editing
-    final editablePlatforms =
-        availablePlatforms.where((p) => p != 'All').toList();
+    final editablePlatforms = ref.read(everyPlatformProvider);
 
     return Column(
       crossAxisAlignment: EditScreenStyles.platformSectionAlignment,

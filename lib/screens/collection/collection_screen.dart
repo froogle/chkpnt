@@ -51,7 +51,9 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
   }
 
   Widget _buildContent() {
-    final groupedGames = ref.watch(collectionGamesByPlatformProvider);
+    final groupedGames = ref.watch(
+      platformSectionsProvider(GameScreen.collection),
+    );
 
     if (groupedGames.isEmpty) {
       return _buildEmptyState();
@@ -78,7 +80,7 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
         BacklogPlatformSection(
           platform: platform,
           games: games,
-          list: PlatformList.collection,
+          screen: GameScreen.collection,
           onGameTap: _handleGameTap,
         ),
         SizedBox(height: BacklogStyles.platformSectionSpacing),

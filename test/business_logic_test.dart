@@ -66,8 +66,8 @@ void main() {
         expect(container.read(selectedPlatformProvider), 'PC');
 
         // Test reset to all
-        notifier.resetToAll();
-        expect(container.read(selectedPlatformProvider), 'All');
+        notifier.selectPlatform(null);
+        expect(container.read(selectedPlatformProvider), isNull);
       });
 
       test('should manage search query state', () {
@@ -86,62 +86,28 @@ void main() {
     group('Filter Integration Logic', () {
       test('should detect active filters correctly', () {
         // No active filters
-        container.read(selectedPlatformProvider.notifier).resetToAll();
+        container.read(selectedPlatformProvider.notifier).selectPlatform(null);
         container.read(searchQueryProvider.notifier).clearQuery();
 
         final platform1 = container.read(selectedPlatformProvider);
         final search1 = container.read(searchQueryProvider);
-        final hasActiveFilters1 = platform1 != 'All' || search1.isNotEmpty;
+        final hasActiveFilters1 = platform1 != null || search1.isNotEmpty;
         expect(hasActiveFilters1, false);
 
         // Platform filter active
         container.read(selectedPlatformProvider.notifier).selectPlatform('PC');
         final platform2 = container.read(selectedPlatformProvider);
         final search2 = container.read(searchQueryProvider);
-        final hasActiveFilters2 = platform2 != 'All' || search2.isNotEmpty;
+        final hasActiveFilters2 = platform2 != null || search2.isNotEmpty;
         expect(hasActiveFilters2, true);
 
         // Search filter active
-        container.read(selectedPlatformProvider.notifier).resetToAll();
+        container.read(selectedPlatformProvider.notifier).selectPlatform(null);
         container.read(searchQueryProvider.notifier).updateQuery('zelda');
         final platform3 = container.read(selectedPlatformProvider);
         final search3 = container.read(searchQueryProvider);
-        final hasActiveFilters3 = platform3 != 'All' || search3.isNotEmpty;
+        final hasActiveFilters3 = platform3 != null || search3.isNotEmpty;
         expect(hasActiveFilters3, true);
-      });
-
-      test('should combine filters correctly', () {
-        // Use unique platforms to avoid conflicts with sample data
-        final uniqueGames = TestHelpers.createUniquePlatformGames();
-        TestHelpers.addGamesToContainer(container, uniqueGames);
-
-        // Test platform filter only
-        final platform1Games = container.read(
-          fullyFilteredGamesProvider(GameStatus.playing, 'TestPlatform1', ''),
-        );
-        expect(platform1Games.length, 1);
-        expect(platform1Games.first.title, 'Test Game Playing');
-
-        // Test platform + search filter
-        final filteredGames = container.read(
-          fullyFilteredGamesProvider(
-            GameStatus.backlog,
-            'TestPlatform1',
-            'test',
-          ),
-        );
-        expect(filteredGames.length, 1);
-        expect(filteredGames.first.title, 'Test Game Backlog');
-
-        // Test no matches
-        final noMatches = container.read(
-          fullyFilteredGamesProvider(
-            GameStatus.completed,
-            'TestPlatform1',
-            'nomatch',
-          ),
-        );
-        expect(noMatches, isEmpty);
       });
     });
 

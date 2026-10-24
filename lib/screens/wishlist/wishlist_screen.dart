@@ -10,6 +10,7 @@ import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/screens/edit/widgets/edit_screen_page_route.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
+import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/services/game_actions_service.dart';
 import 'package:chkpnt/services/navigation_service.dart';
 import 'package:chkpnt/services/paywall_service.dart';
@@ -59,12 +60,11 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   }
 
   Widget _buildHeader() {
-    final wishlistPlatforms = ref.watch(wishlistPlatformsProvider);
     return MainScreenHeader(
+      screen: GameScreen.wishlist,
       title: 'Wishlist',
       icon: Icons.favorite_outline,
       onAddGamePressed: _handleAddGame,
-      customPlatforms: wishlistPlatforms,
     );
   }
 
@@ -75,9 +75,11 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildGameSection(GameStatus.ordered),
-          const SizedBox(height: 20),
-          _buildGameSection(GameStatus.wishlist),
+          for (final status in wishlistScreenStatuses) ...[
+            if (status != wishlistScreenStatuses.first)
+              const SizedBox(height: 20),
+            _buildGameSection(status),
+          ],
           const SizedBox(height: 24),
         ],
       ),

@@ -14,7 +14,7 @@ class BacklogPlatformSection extends ConsumerWidget {
   final bool isAnimating;
   final Function(GameItem) onGameTap;
   final Function(GameItem)? onPlayPressed;
-  final PlatformList list;
+  final GameScreen screen;
 
   const BacklogPlatformSection({
     super.key,
@@ -24,7 +24,7 @@ class BacklogPlatformSection extends ConsumerWidget {
     this.animatingGame,
     this.isAnimating = false,
     this.onPlayPressed,
-    required this.list,
+    required this.screen,
   });
 
   @override
@@ -36,9 +36,9 @@ class BacklogPlatformSection extends ConsumerWidget {
     final selectedPlatform = ref.watch(selectedPlatformProvider);
     final searchQuery = ref.watch(searchQueryProvider);
 
-    final section = PlatformSection(list, platform);
+    final section = PlatformSection(screen, platform);
     final isOpenByPlayer = ref.watch(sectionExpandedProvider(section));
-    final filtersActive = selectedPlatform != 'All' || searchQuery.isNotEmpty;
+    final filtersActive = selectedPlatform != null || searchQuery.isNotEmpty;
     final isExpanded = filtersActive ? games.isNotEmpty : isOpenByPlayer;
 
     return Column(

@@ -9,14 +9,14 @@ import 'package:chkpnt/styles/styles.dart';
 
 class MainScreenHeader extends ConsumerStatefulWidget {
   final VoidCallback? onAddGamePressed;
-  final List<String>? customPlatforms;
+  final GameScreen screen;
   final String title;
   final IconData icon;
 
   const MainScreenHeader({
     super.key,
     this.onAddGamePressed,
-    this.customPlatforms,
+    required this.screen,
     this.title = 'Home',
     this.icon = Icons.home_outlined,
   });
@@ -115,8 +115,9 @@ class _MainScreenHeaderState extends ConsumerState<MainScreenHeader> {
 
   Widget _buildPlatformFilter() {
     final selectedPlatform = ref.watch(selectedPlatformProvider);
-    final defaultPlatforms = ref.watch(availablePlatformsProvider);
-    final availablePlatforms = widget.customPlatforms ?? defaultPlatforms;
+    final availablePlatforms = ref.watch(
+      screenPlatformsProvider(widget.screen),
+    );
 
     return PlatformFilterDropdown(
       selectedPlatform: selectedPlatform,

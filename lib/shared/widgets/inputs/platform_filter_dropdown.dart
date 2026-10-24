@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:chkpnt/styles/styles.dart';
 
 class PlatformFilterDropdown extends StatelessWidget {
-  final String selectedPlatform;
+  static const String _allPlatformsLabel = 'All';
+
+  final String? selectedPlatform;
   final List<String> platforms;
-  final ValueChanged<String> onPlatformChanged;
+  final ValueChanged<String?> onPlatformChanged;
 
   const PlatformFilterDropdown({
     super.key,
@@ -12,6 +14,10 @@ class PlatformFilterDropdown extends StatelessWidget {
     required this.platforms,
     required this.onPlatformChanged,
   });
+
+  List<String?> get _choices => [null, ...platforms];
+
+  String _labelFor(String? platform) => platform ?? _allPlatformsLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +50,10 @@ class PlatformFilterDropdown extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(selectedPlatform, style: MainScreenStyles.filterButtonTextStyle),
+        Text(
+          _labelFor(selectedPlatform),
+          style: MainScreenStyles.filterButtonTextStyle,
+        ),
         const SizedBox(width: 6),
         const Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
       ],
@@ -56,7 +65,7 @@ class PlatformFilterDropdown extends StatelessWidget {
     final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
 
-    showMenu<String>(
+    showMenu<int>(
       context: context,
       position: _calculateMenuPosition(button, overlay),
       color: Colors.white,
@@ -85,17 +94,21 @@ class PlatformFilterDropdown extends StatelessWidget {
     );
   }
 
-  List<PopupMenuItem<String>> _buildMenuItems() {
-    return platforms.map((String platform) {
-      final isSelected = platform == selectedPlatform;
-      return PopupMenuItem<String>(
-        value: platform,
-        child: _buildMenuItem(platform, isSelected),
-      );
-    }).toList();
+  List<PopupMenuItem<int>> _buildMenuItems() {
+    final choices = _choices;
+    return [
+      for (var index = 0; index < choices.length; index++)
+        PopupMenuItem<int>(
+          value: index,
+          child: _buildMenuItem(
+            _labelFor(choices[index]),
+            choices[index] == selectedPlatform,
+          ),
+        ),
+    ];
   }
 
-  Widget _buildMenuItem(String platform, bool isSelected) {
+  Widget _buildMenuItem(String label, bool isSelected) {
     return Container(
       width: double.infinity,
       padding: MainScreenStyles.filterDropdownItemPadding,
@@ -104,7 +117,7 @@ class PlatformFilterDropdown extends StatelessWidget {
               ? MainScreenStyles.filterDropdownSelectedItemDecoration
               : const BoxDecoration(),
       child: Text(
-        platform,
+        label,
         style:
             isSelected
                 ? MainScreenStyles.filterDropdownSelectedTextStyle
@@ -113,9 +126,12 @@ class PlatformFilterDropdown extends StatelessWidget {
     );
   }
 
-  void _handleMenuSelection(String? selectedPlatform) {
-    if (selectedPlatform != null && selectedPlatform != this.selectedPlatform) {
-      onPlatformChanged(selectedPlatform);
+  void _handleMenuSelection(int? index) {
+    if (index == null) return;
+
+    final platform = _choices[index];
+    if (platform != selectedPlatform) {
+      onPlatformChanged(platform);
     }
   }
 }

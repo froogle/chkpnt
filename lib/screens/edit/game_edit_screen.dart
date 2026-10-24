@@ -340,7 +340,7 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   String _matchExistingPlatform(String? detectedPlatform) {
     if (detectedPlatform == null) return '';
 
-    for (final platform in ref.read(availablePlatformsProvider)) {
+    for (final platform in ref.read(everyPlatformProvider)) {
       if (platform.toLowerCase() == detectedPlatform.toLowerCase()) {
         return platform;
       }
