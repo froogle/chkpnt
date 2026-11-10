@@ -18,8 +18,8 @@ class ConfirmDeleteDialog extends StatelessWidget {
   }) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => ConfirmDeleteDialog(title: title, itemName: itemName),
+      builder: (context) =>
+          ConfirmDeleteDialog(title: title, itemName: itemName),
     );
 
     return confirmed ?? false;

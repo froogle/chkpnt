@@ -714,10 +714,9 @@ void main() {
 
     Future<void> scanFinding(String title, {String? platform}) {
       lookup.result = BarcodeLookupResult(
-        outcome:
-            title.isEmpty
-                ? BarcodeLookupOutcome.notFound
-                : BarcodeLookupOutcome.found,
+        outcome: title.isEmpty
+            ? BarcodeLookupOutcome.notFound
+            : BarcodeLookupOutcome.found,
         title: title,
         platform: platform,
       );

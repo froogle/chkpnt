@@ -23,7 +23,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
+        MaterialApp(
+          home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+        ),
       );
 
       // Check that the game title is displayed
@@ -34,7 +36,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
+        MaterialApp(
+          home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+        ),
       );
 
       // Platform is displayed in compact form (truncated to 12 chars + ellipsis for unknown platforms)
@@ -206,7 +210,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
+        MaterialApp(
+          home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+        ),
       );
 
       // Verify the GameDetailSheetInfo widget exists
@@ -218,7 +224,9 @@ void main() {
 
     testWidgets('should render without errors', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
+        MaterialApp(
+          home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+        ),
       );
 
       // Should render without throwing any exceptions
@@ -227,7 +235,9 @@ void main() {
 
     testWidgets('should be a StatelessWidget', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: GameDetailSheetInfo(game: testGame))),
+        MaterialApp(
+          home: Scaffold(body: GameDetailSheetInfo(game: testGame)),
+        ),
       );
 
       // Verify it's a StatelessWidget (no state management)

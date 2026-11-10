@@ -71,10 +71,9 @@ class MainScreenBottomNav extends ConsumerWidget {
       ),
       icon: Icon(
         icon,
-        color:
-            isActive
-                ? AppColors.primaryPurple
-                : AppColors.primaryPurple.withValues(alpha: 0.5),
+        color: isActive
+            ? AppColors.primaryPurple
+            : AppColors.primaryPurple.withValues(alpha: 0.5),
         size: isActive ? 24 : 22,
       ),
     );

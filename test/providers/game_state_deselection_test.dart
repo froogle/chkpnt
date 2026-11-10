@@ -15,10 +15,9 @@ void main() {
 
   group('Deselected state storage', () {
     test('no database migration changes how Status is stored', () {
-      final source =
-          File(
-            'lib/repositories/drift_game_repository.dart',
-          ).readAsStringSync();
+      final source = File(
+        'lib/repositories/drift_game_repository.dart',
+      ).readAsStringSync();
       final migrations = source.substring(
         source.indexOf('onUpgrade:'),
         source.indexOf('beforeOpen:'),

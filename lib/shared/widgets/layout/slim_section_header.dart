@@ -59,13 +59,12 @@ class SlimSectionHeader extends StatelessWidget {
 
   Widget _buildTitle() {
     return ShaderMask(
-      shaderCallback:
-          (bounds) => const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.black, AppColors.primaryPurple, Colors.black],
-            stops: [0.2, 0.5, 0.8],
-          ).createShader(bounds),
+      shaderCallback: (bounds) => const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.black, AppColors.primaryPurple, Colors.black],
+        stops: [0.2, 0.5, 0.8],
+      ).createShader(bounds),
       child: RichText(
         text: TextSpan(
           children: [

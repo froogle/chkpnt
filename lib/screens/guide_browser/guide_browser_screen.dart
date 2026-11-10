@@ -43,17 +43,16 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
   }
 
   void _initWebView() {
-    _controller =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onPageStarted: _onPageStarted,
-              onPageFinished: _onPageFinished,
-              onNavigationRequest: _onNavigationRequest,
-            ),
-          )
-          ..loadRequest(Uri.parse(_gameFaqsHomeUrl));
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: _onPageStarted,
+          onPageFinished: _onPageFinished,
+          onNavigationRequest: _onNavigationRequest,
+        ),
+      )
+      ..loadRequest(Uri.parse(_gameFaqsHomeUrl));
   }
 
   void _onPageStarted(String url) {
@@ -181,7 +180,10 @@ class _GuideBrowserScreenState extends ConsumerState<GuideBrowserScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
-          children: [_buildToolbar(), Expanded(child: _buildWebView())],
+          children: [
+            _buildToolbar(),
+            Expanded(child: _buildWebView()),
+          ],
         ),
       ),
     );

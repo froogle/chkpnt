@@ -126,20 +126,19 @@ class PlatformEntryStyles {
   // Button Style Methods
   static ButtonStyle primaryButtonStyle(bool isActive) =>
       ElevatedButton.styleFrom(
-        backgroundColor:
-            isActive
-                ? primaryButtonActiveBackgroundColor
-                : primaryButtonInactiveBackgroundColor,
-        foregroundColor:
-            isActive
-                ? primaryButtonActiveTextColor
-                : primaryButtonInactiveTextColor,
+        backgroundColor: isActive
+            ? primaryButtonActiveBackgroundColor
+            : primaryButtonInactiveBackgroundColor,
+        foregroundColor: isActive
+            ? primaryButtonActiveTextColor
+            : primaryButtonInactiveTextColor,
         padding: primaryButtonPadding,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(primaryButtonBorderRadius),
         ),
-        elevation:
-            isActive ? primaryButtonElevation : primaryButtonDisabledElevation,
+        elevation: isActive
+            ? primaryButtonElevation
+            : primaryButtonDisabledElevation,
       );
 
   static TextStyle saveButtonTextStyleWithColor(bool isActive) =>

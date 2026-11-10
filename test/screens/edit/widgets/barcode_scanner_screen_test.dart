@@ -23,7 +23,9 @@ void _clearScannerChannel() {
 }
 
 BarcodeCapture _capture(String value, BarcodeFormat format) {
-  return BarcodeCapture(barcodes: [Barcode(rawValue: value, format: format)]);
+  return BarcodeCapture(
+    barcodes: [Barcode(rawValue: value, format: format)],
+  );
 }
 
 Future<List<String?>> _pumpScanner(WidgetTester tester) async {
@@ -32,21 +34,20 @@ Future<List<String?>> _pumpScanner(WidgetTester tester) async {
   await tester.pumpWidget(
     MaterialApp(
       home: Builder(
-        builder:
-            (context) => Scaffold(
-              body: ElevatedButton(
-                onPressed: () async {
-                  popped.add(
-                    await Navigator.of(context).push<String>(
-                      MaterialPageRoute(
-                        builder: (_) => const BarcodeScannerScreen(),
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Open Scanner'),
-              ),
-            ),
+        builder: (context) => Scaffold(
+          body: ElevatedButton(
+            onPressed: () async {
+              popped.add(
+                await Navigator.of(context).push<String>(
+                  MaterialPageRoute(
+                    builder: (_) => const BarcodeScannerScreen(),
+                  ),
+                ),
+              );
+            },
+            child: const Text('Open Scanner'),
+          ),
+        ),
       ),
     ),
   );

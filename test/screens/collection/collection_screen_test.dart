@@ -491,21 +491,19 @@ void main() {
           child: MaterialApp(
             initialRoute: '/main',
             routes: {
-              '/main':
-                  (context) => Scaffold(
-                    body: Builder(
-                      builder: (context) {
-                        return ElevatedButton(
-                          onPressed:
-                              () => NavigationService.handleNavigation(
-                                context,
-                                NavigationService.collectionIndex,
-                              ),
-                          child: const Text('Go to Collection'),
-                        );
-                      },
-                    ),
-                  ),
+              '/main': (context) => Scaffold(
+                body: Builder(
+                  builder: (context) {
+                    return ElevatedButton(
+                      onPressed: () => NavigationService.handleNavigation(
+                        context,
+                        NavigationService.collectionIndex,
+                      ),
+                      child: const Text('Go to Collection'),
+                    );
+                  },
+                ),
+              ),
               '/collection': (context) => const CollectionScreen(),
             },
           ),

@@ -46,10 +46,9 @@ class GameSection extends ConsumerWidget {
         SlimSectionHeader(
           title: title,
           isExpanded: isExpanded,
-          onToggle:
-              () => ref
-                  .read(sectionExpansionProvider.notifier)
-                  .toggleSection(section),
+          onToggle: () => ref
+              .read(sectionExpansionProvider.notifier)
+              .toggleSection(section),
           isEmpty: games.isEmpty,
           gameCount: games.length,
         ),
@@ -127,10 +126,9 @@ class GameSection extends ConsumerWidget {
     return GameCard(
       game: game,
       onTap: () => onGameTap(game),
-      onPlayPressed:
-          game.status == GameStatus.backlog
-              ? () => onPlayPressed?.call(game)
-              : null,
+      onPlayPressed: game.status == GameStatus.backlog
+          ? () => onPlayPressed?.call(game)
+          : null,
     );
   }
 }

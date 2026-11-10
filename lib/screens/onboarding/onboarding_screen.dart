@@ -48,8 +48,8 @@ class OnboardingScreen extends StatelessWidget {
   Future<void> _navigateToSubscription(BuildContext context) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder:
-            (_) => const OnboardingSubscriptionScreen(showCloseButton: true),
+        builder: (_) =>
+            const OnboardingSubscriptionScreen(showCloseButton: true),
       ),
     );
 

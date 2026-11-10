@@ -82,11 +82,10 @@ class BackupValidationService {
 
   BackupValidationResult _validateMetadataAndImages(Archive archive) {
     try {
-      final ArchiveFile metadataFile =
-          _archiveService.findFileInArchive(
-            archive,
-            BackupArchiveService.metadataFileName,
-          )!;
+      final ArchiveFile metadataFile = _archiveService.findFileInArchive(
+        archive,
+        BackupArchiveService.metadataFileName,
+      )!;
 
       final BackupMetadata metadata = _parseMetadataFile(metadataFile);
       final BackupValidationResult versionResult = _validateVersion(metadata);

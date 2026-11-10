@@ -23,14 +23,13 @@ void main() {
       return UncontrolledProviderScope(
         container: container,
         child: ProviderScope(
-          overrides:
-              initialState != null
-                  ? [
-                    backupStateProvider.overrideWith(
-                      () => MockBackupState(initialState),
-                    ),
-                  ]
-                  : [],
+          overrides: initialState != null
+              ? [
+                  backupStateProvider.overrideWith(
+                    () => MockBackupState(initialState),
+                  ),
+                ]
+              : [],
           child: const MaterialApp(
             home: Scaffold(body: ProfileBackupSection()),
           ),

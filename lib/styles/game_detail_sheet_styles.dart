@@ -153,21 +153,19 @@ class GameDetailSheetStyles {
   static const double statusButtonFontSize = 10.0;
 
   static BoxDecoration statusButtonDecoration(bool isSelected) => BoxDecoration(
-    gradient:
-        isSelected
-            ? LinearGradient(
-              colors: [
-                AppColors.primaryPurple.withValues(alpha: 0.15),
-                AppColors.secondaryPurple.withValues(alpha: 0.1),
-              ],
-            )
-            : AppGradients.cardGradient,
+    gradient: isSelected
+        ? LinearGradient(
+            colors: [
+              AppColors.primaryPurple.withValues(alpha: 0.15),
+              AppColors.secondaryPurple.withValues(alpha: 0.1),
+            ],
+          )
+        : AppGradients.cardGradient,
     borderRadius: statusButtonBorderRadius,
     border: Border.all(
-      color:
-          isSelected
-              ? AppColors.primaryPurple.withValues(alpha: 0.4)
-              : AppColors.primaryPurple.withValues(alpha: 0.2),
+      color: isSelected
+          ? AppColors.primaryPurple.withValues(alpha: 0.4)
+          : AppColors.primaryPurple.withValues(alpha: 0.2),
       width: isSelected ? 2 : 1,
     ),
     boxShadow: isSelected ? AppShadows.subtleElevation : null,

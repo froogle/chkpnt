@@ -139,7 +139,9 @@ void main() {
     ) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MaterialApp(home: Scaffold(body: GameImage(imagePath: ''))),
+          child: MaterialApp(
+            home: Scaffold(body: GameImage(imagePath: '')),
+          ),
         ),
       );
 

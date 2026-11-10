@@ -305,10 +305,9 @@ class IsolatedTestGameListNotifier extends GameList {
       // Update timestamps appropriately - preserve lastStatusChange if status didn't change
       final gameWithTimestamps = updatedGame.copyWith(
         lastModified: DateTime.now(),
-        lastStatusChange:
-            existingGame.status != updatedGame.status
-                ? DateTime.now()
-                : existingGame.lastStatusChange,
+        lastStatusChange: existingGame.status != updatedGame.status
+            ? DateTime.now()
+            : existingGame.lastStatusChange,
       );
 
       _games[index] = gameWithTimestamps;
@@ -392,10 +391,9 @@ class TestGameListNotifier extends GameList {
       // Update timestamps appropriately - preserve lastStatusChange if status didn't change
       final gameWithTimestamps = updatedGame.copyWith(
         lastModified: DateTime.now(),
-        lastStatusChange:
-            existingGame.status != updatedGame.status
-                ? DateTime.now()
-                : existingGame.lastStatusChange,
+        lastStatusChange: existingGame.status != updatedGame.status
+            ? DateTime.now()
+            : existingGame.lastStatusChange,
       );
 
       _games[index] = gameWithTimestamps;
@@ -495,10 +493,9 @@ class TestGameRepository implements GameRepository {
     final existingGame = _games[index];
     final updatedGame = game.copyWith(
       lastModified: DateTime.now(),
-      lastStatusChange:
-          existingGame.status != game.status
-              ? DateTime.now()
-              : existingGame.lastStatusChange,
+      lastStatusChange: existingGame.status != game.status
+          ? DateTime.now()
+          : existingGame.lastStatusChange,
     );
 
     _games[index] = updatedGame;
@@ -525,21 +522,20 @@ class TestGameRepository implements GameRepository {
 
   @override
   Future<String> exportDatabaseToJson() async {
-    final jsonData =
-        _games
-            .map(
-              (game) => {
-                'id': game.id.value,
-                'title': game.title,
-                'platform': game.platform,
-                'status': game.status.index,
-                'lastModified': game.lastModified.toIso8601String(),
-                'lastStatusChange': game.lastStatusChange.toIso8601String(),
-                'imagePath': game.imagePath,
-                'remoteImageUrl': game.remoteImageUrl,
-              },
-            )
-            .toList();
+    final jsonData = _games
+        .map(
+          (game) => {
+            'id': game.id.value,
+            'title': game.title,
+            'platform': game.platform,
+            'status': game.status.index,
+            'lastModified': game.lastModified.toIso8601String(),
+            'lastStatusChange': game.lastStatusChange.toIso8601String(),
+            'imagePath': game.imagePath,
+            'remoteImageUrl': game.remoteImageUrl,
+          },
+        )
+        .toList();
 
     return jsonEncode({
       'version': 1,
@@ -551,19 +547,18 @@ class TestGameRepository implements GameRepository {
   @override
   Future<void> importFromJson(String jsonString) async {
     final data = jsonDecode(jsonString) as Map<String, dynamic>;
-    final games =
-        (data['games'] as List).map((gameData) {
-          return GameItem(
-            id: GameId(gameData['id']),
-            title: gameData['title'],
-            platform: gameData['platform'],
-            status: GameStatus.values[gameData['status']],
-            lastModified: DateTime.parse(gameData['lastModified']),
-            lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
-            imagePath: gameData['imagePath'],
-            remoteImageUrl: gameData['remoteImageUrl'],
-          );
-        }).toList();
+    final games = (data['games'] as List).map((gameData) {
+      return GameItem(
+        id: GameId(gameData['id']),
+        title: gameData['title'],
+        platform: gameData['platform'],
+        status: GameStatus.values[gameData['status']],
+        lastModified: DateTime.parse(gameData['lastModified']),
+        lastStatusChange: DateTime.parse(gameData['lastStatusChange']),
+        imagePath: gameData['imagePath'],
+        remoteImageUrl: gameData['remoteImageUrl'],
+      );
+    }).toList();
 
     _games.clear();
     _games.addAll(games);

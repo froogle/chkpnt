@@ -57,10 +57,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   double _calculateLogoSize(BoxConstraints constraints) {
-    final availableSize =
-        constraints.maxWidth < constraints.maxHeight
-            ? constraints.maxWidth
-            : constraints.maxHeight;
+    final availableSize = constraints.maxWidth < constraints.maxHeight
+        ? constraints.maxWidth
+        : constraints.maxHeight;
     return availableSize * SplashScreenStyles.logoSizeRatio;
   }
 

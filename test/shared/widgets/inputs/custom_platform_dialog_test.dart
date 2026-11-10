@@ -62,16 +62,15 @@ void main() {
             MaterialApp(
               home: Scaffold(
                 body: Builder(
-                  builder:
-                      (context) => ElevatedButton(
-                        onPressed: () async {
-                          result = await showDialog<String>(
-                            context: context,
-                            builder: (context) => const CustomPlatformDialog(),
-                          );
-                        },
-                        child: const Text('Show Dialog'),
-                      ),
+                  builder: (context) => ElevatedButton(
+                    onPressed: () async {
+                      result = await showDialog<String>(
+                        context: context,
+                        builder: (context) => const CustomPlatformDialog(),
+                      );
+                    },
+                    child: const Text('Show Dialog'),
+                  ),
                 ),
               ),
             ),
@@ -102,16 +101,15 @@ void main() {
             MaterialApp(
               home: Scaffold(
                 body: Builder(
-                  builder:
-                      (context) => ElevatedButton(
-                        onPressed: () async {
-                          result = await showDialog<String>(
-                            context: context,
-                            builder: (context) => const CustomPlatformDialog(),
-                          );
-                        },
-                        child: const Text('Show Dialog'),
-                      ),
+                  builder: (context) => ElevatedButton(
+                    onPressed: () async {
+                      result = await showDialog<String>(
+                        context: context,
+                        builder: (context) => const CustomPlatformDialog(),
+                      );
+                    },
+                    child: const Text('Show Dialog'),
+                  ),
                 ),
               ),
             ),
@@ -138,16 +136,15 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed: () async {
-                        result = await showDialog<String>(
-                          context: context,
-                          builder: (context) => const CustomPlatformDialog(),
-                        );
-                      },
-                      child: const Text('Show Dialog'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    result = await showDialog<String>(
+                      context: context,
+                      builder: (context) => const CustomPlatformDialog(),
+                    );
+                  },
+                  child: const Text('Show Dialog'),
+                ),
               ),
             ),
           ),
@@ -175,16 +172,15 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed: () async {
-                        result = await showDialog<String>(
-                          context: context,
-                          builder: (context) => const CustomPlatformDialog(),
-                        );
-                      },
-                      child: const Text('Show Dialog'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    result = await showDialog<String>(
+                      context: context,
+                      builder: (context) => const CustomPlatformDialog(),
+                    );
+                  },
+                  child: const Text('Show Dialog'),
+                ),
               ),
             ),
           ),
@@ -209,16 +205,15 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed: () async {
-                        result = await showDialog<String>(
-                          context: context,
-                          builder: (context) => const CustomPlatformDialog(),
-                        );
-                      },
-                      child: const Text('Show Dialog'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    result = await showDialog<String>(
+                      context: context,
+                      builder: (context) => const CustomPlatformDialog(),
+                    );
+                  },
+                  child: const Text('Show Dialog'),
+                ),
               ),
             ),
           ),
@@ -259,16 +254,15 @@ void main() {
             MaterialApp(
               home: Scaffold(
                 body: Builder(
-                  builder:
-                      (context) => ElevatedButton(
-                        onPressed: () async {
-                          result = await showDialog<String>(
-                            context: context,
-                            builder: (context) => const CustomPlatformDialog(),
-                          );
-                        },
-                        child: const Text('Show Dialog'),
-                      ),
+                  builder: (context) => ElevatedButton(
+                    onPressed: () async {
+                      result = await showDialog<String>(
+                        context: context,
+                        builder: (context) => const CustomPlatformDialog(),
+                      );
+                    },
+                    child: const Text('Show Dialog'),
+                  ),
                 ),
               ),
             ),
@@ -305,16 +299,15 @@ void main() {
             MaterialApp(
               home: Scaffold(
                 body: Builder(
-                  builder:
-                      (context) => ElevatedButton(
-                        onPressed: () async {
-                          result = await showDialog<String>(
-                            context: context,
-                            builder: (context) => const CustomPlatformDialog(),
-                          );
-                        },
-                        child: const Text('Show Dialog'),
-                      ),
+                  builder: (context) => ElevatedButton(
+                    onPressed: () async {
+                      result = await showDialog<String>(
+                        context: context,
+                        builder: (context) => const CustomPlatformDialog(),
+                      );
+                    },
+                    child: const Text('Show Dialog'),
+                  ),
                 ),
               ),
             ),

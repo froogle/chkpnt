@@ -102,8 +102,8 @@ class PlatformSelectionBottomSheet extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: platforms.length,
-          itemBuilder:
-              (context, index) => _buildPlatformTile(context, platforms[index]),
+          itemBuilder: (context, index) =>
+              _buildPlatformTile(context, platforms[index]),
         ),
       ],
     );
@@ -126,16 +126,16 @@ class PlatformSelectionBottomSheet extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing:
-          isSelected
-              ? const Icon(
-                Icons.check,
-                color: EditScreenStyles.platformListCheckColour,
-              )
-              : null,
+      trailing: isSelected
+          ? const Icon(
+              Icons.check,
+              color: EditScreenStyles.platformListCheckColour,
+            )
+          : null,
       onTap: () => _handlePlatformSelection(context, platform),
-      tileColor:
-          isSelected ? EditScreenStyles.platformListSelectedColour : null,
+      tileColor: isSelected
+          ? EditScreenStyles.platformListSelectedColour
+          : null,
       shape: EditScreenStyles.platformListTileShape,
     );
   }

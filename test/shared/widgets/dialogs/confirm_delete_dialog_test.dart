@@ -105,17 +105,16 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed: () async {
-                        result = await ConfirmDeleteDialog.show(
-                          context,
-                          title: 'Delete Game',
-                          itemName: 'Lufia',
-                        );
-                      },
-                      child: const Text('Open'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    result = await ConfirmDeleteDialog.show(
+                      context,
+                      title: 'Delete Game',
+                      itemName: 'Lufia',
+                    );
+                  },
+                  child: const Text('Open'),
+                ),
               ),
             ),
           ),
@@ -146,17 +145,16 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed: () async {
-                        result = await ConfirmDeleteDialog.show(
-                          context,
-                          title: 'Delete Game',
-                          itemName: 'Lufia',
-                        );
-                      },
-                      child: const Text('Open'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    result = await ConfirmDeleteDialog.show(
+                      context,
+                      title: 'Delete Game',
+                      itemName: 'Lufia',
+                    );
+                  },
+                  child: const Text('Open'),
+                ),
               ),
             ),
           ),

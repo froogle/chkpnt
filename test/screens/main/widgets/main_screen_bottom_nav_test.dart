@@ -21,22 +21,18 @@ void main() {
           initialRoute: initialRoute,
           routes: {
             for (final entry in routeLabels.entries)
-              entry.key:
-                  (context) => Scaffold(
-                    body: Column(
-                      children: [
-                        Text(entry.value),
-                        const Spacer(),
-                        MainScreenBottomNav(
-                          onNavItemPressed:
-                              (index) => NavigationService.handleNavigation(
-                                context,
-                                index,
-                              ),
-                        ),
-                      ],
+              entry.key: (context) => Scaffold(
+                body: Column(
+                  children: [
+                    Text(entry.value),
+                    const Spacer(),
+                    MainScreenBottomNav(
+                      onNavItemPressed: (index) =>
+                          NavigationService.handleNavigation(context, index),
                     ),
-                  ),
+                  ],
+                ),
+              ),
           },
         ),
       );

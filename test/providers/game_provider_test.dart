@@ -211,8 +211,9 @@ void main() {
         notifier.addGame(game2);
 
         final updatedGames = container.read(gameListProvider);
-        final lastTwoGames =
-            updatedGames.skip(updatedGames.length - 2).toList();
+        final lastTwoGames = updatedGames
+            .skip(updatedGames.length - 2)
+            .toList();
 
         expect(
           lastTwoGames[0].id.value,

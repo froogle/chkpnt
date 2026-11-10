@@ -83,8 +83,8 @@ class GameImageService {
 
   /// Gets the full file path for an image using persistent storage
   Future<File> _getImageFile(String imagePath) async {
-    final Directory appDir =
-        await _storageService.getPersistentStorageDirectory();
+    final Directory appDir = await _storageService
+        .getPersistentStorageDirectory();
     return File(path.join(appDir.path, imagePath));
   }
 
@@ -101,8 +101,8 @@ class GameImageService {
 
   /// Gets the full file path for display
   Future<String> getImagePath(String imagePath) async {
-    final Directory appDir =
-        await _storageService.getPersistentStorageDirectory();
+    final Directory appDir = await _storageService
+        .getPersistentStorageDirectory();
     // If imagePath already includes game_images directory, use it as-is
     // Otherwise, construct the full path with game_images subdirectory
     if (imagePath.startsWith(imageDirectory)) {
@@ -408,8 +408,8 @@ class GameImageService {
     final String filename = 'game_${timestamp}_$randomSuffix.jpg';
 
     // Ensure directory exists using persistent storage
-    final Directory appDir =
-        await _storageService.getPersistentStorageDirectory();
+    final Directory appDir = await _storageService
+        .getPersistentStorageDirectory();
     final Directory imageDir = Directory(
       path.join(appDir.path, imageDirectory),
     );

@@ -23,7 +23,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: PlatformBadge(platform: 'PS5'))),
+        const MaterialApp(
+          home: Scaffold(body: PlatformBadge(platform: 'PS5')),
+        ),
       );
 
       // Find the ink widget with styling
@@ -84,7 +86,9 @@ void main() {
 
       for (final platform in platforms) {
         await tester.pumpWidget(
-          MaterialApp(home: Scaffold(body: PlatformBadge(platform: platform))),
+          MaterialApp(
+            home: Scaffold(body: PlatformBadge(platform: platform)),
+          ),
         );
 
         expect(find.text(platform), findsOneWidget);
@@ -95,7 +99,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: PlatformBadge(platform: ''))),
+        const MaterialApp(
+          home: Scaffold(body: PlatformBadge(platform: '')),
+        ),
       );
 
       // Should still render but with empty text
@@ -169,7 +175,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: PlatformBadge(platform: 'PS5'))),
+        const MaterialApp(
+          home: Scaffold(body: PlatformBadge(platform: 'PS5')),
+        ),
       );
 
       // Tap the platform badge - should not crash

@@ -90,8 +90,8 @@ class BackupPermissionService {
       return backupDir.path;
     }
 
-    final Directory appDir =
-        await _storageService.getPersistentStorageDirectory();
+    final Directory appDir = await _storageService
+        .getPersistentStorageDirectory();
     final Directory backupDir = Directory(path.join(appDir.path, 'backups'));
     if (!await backupDir.exists()) {
       await backupDir.create(recursive: true);

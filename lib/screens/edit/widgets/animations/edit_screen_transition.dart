@@ -20,22 +20,24 @@ class EditScreenTransition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0.0, 1.0), // Start from bottom
-        end: Offset.zero, // End at current position
-      ).animate(
-        CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
-      ),
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: Offset.zero, // Detail screen starts at current position
-          end: const Offset(0.0, -1.0), // Slides up and out
-        ).animate(
-          CurvedAnimation(
-            parent: secondaryAnimation,
-            curve: Curves.easeInOutCubic,
+      position:
+          Tween<Offset>(
+            begin: const Offset(0.0, 1.0), // Start from bottom
+            end: Offset.zero, // End at current position
+          ).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
           ),
-        ),
+      child: SlideTransition(
+        position:
+            Tween<Offset>(
+              begin: Offset.zero, // Detail screen starts at current position
+              end: const Offset(0.0, -1.0), // Slides up and out
+            ).animate(
+              CurvedAnimation(
+                parent: secondaryAnimation,
+                curve: Curves.easeInOutCubic,
+              ),
+            ),
         child: child,
       ),
     );

@@ -56,10 +56,9 @@ class BacklogSortDirectionState extends _$BacklogSortDirectionState {
   }
 
   void toggleDirection() {
-    state =
-        state == SortDirection.ascending
-            ? SortDirection.descending
-            : SortDirection.ascending;
+    state = state == SortDirection.ascending
+        ? SortDirection.descending
+        : SortDirection.ascending;
   }
 }
 

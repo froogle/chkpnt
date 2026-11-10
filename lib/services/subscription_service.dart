@@ -62,10 +62,9 @@ class SubscriptionStateNotifier extends StateNotifier<SubscriptionState> {
     try {
       final hasSubscription = await _service.checkSubscriptionStatus();
       state = SubscriptionState(
-        status:
-            hasSubscription
-                ? SubscriptionStatus.active
-                : SubscriptionStatus.inactive,
+        status: hasSubscription
+            ? SubscriptionStatus.active
+            : SubscriptionStatus.inactive,
         isLoading: false,
         lastChecked: DateTime.now(),
       );
@@ -100,10 +99,9 @@ class SubscriptionStateNotifier extends StateNotifier<SubscriptionState> {
 
     final hasSubscription = await _service.restorePurchases();
     state = SubscriptionState(
-      status:
-          hasSubscription
-              ? SubscriptionStatus.active
-              : SubscriptionStatus.inactive,
+      status: hasSubscription
+          ? SubscriptionStatus.active
+          : SubscriptionStatus.inactive,
       isLoading: false,
       lastChecked: DateTime.now(),
     );

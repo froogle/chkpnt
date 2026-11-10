@@ -260,8 +260,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
     try {
       final gameImageService = ref.read(gameImageServiceProvider);
-      final permissionResult =
-          await gameImageService.checkAndRequestCameraPermission();
+      final permissionResult = await gameImageService
+          .checkAndRequestCameraPermission();
 
       if (!mounted) return;
 
@@ -326,42 +326,35 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   Future<void> _offerCoverArt(BarcodeLookupResult result) async {
     final shouldSearch = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: AppDialogStyles.backgroundColor,
-            surfaceTintColor: AppDialogStyles.surfaceTintColor,
-            elevation: AppDialogStyles.elevation,
-            shape: AppDialogStyles.shape,
-            title: const Text(
-              'Game Found',
-              style: AppDialogStyles.titleTextStyle,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppDialogStyles.backgroundColor,
+        surfaceTintColor: AppDialogStyles.surfaceTintColor,
+        elevation: AppDialogStyles.elevation,
+        shape: AppDialogStyles.shape,
+        title: const Text('Game Found', style: AppDialogStyles.titleTextStyle),
+        content: Text(
+          '${result.title} has been found and the details filled in. Would '
+          'you like to search for box art?',
+          style: AppDialogStyles.contentTextStyle,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            style: AppDialogStyles.buttonStyle(
+              AppDialogStyles.cancelButtonColor,
             ),
-            content: Text(
-              '${result.title} has been found and the details filled in. Would '
-              'you like to search for box art?',
-              style: AppDialogStyles.contentTextStyle,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                style: AppDialogStyles.buttonStyle(
-                  AppDialogStyles.cancelButtonColor,
-                ),
-                child: const Text('No', style: AppDialogStyles.buttonTextStyle),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppDialogStyles.confirmButtonColor,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text(
-                  'Yes',
-                  style: AppDialogStyles.buttonTextStyle,
-                ),
-              ),
-            ],
+            child: const Text('No', style: AppDialogStyles.buttonTextStyle),
           ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppDialogStyles.confirmButtonColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Yes', style: AppDialogStyles.buttonTextStyle),
+          ),
+        ],
+      ),
     );
 
     if (shouldSearch == true && mounted) {
@@ -373,16 +366,16 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
     if (!mounted) return;
 
     final query = '${result.title} ${result.platform ?? ''}'.trim();
-    final suggestedImageUrls =
-        result.imageUrl == null ? <String>[] : <String>[result.imageUrl!];
+    final suggestedImageUrls = result.imageUrl == null
+        ? <String>[]
+        : <String>[result.imageUrl!];
 
     final selectedImageUrl = await Navigator.of(context).push<String>(
       MaterialPageRoute(
-        builder:
-            (buildContext) => ImageSearchScreen(
-              initialQuery: query,
-              suggestedImageUrls: suggestedImageUrls,
-            ),
+        builder: (buildContext) => ImageSearchScreen(
+          initialQuery: query,
+          suggestedImageUrls: suggestedImageUrls,
+        ),
       ),
     );
 
@@ -394,45 +387,41 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   Future<void> _showDuplicateGameDialog(GameItem existingGame) async {
     final shouldOpenGame = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: AppDialogStyles.backgroundColor,
-            surfaceTintColor: AppDialogStyles.surfaceTintColor,
-            elevation: AppDialogStyles.elevation,
-            shape: AppDialogStyles.shape,
-            title: const Text(
-              'Already In Your Collection',
-              style: AppDialogStyles.titleTextStyle,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppDialogStyles.backgroundColor,
+        surfaceTintColor: AppDialogStyles.surfaceTintColor,
+        elevation: AppDialogStyles.elevation,
+        shape: AppDialogStyles.shape,
+        title: const Text(
+          'Already In Your Collection',
+          style: AppDialogStyles.titleTextStyle,
+        ),
+        content: Text(
+          '${existingGame.title} (${existingGame.platform}) already has this '
+          'barcode, so it has not been added again.',
+          style: AppDialogStyles.contentTextStyle,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            style: AppDialogStyles.buttonStyle(
+              AppDialogStyles.cancelButtonColor,
             ),
-            content: Text(
-              '${existingGame.title} (${existingGame.platform}) already has this '
-              'barcode, so it has not been added again.',
-              style: AppDialogStyles.contentTextStyle,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                style: AppDialogStyles.buttonStyle(
-                  AppDialogStyles.cancelButtonColor,
-                ),
-                child: const Text(
-                  'Cancel',
-                  style: AppDialogStyles.buttonTextStyle,
-                ),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppDialogStyles.confirmButtonColor,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text(
-                  'Open Game',
-                  style: AppDialogStyles.buttonTextStyle,
-                ),
-              ),
-            ],
+            child: const Text('Cancel', style: AppDialogStyles.buttonTextStyle),
           ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppDialogStyles.confirmButtonColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              'Open Game',
+              style: AppDialogStyles.buttonTextStyle,
+            ),
+          ),
+        ],
+      ),
     );
 
     if (shouldOpenGame == true && mounted) {
@@ -479,9 +468,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
         if (!mounted) return;
         final selectedImageUrl = await Navigator.of(context).push<String>(
           MaterialPageRoute(
-            builder:
-                (buildContext) =>
-                    ImageSearchScreen(initialQuery: editState.title),
+            builder: (buildContext) =>
+                ImageSearchScreen(initialQuery: editState.title),
           ),
         );
         if (selectedImageUrl != null && mounted) {
@@ -493,8 +481,8 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   Future<void> _handleCameraSelection() async {
     final gameImageService = ref.read(gameImageServiceProvider);
-    final permissionResult =
-        await gameImageService.checkAndRequestCameraPermission();
+    final permissionResult = await gameImageService
+        .checkAndRequestCameraPermission();
 
     if (!mounted) return;
 
@@ -510,53 +498,45 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
   Future<void> _showCameraPermissionDialog() async {
     final shouldOpenSettings = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: AppDialogStyles.backgroundColor,
-            surfaceTintColor: AppDialogStyles.surfaceTintColor,
-            elevation: AppDialogStyles.elevation,
-            shape: AppDialogStyles.shape,
-            title: const Text(
-              'Camera Permission Required',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-            content: const Text(
-              'ChkPnt uses your camera to photograph your games and to scan barcodes.\n\n'
-              'Tap "Open Settings" to go to the app settings page, then enable the Camera permission.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-                height: 1.4,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                style: AppDialogStyles.buttonStyle(
-                  AppDialogStyles.cancelButtonColor,
-                ),
-                child: const Text(
-                  'Cancel',
-                  style: AppDialogStyles.buttonTextStyle,
-                ),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppDialogStyles.confirmButtonColor,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text(
-                  'Open Settings',
-                  style: AppDialogStyles.buttonTextStyle,
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        backgroundColor: AppDialogStyles.backgroundColor,
+        surfaceTintColor: AppDialogStyles.surfaceTintColor,
+        elevation: AppDialogStyles.elevation,
+        shape: AppDialogStyles.shape,
+        title: const Text(
+          'Camera Permission Required',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
           ),
+        ),
+        content: const Text(
+          'ChkPnt uses your camera to photograph your games and to scan barcodes.\n\n'
+          'Tap "Open Settings" to go to the app settings page, then enable the Camera permission.',
+          style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            style: AppDialogStyles.buttonStyle(
+              AppDialogStyles.cancelButtonColor,
+            ),
+            child: const Text('Cancel', style: AppDialogStyles.buttonTextStyle),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppDialogStyles.confirmButtonColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              'Open Settings',
+              style: AppDialogStyles.buttonTextStyle,
+            ),
+          ),
+        ],
+      ),
     );
 
     if (shouldOpenSettings == true && mounted) {
@@ -624,8 +604,9 @@ class _GameEditScreenState extends ConsumerState<GameEditScreen> {
 
   Future<void> _saveChanges() async {
     final gameActionsService = ref.read(gameActionsServiceProvider);
-    final game =
-        ref.read(gameEditStateProvider(_editContext).notifier).gameToSave();
+    final game = ref
+        .read(gameEditStateProvider(_editContext).notifier)
+        .gameToSave();
 
     if (widget.isAddMode) {
       await gameActionsService.addGame(game, context);

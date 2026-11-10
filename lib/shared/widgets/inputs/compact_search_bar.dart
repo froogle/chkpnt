@@ -68,19 +68,18 @@ class _CompactSearchBarState extends ConsumerState<CompactSearchBar> {
         ),
         decoration: InputStyles.compactSearchInputDecoration.copyWith(
           hintText: widget.hintText ?? 'Search games...',
-          suffixIcon:
-              hasText
-                  ? IconButton(
-                    icon: Icon(
-                      Icons.clear_rounded,
-                      color: AppColors.primaryPurple.withValues(alpha: 0.7),
-                      size: 20,
-                    ),
-                    onPressed: _clearSearch,
-                    padding: EdgeInsets.all(8),
-                    constraints: BoxConstraints(minWidth: 36, minHeight: 36),
-                  )
-                  : null,
+          suffixIcon: hasText
+              ? IconButton(
+                  icon: Icon(
+                    Icons.clear_rounded,
+                    color: AppColors.primaryPurple.withValues(alpha: 0.7),
+                    size: 20,
+                  ),
+                  onPressed: _clearSearch,
+                  padding: EdgeInsets.all(8),
+                  constraints: BoxConstraints(minWidth: 36, minHeight: 36),
+                )
+              : null,
         ),
       ),
     );

@@ -35,18 +35,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder:
-                (context) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed:
-                        () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const PlatformEntryScreen(),
-                          ),
-                        ),
-                    child: const Text('Open Platform Entry'),
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const PlatformEntryScreen(),
                   ),
                 ),
+                child: const Text('Open Platform Entry'),
+              ),
+            ),
           ),
         ),
       );
@@ -142,19 +140,18 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder:
-                (context) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed: () async {
-                      result = await Navigator.of(context).push<String>(
-                        MaterialPageRoute(
-                          builder: (_) => const PlatformEntryScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('Open Platform Entry'),
-                  ),
-                ),
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () async {
+                  result = await Navigator.of(context).push<String>(
+                    MaterialPageRoute(
+                      builder: (_) => const PlatformEntryScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Open Platform Entry'),
+              ),
+            ),
           ),
         ),
       );
@@ -183,19 +180,18 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder:
-                (context) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed: () async {
-                      result = await Navigator.of(context).push<String>(
-                        MaterialPageRoute(
-                          builder: (_) => const PlatformEntryScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('Open Platform Entry'),
-                  ),
-                ),
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () async {
+                  result = await Navigator.of(context).push<String>(
+                    MaterialPageRoute(
+                      builder: (_) => const PlatformEntryScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Open Platform Entry'),
+              ),
+            ),
           ),
         ),
       );
@@ -229,19 +225,18 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder:
-                (context) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed: () async {
-                      result = await Navigator.of(context).push<String>(
-                        MaterialPageRoute(
-                          builder: (_) => const PlatformEntryScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('Open Platform Entry'),
-                  ),
-                ),
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () async {
+                  result = await Navigator.of(context).push<String>(
+                    MaterialPageRoute(
+                      builder: (_) => const PlatformEntryScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Open Platform Entry'),
+              ),
+            ),
           ),
         ),
       );
@@ -264,18 +259,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder:
-                (context) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed:
-                        () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const PlatformEntryScreen(),
-                          ),
-                        ),
-                    child: const Text('Open Platform Entry'),
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const PlatformEntryScreen(),
                   ),
                 ),
+                child: const Text('Open Platform Entry'),
+              ),
+            ),
           ),
         ),
       );
@@ -302,19 +295,18 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder:
-                (context) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed: () async {
-                      result = await Navigator.of(context).push<String>(
-                        MaterialPageRoute(
-                          builder: (_) => const PlatformEntryScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('Open Platform Entry'),
-                  ),
-                ),
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () async {
+                  result = await Navigator.of(context).push<String>(
+                    MaterialPageRoute(
+                      builder: (_) => const PlatformEntryScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Open Platform Entry'),
+              ),
+            ),
           ),
         ),
       );

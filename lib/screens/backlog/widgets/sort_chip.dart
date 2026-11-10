@@ -24,10 +24,9 @@ class SortChip extends ConsumerWidget {
       onTap: () => _handleTap(ref),
       child: Container(
         padding: BacklogStyles.sortingChipPadding,
-        decoration:
-            isActive
-                ? BacklogStyles.activeSortingChipDecoration
-                : BacklogStyles.inactiveSortingChipDecoration,
+        decoration: isActive
+            ? BacklogStyles.activeSortingChipDecoration
+            : BacklogStyles.inactiveSortingChipDecoration,
         child: _buildChipContent(),
       ),
     );
@@ -49,10 +48,9 @@ class SortChip extends ConsumerWidget {
   Widget _buildChipText() {
     return Text(
       label,
-      style:
-          isActive
-              ? BacklogStyles.activeSortingChipTextStyle
-              : BacklogStyles.inactiveSortingChipTextStyle,
+      style: isActive
+          ? BacklogStyles.activeSortingChipTextStyle
+          : BacklogStyles.inactiveSortingChipTextStyle,
     );
   }
 
