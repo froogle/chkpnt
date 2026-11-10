@@ -7,7 +7,7 @@ part 'guide_models.freezed.dart';
 enum GuideFormat { text, html }
 
 @freezed
-class GuideId with _$GuideId {
+abstract class GuideId with _$GuideId {
   const factory GuideId(String value) = _GuideId;
 
   factory GuideId.generate() {
@@ -17,7 +17,7 @@ class GuideId with _$GuideId {
 }
 
 @freezed
-class GuideItem with _$GuideItem {
+abstract class GuideItem with _$GuideItem {
   const factory GuideItem({
     required GuideId id,
     required GameId gameId,

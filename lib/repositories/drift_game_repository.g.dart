@@ -229,36 +229,30 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
   Game map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Game(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}id'],
-          )!,
-      title:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}title'],
-          )!,
-      platform:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}platform'],
-          )!,
-      status:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}status'],
-          )!,
-      lastModified:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.dateTime,
-            data['${effectivePrefix}last_modified'],
-          )!,
-      lastStatusChange:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.dateTime,
-            data['${effectivePrefix}last_status_change'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      platform: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}platform'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      lastModified: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_modified'],
+      )!,
+      lastStatusChange: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_status_change'],
+      )!,
       imagePath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}image_path'],
@@ -267,11 +261,10 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
         DriftSqlType.string,
         data['${effectivePrefix}remote_image_url'],
       ),
-      isPhysical:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_physical'],
-          )!,
+      isPhysical: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_physical'],
+      )!,
       barcode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}barcode'],
@@ -338,19 +331,16 @@ class Game extends DataClass implements Insertable<Game> {
       status: Value(status),
       lastModified: Value(lastModified),
       lastStatusChange: Value(lastStatusChange),
-      imagePath:
-          imagePath == null && nullToAbsent
-              ? const Value.absent()
-              : Value(imagePath),
-      remoteImageUrl:
-          remoteImageUrl == null && nullToAbsent
-              ? const Value.absent()
-              : Value(remoteImageUrl),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      remoteImageUrl: remoteImageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteImageUrl),
       isPhysical: Value(isPhysical),
-      barcode:
-          barcode == null && nullToAbsent
-              ? const Value.absent()
-              : Value(barcode),
+      barcode: barcode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(barcode),
     );
   }
 
@@ -408,8 +398,9 @@ class Game extends DataClass implements Insertable<Game> {
     lastModified: lastModified ?? this.lastModified,
     lastStatusChange: lastStatusChange ?? this.lastStatusChange,
     imagePath: imagePath.present ? imagePath.value : this.imagePath,
-    remoteImageUrl:
-        remoteImageUrl.present ? remoteImageUrl.value : this.remoteImageUrl,
+    remoteImageUrl: remoteImageUrl.present
+        ? remoteImageUrl.value
+        : this.remoteImageUrl,
     isPhysical: isPhysical ?? this.isPhysical,
     barcode: barcode.present ? barcode.value : this.barcode,
   );
@@ -419,21 +410,19 @@ class Game extends DataClass implements Insertable<Game> {
       title: data.title.present ? data.title.value : this.title,
       platform: data.platform.present ? data.platform.value : this.platform,
       status: data.status.present ? data.status.value : this.status,
-      lastModified:
-          data.lastModified.present
-              ? data.lastModified.value
-              : this.lastModified,
-      lastStatusChange:
-          data.lastStatusChange.present
-              ? data.lastStatusChange.value
-              : this.lastStatusChange,
+      lastModified: data.lastModified.present
+          ? data.lastModified.value
+          : this.lastModified,
+      lastStatusChange: data.lastStatusChange.present
+          ? data.lastStatusChange.value
+          : this.lastStatusChange,
       imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
-      remoteImageUrl:
-          data.remoteImageUrl.present
-              ? data.remoteImageUrl.value
-              : this.remoteImageUrl,
-      isPhysical:
-          data.isPhysical.present ? data.isPhysical.value : this.isPhysical,
+      remoteImageUrl: data.remoteImageUrl.present
+          ? data.remoteImageUrl.value
+          : this.remoteImageUrl,
+      isPhysical: data.isPhysical.present
+          ? data.isPhysical.value
+          : this.isPhysical,
       barcode: data.barcode.present ? data.barcode.value : this.barcode,
     );
   }
@@ -885,60 +874,50 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
   Guide map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Guide(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}id'],
-          )!,
-      gameId:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}game_id'],
-          )!,
-      title:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}title'],
-          )!,
-      author:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}author'],
-          )!,
-      fileName:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}file_name'],
-          )!,
-      createdAt:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.dateTime,
-            data['${effectivePrefix}created_at'],
-          )!,
-      lastReadSection:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}last_read_section'],
-          )!,
-      lastReadBlock:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}last_read_block'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}game_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      author: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author'],
+      )!,
+      fileName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_name'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      lastReadSection: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_read_section'],
+      )!,
+      lastReadBlock: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_read_block'],
+      )!,
       sourceUrl: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}source_url'],
       ),
-      hasSeenAttribution:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}has_seen_attribution'],
-          )!,
-      format:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}format'],
-          )!,
+      hasSeenAttribution: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_seen_attribution'],
+      )!,
+      format: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}format'],
+      )!,
     );
   }
 
@@ -1002,10 +981,9 @@ class Guide extends DataClass implements Insertable<Guide> {
       createdAt: Value(createdAt),
       lastReadSection: Value(lastReadSection),
       lastReadBlock: Value(lastReadBlock),
-      sourceUrl:
-          sourceUrl == null && nullToAbsent
-              ? const Value.absent()
-              : Value(sourceUrl),
+      sourceUrl: sourceUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceUrl),
       hasSeenAttribution: Value(hasSeenAttribution),
       format: Value(format),
     );
@@ -1081,19 +1059,16 @@ class Guide extends DataClass implements Insertable<Guide> {
       author: data.author.present ? data.author.value : this.author,
       fileName: data.fileName.present ? data.fileName.value : this.fileName,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      lastReadSection:
-          data.lastReadSection.present
-              ? data.lastReadSection.value
-              : this.lastReadSection,
-      lastReadBlock:
-          data.lastReadBlock.present
-              ? data.lastReadBlock.value
-              : this.lastReadBlock,
+      lastReadSection: data.lastReadSection.present
+          ? data.lastReadSection.value
+          : this.lastReadSection,
+      lastReadBlock: data.lastReadBlock.present
+          ? data.lastReadBlock.value
+          : this.lastReadBlock,
       sourceUrl: data.sourceUrl.present ? data.sourceUrl.value : this.sourceUrl,
-      hasSeenAttribution:
-          data.hasSeenAttribution.present
-              ? data.hasSeenAttribution.value
-              : this.hasSeenAttribution,
+      hasSeenAttribution: data.hasSeenAttribution.present
+          ? data.hasSeenAttribution.value
+          : this.hasSeenAttribution,
       format: data.format.present ? data.format.value : this.format,
     );
   }
@@ -1365,7 +1340,7 @@ final class $$GamesTableReferences
     _$GameDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.guides,
-    aliasName: $_aliasNameGenerator(db.games.id, db.guides.gameId),
+    aliasName: 'games__id__guides__game_id',
   );
 
   $$GuidesTableProcessedTableManager get guidesRefs {
@@ -1618,12 +1593,12 @@ class $$GamesTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer:
-              () => $$GamesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer:
-              () => $$GamesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer:
-              () => $$GamesTableAnnotationComposer($db: db, $table: table),
+          createFilteringComposer: () =>
+              $$GamesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GamesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GamesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -1676,16 +1651,14 @@ class $$GamesTableTableManager
                 barcode: barcode,
                 rowid: rowid,
               ),
-          withReferenceMapper:
-              (p0) =>
-                  p0
-                      .map(
-                        (e) => (
-                          e.readTable(table),
-                          $$GamesTableReferences(db, table, e),
-                        ),
-                      )
-                      .toList(),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GamesTable, Game>(table),
+                  $$GamesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
           prefetchHooksCallback: ({guidesRefs = false}) {
             return PrefetchHooks(
               db: db,
@@ -1694,17 +1667,20 @@ class $$GamesTableTableManager
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (guidesRefs)
-                    await $_getPrefetchedData<Game, $GamesTable, Guide>(
+                    await $_getPrefetchedDataByColumns<
+                      Game,
+                      $GamesTable,
+                      Guide,
+                      $GuidesTable
+                    >(
                       currentTable: table,
                       referencedTable: $$GamesTableReferences._guidesRefsTable(
                         db,
                       ),
-                      managerFromTypedResult:
-                          (p0) =>
-                              $$GamesTableReferences(db, table, p0).guidesRefs,
-                      referencedItemsForCurrentItem:
-                          (item, referencedItems) =>
-                              referencedItems.where((e) => e.gameId == item.id),
+                      managerFromTypedResult: (p0) =>
+                          $$GamesTableReferences(db, table, p0).guidesRefs,
+                      currentColumn: 'id',
+                      referencedColumn: 'game_id',
                       typedResults: items,
                     ),
                 ];
@@ -1765,7 +1741,7 @@ final class $$GuidesTableReferences
   $$GuidesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $GamesTable _gameIdTable(_$GameDatabase db) =>
-      db.games.createAlias($_aliasNameGenerator(db.guides.gameId, db.games.id));
+      db.games.createAlias('guides__game_id__games__id');
 
   $$GamesTableProcessedTableManager get gameId {
     final $_column = $_itemColumn<String>('game_id')!;
@@ -2037,12 +2013,12 @@ class $$GuidesTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer:
-              () => $$GuidesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer:
-              () => $$GuidesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer:
-              () => $$GuidesTableAnnotationComposer($db: db, $table: table),
+          createFilteringComposer: () =>
+              $$GuidesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GuidesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GuidesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -2099,50 +2075,50 @@ class $$GuidesTableTableManager
                 format: format,
                 rowid: rowid,
               ),
-          withReferenceMapper:
-              (p0) =>
-                  p0
-                      .map(
-                        (e) => (
-                          e.readTable(table),
-                          $$GuidesTableReferences(db, table, e),
-                        ),
-                      )
-                      .toList(),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GuidesTable, Guide>(table),
+                  $$GuidesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
           prefetchHooksCallback: ({gameId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
-              addJoins: <
-                T extends TableManagerState<
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic,
-                  dynamic
-                >
-              >(state) {
-                if (gameId) {
-                  state =
-                      state.withJoin(
-                            currentTable: table,
-                            currentColumn: table.gameId,
-                            referencedTable: $$GuidesTableReferences
-                                ._gameIdTable(db),
-                            referencedColumn:
-                                $$GuidesTableReferences._gameIdTable(db).id,
-                          )
-                          as T;
-                }
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (gameId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.gameId,
+                                referencedTable: $$GuidesTableReferences
+                                    ._gameIdTable(db),
+                                referencedColumn: $$GuidesTableReferences
+                                    ._gameIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
 
-                return state;
-              },
+                    return state;
+                  },
               getPrefetchedDataCallback: (items) async {
                 return [];
               },

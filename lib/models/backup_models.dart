@@ -5,7 +5,7 @@ part 'backup_models.g.dart';
 
 /// Metadata for backup files containing validation and version information
 @freezed
-class BackupMetadata with _$BackupMetadata {
+abstract class BackupMetadata with _$BackupMetadata {
   const factory BackupMetadata({
     required String version,
     required DateTime createdAt,
@@ -22,7 +22,7 @@ class BackupMetadata with _$BackupMetadata {
 
 /// Result of backup file validation
 @freezed
-class BackupValidationResult with _$BackupValidationResult {
+sealed class BackupValidationResult with _$BackupValidationResult {
   const factory BackupValidationResult.valid(BackupMetadata metadata) = _Valid;
   const factory BackupValidationResult.invalid(String reason) = _Invalid;
   const factory BackupValidationResult.corrupted(String details) = _Corrupted;
@@ -30,7 +30,7 @@ class BackupValidationResult with _$BackupValidationResult {
 
 /// Progress information for backup/restore operations
 @freezed
-class BackupProgress with _$BackupProgress {
+abstract class BackupProgress with _$BackupProgress {
   const factory BackupProgress({
     required double progress, // 0.0 to 1.0
     required String currentStep,
@@ -46,7 +46,7 @@ enum BackupOperationType { create, restore, validate }
 
 /// Backup file information
 @freezed
-class BackupFileInfo with _$BackupFileInfo {
+abstract class BackupFileInfo with _$BackupFileInfo {
   const factory BackupFileInfo({
     required String filePath,
     required String fileName,

@@ -9,7 +9,7 @@ part 'backup_state_provider.g.dart';
 
 /// State representation for backup operations
 @freezed
-class BackupOperationState with _$BackupOperationState {
+sealed class BackupOperationState with _$BackupOperationState {
   const factory BackupOperationState.idle() = _Idle;
   const factory BackupOperationState.selectingDirectory() = _SelectingDirectory;
   const factory BackupOperationState.selectingFile() = _SelectingFile;
