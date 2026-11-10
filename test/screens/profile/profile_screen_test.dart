@@ -7,11 +7,16 @@ import 'package:chkpnt/screens/profile/widgets/profile_visualisation_section.dar
 import 'package:chkpnt/screens/profile/widgets/profile_incoming_games_section.dart';
 import 'package:chkpnt/screens/profile/widgets/profile_backup_section.dart';
 import 'package:chkpnt/screens/main/widgets/main_screen_bottom_nav.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import '../../test_helpers.dart';
 
 void main() {
   group('ProfileScreen', () {
     Widget createProfileScreen() {
-      return const ProviderScope(child: MaterialApp(home: ProfileScreen()));
+      return ProviderScope(
+        overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
+        child: MaterialApp(home: ProfileScreen()),
+      );
     }
 
     testWidgets('renders all main sections', (WidgetTester tester) async {

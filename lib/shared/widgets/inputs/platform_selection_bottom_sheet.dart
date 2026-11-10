@@ -98,12 +98,15 @@ class PlatformSelectionBottomSheet extends StatelessWidget {
           style: EditScreenStyles.platformListLabelStyle,
         ),
         const SizedBox(height: EditScreenStyles.platformListSpacing),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: platforms.length,
-          itemBuilder: (context, index) =>
-              _buildPlatformTile(context, platforms[index]),
+        Material(
+          type: MaterialType.transparency,
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: platforms.length,
+            itemBuilder: (context, index) =>
+                _buildPlatformTile(context, platforms[index]),
+          ),
         ),
       ],
     );
