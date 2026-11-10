@@ -47,10 +47,9 @@ class BacklogPlatformSection extends ConsumerWidget {
         SlimSectionHeader(
           title: platform,
           isExpanded: isExpanded,
-          onToggle:
-              () => ref
-                  .read(sectionExpansionProvider.notifier)
-                  .toggleSection(section),
+          onToggle: () => ref
+              .read(sectionExpansionProvider.notifier)
+              .toggleSection(section),
           isEmpty: false,
           gameCount: games.length,
         ),

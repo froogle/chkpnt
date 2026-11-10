@@ -54,51 +54,39 @@ class ProfileBackupSection extends ConsumerWidget {
   ) {
     return state.when(
       idle: () => _buildIdleState(context, ref, isLandscape),
-      selectingDirectory:
-          () => _buildLoadingState(
-            isLandscape,
-            'Selecting backup location...',
-            null,
-          ),
-      selectingFile:
-          () =>
-              _buildLoadingState(isLandscape, 'Selecting backup file...', null),
-      creatingBackup:
-          (progress, currentStep, statusMessage) => _buildProgressState(
+      selectingDirectory: () =>
+          _buildLoadingState(isLandscape, 'Selecting backup location...', null),
+      selectingFile: () =>
+          _buildLoadingState(isLandscape, 'Selecting backup file...', null),
+      creatingBackup: (progress, currentStep, statusMessage) =>
+          _buildProgressState(
             isLandscape,
             'Creating Backup',
             progress,
             currentStep,
             statusMessage,
           ),
-      restoringBackup:
-          (progress, currentStep, statusMessage) => _buildProgressState(
+      restoringBackup: (progress, currentStep, statusMessage) =>
+          _buildProgressState(
             isLandscape,
             'Restoring Backup',
             progress,
             currentStep,
             statusMessage,
           ),
-      validatingBackup:
-          (filePath) => _buildLoadingState(
-            isLandscape,
-            'Validating backup file...',
-            null,
-          ),
-      confirmingRestore:
-          (backupFilePath, metadata) => _buildConfirmationState(
-            context,
-            ref,
-            isLandscape,
-            backupFilePath,
-            metadata,
-          ),
-      success:
-          (message, filePath) =>
-              _buildSuccessState(context, ref, isLandscape, message, filePath),
-      error:
-          (message, code, originalError) =>
-              _buildErrorState(context, ref, isLandscape, message),
+      validatingBackup: (filePath) =>
+          _buildLoadingState(isLandscape, 'Validating backup file...', null),
+      confirmingRestore: (backupFilePath, metadata) => _buildConfirmationState(
+        context,
+        ref,
+        isLandscape,
+        backupFilePath,
+        metadata,
+      ),
+      success: (message, filePath) =>
+          _buildSuccessState(context, ref, isLandscape, message, filePath),
+      error: (message, code, originalError) =>
+          _buildErrorState(context, ref, isLandscape, message),
     );
   }
 
@@ -131,8 +119,8 @@ class ProfileBackupSection extends ConsumerWidget {
       children: [
         Expanded(
           child: _buildActionButton(
-            onPressed:
-                () => ref.read(backupStateProvider.notifier).startRestore(),
+            onPressed: () =>
+                ref.read(backupStateProvider.notifier).startRestore(),
             icon: Icons.restore_outlined,
             label: 'Restore Backup',
             isLandscape: isLandscape,
@@ -141,8 +129,8 @@ class ProfileBackupSection extends ConsumerWidget {
         SizedBox(width: isLandscape ? 8 : 12),
         Expanded(
           child: _buildActionButton(
-            onPressed:
-                () => ref.read(backupStateProvider.notifier).startBackup(),
+            onPressed: () =>
+                ref.read(backupStateProvider.notifier).startBackup(),
             icon: Icons.backup_outlined,
             label: 'Create Backup',
             isLandscape: isLandscape,
@@ -171,30 +159,31 @@ class ProfileBackupSection extends ConsumerWidget {
             color: Colors.white,
           ),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryPurple,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(isLandscape ? 8 : 12),
-          ),
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          padding: EdgeInsets.symmetric(
-            horizontal: isLandscape ? 12 : 16,
-            vertical: isLandscape ? 8 : 12,
-          ),
-        ).copyWith(
-          backgroundColor: WidgetStateProperty.resolveWith<Color>((
-            Set<WidgetState> states,
-          ) {
-            if (states.contains(WidgetState.pressed)) {
-              return AppColors.lightPurple;
-            } else if (states.contains(WidgetState.hovered)) {
-              return AppColors.secondaryPurple;
-            }
-            return AppColors.primaryPurple;
-          }),
-        ),
+        style:
+            ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryPurple,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(isLandscape ? 8 : 12),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              padding: EdgeInsets.symmetric(
+                horizontal: isLandscape ? 12 : 16,
+                vertical: isLandscape ? 8 : 12,
+              ),
+            ).copyWith(
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                Set<WidgetState> states,
+              ) {
+                if (states.contains(WidgetState.pressed)) {
+                  return AppColors.lightPurple;
+                } else if (states.contains(WidgetState.hovered)) {
+                  return AppColors.secondaryPurple;
+                }
+                return AppColors.primaryPurple;
+              }),
+            ),
       ),
     );
   }
@@ -343,10 +332,9 @@ class ProfileBackupSection extends ConsumerWidget {
             SizedBox(width: isLandscape ? 8 : 12),
             Expanded(
               child: _buildActionButton(
-                onPressed:
-                    () => ref
-                        .read(backupStateProvider.notifier)
-                        .confirmRestore(backupFilePath),
+                onPressed: () => ref
+                    .read(backupStateProvider.notifier)
+                    .confirmRestore(backupFilePath),
                 icon: Icons.restore_outlined,
                 label: 'Restore',
                 isLandscape: isLandscape,
@@ -445,8 +433,8 @@ class ProfileBackupSection extends ConsumerWidget {
         ),
         SizedBox(height: isLandscape ? 12 : 16),
         _buildSecondaryButton(
-          onPressed:
-              () => ref.read(backupStateProvider.notifier).dismissMessage(),
+          onPressed: () =>
+              ref.read(backupStateProvider.notifier).dismissMessage(),
           label: 'OK',
           isLandscape: isLandscape,
         ),
@@ -490,8 +478,8 @@ class ProfileBackupSection extends ConsumerWidget {
         ),
         SizedBox(height: isLandscape ? 12 : 16),
         _buildSecondaryButton(
-          onPressed:
-              () => ref.read(backupStateProvider.notifier).dismissMessage(),
+          onPressed: () =>
+              ref.read(backupStateProvider.notifier).dismissMessage(),
           label: 'Dismiss',
           isLandscape: isLandscape,
         ),
@@ -509,39 +497,40 @@ class ProfileBackupSection extends ConsumerWidget {
       width: double.infinity,
       child: OutlinedButton(
         onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          side: BorderSide(
-            color: AppColors.primaryPurple.withValues(alpha: 0.3),
-            width: 1,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(isLandscape ? 8 : 12),
-          ),
-          padding: EdgeInsets.symmetric(
-            horizontal: isLandscape ? 12 : 16,
-            vertical: isLandscape ? 8 : 12,
-          ),
-        ).copyWith(
-          side: WidgetStateProperty.resolveWith<BorderSide>((
-            Set<WidgetState> states,
-          ) {
-            if (states.contains(WidgetState.pressed)) {
-              return BorderSide(
-                color: AppColors.lightPurple.withValues(alpha: 0.5),
+        style:
+            OutlinedButton.styleFrom(
+              side: BorderSide(
+                color: AppColors.primaryPurple.withValues(alpha: 0.3),
                 width: 1,
-              );
-            } else if (states.contains(WidgetState.hovered)) {
-              return BorderSide(
-                color: AppColors.secondaryPurple.withValues(alpha: 0.4),
-                width: 1,
-              );
-            }
-            return BorderSide(
-              color: AppColors.primaryPurple.withValues(alpha: 0.3),
-              width: 1,
-            );
-          }),
-        ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(isLandscape ? 8 : 12),
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: isLandscape ? 12 : 16,
+                vertical: isLandscape ? 8 : 12,
+              ),
+            ).copyWith(
+              side: WidgetStateProperty.resolveWith<BorderSide>((
+                Set<WidgetState> states,
+              ) {
+                if (states.contains(WidgetState.pressed)) {
+                  return BorderSide(
+                    color: AppColors.lightPurple.withValues(alpha: 0.5),
+                    width: 1,
+                  );
+                } else if (states.contains(WidgetState.hovered)) {
+                  return BorderSide(
+                    color: AppColors.secondaryPurple.withValues(alpha: 0.4),
+                    width: 1,
+                  );
+                }
+                return BorderSide(
+                  color: AppColors.primaryPurple.withValues(alpha: 0.3),
+                  width: 1,
+                );
+              }),
+            ),
         child: Text(
           label,
           style: TextStyle(

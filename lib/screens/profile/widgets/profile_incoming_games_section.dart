@@ -83,10 +83,9 @@ class ProfileIncomingGamesSection extends ConsumerWidget {
     BuildContext context,
   ) {
     return Column(
-      children:
-          games
-              .map((game) => _buildGameListItem(game, isLandscape, context))
-              .toList(),
+      children: games
+          .map((game) => _buildGameListItem(game, isLandscape, context))
+          .toList(),
     );
   }
 

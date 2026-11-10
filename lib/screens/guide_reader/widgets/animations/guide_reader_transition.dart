@@ -15,22 +15,21 @@ class GuideReaderTransition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0.0, 1.0),
-        end: Offset.zero,
-      ).animate(
-        CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
-      ),
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: Offset.zero,
-          end: const Offset(0.0, -1.0),
-        ).animate(
-          CurvedAnimation(
-            parent: secondaryAnimation,
-            curve: Curves.easeInOutCubic,
+      position: Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero)
+          .animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
           ),
-        ),
+      child: SlideTransition(
+        position:
+            Tween<Offset>(
+              begin: Offset.zero,
+              end: const Offset(0.0, -1.0),
+            ).animate(
+              CurvedAnimation(
+                parent: secondaryAnimation,
+                curve: Curves.easeInOutCubic,
+              ),
+            ),
         child: child,
       ),
     );

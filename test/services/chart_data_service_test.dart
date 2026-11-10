@@ -188,16 +188,15 @@ void main() {
       });
 
       test('presents every Status slice as Status presentation does', () {
-        final everyStatusGames =
-            GameStatus.values
-                .map(
-                  (status) => TestHelpers.createTestGame(
-                    title: 'Game ${status.index}',
-                    platform: 'PlayStation 5',
-                    status: status,
-                  ),
-                )
-                .toList();
+        final everyStatusGames = GameStatus.values
+            .map(
+              (status) => TestHelpers.createTestGame(
+                title: 'Game ${status.index}',
+                platform: 'PlayStation 5',
+                status: status,
+              ),
+            )
+            .toList();
 
         final result = ChartDataService.generateStatusData(everyStatusGames);
 

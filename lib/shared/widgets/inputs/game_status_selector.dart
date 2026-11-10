@@ -26,9 +26,8 @@ class GameStatusSelector extends StatelessWidget {
     final statuses = _getAvailableStatuses();
 
     return LayoutBuilder(
-      builder:
-          (context, constraints) =>
-              _buildResponsiveStatusGrid(context, statuses, constraints),
+      builder: (context, constraints) =>
+          _buildResponsiveStatusGrid(context, statuses, constraints),
     );
   }
 

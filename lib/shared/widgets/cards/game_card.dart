@@ -133,10 +133,9 @@ class GameCard extends ConsumerWidget {
 
   Widget _buildGradientOverlay() {
     final hasCustomImage = _hasCustomImage();
-    final gradientDecoration =
-        hasCustomImage
-            ? GameCardStyles.compactGameCardGradientWithImage
-            : GameCardStyles.compactGameCardGradientDefault;
+    final gradientDecoration = hasCustomImage
+        ? GameCardStyles.compactGameCardGradientWithImage
+        : GameCardStyles.compactGameCardGradientDefault;
 
     return Positioned.fill(child: Container(decoration: gradientDecoration));
   }
@@ -147,10 +146,9 @@ class GameCard extends ConsumerWidget {
 
   Widget _buildCompactTitle() {
     final hasCustomImage = _hasCustomImage();
-    final titleStyle =
-        hasCustomImage
-            ? GameCardStyles.compactGameCardTitleStyleWithImage
-            : GameCardStyles.compactGameCardTitleStyleDefault;
+    final titleStyle = hasCustomImage
+        ? GameCardStyles.compactGameCardTitleStyleWithImage
+        : GameCardStyles.compactGameCardTitleStyleDefault;
 
     return Positioned(
       left: 12,
@@ -169,10 +167,9 @@ class GameCard extends ConsumerWidget {
     return Positioned(
       left: 12,
       bottom: 12,
-      right:
-          game.status == GameStatus.backlog && onPlayPressed != null
-              ? 50
-              : 12, // Space for play button if backlog
+      right: game.status == GameStatus.backlog && onPlayPressed != null
+          ? 50
+          : 12, // Space for play button if backlog
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(

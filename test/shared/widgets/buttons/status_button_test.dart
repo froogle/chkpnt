@@ -164,16 +164,15 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: Column(
-              children:
-                  statuses.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final status = entry.value;
-                    return StatusButton(
-                      status: status,
-                      isSelected: index == selectedIndex,
-                      onTap: () {},
-                    );
-                  }).toList(),
+              children: statuses.asMap().entries.map((entry) {
+                final index = entry.key;
+                final status = entry.value;
+                return StatusButton(
+                  status: status,
+                  isSelected: index == selectedIndex,
+                  onTap: () {},
+                );
+              }).toList(),
             ),
           ),
         ),

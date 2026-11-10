@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chkpnt/config/feature_flags.dart';
 
@@ -61,10 +62,9 @@ class SubscriptionStateNotifier extends StateNotifier<SubscriptionState> {
     try {
       final hasSubscription = await _service.checkSubscriptionStatus();
       state = SubscriptionState(
-        status:
-            hasSubscription
-                ? SubscriptionStatus.active
-                : SubscriptionStatus.inactive,
+        status: hasSubscription
+            ? SubscriptionStatus.active
+            : SubscriptionStatus.inactive,
         isLoading: false,
         lastChecked: DateTime.now(),
       );
@@ -99,10 +99,9 @@ class SubscriptionStateNotifier extends StateNotifier<SubscriptionState> {
 
     final hasSubscription = await _service.restorePurchases();
     state = SubscriptionState(
-      status:
-          hasSubscription
-              ? SubscriptionStatus.active
-              : SubscriptionStatus.inactive,
+      status: hasSubscription
+          ? SubscriptionStatus.active
+          : SubscriptionStatus.inactive,
       isLoading: false,
       lastChecked: DateTime.now(),
     );

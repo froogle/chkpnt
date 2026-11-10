@@ -27,9 +27,8 @@ class ChartDataService {
     }
 
     // Sort entries by count descending
-    final entries =
-        platformCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+    final entries = platformCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
     return entries.asMap().entries.map((entry) {
       final index = entry.key;

@@ -53,12 +53,12 @@ class GameDetailSheetActions extends StatelessWidget {
       onPressed: hasChanges ? onSavePressed : null,
       label: 'Save',
       icon: Icons.save,
-      gradient:
-          hasChanges
-              ? AppGradients.buttonGradient
-              : InputStyles.disabledActionButtonGradient,
-      shadowColour:
-          hasChanges ? AppColors.primaryPurple.withValues(alpha: 0.3) : null,
+      gradient: hasChanges
+          ? AppGradients.buttonGradient
+          : InputStyles.disabledActionButtonGradient,
+      shadowColour: hasChanges
+          ? AppColors.primaryPurple.withValues(alpha: 0.3)
+          : null,
       enabled: hasChanges,
     );
   }

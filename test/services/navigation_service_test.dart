@@ -14,23 +14,22 @@ void main() {
         MaterialApp(
           initialRoute: '/main',
           routes: {
-            '/main':
-                (context) => Scaffold(
-                  body: Builder(
-                    builder: (context) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          // Try to navigate to the same screen
-                          NavigationService.handleNavigation(
-                            context,
-                            NavigationService.homeIndex,
-                          );
-                        },
-                        child: const Text('Navigate'),
+            '/main': (context) => Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      // Try to navigate to the same screen
+                      NavigationService.handleNavigation(
+                        context,
+                        NavigationService.homeIndex,
                       );
                     },
-                  ),
-                ),
+                    child: const Text('Navigate'),
+                  );
+                },
+              ),
+            ),
             '/backlog': (context) {
               navigationCalled = true;
               return const Scaffold(body: Text('Backlog'));
@@ -53,24 +52,23 @@ void main() {
         MaterialApp(
           initialRoute: '/main',
           routes: {
-            '/main':
-                (context) => Scaffold(
-                  body: Builder(
-                    builder: (context) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          NavigationService.handleNavigation(
-                            context,
-                            NavigationService.backlogIndex,
-                          );
-                        },
-                        child: const Text('Navigate to Backlog'),
+            '/main': (context) => Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      NavigationService.handleNavigation(
+                        context,
+                        NavigationService.backlogIndex,
                       );
                     },
-                  ),
-                ),
-            '/backlog':
-                (context) => const Scaffold(body: Text('Backlog Screen')),
+                    child: const Text('Navigate to Backlog'),
+                  );
+                },
+              ),
+            ),
+            '/backlog': (context) =>
+                const Scaffold(body: Text('Backlog Screen')),
           },
         ),
       );

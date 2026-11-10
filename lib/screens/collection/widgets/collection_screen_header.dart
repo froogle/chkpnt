@@ -62,13 +62,12 @@ class _CollectionScreenHeaderState
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: _showTitle ? 1.0 : 0.0,
-        child:
-            _showTitle
-                ? Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _buildTitleRow(),
-                )
-                : const SizedBox.shrink(),
+        child: _showTitle
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildTitleRow(),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }

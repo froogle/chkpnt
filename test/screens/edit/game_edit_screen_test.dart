@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/screens/edit/game_edit_screen.dart';
 import 'package:chkpnt/providers/game_edit_provider.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import '../../test_helpers.dart';
 
 void main() {
   group('GameEditScreen', () {
@@ -25,6 +27,9 @@ void main() {
       testWidgets('renders correctly with edit title', (tester) async {
         await tester.pumpWidget(
           ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
             child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
           ),
         );
@@ -39,6 +44,9 @@ void main() {
       testWidgets('shows existing game title', (tester) async {
         await tester.pumpWidget(
           ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
             child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
           ),
         );
@@ -52,6 +60,9 @@ void main() {
       testWidgets('shows Save Changes button', (tester) async {
         await tester.pumpWidget(
           ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
             child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
           ),
         );
@@ -66,7 +77,12 @@ void main() {
     group('Add Mode', () {
       testWidgets('renders correctly with add title', (tester) async {
         await tester.pumpWidget(
-          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+          ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
+            child: MaterialApp(home: GameEditScreen.add()),
+          ),
         );
 
         // No more async timing issues
@@ -78,7 +94,12 @@ void main() {
 
       testWidgets('shows default title "New Game"', (tester) async {
         await tester.pumpWidget(
-          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+          ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
+            child: MaterialApp(home: GameEditScreen.add()),
+          ),
         );
 
         // No more async timing issues
@@ -89,7 +110,12 @@ void main() {
 
       testWidgets('shows Scan Barcode button before any entry', (tester) async {
         await tester.pumpWidget(
-          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+          ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
+            child: MaterialApp(home: GameEditScreen.add()),
+          ),
         );
 
         // No more async timing issues
@@ -106,7 +132,12 @@ void main() {
         tester,
       ) async {
         await tester.pumpWidget(
-          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+          ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
+            child: MaterialApp(home: GameEditScreen.add()),
+          ),
         );
         await tester.pump();
 
@@ -124,6 +155,7 @@ void main() {
     testWidgets('shows game information', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
           child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
         ),
       );
@@ -138,6 +170,7 @@ void main() {
     testWidgets('allows editing game title', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
           child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
         ),
       );
@@ -159,6 +192,7 @@ void main() {
     testWidgets('save button is enabled when changes are made', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
           child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
         ),
       );
@@ -183,6 +217,7 @@ void main() {
     testWidgets('shows platform selection', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
           child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
         ),
       );
@@ -197,6 +232,7 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(800, 400));
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
           child: MaterialApp(
             home: Scaffold(body: GameEditScreen.edit(game: testGame)),
           ),
@@ -213,6 +249,7 @@ void main() {
     testWidgets('title field selects all text when tapped', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
           child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
         ),
       );
@@ -232,6 +269,7 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
           child: MaterialApp(
             home: Scaffold(body: GameEditScreen.edit(game: testGame)),
           ),
@@ -249,6 +287,9 @@ void main() {
       testWidgets('displays current game status', (tester) async {
         await tester.pumpWidget(
           ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
             child: MaterialApp(home: GameEditScreen.edit(game: testGame)),
           ),
         );
@@ -265,7 +306,9 @@ void main() {
       testWidgets('properly initializes provider state for edit mode', (
         tester,
       ) async {
-        final container = ProviderContainer();
+        final container = ProviderContainer(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
+        );
 
         await tester.pumpWidget(
           UncontrolledProviderScope(
@@ -294,7 +337,9 @@ void main() {
       testWidgets('properly initializes provider state for add mode', (
         tester,
       ) async {
-        final container = ProviderContainer();
+        final container = ProviderContainer(
+          overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
+        );
 
         await tester.pumpWidget(
           UncontrolledProviderScope(
@@ -326,7 +371,12 @@ void main() {
         tester,
       ) async {
         await tester.pumpWidget(
-          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+          ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
+            child: MaterialApp(home: GameEditScreen.add()),
+          ),
         );
 
         await tester.pump();
@@ -344,7 +394,12 @@ void main() {
         tester,
       ) async {
         await tester.pumpWidget(
-          ProviderScope(child: MaterialApp(home: GameEditScreen.add())),
+          ProviderScope(
+            overrides: [
+              gameListProvider.overrideWith(EmptyGameListNotifier.new),
+            ],
+            child: MaterialApp(home: GameEditScreen.add()),
+          ),
         );
 
         await tester.pump();

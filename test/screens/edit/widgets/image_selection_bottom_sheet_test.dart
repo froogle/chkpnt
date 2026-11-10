@@ -73,18 +73,14 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: Builder(
-              builder:
-                  (context) => ElevatedButton(
-                    onPressed:
-                        () => showModalBottomSheet<dynamic>(
-                          context: context,
-                          builder:
-                              (_) => const ImageSelectionBottomSheet(
-                                hasExistingImage: false,
-                              ),
-                        ),
-                    child: const Text('Show Sheet'),
-                  ),
+              builder: (context) => ElevatedButton(
+                onPressed: () => showModalBottomSheet<dynamic>(
+                  context: context,
+                  builder: (_) =>
+                      const ImageSelectionBottomSheet(hasExistingImage: false),
+                ),
+                child: const Text('Show Sheet'),
+              ),
             ),
           ),
         ),
@@ -107,18 +103,14 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: Builder(
-              builder:
-                  (context) => ElevatedButton(
-                    onPressed:
-                        () => showModalBottomSheet<dynamic>(
-                          context: context,
-                          builder:
-                              (_) => const ImageSelectionBottomSheet(
-                                hasExistingImage: false,
-                              ),
-                        ),
-                    child: const Text('Show Sheet'),
-                  ),
+              builder: (context) => ElevatedButton(
+                onPressed: () => showModalBottomSheet<dynamic>(
+                  context: context,
+                  builder: (_) =>
+                      const ImageSelectionBottomSheet(hasExistingImage: false),
+                ),
+                child: const Text('Show Sheet'),
+              ),
             ),
           ),
         ),
@@ -147,19 +139,15 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: Builder(
-              builder:
-                  (context) => ElevatedButton(
-                    onPressed:
-                        () => showModalBottomSheet<dynamic>(
-                          context: context,
-                          isScrollControlled: true,
-                          builder:
-                              (_) => const ImageSelectionBottomSheet(
-                                hasExistingImage: true,
-                              ),
-                        ),
-                    child: const Text('Show Sheet'),
-                  ),
+              builder: (context) => ElevatedButton(
+                onPressed: () => showModalBottomSheet<dynamic>(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) =>
+                      const ImageSelectionBottomSheet(hasExistingImage: true),
+                ),
+                child: const Text('Show Sheet'),
+              ),
             ),
           ),
         ),
@@ -207,15 +195,13 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed:
-                          () => ImageSelectionBottomSheet.show(
-                            context: context,
-                            hasExistingImage: false,
-                          ),
-                      child: const Text('Show Sheet'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () => ImageSelectionBottomSheet.show(
+                    context: context,
+                    hasExistingImage: false,
+                  ),
+                  child: const Text('Show Sheet'),
+                ),
               ),
             ),
           ),
@@ -239,16 +225,15 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed: () async {
-                        result = await ImageSelectionBottomSheet.show(
-                          context: context,
-                          hasExistingImage: false,
-                        );
-                      },
-                      child: const Text('Show Sheet'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    result = await ImageSelectionBottomSheet.show(
+                      context: context,
+                      hasExistingImage: false,
+                    );
+                  },
+                  child: const Text('Show Sheet'),
+                ),
               ),
             ),
           ),
@@ -273,16 +258,15 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Builder(
-                builder:
-                    (context) => ElevatedButton(
-                      onPressed: () async {
-                        result = await ImageSelectionBottomSheet.show(
-                          context: context,
-                          hasExistingImage: false,
-                        );
-                      },
-                      child: const Text('Show Sheet'),
-                    ),
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    result = await ImageSelectionBottomSheet.show(
+                      context: context,
+                      hasExistingImage: false,
+                    );
+                  },
+                  child: const Text('Show Sheet'),
+                ),
               ),
             ),
           ),

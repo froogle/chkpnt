@@ -32,10 +32,9 @@ class ContentSection {
 
   factory ContentSection.fromJson(Map<String, dynamic> json) => ContentSection(
     title: json['title'] as String,
-    blocks:
-        (json['blocks'] as List<dynamic>)
-            .map((b) => ContentBlock.fromJson(b as Map<String, dynamic>))
-            .toList(),
+    blocks: (json['blocks'] as List<dynamic>)
+        .map((b) => ContentBlock.fromJson(b as Map<String, dynamic>))
+        .toList(),
   );
 }
 
@@ -63,15 +62,15 @@ class GuideContent {
     title: json['title'] as String,
     author: json['author'] as String,
     url: json['url'] as String?,
-    sections:
-        (json['sections'] as List<dynamic>)
-            .map((s) => ContentSection.fromJson(s as Map<String, dynamic>))
-            .toList(),
+    sections: (json['sections'] as List<dynamic>)
+        .map((s) => ContentSection.fromJson(s as Map<String, dynamic>))
+        .toList(),
   );
 
   String toJsonString({bool pretty = false}) {
-    final encoder =
-        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+    final encoder = pretty
+        ? const JsonEncoder.withIndent('  ')
+        : const JsonEncoder();
     return encoder.convert(toJson());
   }
 
@@ -130,8 +129,9 @@ class GuideContentFetcher {
 
   GuidePage parseFromHtml(String html) {
     final document = html_parser.parse(html);
-    final url =
-        document.querySelector('link[rel="canonical"]')?.attributes['href'];
+    final url = document
+        .querySelector('link[rel="canonical"]')
+        ?.attributes['href'];
     final (extractedTitle, extractedAuthor) = _extractTitleAndAuthor(document);
     final title =
         extractedTitle ??
@@ -177,8 +177,9 @@ class GuideContentFetcher {
       if (authorLinkStart > 0) {
         var extractedTitle = h2Html.substring(0, authorLinkStart).trim();
         if (extractedTitle.toLowerCase().endsWith(' by')) {
-          extractedTitle =
-              extractedTitle.substring(0, extractedTitle.length - 3).trim();
+          extractedTitle = extractedTitle
+              .substring(0, extractedTitle.length - 3)
+              .trim();
         }
         title = extractedTitle;
       }

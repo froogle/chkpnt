@@ -225,9 +225,8 @@ class ImageSelectionBottomSheet extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder:
-          (context) =>
-              ImageSelectionBottomSheet(hasExistingImage: hasExistingImage),
+      builder: (context) =>
+          ImageSelectionBottomSheet(hasExistingImage: hasExistingImage),
     );
   }
 }

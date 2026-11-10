@@ -13,8 +13,10 @@ import 'styles/styles.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(retry: _neverRetry, child: MyApp()));
 }
+
+Duration? _neverRetry(int retryCount, Object error) => null;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

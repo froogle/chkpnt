@@ -10,12 +10,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:chkpnt/screens/main/main_screen.dart';
+import 'package:chkpnt/providers/game_provider.dart';
+import 'test_helpers.dart';
 
 void main() {
   testWidgets('MainScreen displays game sections', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: MainScreen())),
+      ProviderScope(
+        overrides: [gameListProvider.overrideWith(EmptyGameListNotifier.new)],
+        child: MaterialApp(home: MainScreen()),
+      ),
     );
 
     // Wait for providers to initialize and async data to load

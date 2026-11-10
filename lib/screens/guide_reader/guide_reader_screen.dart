@@ -53,13 +53,12 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
     final positions = _itemPositionsListener.itemPositions.value;
     if (positions.isEmpty) return null;
 
-    final visibleItems =
-        positions
-            .where(
-              (position) =>
-                  position.itemLeadingEdge < 1 && position.itemTrailingEdge > 0,
-            )
-            .toList();
+    final visibleItems = positions
+        .where(
+          (position) =>
+              position.itemLeadingEdge < 1 && position.itemTrailingEdge > 0,
+        )
+        .toList();
 
     if (visibleItems.isEmpty) return null;
 
@@ -139,12 +138,11 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder:
-            (context) => GuideWebReaderScreen(
-              guide: widget.guide,
-              url: sourceUrl,
-              canDelete: false,
-            ),
+        builder: (context) => GuideWebReaderScreen(
+          guide: widget.guide,
+          url: sourceUrl,
+          canDelete: false,
+        ),
       ),
     );
   }
@@ -199,15 +197,13 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   Color get _textColour =>
       _preferences.invertedColours ? Colors.black : Colors.white;
 
-  Color get _secondaryTextColour =>
-      _preferences.invertedColours
-          ? Colors.black.withValues(alpha: 0.6)
-          : Colors.white.withValues(alpha: 0.6);
+  Color get _secondaryTextColour => _preferences.invertedColours
+      ? Colors.black.withValues(alpha: 0.6)
+      : Colors.white.withValues(alpha: 0.6);
 
-  Color get _preformattedBackgroundColour =>
-      _preferences.invertedColours
-          ? Colors.black.withValues(alpha: 0.05)
-          : Colors.white.withValues(alpha: 0.05);
+  Color get _preformattedBackgroundColour => _preferences.invertedColours
+      ? Colors.black.withValues(alpha: 0.05)
+      : Colors.white.withValues(alpha: 0.05);
 
   @override
   Widget build(BuildContext context) {
@@ -316,12 +312,9 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
         .watch(readingPositionProvider(widget.guide.id))
         .when(
           data: _buildGuideContent,
-          loading:
-              () => Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryPurple,
-                ),
-              ),
+          loading: () => Center(
+            child: CircularProgressIndicator(color: AppColors.primaryPurple),
+          ),
           error: (error, stack) => _buildErrorState(),
         );
   }
@@ -438,10 +431,12 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildToolbar() {
-    final toolbarBackgroundColour =
-        _preferences.invertedColours ? Colors.white : Colors.black;
-    final toolbarTextColour =
-        _preferences.invertedColours ? Colors.black : Colors.white;
+    final toolbarBackgroundColour = _preferences.invertedColours
+        ? Colors.white
+        : Colors.black;
+    final toolbarTextColour = _preferences.invertedColours
+        ? Colors.black
+        : Colors.white;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -492,20 +487,21 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildFontSizeControls() {
-    final toolbarTextColour =
-        _preferences.invertedColours ? Colors.black : Colors.white;
+    final toolbarTextColour = _preferences.invertedColours
+        ? Colors.black
+        : Colors.white;
 
     return Row(
       children: [
         IconButton(
-          onPressed:
-              _preferences.canDecreaseFontSize ? _decreaseFontSize : null,
+          onPressed: _preferences.canDecreaseFontSize
+              ? _decreaseFontSize
+              : null,
           icon: Icon(
             Icons.text_decrease,
-            color:
-                _preferences.canDecreaseFontSize
-                    ? toolbarTextColour
-                    : toolbarTextColour.withValues(alpha: 0.3),
+            color: _preferences.canDecreaseFontSize
+                ? toolbarTextColour
+                : toolbarTextColour.withValues(alpha: 0.3),
           ),
         ),
         Text(
@@ -517,14 +513,14 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
           ),
         ),
         IconButton(
-          onPressed:
-              _preferences.canIncreaseFontSize ? _increaseFontSize : null,
+          onPressed: _preferences.canIncreaseFontSize
+              ? _increaseFontSize
+              : null,
           icon: Icon(
             Icons.text_increase,
-            color:
-                _preferences.canIncreaseFontSize
-                    ? toolbarTextColour
-                    : toolbarTextColour.withValues(alpha: 0.3),
+            color: _preferences.canIncreaseFontSize
+                ? toolbarTextColour
+                : toolbarTextColour.withValues(alpha: 0.3),
           ),
         ),
       ],
@@ -532,8 +528,9 @@ class _GuideReaderScreenState extends ConsumerState<GuideReaderScreen> {
   }
 
   Widget _buildColourToggle() {
-    final toolbarTextColour =
-        _preferences.invertedColours ? Colors.black : Colors.white;
+    final toolbarTextColour = _preferences.invertedColours
+        ? Colors.black
+        : Colors.white;
 
     return IconButton(
       onPressed: _toggleColours,

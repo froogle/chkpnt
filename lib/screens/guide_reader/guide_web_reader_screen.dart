@@ -36,16 +36,15 @@ class _GuideWebReaderScreenState extends ConsumerState<GuideWebReaderScreen> {
   }
 
   void _initWebView() {
-    _controller =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onPageStarted: _onPageStarted,
-              onPageFinished: _onPageFinished,
-            ),
-          )
-          ..loadRequest(Uri.parse(widget.url));
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: _onPageStarted,
+          onPageFinished: _onPageFinished,
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
   }
 
   void _onPageStarted(String url) {
@@ -121,7 +120,10 @@ class _GuideWebReaderScreenState extends ConsumerState<GuideWebReaderScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
-          children: [_buildToolbar(), Expanded(child: _buildWebView())],
+          children: [
+            _buildToolbar(),
+            Expanded(child: _buildWebView()),
+          ],
         ),
       ),
     );

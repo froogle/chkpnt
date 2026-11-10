@@ -9,7 +9,7 @@ part 'backup_state_provider.g.dart';
 
 /// State representation for backup operations
 @freezed
-class BackupOperationState with _$BackupOperationState {
+sealed class BackupOperationState with _$BackupOperationState {
   const factory BackupOperationState.idle() = _Idle;
   const factory BackupOperationState.selectingDirectory() = _SelectingDirectory;
   const factory BackupOperationState.selectingFile() = _SelectingFile;
@@ -61,8 +61,8 @@ class BackupState extends _$BackupState {
       state = const BackupOperationState.selectingDirectory();
 
       // Let user select backup directory
-      final String? selectedDirectory =
-          await _backupService.selectBackupDirectory();
+      final String? selectedDirectory = await _backupService
+          .selectBackupDirectory();
 
       if (selectedDirectory == null) {
         // User cancelled directory selection
@@ -107,8 +107,9 @@ class BackupState extends _$BackupState {
         state = BackupOperationState.creatingBackup(
           progress: result.progress,
           currentStep: stepMessage,
-          statusMessage:
-              result.progress < 1.0 ? 'Creating backup...' : 'Backup complete!',
+          statusMessage: result.progress < 1.0
+              ? 'Creating backup...'
+              : 'Backup complete!',
         );
 
         // Store the result when complete
@@ -231,8 +232,8 @@ class BackupState extends _$BackupState {
       );
 
       // Restore backup with progress tracking
-      await for (final progress in _backupService
-          .restoreFromFullBackupWithProgress(backupFilePath)) {
+      await for (final progress
+          in _backupService.restoreFromFullBackupWithProgress(backupFilePath)) {
         if (state is! _RestoringBackup) {
           // Operation was cancelled
           return;
@@ -242,8 +243,9 @@ class BackupState extends _$BackupState {
         state = BackupOperationState.restoringBackup(
           progress: progress,
           currentStep: stepMessage,
-          statusMessage:
-              progress < 1.0 ? 'Restoring data...' : 'Restore complete!',
+          statusMessage: progress < 1.0
+              ? 'Restoring data...'
+              : 'Restore complete!',
         );
       }
 

@@ -9,7 +9,7 @@ generated_code_fingerprint() {
 }
 
 before=$(generated_code_fingerprint)
-if ! build_output=$(dart run build_runner build --delete-conflicting-outputs 2>&1); then
+if ! build_output=$(dart run build_runner build 2>&1); then
   echo "$build_output" >&2
   exit 1
 fi

@@ -27,7 +27,9 @@ void main() {
 
     testWidgets('handles empty children list', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: AnimatedEditForm(children: []))),
+        const MaterialApp(
+          home: Scaffold(body: AnimatedEditForm(children: [])),
+        ),
       );
 
       await tester.pumpAndSettle();

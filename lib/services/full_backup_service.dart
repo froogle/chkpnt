@@ -86,8 +86,8 @@ class FullBackupService {
 
   Future<List<File>> collectAllImages() async {
     try {
-      final Directory appDir =
-          await _storageService.getPersistentStorageDirectory();
+      final Directory appDir = await _storageService
+          .getPersistentStorageDirectory();
       final Directory imageDir = Directory(
         path.join(appDir.path, 'game_images'),
       );
@@ -132,8 +132,8 @@ class FullBackupService {
 
   Future<List<File>> collectAllGuides() async {
     try {
-      final List<File> guideFiles =
-          await _guideStorageService.getAllGuideFiles();
+      final List<File> guideFiles = await _guideStorageService
+          .getAllGuideFiles();
       guideFiles.sort(
         (a, b) => path.basename(a.path).compareTo(path.basename(b.path)),
       );
@@ -154,10 +154,12 @@ class FullBackupService {
   ) async {
     try {
       final List<GameItem> games = await _repository.getAllGames();
-      final List<String> imageNames =
-          imageFiles.map((file) => path.basename(file.path)).toList();
-      final List<String> guideNames =
-          guideFiles.map((file) => path.basename(file.path)).toList();
+      final List<String> imageNames = imageFiles
+          .map((file) => path.basename(file.path))
+          .toList();
+      final List<String> guideNames = guideFiles
+          .map((file) => path.basename(file.path))
+          .toList();
 
       return BackupMetadata(
         version: BackupValidationService.currentBackupVersion,
@@ -296,18 +298,14 @@ class FullBackupService {
 
     return validationResult.when(
       valid: (meta) => meta,
-      invalid:
-          (reason) =>
-              throw BackupException(
-                'Invalid backup file: $reason',
-                code: 'INVALID_BACKUP_FILE',
-              ),
-      corrupted:
-          (details) =>
-              throw BackupException(
-                'Corrupted backup file: $details',
-                code: 'CORRUPTED_BACKUP_FILE',
-              ),
+      invalid: (reason) => throw BackupException(
+        'Invalid backup file: $reason',
+        code: 'INVALID_BACKUP_FILE',
+      ),
+      corrupted: (details) => throw BackupException(
+        'Corrupted backup file: $details',
+        code: 'CORRUPTED_BACKUP_FILE',
+      ),
     );
   }
 
@@ -520,8 +518,8 @@ class FullBackupService {
         // Database not initialized on fresh install - continue with restore
       }
 
-      final Directory appDir =
-          await _storageService.getPersistentStorageDirectory();
+      final Directory appDir = await _storageService
+          .getPersistentStorageDirectory();
 
       // Clear images directory
       final Directory imageDir = Directory(
@@ -554,8 +552,8 @@ class FullBackupService {
   /// Restore images from extracted backup directory
   Future<void> _restoreImages(Directory imagesExtractDir) async {
     try {
-      final Directory appDir =
-          await _storageService.getPersistentStorageDirectory();
+      final Directory appDir = await _storageService
+          .getPersistentStorageDirectory();
       final Directory targetImageDir = Directory(
         path.join(appDir.path, 'game_images'),
       );
@@ -566,8 +564,8 @@ class FullBackupService {
       }
 
       // Copy all image files from extracted directory
-      final List<FileSystemEntity> extractedImages =
-          imagesExtractDir.listSync();
+      final List<FileSystemEntity> extractedImages = imagesExtractDir
+          .listSync();
       int restoredCount = 0;
 
       for (final entity in extractedImages) {
@@ -601,8 +599,8 @@ class FullBackupService {
   /// Restore guides from extracted backup directory
   Future<void> _restoreGuides(Directory guidesExtractDir) async {
     try {
-      final Directory appDir =
-          await _storageService.getPersistentStorageDirectory();
+      final Directory appDir = await _storageService
+          .getPersistentStorageDirectory();
       final Directory targetGuidesDir = Directory(
         path.join(appDir.path, GuideStorageService.guidesDirectory),
       );
@@ -611,8 +609,8 @@ class FullBackupService {
         await targetGuidesDir.create(recursive: true);
       }
 
-      final List<FileSystemEntity> extractedGuides =
-          guidesExtractDir.listSync();
+      final List<FileSystemEntity> extractedGuides = guidesExtractDir
+          .listSync();
       int restoredCount = 0;
 
       for (final entity in extractedGuides) {
@@ -639,8 +637,8 @@ class FullBackupService {
   /// Rollback restore operation using backed up current state
   Future<void> _rollbackRestore(Directory backupStateDir) async {
     try {
-      final Directory appDir =
-          await _storageService.getPersistentStorageDirectory();
+      final Directory appDir = await _storageService
+          .getPersistentStorageDirectory();
 
       // 1. Restore database from backup
       final File currentDbFile = File(
@@ -669,8 +667,8 @@ class FullBackupService {
         }
         await targetImageDir.create(recursive: true);
 
-        final List<FileSystemEntity> backedUpImages =
-            currentImagesDir.listSync();
+        final List<FileSystemEntity> backedUpImages = currentImagesDir
+            .listSync();
         for (final entity in backedUpImages) {
           if (entity is File) {
             final String imageName = path.basename(entity.path);
@@ -696,8 +694,8 @@ class FullBackupService {
         }
         await targetGuidesDir.create(recursive: true);
 
-        final List<FileSystemEntity> backedUpGuides =
-            currentGuidesDir.listSync();
+        final List<FileSystemEntity> backedUpGuides = currentGuidesDir
+            .listSync();
         for (final entity in backedUpGuides) {
           if (entity is File) {
             final String guideName = path.basename(entity.path);

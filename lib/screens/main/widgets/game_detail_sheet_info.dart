@@ -84,10 +84,9 @@ class GameDetailSheetInfo extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color:
-              isPhysical
-                  ? AppColors.primaryPurple.withValues(alpha: 0.9)
-                  : AppColors.expandIcon.withValues(alpha: 0.7),
+          color: isPhysical
+              ? AppColors.primaryPurple.withValues(alpha: 0.9)
+              : AppColors.expandIcon.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Row(
@@ -152,10 +151,9 @@ class GameDetailSheetInfo extends StatelessWidget {
   Widget _buildCurrentStatusIcon() {
     return Icon(
       StatusStyles.of(game.status).icon,
-      color:
-          game.status == GameStatus.abandoned
-              ? AppColors.expandIcon
-              : AppColors.primaryPurple,
+      color: game.status == GameStatus.abandoned
+          ? AppColors.expandIcon
+          : AppColors.primaryPurple,
       size: InputStyles.statusButtonIconSize,
     );
   }

@@ -56,8 +56,8 @@ class CollapsibleSection extends StatelessWidget {
     return isExpanded
         ? MainScreenStyles.collapsibleSectionHeaderDecoration
         : MainScreenStyles.collapsibleSectionHeaderDecoration.copyWith(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
-        );
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
+          );
   }
 
   Widget _buildHeaderContent() {

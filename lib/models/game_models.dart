@@ -15,7 +15,7 @@ enum GameStatus {
 }
 
 @freezed
-class GameId with _$GameId {
+abstract class GameId with _$GameId {
   const factory GameId(String value) = _GameId;
 
   factory GameId.generate() {
@@ -25,7 +25,7 @@ class GameId with _$GameId {
 }
 
 @freezed
-class GameItem with _$GameItem {
+abstract class GameItem with _$GameItem {
   const factory GameItem({
     required GameId id,
     required String title,

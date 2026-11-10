@@ -8,7 +8,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: StyledCloseButton(onPressed: () {}))),
+        MaterialApp(
+          home: Scaffold(body: StyledCloseButton(onPressed: () {})),
+        ),
       );
 
       // Check that the close icon is displayed
@@ -39,7 +41,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: StyledCloseButton(onPressed: () {}))),
+        MaterialApp(
+          home: Scaffold(body: StyledCloseButton(onPressed: () {})),
+        ),
       );
 
       // Find the container with decoration
@@ -58,7 +62,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: StyledCloseButton(onPressed: () {}))),
+        MaterialApp(
+          home: Scaffold(body: StyledCloseButton(onPressed: () {})),
+        ),
       );
 
       // Find the IconButton
@@ -81,7 +87,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: StyledCloseButton(onPressed: () {}))),
+        MaterialApp(
+          home: Scaffold(body: StyledCloseButton(onPressed: () {})),
+        ),
       );
 
       // Find the Icon widget
@@ -129,7 +137,9 @@ void main() {
 
     testWidgets('should be accessible', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: StyledCloseButton(onPressed: () {}))),
+        MaterialApp(
+          home: Scaffold(body: StyledCloseButton(onPressed: () {})),
+        ),
       );
 
       // The IconButton should be tappable

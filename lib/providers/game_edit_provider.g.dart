@@ -6,159 +6,102 @@ part of 'game_edit_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameEditStateHash() => r'87f199201f854accad57d7c5b75833b52f59c7ca';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$GameEditState
-    extends BuildlessAutoDisposeNotifier<GameEditFormState> {
-  late final GameEditContext context;
-
-  GameEditFormState build(GameEditContext context);
-}
-
-/// See also [GameEditState].
 @ProviderFor(GameEditState)
-const gameEditStateProvider = GameEditStateFamily();
+final gameEditStateProvider = GameEditStateFamily._();
 
-/// See also [GameEditState].
-class GameEditStateFamily extends Family<GameEditFormState> {
-  /// See also [GameEditState].
-  const GameEditStateFamily();
+final class GameEditStateProvider
+    extends $NotifierProvider<GameEditState, GameEditFormState> {
+  GameEditStateProvider._({
+    required GameEditStateFamily super.from,
+    required GameEditContext super.argument,
+  }) : super(
+         retry: null,
+         name: r'gameEditStateProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// See also [GameEditState].
-  GameEditStateProvider call(GameEditContext context) {
-    return GameEditStateProvider(context);
+  @override
+  String debugGetCreateSourceHash() => _$gameEditStateHash();
+
+  @override
+  String toString() {
+    return r'gameEditStateProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  GameEditStateProvider getProviderOverride(
-    covariant GameEditStateProvider provider,
-  ) {
-    return call(provider.context);
-  }
+  GameEditState create() => GameEditState();
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'gameEditStateProvider';
-}
-
-/// See also [GameEditState].
-class GameEditStateProvider
-    extends AutoDisposeNotifierProviderImpl<GameEditState, GameEditFormState> {
-  /// See also [GameEditState].
-  GameEditStateProvider(GameEditContext context)
-    : this._internal(
-        () => GameEditState()..context = context,
-        from: gameEditStateProvider,
-        name: r'gameEditStateProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$gameEditStateHash,
-        dependencies: GameEditStateFamily._dependencies,
-        allTransitiveDependencies:
-            GameEditStateFamily._allTransitiveDependencies,
-        context: context,
-      );
-
-  GameEditStateProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.context,
-  }) : super.internal();
-
-  final GameEditContext context;
-
-  @override
-  GameEditFormState runNotifierBuild(covariant GameEditState notifier) {
-    return notifier.build(context);
-  }
-
-  @override
-  Override overrideWith(GameEditState Function() create) {
-    return ProviderOverride(
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GameEditFormState value) {
+    return $ProviderOverride(
       origin: this,
-      override: GameEditStateProvider._internal(
-        () => create()..context = context,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        context: context,
-      ),
+      providerOverride: $SyncValueProvider<GameEditFormState>(value),
     );
   }
 
   @override
-  AutoDisposeNotifierProviderElement<GameEditState, GameEditFormState>
-  createElement() {
-    return _GameEditStateProviderElement(this);
-  }
-
-  @override
   bool operator ==(Object other) {
-    return other is GameEditStateProvider && other.context == context;
+    return other is GameEditStateProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, context.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin GameEditStateRef on AutoDisposeNotifierProviderRef<GameEditFormState> {
-  /// The parameter `context` of this provider.
-  GameEditContext get context;
-}
+String _$gameEditStateHash() => r'87f199201f854accad57d7c5b75833b52f59c7ca';
 
-class _GameEditStateProviderElement
-    extends AutoDisposeNotifierProviderElement<GameEditState, GameEditFormState>
-    with GameEditStateRef {
-  _GameEditStateProviderElement(super.provider);
+final class GameEditStateFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          GameEditState,
+          GameEditFormState,
+          GameEditFormState,
+          GameEditFormState,
+          GameEditContext
+        > {
+  GameEditStateFamily._()
+    : super(
+        retry: null,
+        name: r'gameEditStateProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  GameEditStateProvider call(GameEditContext context) =>
+      GameEditStateProvider._(argument: context, from: this);
 
   @override
-  GameEditContext get context => (origin as GameEditStateProvider).context;
+  String toString() => r'gameEditStateProvider';
 }
 
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$GameEditState extends $Notifier<GameEditFormState> {
+  late final _$args = ref.$arg as GameEditContext;
+  GameEditContext get context => _$args;
+
+  GameEditFormState build(GameEditContext context);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<GameEditFormState, GameEditFormState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<GameEditFormState, GameEditFormState>,
+              GameEditFormState,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
+}

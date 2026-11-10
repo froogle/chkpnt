@@ -61,8 +61,8 @@ class PlatformEditDropdown extends StatelessWidget {
   void _showCustomPlatformDialog(BuildContext context) {
     showDialog<String>(
       context: context,
-      builder:
-          (context) => CustomPlatformDialog(initialValue: selectedPlatform),
+      builder: (context) =>
+          CustomPlatformDialog(initialValue: selectedPlatform),
     ).then((result) {
       if (result != null && result != selectedPlatform) {
         onPlatformChanged(result);
@@ -76,12 +76,11 @@ class PlatformEditDropdown extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       useSafeArea: true,
-      builder:
-          (context) => PlatformSelectionBottomSheet(
-            platforms: platforms,
-            selectedPlatform: selectedPlatform,
-            onPlatformSelected: onPlatformChanged,
-          ),
+      builder: (context) => PlatformSelectionBottomSheet(
+        platforms: platforms,
+        selectedPlatform: selectedPlatform,
+        onPlatformSelected: onPlatformChanged,
+      ),
     );
   }
 }

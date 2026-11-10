@@ -21,7 +21,9 @@ void main() {
     Widget buildChips(List<StatusFilterChip> chips) {
       return UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(home: Scaffold(body: Row(children: chips))),
+        child: MaterialApp(
+          home: Scaffold(body: Row(children: chips)),
+        ),
       );
     }
 

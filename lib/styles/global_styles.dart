@@ -15,13 +15,12 @@ class AppHeadingStyles {
   /// Creates a gradient heading widget with consistent styling
   static Widget gradientHeading(String text, {double fontSize = 14.0}) {
     return ShaderMask(
-      shaderCallback:
-          (bounds) => const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.black, AppColors.primaryPurple, Colors.black],
-            stops: [0.2, 0.5, 0.8],
-          ).createShader(bounds),
+      shaderCallback: (bounds) => const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.black, AppColors.primaryPurple, Colors.black],
+        stops: [0.2, 0.5, 0.8],
+      ).createShader(bounds),
       child: Text(
         text,
         style: TextStyle(

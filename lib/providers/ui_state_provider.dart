@@ -1,5 +1,4 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/services/game_image_service.dart';
 
@@ -57,10 +56,9 @@ class BacklogSortDirectionState extends _$BacklogSortDirectionState {
   }
 
   void toggleDirection() {
-    state =
-        state == SortDirection.ascending
-            ? SortDirection.descending
-            : SortDirection.ascending;
+    state = state == SortDirection.ascending
+        ? SortDirection.descending
+        : SortDirection.ascending;
   }
 }
 

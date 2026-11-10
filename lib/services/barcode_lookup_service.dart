@@ -92,11 +92,10 @@ class BarcodeLookupService {
 
     final item = items.first as Map<String, dynamic>;
     final topLevelTitle = (item['title'] as String? ?? '').trim();
-    final candidates =
-        [
-          ..._offerTitles(item),
-          topLevelTitle,
-        ].where((candidate) => candidate.isNotEmpty).toList();
+    final candidates = [
+      ..._offerTitles(item),
+      topLevelTitle,
+    ].where((candidate) => candidate.isNotEmpty).toList();
 
     if (candidates.isEmpty) {
       return const BarcodeLookupResult(outcome: BarcodeLookupOutcome.notFound);

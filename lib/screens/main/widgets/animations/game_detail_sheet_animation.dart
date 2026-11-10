@@ -20,9 +20,8 @@ class GameDetailSheetAnimation {
         reverseDuration: const Duration(milliseconds: 250),
         vsync: Navigator.of(context),
       ),
-      builder:
-          (context) =>
-              _GameDetailSheetContent(game: game, onEditPressed: onEditPressed),
+      builder: (context) =>
+          _GameDetailSheetContent(game: game, onEditPressed: onEditPressed),
     );
   }
 }
@@ -42,35 +41,29 @@ class _GameDetailSheetContent extends StatelessWidget {
         initialChildSize: 0.75,
         minChildSize: 0.5,
         maxChildSize: 0.95,
-        builder:
-            (context, scrollController) => GestureDetector(
-              onTap: () {},
-              child: RepaintBoundary(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xB3FFFFFF), Colors.white],
-                    ),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(32),
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        blurRadius: 16,
-                        offset: Offset(0, -4),
-                      ),
-                    ],
-                  ),
-                  child: GameDetailSheet(
-                    game: game,
-                    onEditPressed: onEditPressed,
-                  ),
+        builder: (context, scrollController) => GestureDetector(
+          onTap: () {},
+          child: RepaintBoundary(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xB3FFFFFF), Colors.white],
                 ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 16,
+                    offset: Offset(0, -4),
+                  ),
+                ],
               ),
+              child: GameDetailSheet(game: game, onEditPressed: onEditPressed),
             ),
+          ),
+        ),
       ),
     );
   }

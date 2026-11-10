@@ -58,6 +58,7 @@ void main() {
     database = GameDatabase.withExecutor(NativeDatabase.memory());
     repository = DriftGuideRepository(database);
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [guideRepositoryProvider.overrideWithValue(repository)],
     );
     game = await database.insertGame(

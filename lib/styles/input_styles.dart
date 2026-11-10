@@ -85,21 +85,19 @@ class InputStyles {
 
   /// Status button decoration - works for both selected and unselected states
   static BoxDecoration statusButtonDecoration(bool isSelected) => BoxDecoration(
-    gradient:
-        isSelected
-            ? LinearGradient(
-              colors: [
-                AppColors.primaryPurple.withValues(alpha: 0.15),
-                AppColors.secondaryPurple.withValues(alpha: 0.1),
-              ],
-            )
-            : AppGradients.cardGradient,
+    gradient: isSelected
+        ? LinearGradient(
+            colors: [
+              AppColors.primaryPurple.withValues(alpha: 0.15),
+              AppColors.secondaryPurple.withValues(alpha: 0.1),
+            ],
+          )
+        : AppGradients.cardGradient,
     borderRadius: statusButtonBorderRadius,
     border: Border.all(
-      color:
-          isSelected
-              ? AppColors.primaryPurple.withValues(alpha: 0.4)
-              : AppColors.primaryPurple.withValues(alpha: 0.2),
+      color: isSelected
+          ? AppColors.primaryPurple.withValues(alpha: 0.4)
+          : AppColors.primaryPurple.withValues(alpha: 0.2),
       width: isSelected ? 2 : 1,
     ),
     boxShadow: isSelected ? AppShadows.subtleElevation : null,
@@ -167,16 +165,15 @@ class InputStyles {
         gradient: enabled ? AppGradients.buttonGradient : null,
         color: enabled ? null : AppColors.expandIcon.withValues(alpha: 0.3),
         borderRadius: actionButtonBorderRadius,
-        boxShadow:
-            enabled
-                ? [
-                  BoxShadow(
-                    color: AppColors.primaryPurple.withValues(alpha: 0.2),
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  ),
-                ]
-                : null,
+        boxShadow: enabled
+            ? [
+                BoxShadow(
+                  color: AppColors.primaryPurple.withValues(alpha: 0.2),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,

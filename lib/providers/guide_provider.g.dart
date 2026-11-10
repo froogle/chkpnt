@@ -6,300 +6,220 @@ part of 'guide_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$guideRepositoryHash() => r'44cdd094e42d595b0b320d9589c0fa0f9b36caab';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [guideRepository].
 @ProviderFor(guideRepository)
-final guideRepositoryProvider = AutoDisposeProvider<GuideRepository>.internal(
-  guideRepository,
-  name: r'guideRepositoryProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$guideRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final guideRepositoryProvider = GuideRepositoryProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GuideRepositoryRef = AutoDisposeProviderRef<GuideRepository>;
-String _$guidesForGameStreamHash() =>
-    r'3ed55f171f375475349120138458e9e25b40b34a';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [guidesForGameStream].
-@ProviderFor(guidesForGameStream)
-const guidesForGameStreamProvider = GuidesForGameStreamFamily();
-
-/// See also [guidesForGameStream].
-class GuidesForGameStreamFamily extends Family<AsyncValue<List<GuideItem>>> {
-  /// See also [guidesForGameStream].
-  const GuidesForGameStreamFamily();
-
-  /// See also [guidesForGameStream].
-  GuidesForGameStreamProvider call(GameId gameId) {
-    return GuidesForGameStreamProvider(gameId);
-  }
-
-  @override
-  GuidesForGameStreamProvider getProviderOverride(
-    covariant GuidesForGameStreamProvider provider,
-  ) {
-    return call(provider.gameId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'guidesForGameStreamProvider';
-}
-
-/// See also [guidesForGameStream].
-class GuidesForGameStreamProvider
-    extends AutoDisposeStreamProvider<List<GuideItem>> {
-  /// See also [guidesForGameStream].
-  GuidesForGameStreamProvider(GameId gameId)
-    : this._internal(
-        (ref) => guidesForGameStream(ref as GuidesForGameStreamRef, gameId),
-        from: guidesForGameStreamProvider,
-        name: r'guidesForGameStreamProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$guidesForGameStreamHash,
-        dependencies: GuidesForGameStreamFamily._dependencies,
-        allTransitiveDependencies:
-            GuidesForGameStreamFamily._allTransitiveDependencies,
-        gameId: gameId,
+final class GuideRepositoryProvider
+    extends
+        $FunctionalProvider<GuideRepository, GuideRepository, GuideRepository>
+    with $Provider<GuideRepository> {
+  GuideRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'guideRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
       );
 
-  GuidesForGameStreamProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.gameId,
-  }) : super.internal();
+  @override
+  String debugGetCreateSourceHash() => _$guideRepositoryHash();
 
-  final GameId gameId;
+  @$internal
+  @override
+  $ProviderElement<GuideRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
-  Override overrideWith(
-    Stream<List<GuideItem>> Function(GuidesForGameStreamRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: GuidesForGameStreamProvider._internal(
-        (ref) => create(ref as GuidesForGameStreamRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        gameId: gameId,
-      ),
-    );
+  GuideRepository create(Ref ref) {
+    return guideRepository(ref);
   }
 
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GuideRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GuideRepository>(value),
+    );
+  }
+}
+
+String _$guideRepositoryHash() => r'44cdd094e42d595b0b320d9589c0fa0f9b36caab';
+
+@ProviderFor(guidesForGameStream)
+final guidesForGameStreamProvider = GuidesForGameStreamFamily._();
+
+final class GuidesForGameStreamProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<GuideItem>>,
+          List<GuideItem>,
+          Stream<List<GuideItem>>
+        >
+    with $FutureModifier<List<GuideItem>>, $StreamProvider<List<GuideItem>> {
+  GuidesForGameStreamProvider._({
+    required GuidesForGameStreamFamily super.from,
+    required GameId super.argument,
+  }) : super(
+         retry: null,
+         name: r'guidesForGameStreamProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
   @override
-  AutoDisposeStreamProviderElement<List<GuideItem>> createElement() {
-    return _GuidesForGameStreamProviderElement(this);
+  String debugGetCreateSourceHash() => _$guidesForGameStreamHash();
+
+  @override
+  String toString() {
+    return r'guidesForGameStreamProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<GuideItem>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<GuideItem>> create(Ref ref) {
+    final argument = this.argument as GameId;
+    return guidesForGameStream(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is GuidesForGameStreamProvider && other.gameId == gameId;
+    return other is GuidesForGameStreamProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, gameId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin GuidesForGameStreamRef on AutoDisposeStreamProviderRef<List<GuideItem>> {
-  /// The parameter `gameId` of this provider.
-  GameId get gameId;
-}
+String _$guidesForGameStreamHash() =>
+    r'3ed55f171f375475349120138458e9e25b40b34a';
 
-class _GuidesForGameStreamProviderElement
-    extends AutoDisposeStreamProviderElement<List<GuideItem>>
-    with GuidesForGameStreamRef {
-  _GuidesForGameStreamProviderElement(super.provider);
+final class GuidesForGameStreamFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<GuideItem>>, GameId> {
+  GuidesForGameStreamFamily._()
+    : super(
+        retry: null,
+        name: r'guidesForGameStreamProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  GuidesForGameStreamProvider call(GameId gameId) =>
+      GuidesForGameStreamProvider._(argument: gameId, from: this);
 
   @override
-  GameId get gameId => (origin as GuidesForGameStreamProvider).gameId;
+  String toString() => r'guidesForGameStreamProvider';
+}
+
+@ProviderFor(GuidesForGame)
+final guidesForGameProvider = GuidesForGameFamily._();
+
+final class GuidesForGameProvider
+    extends $NotifierProvider<GuidesForGame, List<GuideItem>> {
+  GuidesForGameProvider._({
+    required GuidesForGameFamily super.from,
+    required GameId super.argument,
+  }) : super(
+         retry: null,
+         name: r'guidesForGameProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$guidesForGameHash();
+
+  @override
+  String toString() {
+    return r'guidesForGameProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  GuidesForGame create() => GuidesForGame();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<GuideItem> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<GuideItem>>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GuidesForGameProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
 String _$guidesForGameHash() => r'adf71186a72673bbf288edfeb26e3b97d907cca2';
 
-abstract class _$GuidesForGame
-    extends BuildlessAutoDisposeNotifier<List<GuideItem>> {
-  late final GameId gameId;
-
-  List<GuideItem> build(GameId gameId);
-}
-
-/// See also [GuidesForGame].
-@ProviderFor(GuidesForGame)
-const guidesForGameProvider = GuidesForGameFamily();
-
-/// See also [GuidesForGame].
-class GuidesForGameFamily extends Family<List<GuideItem>> {
-  /// See also [GuidesForGame].
-  const GuidesForGameFamily();
-
-  /// See also [GuidesForGame].
-  GuidesForGameProvider call(GameId gameId) {
-    return GuidesForGameProvider(gameId);
-  }
-
-  @override
-  GuidesForGameProvider getProviderOverride(
-    covariant GuidesForGameProvider provider,
-  ) {
-    return call(provider.gameId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'guidesForGameProvider';
-}
-
-/// See also [GuidesForGame].
-class GuidesForGameProvider
-    extends AutoDisposeNotifierProviderImpl<GuidesForGame, List<GuideItem>> {
-  /// See also [GuidesForGame].
-  GuidesForGameProvider(GameId gameId)
-    : this._internal(
-        () => GuidesForGame()..gameId = gameId,
-        from: guidesForGameProvider,
+final class GuidesForGameFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          GuidesForGame,
+          List<GuideItem>,
+          List<GuideItem>,
+          List<GuideItem>,
+          GameId
+        > {
+  GuidesForGameFamily._()
+    : super(
+        retry: null,
         name: r'guidesForGameProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$guidesForGameHash,
-        dependencies: GuidesForGameFamily._dependencies,
-        allTransitiveDependencies:
-            GuidesForGameFamily._allTransitiveDependencies,
-        gameId: gameId,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
       );
 
-  GuidesForGameProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.gameId,
-  }) : super.internal();
-
-  final GameId gameId;
+  GuidesForGameProvider call(GameId gameId) =>
+      GuidesForGameProvider._(argument: gameId, from: this);
 
   @override
-  List<GuideItem> runNotifierBuild(covariant GuidesForGame notifier) {
-    return notifier.build(gameId);
-  }
-
-  @override
-  Override overrideWith(GuidesForGame Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: GuidesForGameProvider._internal(
-        () => create()..gameId = gameId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        gameId: gameId,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<GuidesForGame, List<GuideItem>>
-  createElement() {
-    return _GuidesForGameProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is GuidesForGameProvider && other.gameId == gameId;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, gameId.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
+  String toString() => r'guidesForGameProvider';
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin GuidesForGameRef on AutoDisposeNotifierProviderRef<List<GuideItem>> {
-  /// The parameter `gameId` of this provider.
-  GameId get gameId;
-}
+abstract class _$GuidesForGame extends $Notifier<List<GuideItem>> {
+  late final _$args = ref.$arg as GameId;
+  GameId get gameId => _$args;
 
-class _GuidesForGameProviderElement
-    extends AutoDisposeNotifierProviderElement<GuidesForGame, List<GuideItem>>
-    with GuidesForGameRef {
-  _GuidesForGameProviderElement(super.provider);
-
+  List<GuideItem> build(GameId gameId);
+  @$mustCallSuper
   @override
-  GameId get gameId => (origin as GuidesForGameProvider).gameId;
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<List<GuideItem>, List<GuideItem>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<GuideItem>, List<GuideItem>>,
+              List<GuideItem>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
 }
-
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -112,16 +112,14 @@ class PlatformFilterDropdown extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: MainScreenStyles.filterDropdownItemPadding,
-      decoration:
-          isSelected
-              ? MainScreenStyles.filterDropdownSelectedItemDecoration
-              : const BoxDecoration(),
+      decoration: isSelected
+          ? MainScreenStyles.filterDropdownSelectedItemDecoration
+          : const BoxDecoration(),
       child: Text(
         label,
-        style:
-            isSelected
-                ? MainScreenStyles.filterDropdownSelectedTextStyle
-                : MainScreenStyles.filterDropdownUnselectedTextStyle,
+        style: isSelected
+            ? MainScreenStyles.filterDropdownSelectedTextStyle
+            : MainScreenStyles.filterDropdownUnselectedTextStyle,
       ),
     );
   }

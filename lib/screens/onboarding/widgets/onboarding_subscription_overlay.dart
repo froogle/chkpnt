@@ -254,14 +254,12 @@ class _SubscriptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation:
-          selected
-              ? OnboardingOverlayStyles.tileElevationSelected
-              : OnboardingOverlayStyles.tileElevationUnselected,
-      color:
-          selected
-              ? const Color(0xFFF3F4F6)
-              : Colors.white, // Explicit background colours for Android 13
+      elevation: selected
+          ? OnboardingOverlayStyles.tileElevationSelected
+          : OnboardingOverlayStyles.tileElevationUnselected,
+      color: selected
+          ? const Color(0xFFF3F4F6)
+          : Colors.white, // Explicit background colours for Android 13
       shape: _buildCardShape(context),
       margin: OnboardingOverlayStyles.tileMargin,
       child: InkWell(
@@ -271,10 +269,9 @@ class _SubscriptionTile extends StatelessWidget {
         ),
         child: Padding(
           padding: OnboardingOverlayStyles.tilePadding,
-          child:
-              isLandscape
-                  ? _buildLandscapeLayout(context)
-                  : _buildPortraitLayout(context),
+          child: isLandscape
+              ? _buildLandscapeLayout(context)
+              : _buildPortraitLayout(context),
         ),
       ),
     );
@@ -286,10 +283,9 @@ class _SubscriptionTile extends StatelessWidget {
         OnboardingOverlayStyles.tileBorderRadius,
       ),
       side: BorderSide(
-        color:
-            selected
-                ? const Color(0xFF8B5CF6)
-                : Colors.transparent, // Explicit purple border for Android 13
+        color: selected
+            ? const Color(0xFF8B5CF6)
+            : Colors.transparent, // Explicit purple border for Android 13
         width: OnboardingOverlayStyles.tileBorderWidth,
       ),
     );

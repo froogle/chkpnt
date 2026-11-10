@@ -40,13 +40,9 @@ class _AnimatedEditFormState extends State<AnimatedEditForm>
       ),
     );
 
-    _animations =
-        _controllers.map((controller) {
-          return CurvedAnimation(
-            parent: controller,
-            curve: Curves.easeInOutCubic,
-          );
-        }).toList();
+    _animations = _controllers.map((controller) {
+      return CurvedAnimation(parent: controller, curve: Curves.easeInOutCubic);
+    }).toList();
   }
 
   void _startAnimations() {
@@ -77,28 +73,27 @@ class _AnimatedEditFormState extends State<AnimatedEditForm>
   @override
   Widget build(BuildContext context) {
     return Column(
-      children:
-          widget.children.asMap().entries.map((entry) {
-            final index = entry.key;
-            final child = entry.value;
+      children: widget.children.asMap().entries.map((entry) {
+        final index = entry.key;
+        final child = entry.value;
 
-            return AnimatedBuilder(
-              animation: _animations[index],
-              builder: (context, child) {
-                return FadeTransition(
-                  opacity: _animations[index],
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 0.3),
-                      end: Offset.zero,
-                    ).animate(_animations[index]),
-                    child: child,
-                  ),
-                );
-              },
-              child: child,
+        return AnimatedBuilder(
+          animation: _animations[index],
+          builder: (context, child) {
+            return FadeTransition(
+              opacity: _animations[index],
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.3),
+                  end: Offset.zero,
+                ).animate(_animations[index]),
+                child: child,
+              ),
             );
-          }).toList(),
+          },
+          child: child,
+        );
+      }).toList(),
     );
   }
 }

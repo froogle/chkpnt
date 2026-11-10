@@ -136,8 +136,10 @@ class _ImageSearchScreenState extends ConsumerState<ImageSearchScreen> {
   }
 
   Widget _buildGrid() {
-    final validUrls =
-        _imageUrls.where((url) => url.isNotEmpty).take(9).toList();
+    final validUrls = _imageUrls
+        .where((url) => url.isNotEmpty)
+        .take(9)
+        .toList();
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -163,14 +165,13 @@ class _ImageSearchScreenState extends ConsumerState<ImageSearchScreen> {
               child: Image.network(
                 url,
                 fit: BoxFit.cover,
-                errorBuilder:
-                    (context, error, stackTrace) => const Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        color: AppColors.primaryPurple,
-                        size: 32,
-                      ),
-                    ),
+                errorBuilder: (context, error, stackTrace) => const Center(
+                  child: Icon(
+                    Icons.broken_image,
+                    color: AppColors.primaryPurple,
+                    size: 32,
+                  ),
+                ),
               ),
             ),
           ),
