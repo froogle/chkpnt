@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chkpnt/styles/styles.dart';
-import 'package:chkpnt/config/feature_flags.dart';
-import 'package:chkpnt/services/subscription_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -21,15 +19,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _initialiseApp() async {
-    final futures = <Future>[];
-
-    if (kPaywallEnabled) {
-      futures.add(ref.read(subscriptionStateProvider.notifier).initialise());
-    }
-
-    futures.add(Future.delayed(SplashScreenStyles.splashDuration));
-
-    await Future.wait(futures);
+    await Future.delayed(SplashScreenStyles.splashDuration);
 
     if (!mounted) return;
     _navigateToMain();

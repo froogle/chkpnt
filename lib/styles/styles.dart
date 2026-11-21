@@ -5,7 +5,7 @@ library;
 // Export all style modules
 export 'themes.dart';
 export 'global_styles.dart';
-export 'onboarding_styles.dart';
+export 'splash_screen_styles.dart';
 export 'game_card_styles.dart';
 export 'game_detail_sheet_styles.dart';
 export 'layout_styles.dart';

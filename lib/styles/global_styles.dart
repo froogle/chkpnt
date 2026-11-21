@@ -1,15 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Global text styles used across multiple components
-TextStyle get onboardingWelcomeTextStyle => TextStyle(
-  fontSize: 32,
-  fontWeight: FontWeight.bold,
-  color: Color(0xFF1E293B),
-  shadows: const [
-    Shadow(blurRadius: 8, color: Colors.black26, offset: Offset(2, 2)),
-  ],
-);
-
 /// Standardized heading style with gradient - used for section titles throughout the app
 class AppHeadingStyles {
   /// Creates a gradient heading widget with consistent styling
