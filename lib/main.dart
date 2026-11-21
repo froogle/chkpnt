@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/main/main_screen.dart';
-import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/wishlist/wishlist_screen.dart';
 import 'screens/backlog/backlog_screen.dart';
 import 'screens/collection/collection_screen.dart';
@@ -33,7 +32,6 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       routes: {
         '/main': (context) => const MainScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
         '/wishlist': (context) => const WishlistScreen(),
         '/backlog': (context) => const BacklogScreen(),
         '/collection': (context) => const CollectionScreen(),

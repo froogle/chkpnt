@@ -12,7 +12,6 @@ import 'package:chkpnt/models/game_models.dart';
 import 'package:chkpnt/providers/game_provider.dart';
 import 'package:chkpnt/providers/ui_state_provider.dart';
 import 'package:chkpnt/services/navigation_service.dart';
-import 'package:chkpnt/services/paywall_service.dart';
 
 class CollectionScreen extends ConsumerStatefulWidget {
   const CollectionScreen({super.key});
@@ -144,11 +143,7 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
     NavigationService.handleNavigation(context, index);
   }
 
-  Future<void> _handleAddGame() async {
-    final paywallService = ref.read(paywallServiceProvider);
-    final canProceed = await paywallService.checkAndShowPaywall(context);
-    if (!canProceed || !mounted) return;
-
+  void _handleAddGame() {
     Navigator.of(context).push(
       EditScreenPageRoute(child: GameEditScreen.add(defaultIsPhysical: true)),
     );

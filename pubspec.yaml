@@ -79,9 +79,6 @@ dependencies:
   # Index-based list scrolling for guide reader
   scrollable_positioned_list: ^0.3.8
 
-  # Local key-value storage for preferences
-  shared_preferences: ^2.2.2
-
   # Barcode scanning for physical game entry
   mobile_scanner: '>=7.1.4 <7.2.0'
 
@@ -153,8 +150,6 @@ flutter:
 
   assets:
     - assets/logo.png
-    - assets/onboarding1.png
-    - assets/onboarding2.png
 
 flutter_launcher_icons:
   android: true
