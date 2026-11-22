@@ -1,5 +1,16 @@
 # ChkPnt
 
+> [!IMPORTANT]
+> ## 🙋 Help get ChkPnt onto the Play Store
+>
+> ChkPnt is free and always will be. The code is here for anyone to build, but I'd love non-technical players to be able to install it straight from the Google Play Store.
+>
+> **Before Google will let me release it, I need at least 12 testers to keep it installed for 2 weeks.** If you have an Android phone, please join the closed test:
+>
+> ### 👉 [Join the ChkPnt closed test](https://play.google.com/apps/testing/com.frooglesim.chkpnt)
+>
+> All help is welcome, and thank you!
+
 ChkPnt is an Android app for tracking the games you own or want, and where you are with each one: what you're playing, what's waiting in the backlog, and what's done.
 
 It is built with Flutter. Everything it stores stays on your device. There is no account, no server and no tracking.
