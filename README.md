@@ -4,6 +4,12 @@ ChkPnt is an Android app for tracking the games you own or want, and where you a
 
 It is built with Flutter. Everything it stores stays on your device. There is no account, no server and no tracking.
 
+<p align="center">
+  <img src="docs/screenshots/home.jpg" width="250" alt="Home screen: Games grouped by Status, with Playing expanded to show six Games and their Platforms">
+  <img src="docs/screenshots/wishlist.jpg" width="250" alt="Wishlist screen: Ordered Games above the Wishlist">
+  <img src="docs/screenshots/statistics.jpg" width="250" alt="Profile screen: a chart of the library by Platform, and Games on the way">
+</p>
+
 ## What it does
 
 - **Track each Game with a Status**: Wishlist, Ordered, Backlog, Playing, Ongoing, Completed or Abandoned. A Game you own may also have no Status and simply sit in your Collection.
@@ -14,6 +20,16 @@ It is built with Flutter. Everything it stores stays on your device. There is no
 - **Keep Guides with a Game.** Browse GameFAQs inside the app and save a Text Guide, which opens in ChkPnt's own reader at the place you left off, or keep a Web Guide as a link.
 - **See statistics**: charts of your library by Status or by Platform, and a list of Games still on the way.
 - **Back up and restore** all your Games, images and Guides as a single zip file.
+
+| Change a Game's Status | Read a saved Text Guide | Search your Collection |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/game-detail.jpg" width="240" alt="A Game's detail sheet with its Status buttons, Guides and actions"> | <img src="docs/screenshots/guide-reader.jpg" width="240" alt="The Text Guide reader in dark mode"> | <img src="docs/screenshots/collection-search.jpg" width="240" alt="The Collection searched for 'assassin', grouped by Platform"> |
+
+On a tablet or an unfolded foldable, the grids widen to use the extra space:
+
+<p align="center">
+  <img src="docs/screenshots/tablet.jpg" width="600" alt="Home screen on an unfolded foldable, showing six Games per row">
+</p>
 
 The words above (Game, Status, Platform, Collection, Guide) have exact meanings in ChkPnt; [GLOSSARY.md](GLOSSARY.md) defines them.
 
