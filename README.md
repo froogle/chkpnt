@@ -7,6 +7,9 @@
 >
 > **Before Google will let me release it, I need at least 12 testers to keep it installed for 2 weeks.** If you have an Android phone, please join the closed test:
 >
+> 1. **Email [frooglesim@gmail.com](mailto:frooglesim@gmail.com?subject=ChkPnt%20closed%20test)** with the Google account email you use on your phone, and I'll add you to the tester list. The link below won't work until I have.
+> 2. **Then join the test:**
+>
 > ### 👉 [Join the ChkPnt closed test](https://play.google.com/apps/testing/com.frooglesim.chkpnt)
 >
 > All help is welcome, and thank you!
