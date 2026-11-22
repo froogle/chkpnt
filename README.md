@@ -18,6 +18,10 @@ ChkPnt is an Android app for tracking the games you own or want, and where you a
 
 It is built with Flutter. Everything it stores stays on your device. There is no account, no server and no tracking.
 
+### 📦 [Download the latest APK](https://github.com/froogle/chkpnt/releases/latest)
+
+Download the `.apk` file from the latest release and open it on your Android phone. You may need to allow installs from your browser or file manager.
+
 <p align="center">
   <img src="docs/screenshots/home.jpg" width="250" alt="Home screen: Games grouped by Status, with Playing expanded to show six Games and their Platforms">
   <img src="docs/screenshots/wishlist.jpg" width="250" alt="Wishlist screen: Ordered Games above the Wishlist">
