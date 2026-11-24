@@ -1,31 +1,30 @@
-# Issue tracker: Local Markdown
+# Issue tracker: GitHub Issues
 
-Issues and specs for this repo live as markdown files in `.scratch/`.
+Issues and specs for this repo live as GitHub Issues on `froogle/chkpnt`. Use the `gh` CLI for every operation.
 
 ## Conventions
 
-- One feature per directory: `.scratch/<feature-slug>/`
-- The spec is `.scratch/<feature-slug>/spec.md`
-- Implementation issues are one file per ticket at `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`, never a single combined tickets file
-- Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
-- Comments and conversation history append to the bottom of the file under a `## Comments` heading
-- The PR that implements a ticket also resolves it: in that same PR, set `Status: resolved` and append a `## Comments` entry naming the PR and its branch
+- One issue per ticket, never a single combined tickets issue.
+- A spec is its own issue labelled `spec`. Its implementation tickets are separate issues that start their body with `Part of #<spec>`.
+- Triage state is a label (see `triage-labels.md` for the role strings). An issue carries one triage label at a time.
+- Comments and conversation history go in issue comments (`gh issue comment <n>`), not edits to the body.
+- The PR that implements a ticket also resolves it: put `Closes #<n>` in the PR body so merging closes the issue.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).
+`gh issue create --title "<title>" --body-file <file> --label <triage-label>`
 
 ## When a skill says "fetch the relevant ticket"
 
-Read the file at the referenced path. The user will normally pass the path or the issue number directly.
+`gh issue view <n> --comments`. The user will normally pass the issue number or URL directly.
 
 ## Wayfinding operations
 
-Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
+Used by `/wayfinder`. The **map** is an issue with one **child** issue per ticket.
 
-- **Map**: `.scratch/<effort>/map.md` (the Notes / Decisions-so-far / Fog body).
-- **Child ticket**: `.scratch/<effort>/issues/NN-<slug>.md`, numbered from `01`, with the question in the body. A `Type:` line records the ticket type (`research`/`prototype`/`grilling`/`task`); a `Status:` line records `claimed`/`resolved`.
-- **Blocking**: a `Blocked by: NN, NN` line near the top. A ticket is unblocked when every file it lists is `resolved`.
-- **Frontier**: scan `.scratch/<effort>/issues/` for files that are open, unblocked, and unclaimed; first by number wins.
-- **Claim**: set `Status: claimed` and save before any work.
-- **Resolve**: append the answer under an `## Answer` heading, set `Status: resolved`, then append a context pointer (gist + link) to the map's Decisions-so-far in `map.md`.
+- **Map**: an issue labelled `map` whose body holds the Notes / Decisions-so-far / Fog sections.
+- **Child ticket**: an issue whose body starts with `Part of #<map>`, then the question. A `type:research`, `type:prototype`, `type:grilling` or `type:task` label records the ticket type.
+- **Blocking**: a `Blocked by: #N, #N` line near the top of the body. A ticket is unblocked when every issue it lists is closed.
+- **Frontier**: `gh issue list --search "Part of #<map>" --state open` and take the open, unblocked, unassigned issues; lowest number wins.
+- **Claim**: assign yourself (`gh issue edit <n> --add-assignee @me`) before any work.
+- **Resolve**: comment the answer under an `## Answer` heading, close the issue, then add a context pointer (gist + link) to the map's Decisions-so-far by editing the map issue's body.

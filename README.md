@@ -161,7 +161,7 @@ docs/adr/           Architecture decision records
 - [CODING_STANDARDS.md](CODING_STANDARDS.md): the rules every change follows, covering styling, state, layout and tests.
 - [GLOSSARY.md](GLOSSARY.md): ChkPnt's domain language, which code, UI text and tests all use.
 - [docs/adr/](docs/adr/): recorded architecture decisions.
-- [CLAUDE.md](CLAUDE.md) and [docs/agents/](docs/agents/): instructions for AI coding agents working in this repo. Issues they work from live as markdown files under `.scratch/`.
+- [CLAUDE.md](CLAUDE.md) and [docs/agents/](docs/agents/): instructions for AI coding agents working in this repo. Issues they work from live in GitHub Issues.
 
 ## Contributing
 
